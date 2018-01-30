@@ -39,7 +39,7 @@ public class RTISimConnectThread extends Thread{
 	
 	boolean isConnected = true;
 	public void run() {
-		try {
+		/*try {
 			//printLine("trying to connect now...");
 			printLine("Connected to dedicated socket! Now running thread to receive new messages!");
 			
@@ -49,14 +49,82 @@ public class RTISimConnectThread extends Thread{
 			//out.println(tag);
 			//out.flush();
 			//printLine("I sent message with : " + tag);
-			String userInput = "";
-			while (isConnected == true && (userInput = in.readLine()) != null) {
-				printLine("I READ FROM RTI : " + userInput);
+			String userInput = in.readLine();
+			while (isConnected == true && userInput.length() <= 0) {
 				rtiLib.receivedMessage(userInput);
+				printLine("ready to read = " + in.ready());
+				userInput = in.readLine();
+				printLine("ready to read = " + in.ready() + "... received input = " + userInput);
 			}
 		} catch (Exception e) {
-			printLine("Exception (connection closed) >> " + e.toString());
+			printLine(System.currentTimeMillis() + " Exception (connection closed) >> " + e.toString());
+		}*/
+		printLine("Connected to dedicated socket! Now running thread to receive new messages!");
+		BufferedReader in;
+		try {
+			in = new BufferedReader(new InputStreamReader(rtiSocket.getInputStream()));
+			continuousInput(in);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			printLine(System.currentTimeMillis() + " Exception (some error trying to open the bufferedreader from the RTI...) >> " + e.toString());
 		}
+		
+	}
+	
+	private long crashTimeInMillis = 0;
+	private int numOfRTICrash = 0;
+	
+	private void continuousInput(BufferedReader in) {
+		try {
+			printLine("Connected to dedicated socket! Now running thread to receive new messages!");
+			String userInput = in.readLine();
+			while (isConnected == true && userInput.length() > 0) {
+				rtiLib.receivedMessage(userInput);
+				printLine("ready to read...");
+				userInput = in.readLine();
+				printLine("had read, received input = " + userInput);
+			}
+		} catch (Exception e) {
+			disconnectedErr = System.currentTimeMillis() + " Exception (connection closed) >> " + e.toString();
+			printLine(disconnectedErr);
+			e.printStackTrace();
+		}
+		
+		// if thread reading from RTI broke multiple times within 10 seconds, then there is some problem, maybe best to close the thread...
+		if (System.currentTimeMillis() - crashTimeInMillis < 10000) {
+			numOfRTICrash++;
+		} else {
+			numOfRTICrash = 0;
+			numOfRTICrash++;
+		}
+		crashTimeInMillis = System.currentTimeMillis();
+		
+		
+		if (isConnected == true) {
+			if (numOfRTICrash >= 3) {
+				printLine("Something serious is wrong with the connection to the RTI. Shut down the thread.");
+				System.out.println("Something serious is wrong with the connection to the RTI. Shut down the thread.");
+			} else {
+				continuousInput(in);
+				return;
+			}
+		}
+		
+		try {
+			in.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private String disconnectedErr = "";
+	public String getDisconnectedErr() {
+		String returnString = null;
+		if (disconnectedErr.length() > 0) {
+			returnString = disconnectedErr;
+			disconnectedErr = "";
+		}
+		return returnString;
 	}
 	
 	public void closeConnection() {

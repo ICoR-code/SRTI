@@ -770,7 +770,7 @@ public class ExampleServerGUI extends JFrame implements RTISim{
 	
 	
 	public void printLine(String line) {
-		System.out.println(String.format("%1$32s", "[" + tag + "]" + " --- ") + line);
+		//System.out.println(String.format("%1$32s", "[" + tag + "]" + " --- ") + line);
 	}
 	
 	public static void main(String[] args) {

@@ -181,7 +181,12 @@ public class RTILib {
 			newMessage.fromSim = fromSim;
 			newMessage.originalMessage = message;
 			messageQueue.add(newMessage);
-			Collections.sort(messageQueue);
+			/* (no point to sort list any more, we just iterate through whole array list anyway...)
+			try {
+				Collections.sort(messageQueue);
+			} catch (Exception e) {
+				printLine("For some reason, unable to sort the list due to Collections.sort(messageQueue) giving an error of NoSuchElementException... " + e.getMessage());
+			}*/
 			printLine("Received new message, messageQueue now has this many: " + messageQueue.size());
 		}
 
@@ -278,7 +283,19 @@ public class RTILib {
 	
 	public String getNextMessage(String messageName, int millisToWait) {
 		String returnString = null;
-		printLine("getNextMessage() called...");
+		//printLine("getNextMessage() called...");
+		String debugErr = readThread.getDisconnectedErr();
+		if (debugErr != null) {
+			printLine("WARNING: did you know there might be a disconnect with the RTI? " + debugErr);
+			System.out.println("WARNING: did you know there might be a disconnect with the RTI? " + debugErr);
+		}
+		
+		String debugLine = "";
+		//for debugging, print out queue before and after 
+		for (int i = 0; i < messageQueue.size(); i++) {
+			debugLine += messageQueue.get(i).name + "\t";
+		}
+		printLine("queue before checking message: size = " + messageQueue.size() + " ... " + debugLine);
 		for (int j = 0; j < millisToWait; j+=10) {
 			if (messageQueue.isEmpty() == false) {
 				for (int i = 0; i < messageQueue.size(); i++) {
@@ -295,6 +312,13 @@ public class RTILib {
 				printLine("while trying to get next message, some error happened: " + e.getMessage());
 			}
 		}
+		//for debugging, print out queue before and after 
+		debugLine = "";
+		for (int i = 0; i < messageQueue.size(); i++) {
+			debugLine += messageQueue.get(i).name + "\t";
+		}
+		//printLine("queue after checking message: size = " + messageQueue.size() + " ... " + debugLine);
+		//printLine("confirm socket is still connected = " + readThread.rtiSocket.isConnected());
 		return returnString;
 	}
 	
@@ -583,7 +607,7 @@ public class RTILib {
 		return returnString;
 	}
 
-	private String version = "v0.412";
+	private String version = "v0.43";
 	public void printVersion() {
 		printLine("SRTI Version - " + version);
 	}
@@ -592,8 +616,10 @@ public class RTILib {
 	public void setDebugOutput(boolean setDebugOut) {
 		debugOut = setDebugOut;
 		
-		readThread.setDebugOutput(setDebugOut);
-		writeThread.setDebugOutput(setDebugOut);
+		if (readThread != null)
+			readThread.setDebugOutput(setDebugOut);
+		if (writeThread != null)
+			writeThread.setDebugOutput(setDebugOut);
 	}
 	
 	private String tag = "RTILib";

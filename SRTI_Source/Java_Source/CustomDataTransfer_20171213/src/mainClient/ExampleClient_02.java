@@ -19,15 +19,15 @@ public class ExampleClient_02 implements RTISim{
 	public ExampleClient_02() {
 		printLine("This is an example Java client to show how to use RTILib");
 		
-		String hostName = "35.3.104.242";
-		String portNum = "60535";
+		String hostName = "35.3.101.84";
+		String portNum = "4200";
 		rtiLib = new RTILib(this);
 		rtiLib.connect(hostName, portNum);
 		rtiLib.subscribeTo("StoreStatus");
 		
-		for (int i = 0; i < 20; i++) {
+		for (int i = 0; i < 20000; i++) {
 			try {
-				TimeUnit.SECONDS.sleep(4);
+				TimeUnit.SECONDS.sleep(1);
 				//numOfCustomers++;
 				String sendMessage = rtiLib.setJsonObject("", "NumOfCustomers", "" + numOfCustomers);
 				printLine("the message to send is: " + sendMessage);
@@ -48,11 +48,14 @@ public class ExampleClient_02 implements RTISim{
 		return "ExampleClient_02";
 	}
 
+	int numOfMessages = 0;
+	
 	@Override
 	public void receivedMessage(String name, String content, String timestamp, String fromSim) {
 		printLine("Received message = " + name);
 		if (name.compareTo("StoreStatus") == 0) {
-			printLine("value = " + rtiLib.getJsonObject("NumOfFood", content));
+			numOfMessages++;
+			printLine(numOfMessages + "... value = " + rtiLib.getJsonObject("NumOfFood", content));
 			int numOfFood = Integer.parseInt(rtiLib.getStringNoQuotes(rtiLib.getJsonObject("NumOfFood", content)));
 			if (numOfFood % 4 == 0) {
 				numOfCustomers++;

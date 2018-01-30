@@ -86,6 +86,8 @@ public class RTIConnectThread extends Thread {
 			out = new PrintWriter(thisSimSocket.getOutputStream(), true);
 			out.println(json);
 			out.flush();
+			printLine("Sent message " + name + " to " + simName + " with content " + content);
+			//printLine("Confirm that socket is still connected = " + thisSimSocket.);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			printLine("   IOExceoption error happened here...");

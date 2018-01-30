@@ -34,7 +34,7 @@ public class ExampleServer {
 	String tag = "ExampleServer";
 	
 	private String hostName = "localhost";
-	private int portNumber =-1;
+	private int portNumber = -1;
 	ArrayList<RTIConnectThread> threadList = new ArrayList<RTIConnectThread>();
 	ArrayList<String> messageHistoryList = new ArrayList<String>();
 	
@@ -257,12 +257,15 @@ public class ExampleServer {
 			messageHistoryList.add(newJsonMessage);
 			
 			//send message back out to all sims that are subscribed to it
+			int subscribedToTotal = 0;
 			for (int i = 0; i < threadList.size(); i++) {
 				if (threadList.get(i).isSubscribedTo(name)) {
+					subscribedToTotal ++;
 					threadList.get(i).update(newJsonMessage);
 				}
 				//threadList.get(i).update("RTI_UpdateMessage", message);
 			}
+			printLine("There should be " + subscribedToTotal + " subscribed to message " + name);
 		}
 		
 		public void disconnectThread(int threadIndex) {
