@@ -1,0 +1,7 @@
+{
+"portNumber":4200,
+"gui":true,
+"tcp":false,
+"compress":false,
+"checkConnectionInterval":0.0
+}

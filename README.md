@@ -4,7 +4,7 @@
 
 #### What is it?
 
-A simple software solution to allow data-transfer between applications, either running on the same machine or separate machines. Can be used for virtual simulations of shared systems, IoT systems, and other applications.
+A simple, portable software solution to allow data-transfer between applications, either running on the same machine or separate machines. Can be used for virtual simulations of shared systems, IoT systems, and other applications.
 
 Unlike similar solutions, is not built for efficiency at the expense of usability: data messages are sent and received as "string" representations of JSON format, to allow flexible data representation without re-compilation. This software library includes API to help format strings properly, but to extract data requires documentation between users to understand the expected content of messages. 
 

@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>15.0</VCProjectVersion>
+    <ProjectGuid>{E6FB044D-8EAD-437B-9F93-9F3334C03189}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>RTILib_C_20180313</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>C:\Users\hlynk\Desktop\UMich\ICoR\Workspace-CPlusPlus\RTILib_C++_20180313\RTILib_C++_20180313\rapidjson\</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\rapidjson-master\include\rapidjson\allocators.h" />
+    <ClInclude Include="..\..\..\..\..\rapidjson-master\include\rapidjson\cursorstreamwrapper.h" />
+    <ClInclude Include="..\..\..\..\..\rapidjson-master\include\rapidjson\document.h" />
+    <ClInclude Include="..\..\..\..\..\rapidjson-master\include\rapidjson\encodedstream.h" />
+    <ClInclude Include="..\..\..\..\..\rapidjson-master\include\rapidjson\encodings.h" />
+    <ClInclude Include="..\..\..\..\..\rapidjson-master\include\rapidjson\error\en.h" />
+    <ClInclude Include="..\..\..\..\..\rapidjson-master\include\rapidjson\error\error.h" />
+    <ClInclude Include="..\..\..\..\..\rapidjson-master\include\rapidjson\filereadstream.h" />
+    <ClInclude Include="..\..\..\..\..\rapidjson-master\include\rapidjson\filewritestream.h" />
+    <ClInclude Include="..\..\..\..\..\rapidjson-master\include\rapidjson\fwd.h" />
+    <ClInclude Include="..\..\..\..\..\rapidjson-master\include\rapidjson\internal\biginteger.h" />
+    <ClInclude Include="..\..\..\..\..\rapidjson-master\include\rapidjson\internal\diyfp.h" />
+    <ClInclude Include="..\..\..\..\..\rapidjson-master\include\rapidjson\internal\dtoa.h" />
+    <ClInclude Include="..\..\..\..\..\rapidjson-master\include\rapidjson\internal\ieee754.h" />
+    <ClInclude Include="..\..\..\..\..\rapidjson-master\include\rapidjson\internal\itoa.h" />
+    <ClInclude Include="..\..\..\..\..\rapidjson-master\include\rapidjson\internal\meta.h" />
+    <ClInclude Include="..\..\..\..\..\rapidjson-master\include\rapidjson\internal\pow10.h" />
+    <ClInclude Include="..\..\..\..\..\rapidjson-master\include\rapidjson\internal\regex.h" />
+    <ClInclude Include="..\..\..\..\..\rapidjson-master\include\rapidjson\internal\stack.h" />
+    <ClInclude Include="..\..\..\..\..\rapidjson-master\include\rapidjson\internal\strfunc.h" />
+    <ClInclude Include="..\..\..\..\..\rapidjson-master\include\rapidjson\internal\strtod.h" />
+    <ClInclude Include="..\..\..\..\..\rapidjson-master\include\rapidjson\internal\swap.h" />
+    <ClInclude Include="..\..\..\..\..\rapidjson-master\include\rapidjson\istreamwrapper.h" />
+    <ClInclude Include="..\..\..\..\..\rapidjson-master\include\rapidjson\memorybuffer.h" />
+    <ClInclude Include="..\..\..\..\..\rapidjson-master\include\rapidjson\memorystream.h" />
+    <ClInclude Include="..\..\..\..\..\rapidjson-master\include\rapidjson\msinttypes\inttypes.h" />
+    <ClInclude Include="..\..\..\..\..\rapidjson-master\include\rapidjson\msinttypes\stdint.h" />
+    <ClInclude Include="..\..\..\..\..\rapidjson-master\include\rapidjson\ostreamwrapper.h" />
+    <ClInclude Include="..\..\..\..\..\rapidjson-master\include\rapidjson\pointer.h" />
+    <ClInclude Include="..\..\..\..\..\rapidjson-master\include\rapidjson\prettywriter.h" />
+    <ClInclude Include="..\..\..\..\..\rapidjson-master\include\rapidjson\rapidjson.h" />
+    <ClInclude Include="..\..\..\..\..\rapidjson-master\include\rapidjson\reader.h" />
+    <ClInclude Include="..\..\..\..\..\rapidjson-master\include\rapidjson\schema.h" />
+    <ClInclude Include="..\..\..\..\..\rapidjson-master\include\rapidjson\stream.h" />
+    <ClInclude Include="..\..\..\..\..\rapidjson-master\include\rapidjson\stringbuffer.h" />
+    <ClInclude Include="..\..\..\..\..\rapidjson-master\include\rapidjson\writer.h" />
+    <ClInclude Include="CustomJSONParser.h" />
+    <ClInclude Include="RTILib.h" />
+    <ClInclude Include="RTISim.h" />
+    <ClInclude Include="RTISimConnectThread.h" />
+    <ClInclude Include="RTISimExample.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="targetver.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="RTILib.cpp" />
+    <ClCompile Include="RTILibC20180313.cpp" />
+    <ClCompile Include="RTISim.cpp" />
+    <ClCompile Include="RTISimConnectThread.cpp" />
+    <ClCompile Include="RTISimExample.cpp" />
+    <ClCompile Include="stdafx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+    </ClCompile>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
