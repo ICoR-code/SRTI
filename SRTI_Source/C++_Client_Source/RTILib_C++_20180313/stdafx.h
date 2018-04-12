@@ -9,7 +9,19 @@
 
 #include <stdio.h>
 #include <tchar.h>
+/*#include <time.h>
+#include <string>
+#include <cstring>
+#include <vector>
+#include <deque>
+#include <iostream>
+#include <algorithm>
+#include <thread>*/
 
+
+//#include "RTISimConnectThread.h"
+//#include "RTILib.h"
+//#include "RTISim.h"
 
 
 // TODO: reference additional headers your program requires here

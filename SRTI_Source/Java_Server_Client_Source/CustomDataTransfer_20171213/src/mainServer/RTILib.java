@@ -31,7 +31,7 @@ public class RTILib {
 	public class Message implements Comparable{
 		public String name = "";
 		public String timestamp = "";
-		public String fromSim = "";
+		public String source = "";
 		public String content = "";
 		public String originalMessage = "";
 		
@@ -140,7 +140,7 @@ public class RTILib {
 					.add("name", name)
 					.add("content", content)
 					.add("timestamp", "" + System.currentTimeMillis())
-					.add("fromSim", simName)
+					.add("source", simName)
 					.build();
 			PrintWriter out;
 			out = new PrintWriter(dedicatedRtiSocket.getOutputStream(), true);
@@ -160,7 +160,7 @@ public class RTILib {
 		String name = "";
 		String content = "";
 		String timestamp = "";
-		String fromSim = "";
+		String source = "";
 		
 		JsonReader reader = Json.createReader(new StringReader(message));
 		JsonObject json = reader.readObject();
@@ -168,17 +168,17 @@ public class RTILib {
 		name = json.getString("name");
 		content = json.getString("content");
 		timestamp = json.getString("timestamp");
-		fromSim = json.getString("fromSim");
+		source = json.getString("source");
 		
 		//if thisSim is available, call upon api directly, else add message to an ordered queue (ordered based on timestamp)
 		if (thisSim != null) {
-			thisSim.receivedMessage(name, content, timestamp, fromSim);
+			thisSim.receivedMessage(name, content, timestamp, source);
 		} else {
 			Message newMessage = new Message();
 			newMessage.name = name;
 			newMessage.content = content;
 			newMessage.timestamp = timestamp;
-			newMessage.fromSim = fromSim;
+			newMessage.source = source;
 			newMessage.originalMessage = message;
 			messageQueue.add(newMessage);
 			/* (no point to sort list any more, we just iterate through whole array list anyway...)
@@ -338,7 +338,7 @@ public class RTILib {
 	public String getJsonObject(String name, String content) {
 		String returnString = "";
 		
-		printLine("asked to read jsonValue with content (" + content + ")");
+		printLine("asked to read jsonValue from content (" + content + ")");
 		
 		if (content.compareTo("")==0 || content == null) {
 			returnString = null;
@@ -442,8 +442,8 @@ public class RTILib {
 		String returnString = "";
 		
 		int numOfQuotes = 0;
-		for (int j = 0; j < content.length(); j++) {
-			if (content.charAt(j) == '\"') {
+		for (int i = 0; i < content.length(); i++) {
+			if (content.charAt(i) == '\"') {
 				numOfQuotes++;
 			}
 		}
@@ -486,14 +486,14 @@ public class RTILib {
 		return returnString;
 	}
 	
-	public String getMessageFromSim(String originalMessage) {
+	public String getMessageSource(String originalMessage) {
 		String returnString = "";
 		JsonReader reader = Json.createReader(new StringReader(originalMessage));
 		JsonObject json = reader.readObject();
 		
-		if (json.containsKey("fromSim")) {
+		if (json.containsKey("source")) {
 			// extra formatting to remove quotes: "json.get(string)" returns different format from "json.getString(string)"
-			returnString = json.get("fromSim").toString();
+			returnString = json.get("source").toString();
 		}
 		else {
 			returnString = null;

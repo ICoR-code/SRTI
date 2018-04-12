@@ -61,7 +61,7 @@ public class ExampleServerGUI extends JFrame implements RTISim{
 	public class MessageHistory{
 		public String name = "";
 		public ArrayList<String> historyTimestamps = new ArrayList<String>();
-		public ArrayList<String> historyFromSim = new ArrayList<String>();
+		public ArrayList<String> historySource = new ArrayList<String>();
 		public ArrayList<String> historyContent = new ArrayList<String>();
 	}
 	ArrayList<MessageHistory> listMessages_items = new ArrayList<MessageHistory>();			
@@ -108,7 +108,7 @@ public class ExampleServerGUI extends JFrame implements RTISim{
 				listMessagesHistory_string = new String[listMessages_items.get(listMessage_selectedIndex).historyTimestamps.size()];
 				for (int i = 0; i < listMessagesHistory_string.length; i++) {
 					listMessagesHistory_string[i] = listMessages_items.get(listMessage_selectedIndex).historyTimestamps.get(i) 
-							+ " <- " + listMessages_items.get(listMessage_selectedIndex).historyFromSim.get(i);
+							+ " <- " + listMessages_items.get(listMessage_selectedIndex).historySource.get(i);
 				}
 			} else {
 				listMessagesHistory_string = new String[0];
@@ -213,7 +213,7 @@ public class ExampleServerGUI extends JFrame implements RTISim{
 			String[] listMessagesHistory_string = new String[listMessages_items.get(listMessage_selectedIndex).historyTimestamps.size()];
 			for (int i = 0; i < listMessagesHistory_string.length; i++) {
 				listMessagesHistory_string[i] = listMessages_items.get(listMessage_selectedIndex).historyTimestamps.get(i) 
-						+ " <- " + listMessages_items.get(listMessage_selectedIndex).historyFromSim.get(i);
+						+ " <- " + listMessages_items.get(listMessage_selectedIndex).historySource.get(i);
 			}
 			listMessagesHistory_list.setListData(listMessagesHistory_string);
 			listMessagesHistory_list.updateUI();
@@ -392,7 +392,7 @@ public class ExampleServerGUI extends JFrame implements RTISim{
 			String[] listMessagesHistory_string = new String[listMessages_items.get(listMessage_selectedIndex).historyTimestamps.size()];
 			for (int i = 0; i < listMessagesHistory_string.length; i++) {
 				listMessagesHistory_string[i] = listMessages_items.get(listMessage_selectedIndex).historyTimestamps.get(i) 
-						+ " <- " + listMessages_items.get(listMessage_selectedIndex).historyFromSim.get(i);
+						+ " <- " + listMessages_items.get(listMessage_selectedIndex).historySource.get(i);
 			}
 			listMessagesHistory_list.setListData(listMessagesHistory_string);
 			listMessagesHistory_list.updateUI();
@@ -476,7 +476,7 @@ public class ExampleServerGUI extends JFrame implements RTISim{
 						for (int j = 0; j < listMessages_items.get(i).historyTimestamps.size(); j++) {
 							outputString += listMessages_items.get(i).name + "\t"
 									+ listMessages_items.get(i).historyTimestamps.get(j) + "\t"
-									+ listMessages_items.get(i).historyFromSim.get(j) + "\t"
+									+ listMessages_items.get(i).historySource.get(j) + "\t"
 									+ listMessages_items.get(i).historyContent.get(j) + "\t \n";
 						}
 					}
@@ -643,7 +643,7 @@ public class ExampleServerGUI extends JFrame implements RTISim{
 	
 	//!!!! Below is RTISim-specific logic
 	@Override
-	public void receivedMessage(String messageName, String content, String timestamp, String fromSim) {
+	public void receivedMessage(String messageName, String content, String timestamp, String source) {
 		
 		
 		
@@ -693,15 +693,15 @@ public class ExampleServerGUI extends JFrame implements RTISim{
 				}
 				if (alreadyListed == true) {
 					listMessages_items.get(existIndex).historyTimestamps.add(rtiLib.getJsonObject("timestamp", content));
-					listMessages_items.get(existIndex).historyFromSim.add(rtiLib.getJsonObject("fromSim", content));
+					listMessages_items.get(existIndex).historySource.add(rtiLib.getJsonObject("source", content));
 					listMessages_items.get(existIndex).historyContent.add(rtiLib.getJsonObject("content", content));
 				} else {
 					MessageHistory newMessageItem = new MessageHistory();
 					newMessageItem.name = contentMessageName;
 					newMessageItem.historyTimestamps = new ArrayList<String>();
 					newMessageItem.historyTimestamps.add(rtiLib.getJsonObject("timestamp", content));
-					newMessageItem.historyFromSim = new ArrayList<String>();
-					newMessageItem.historyFromSim.add(rtiLib.getJsonObject("fromSim", content));
+					newMessageItem.historySource = new ArrayList<String>();
+					newMessageItem.historySource.add(rtiLib.getJsonObject("source", content));
 					newMessageItem.historyContent = new ArrayList<String>();
 					newMessageItem.historyContent.add(rtiLib.getJsonObject("content", content));
 					listMessages_items.add(newMessageItem);
@@ -728,9 +728,9 @@ public class ExampleServerGUI extends JFrame implements RTISim{
 		//printLine("updating receiveMessage... 2");
 		if (alreadyListed == true) {
 			//printLine("updating receiveMessage... 2.1");
-			if (alreadyReceivedMessage(contentMessageName, content, timestamp, fromSim) == false) {
+			if (alreadyReceivedMessage(contentMessageName, content, timestamp, source) == false) {
 				listMessages_items.get(existIndex).historyTimestamps.add(timestamp);
-				listMessages_items.get(existIndex).historyFromSim.add(fromSim);
+				listMessages_items.get(existIndex).historySource.add(source);
 				listMessages_items.get(existIndex).historyContent.add(content);
 			}
 			//printLine("update receiveMessage... 2.2");
@@ -740,7 +740,7 @@ public class ExampleServerGUI extends JFrame implements RTISim{
 			newMessageItem.name = contentMessageName;
 			newMessageItem.historyTimestamps = new ArrayList<String>();
 			newMessageItem.historyTimestamps.add(timestamp);
-			newMessageItem.historyFromSim.add(fromSim);
+			newMessageItem.historySource.add(source);
 			newMessageItem.historyContent = new ArrayList<String>();
 			newMessageItem.historyContent.add(content);
 			listMessages_items.add(newMessageItem);
@@ -750,13 +750,13 @@ public class ExampleServerGUI extends JFrame implements RTISim{
 		//printLine("updating receiveMessage... 3");
 	}
 	
-	private boolean alreadyReceivedMessage(String name, String content, String timestamp, String fromSim) {
+	private boolean alreadyReceivedMessage(String name, String content, String timestamp, String source) {
 
 		for(int i = 0; i < listMessages_items.size(); i++) {
 			if (listMessages_items.get(i).name.compareTo(name) == 0){
 				for (int j = 0; j < listMessages_items.get(i).historyTimestamps.size(); j++) {
 					if (listMessages_items.get(i).historyTimestamps.get(j).compareTo(timestamp) == 0) {
-						if (listMessages_items.get(i).historyFromSim.get(j).compareTo(fromSim) == 0 &&
+						if (listMessages_items.get(i).historySource.get(j).compareTo(source) == 0 &&
 								listMessages_items.get(i).historyContent.get(j).compareTo(content) == 0) {
 							return true;
 						}

@@ -12,7 +12,7 @@ public class ExampleClient_01 {
 	public static void main(String [] args) {
 		printLine("This is an example Java client to show how to use RTILib");
 		
-		String hostName = "35.3.101.84";
+		String hostName = "35.3.75.84";
 		String portNum = "4200";
 		RTILib rtiLib = new RTILib();
 		rtiLib.setSimName("betterdefaultname");
@@ -32,7 +32,7 @@ public class ExampleClient_01 {
 				printLine("the message to send is: " + sendMessage);
 				
 				String receivedMessage = rtiLib.getNextMessage();
-				while (receivedMessage != null) {
+				/*while (receivedMessage != null) {
 					numOfMessages++;
 					printLine(numOfMessages + "... the message received is: " + receivedMessage);
 					String messageName = rtiLib.getStringNoQuotes(rtiLib.getMessageName(receivedMessage));
@@ -47,7 +47,7 @@ public class ExampleClient_01 {
 					}
 					
 					receivedMessage = rtiLib.getNextMessage();
-				}
+				}*/
 				
 				rtiLib.publish("StoreStatus",sendMessage);
 			} catch (InterruptedException e) {

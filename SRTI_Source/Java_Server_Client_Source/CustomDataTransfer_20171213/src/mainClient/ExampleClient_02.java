@@ -51,7 +51,7 @@ public class ExampleClient_02 implements RTISim{
 	int numOfMessages = 0;
 	
 	@Override
-	public void receivedMessage(String name, String content, String timestamp, String fromSim) {
+	public void receivedMessage(String name, String content, String timestamp, String source) {
 		printLine("Received message = " + name);
 		if (name.compareTo("StoreStatus") == 0) {
 			numOfMessages++;

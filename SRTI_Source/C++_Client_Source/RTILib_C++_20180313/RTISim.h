@@ -8,7 +8,7 @@ class RTISim
 {
 public:
 	RTISim();
-	virtual void receivedMessage(string messageName, string content, string timestamp, string fromSim) = 0;
+	virtual void receivedMessage(string messageName, string content, string timestamp, string source) = 0;
 	virtual string getSimName() = 0;
 	~RTISim();
 };

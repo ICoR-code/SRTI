@@ -14,13 +14,20 @@
 
 class RTISimConnectThread
 {
+
+private:
+	string tag = "RTISimConnectThread";
+	bool debugOut = false;
+
 public:
-	SOCKET dedicatedSocket;
+	//SOCKET dedicatedSocket;
 
 	RTISimConnectThread();
 	RTISimConnectThread(RTILib rtiSim, SOCKET dedicatedSocket);
 	void start();
-	//void run();
+	void closeConnection();
+	void setDebugOutput(bool setDebugOut);
+	void printLine(string line);
 	~RTISimConnectThread();
 };
 

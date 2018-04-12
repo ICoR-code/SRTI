@@ -75,13 +75,13 @@ public class RTIConnectThread extends Thread {
 		return send(name, content, timestamp, "RTI");
 	}
 	
-	int send(String name, String content, String timestamp, String fromSim) {
+	int send(String name, String content, String timestamp, String source) {
 		try {
 			JsonObject json =  Json.createObjectBuilder()
 					.add("name", name)
 					.add("content", content)
 					.add("timestamp", timestamp)
-					.add("fromSim", fromSim)
+					.add("source", source)
 					.build();
 			PrintWriter out;
 			out = new PrintWriter(thisSimSocket.getOutputStream(), true);
@@ -102,9 +102,9 @@ public class RTIConnectThread extends Thread {
 		String name = Json.createReader(new StringReader(message)).readObject().getString("name");
 		String content = Json.createReader(new StringReader(message)).readObject().getString("content");
 		String timestamp = Json.createReader(new StringReader(message)).readObject().getString("timestamp");
-		String fromSim =  Json.createReader(new StringReader(message)).readObject().getString("fromSim");
+		String source =  Json.createReader(new StringReader(message)).readObject().getString("source");
 		
-		send(name, content, timestamp, fromSim);
+		send(name, content, timestamp, source);
 	}
 	
 	public void update(String name, String content) {

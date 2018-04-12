@@ -7,7 +7,7 @@ RTISimExample::RTISimExample()
 {
 }
 
-void RTISimExample::receivedMessage(string messageName, string content, string timestamp, string fromSim) {
+void RTISimExample::receivedMessage(string messageName, string content, string timestamp, string source) {
 
 }
 

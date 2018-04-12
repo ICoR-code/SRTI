@@ -1,21 +1,21 @@
 #include "stdafx.h"
-#include "RTILib.h"
 #include "RTISim.h"
 #include "RTISimConnectThread.h"
 #include <iostream>
 #include <string>
 #include <cstring>
 #include <vector>
+#include <deque>
 #include <algorithm>
 #include <thread>
 
-/* 
-	C++ does not have a single cross-platform standard library for using socket communication:
-	- programmers would use <winsock2.h> for Windows, and <sys/socket.h> for Linux/Mac, OR
-	- use BOOST or another 3rd party library for multiple platforms (it itself would handle platform-specific syntax).
+/*
+C++ does not have a single cross-platform standard library for using socket communication:
+- programmers would use <winsock2.h> for Windows, and <sys/socket.h> for Linux/Mac, OR
+- use BOOST or another 3rd party library for multiple platforms (it itself would handle platform-specific syntax).
 
-	Socket is necessary to connect to the RTI, it's logic in C++ may need to be rewritten by user to ensure compatibility with chosen platform.
-	*/
+Socket is necessary to connect to the RTI, it's logic in C++ may need to be rewritten by user to ensure compatibility with chosen platform.
+*/
 #ifdef _WIN32
 #include <winsock2.h>
 #include <ws2tcpip.h>
@@ -33,9 +33,10 @@
 #include "rapidjson/stringbuffer.h"
 
 using namespace std;
-//void printLine(string line);
 
-
+#ifndef CPPADDED
+#define CPPADDED
+#endif
 
 
 WSADATA wsaData;
@@ -51,14 +52,15 @@ struct Message {
 	
 	string name = "";
 	string timestamp = "";
-	string fromSim = "";
+	string source = "";
 	string content = "";
 	string originalMessage = "";
 	bool compareTo(Message i, Message j) {
 		return (i.timestamp.compare(j.timestamp));
 	}
 };
-vector<Message> messageQueue;
+//vector<Message> messageQueue;
+deque<Message> messageQueue;
 
 RTILib::RTILib(RTISim * rtiSim) {
 	thisSim = rtiSim;
@@ -208,91 +210,84 @@ int RTILib::connect(string hostName, string portNumber) {
 	readThread = RTISimConnectThread(*this, dedicatedRtiSocket);
 	readThread.start();
 
-	publish("RTI_InitializeSim", "");
-	/*iResult = send(ConnectSocket, "Hello nurse!", (int)strlen("Hello nurse!"), 0);
-	if (iResult == SOCKET_ERROR) {
-		return -1;
-	}*/
 
+	string jsonContent;
+	rapidjson::StringBuffer bufferOut;
+	bufferOut.Clear();
+	rapidjson::Writer<rapidjson::StringBuffer> writerOut(bufferOut);
+	rapidjson::Document document;
+	rapidjson::Value jsonContent1(rapidjson::kObjectType);
+	rapidjson::Value jsonSimName(simName.c_str(), document.GetAllocator());
+	jsonContent1.AddMember("simName", jsonSimName, document.GetAllocator());
+	jsonContent1.Accept(writerOut);
 
+	publish("RTI_InitializeSim", bufferOut.GetString());
 
 	return 0;
 }
 
 int RTILib::disconnect() {
+	readThread.closeConnection();
 	return 0;
 }
 
 int RTILib::subscribeTo(string messageName) {
+	rapidjson::StringBuffer bufferOut;
+	bufferOut.Clear();
+	rapidjson::Writer<rapidjson::StringBuffer> writerOut(bufferOut);
+	rapidjson::Document document;
+
+	rapidjson::Value jsonContent(rapidjson::kObjectType);
+	rapidjson::Value jsonMessageName(messageName.c_str(), document.GetAllocator());
+	jsonContent.AddMember("subscribeTo", jsonMessageName, document.GetAllocator());
+	jsonContent.Accept(writerOut);
+
+	publish("RTI_SubscribeTo", bufferOut.GetString());
 	return 0;
 }
 
 int RTILib::subscribeToAll() {
+	publish("RTI_SubscribeToAll", "");
 	return 0;
 }
 
 int RTILib::subscribeToAllPlusHistory() {
+	publish("RTI_SubscribeToAllPlusHistory", "");
 	return 0;
 }
 
 int RTILib::publishTo(string messageName) {
+	// not used yet... currently, all sims have unrestricted access to publish any message without qualifications
 	return 0;
 }
 
 int RTILib::publish(string name, string content) {
 	int iSendResult = 0;
 	string message = "";
-	string messageStart = "{";
-	string messageName = "\"name\":\"RTI_InitializeSim\",";
-	string messageContent = "\"content\":\"{\\\"simName\\\":\\\"testCSim05\\\"}\",";
-	string messageTimestamp = "\"timestamp\":\"12019112143\",";
-	string messageFromSim = "\"fromSim\":\"testCSim05\"";
-	string messageEnd = "}";
-	message = messageStart + messageName + messageContent + messageTimestamp + messageFromSim + messageEnd;
 	
 	rapidjson::StringBuffer bufferOut;
 	bufferOut.Clear();
 	rapidjson::Writer<rapidjson::StringBuffer> writerOut(bufferOut);
+	rapidjson::Document document;
 
-	rapidjson::Document d;
+	rapidjson::Value jsonTotal(rapidjson::kObjectType);
+	rapidjson::Value jsonNameString(name.c_str(), document.GetAllocator());
+	jsonTotal.AddMember("name", jsonNameString, document.GetAllocator());
 	
-	//!!!! BELOW works... only can output as string if it parsed from a string???
-	//d.Parse<0>(" { \"x\" : \"0.01\", \"y\" :\"0.02\" , \"z\" : \"0.03\"} ");
-	//d.Accept(writerOut);
+	rapidjson::Value jsonContentString(content.c_str(), document.GetAllocator());
+	jsonTotal.AddMember("content", jsonContentString, document.GetAllocator());
 
-	rapidjson::Value jsonContent;
-	char *buffer = &content[0];
-	jsonContent.SetString(buffer, content.length(), d.GetAllocator());
+	long long timestamp = std::chrono::time_point_cast<std::chrono::milliseconds>(std::chrono::system_clock::now()).time_since_epoch().count();
+	rapidjson::Value jsonTimestampString(to_string(timestamp).c_str(), document.GetAllocator());
+	jsonTotal.AddMember("timestamp",jsonTimestampString, document.GetAllocator());
 
-	jsonContent.AddMember("content", content, d.GetAllocator());
-	//!!! BELOW crashes at "...Accept(writerOut);" , cannot test by viewing string output unless this part is resolved.
-	//jsonContent.Accept(writerOut);
+	rapidjson::Value jsonSimName(simName.c_str(), document.GetAllocator());
+	jsonTotal.AddMember("source", jsonSimName, document.GetAllocator());
 
-	//d.SetObject();
+	jsonTotal.Accept(writerOut);
+	message = bufferOut.GetString();
 	
-	//rapidjson::Value jsonContent;
-	//char *buffer = &content[0];
-	//jsonContent.SetString(buffer, content.length(), d.GetAllocator());
 
-	/*jsonContent.Accept(bufferOut);
-	printLine("The following is what was saved in Document d(part 1):");
-	printLine(bufferOut.GetString());
-	jsonContent.Accept(bufferOut);
-	printLine("The following is what was saved in Value jsonContent(part 1)");
-	printLine(bufferOut.GetString());
-
-	d.AddMember("content", content, d.GetAllocator());
-	jsonContent.AddMember("content", content, d.GetAllocator());
-
-	d.Accept(bufferOut);
-	printLine("The following is what was saved in Document d(part 2):");
-	printLine(bufferOut.GetString());
-	jsonContent.Accept(bufferOut);
-	printLine("The following is what was saved in Value jsonContent(part 2)");
-	printLine(bufferOut.GetString());*/
-	
-	
-	
 
 	printLine("Trying to publish message now: " + message);
 
@@ -301,12 +296,9 @@ int RTILib::publish(string name, string content) {
 	for (int i = 0; i < message.length(); i++) {
 		recvbuf[0] = message[i];
 		iSendResult = send(dedicatedRtiSocket, recvbuf, 1, 0);
-		//cout << iSendResult << " " << recvbuf[0] << endl;
 		if (iSendResult <= 0) {
 			printLine("Error when trying to send message at " + to_string(i));
 			printLine("Error was = " + to_string(iSendResult));
-			//closesocket(dedicatedRtiSocket);
-			//WSACleanup();
 			return -1;
 		}
 	}
@@ -326,41 +318,163 @@ int RTILib::publish(string name, string content) {
 }
 
 int RTILib::receivedMessaage(string message) {
+	string name = "";
+	string content = "";
+	string timestamp = "";
+	string source = "";
+
+	rapidjson::StringStream s(message.c_str());
+	rapidjson::Document document;
+	document.ParseStream(s);
+
+	name = document["name"].GetString();
+	content = document["content"].GetString();
+	timestamp = document["timestamp"].GetString();
+	source = document["fromSim"].GetString();
+
+	if (thisSim != 0) {
+		thisSim->receivedMessage(name, content, timestamp, source);
+	}
+	else {
+		Message newMessage;
+		newMessage.name = name;
+		newMessage.content = content;
+		newMessage.timestamp = timestamp;
+		newMessage.source = source;
+		newMessage.originalMessage = message;
+		messageQueue.push_back(newMessage);
+		printLine("Received new message, messageQueue now has this many: " + messageQueue.size());
+	}
+
 	return 0;
 }
 
 string RTILib::getNextMessage() {
 	string returnString = "";
+	printLine("getNextMessage() called...");
+
+	if (messageQueue.empty() == true) {
+		returnString = "";
+		printLine("getNextMessage is null.");
+	}
+	else {
+		returnString = messageQueue.front().originalMessage;
+		messageQueue.pop_front();
+	}
+
 	return returnString;
 }
 
 string RTILib::getNextMessage(int millisToWait) {
 	string returnString = "";
+	printLine("getNextMessage() called...");
+	for (int i = 0; i < millisToWait; i += 10) {
+		if (messageQueue.empty() == false) {
+			break;
+		}
+		std::this_thread::sleep_for(std::chrono::milliseconds(10));
+	}
+
+	if (messageQueue.empty() == true) {
+		returnString = "";
+		printLine("getNextMessage is null.");
+	}
+	else {
+		returnString = messageQueue.front().originalMessage;
+		messageQueue.pop_front();
+	}
+
 	return returnString;
 }
 
 string RTILib::getNextMessage(string messageName) {
 	string returnString = "";
+
+	printLine("getNextMessage() called...");
+
+	if (messageQueue.empty() == true) {
+		returnString = "";
+		printLine("getNextMessage is null.");
+	}
+	else {
+		for (int i = 0; i < messageQueue.size(); i++){
+			if (messageQueue.at(i).name.compare(messageName) == 0) {
+				returnString = messageQueue.at(i).originalMessage;
+				messageQueue.erase(messageQueue.begin() + i);
+				break;
+			}
+		}
+		printLine("getNextMessage was NOT null.");
+	}
+
+
 	return returnString;
 }
 
 string RTILib::getNextMessage(string messageName, int millisToWait) {
 	string returnString = "";
+
+	printLine("getNextMessage() called...");
+
+	for (int i = 0; i < millisToWait; i += 10) {
+		if (messageQueue.empty() == false) {
+			for (int j = 0; j < messageQueue.size(); j++) {
+				if (messageQueue.at(j).name.compare(messageName) == 0) {
+					returnString = messageQueue.at(j).originalMessage;
+					messageQueue.erase(messageQueue.begin() + j);
+					break;
+				}
+			}
+		}
+		std::this_thread::sleep_for(std::chrono::milliseconds(10));
+	}
+
 	return returnString;
 }
 
 string RTILib::waitForNextMessage() {
 	string returnString = "";
+
+	printLine("Will immeidately return message if there is one in the message buffer, else will wait until the queue gets a value.");
+
+	while (messageQueue.empty() == true) {
+
+	}
+	returnString = messageQueue.front().originalMessage;
+	messageQueue.pop_front();
+
 	return returnString;
 }
 
 string RTILib::getJsonObject(string name, string content) {
 	string returnString = "";
+
+	printLine("asked to read jsonValue from content (" + content + ")");
+
+	rapidjson::StringStream s(content.c_str());
+	rapidjson::Document document;
+	document.ParseStream(s);
+
+	if (document.HasMember(name.c_str()) == true) {
+		//we are making assumption that all values are strictly sent as "string" type, whether or not it is most efficient.
+		returnString = document[name.c_str()].GetString();
+	}
+
 	return returnString;
 }
 
 string RTILib::getJsonString(string name, string content) {
 	string returnString = "";
+
+	rapidjson::StringStream s(content.c_str());
+	rapidjson::Document document;
+	document.ParseStream(s);
+
+	if (document.HasMember(name.c_str()) == true) {
+		//we are making assumption that all values are strictly sent as "string" type, whether or not it is most efficient.
+		returnString = document[name.c_str()].GetString();
+	}
+
 	return returnString;
 }
 
@@ -369,41 +483,116 @@ string RTILib::getJsonString(string name, string content) {
 	instead it must return a pointer address to the first value.
 */
 string* RTILib::getJsonArray(string content) {
-	static string returnString[10];
+	//static string returnString[10];
+
+	rapidjson::StringStream s(content.c_str());
+	rapidjson::Document document;
+	document.ParseStream(s);
+
+	string* returnString = new string[document.Size()];
+
+	for (int i = 0; i < document.Size(); i++) {
+		returnString[i] = document[i].GetString();
+	}
+
 	return returnString;
 }
 
 string RTILib::getStringNoQuotes(string content) {
 	string returnString = "";
+
+	int numOfQuotes = 0;
+	for (int i = 0; i < content.length(); i++){
+		if (content.at(i) == '\"') {
+			numOfQuotes++;
+		}
+	}
+	if (numOfQuotes >= 2) {
+		returnString = content.substr(1, content.length() - 2);
+	}
+	else {
+		returnString = content;
+	}
+
 	return returnString;
 }
 
 string RTILib::getMessageName(string originalMessage) {
 	string returnString = "";
+
+	rapidjson::StringStream s(originalMessage.c_str());
+	rapidjson::Document document;
+	document.ParseStream(s);
+	if (document.HasMember("name") == true) {
+		returnString = document["name"].GetString();
+	}
+
 	return returnString;
 }
 
 string RTILib::getMessageTimestamp(string originalMessage) {
 	string returnString = "";
+
+	rapidjson::StringStream s(originalMessage.c_str());
+	rapidjson::Document document;
+	document.ParseStream(s);
+	if (document.HasMember("timestamp") == true) {
+		returnString = document["timestamp"].GetString();
+	}
+
 	return returnString;
 }
 
-string RTILib::getMessageFromSim(string originalMessage) {
+string RTILib::getMessageSource(string originalMessage) {
 	string returnString = "";
+
+	rapidjson::StringStream s(originalMessage.c_str());
+	rapidjson::Document document;
+	document.ParseStream(s);
+	if (document.HasMember("source") == true) {
+		returnString = document["source"].GetString();
+	}
+
 	return returnString;
 }
 
 string RTILib::getMessageContent(string originalMessage) {
 	string returnString = "";
+
+	rapidjson::StringStream s(originalMessage.c_str());
+	rapidjson::Document document;
+	document.ParseStream(s);
+	if (document.HasMember("content") == true) {
+		returnString = document["content"].GetString();
+	}
+
 	return returnString;
 }
 
 string RTILib::setJsonObject(string originalJson, string nameNewObject, string contentNewObject) {
 	string returnString = "";
+
+	rapidjson::StringStream s(originalJson.c_str());
+	rapidjson::Document document;
+	document.ParseStream(s);
+
+	rapidjson::StringBuffer bufferOut;
+	bufferOut.Clear();
+	rapidjson::Writer<rapidjson::StringBuffer> writerOut(bufferOut);
+
+	rapidjson::Value jsonAdd(rapidjson::kObjectType);
+	rapidjson::Value jsonContentString(contentNewObject.c_str(), document.GetAllocator());
+	rapidjson::Value jsonNameString(nameNewObject.c_str(), document.GetAllocator());
+	document.AddMember(jsonNameString, jsonContentString, document.GetAllocator());
+
+	document.Accept(writerOut);
+	returnString = bufferOut.GetString();
+
 	return returnString;
 }
 
 /* note: 'to_string(var)' is available as of C++11, older systems may be unable to compile this script.*/
+
 string RTILib::setJsonObject(string originalJson, string nameNewObject, int contentNewObject) {
 	return setJsonObject(originalJson, nameNewObject, to_string(contentNewObject));
 }
@@ -432,12 +621,20 @@ string RTILib::setJsonObject(string originalJson, string nameNewObject, bool con
 
 string version = "v0.43";
 void RTILib::printVersion() {
-
+	printLine("SRTI Version - " + version);
 }
 
 bool debugOut = false;
 void RTILib::setDebugOutput(bool setDebugOut) {
+	debugOut = setDebugOut;
 
+	if (&readThread != nullptr) {
+		readThread.setDebugOutput(debugOut);
+	} 
+	if (&writeThread != nullptr) {
+		writeThread.setDebugOutput(debugOut);
+	}
+	
 }
 
 string tag = "RTILib";

@@ -36,7 +36,7 @@ public class ExampleServer {
 	String tag = "ExampleServer";
 	
 	private String hostName = "localhost";
-	public int portNumber = 4200;
+	public int portNumber = -1;
 	public boolean guiOn = true;
 	public boolean tcpOn = false;
 	public boolean compressOn = false;
@@ -277,15 +277,15 @@ public class ExampleServer {
 					break;
 			}
 			
-			// HERE, change "fromSim" if there were more than one, before sending the message back out again.
-			String fromSim = json.getString("fromSim");
+			// HERE, change "source" if there were more than one, before sending the message back out again.
+			String source = json.getString("source");
 			String timestamp = json.getString("timestamp");
 			
 			for (int i = 0; i < threadList.size(); i++) {
 				if (threadList.get(i).getIndex() == threadIndex) {	
 					int numOfDuplicates = threadList.get(i).getNumOfSameName();
 					if (numOfDuplicates > 0) {
-						fromSim = threadList.get(i).getSimName() + "_" + String.format("%03d", numOfDuplicates);
+						source = threadList.get(i).getSimName() + "_" + String.format("%03d", numOfDuplicates);
 					}
 				}
 			}
@@ -294,7 +294,7 @@ public class ExampleServer {
 					.add("name", name)
 					.add("content", content)
 					.add("timestamp", timestamp)
-					.add("fromSim", fromSim)
+					.add("source", source)
 					.build().toString();
 			
 			messageHistoryList.add(newJsonMessage);
@@ -369,7 +369,7 @@ public class ExampleServer {
 		
 		jsonMessageBuilder.add("content", jsonSimArray.toString());
 		jsonMessageBuilder.add("name", "RTI_UpdateSim");
-		jsonMessageBuilder.add("fromSim", "RTI");
+		jsonMessageBuilder.add("source", "RTI");
 		jsonMessageBuilder.add("timestamp", "" + System.currentTimeMillis());
 		jsonMessageObject = jsonMessageBuilder.build();
 		

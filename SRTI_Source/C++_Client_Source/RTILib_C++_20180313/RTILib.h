@@ -1,18 +1,19 @@
 #pragma once
 #include "RTISim.h"
 #include <string>
-#include <vector>
+//#include <vector>
+//#include <deque>
+
+
 
 using namespace std;
 
 class RTILib
 {
 private:
-	string version;
-	bool debugOut;
-	string tag;
 
 public:
+
 	RTILib();
 	RTILib(RTISim * rtiSim);
 	void setSimName(string newName);
@@ -36,7 +37,7 @@ public:
 	string getStringNoQuotes(string content);
 	string getMessageName(string originalMessage);
 	string getMessageTimestamp(string originalMessage);
-	string getMessageFromSim(string originalMessage);
+	string getMessageSource(string originalMessage);
 	string getMessageContent(string originalMessage);
 	string setJsonObject(string originalJson, string nameNewObject, int contentNewObject);
 	string setJsonObject(string originalJson, string nameNewObject, float contentNewObject);

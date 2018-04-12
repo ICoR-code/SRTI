@@ -4,17 +4,13 @@
 
 using namespace std;
 
+#ifndef CPPADDED
+#define CPPADDED
+#endif
+
 RTISim::RTISim()
 {
 }
-
-/*void receivedMessage(string messageName, string content, string timestamp, string fromSim) {
-
-}
-
-string getSimName() {
-	return "";
-}*/
 
 RTISim::~RTISim()
 {

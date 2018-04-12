@@ -1,9 +1,11 @@
+
 #include "stdafx.h"
 #include "RTISimConnectThread.h"
 #include "RTILib.h"
 #include <iostream>
 #include <thread>
 #include <time.h>
+//#include <string>
 
 #ifdef _WIN32
 #include <winsock2.h>
@@ -15,49 +17,28 @@
 
 using namespace std;
 
-/*
-class DisplayThread {
-public:
-	SOCKET ConnectSocket;
-	bool threadActive = true;
-	int total = 0;
-	string finalMessage = "";
-	void operator()() {
+//#ifndef CPPADDED
+//#define CPPADDED
+//#endif
 
-	}
-
-	void run() {
-		cout << "starting thread to listen/read RTI data." << endl;
-
-		ConnectSocket = dedicatedSocket;
-		char recvbuf[2] = { '\0' };
-		int iResult = 0;
-
-		do {
-			iResult = recv(ConnectSocket, recvbuf, 1, 0);
-			finalMessage = finalMessage + string(recvbuf);
-			cout << "(I received something) = " << finalMessage << endl;
-		} while (iResult > 0);
-		cout << "thread active ended, finalMessage  = " << finalMessage << endl;
-	}
-
-};*/
-
+RTILib rtiSim;
 SOCKET dedicatedSocket;
 std::thread threadObj;
+bool isConnected = false;
 
 RTISimConnectThread::RTISimConnectThread()
 {
 }
 
-RTISimConnectThread::RTISimConnectThread(RTILib rtiSim, SOCKET newDedicatedSocket) {
+RTISimConnectThread::RTISimConnectThread(RTILib newRtiSim, SOCKET newDedicatedSocket) {
 	dedicatedSocket = newDedicatedSocket;
+	rtiSim = newRtiSim;
+	isConnected = true;
 }
 
 void run() {
 	cout << "currently running thread to listen/read RTI data." << endl;
 
-	//ConnectSocket = dedicatedSocket;
 	string finalMessage = "";
 	char recvbuf[2] = { '\0' };
 	int iResult = 0;
@@ -65,43 +46,58 @@ void run() {
 	time_t start = time(0);
 	double passedTime = 0;
 
-	
 	do {
 		iResult = recv(dedicatedSocket, recvbuf, 1, 0);
+		//issue: 'recv' will return 0 or -1 often, even when still capable of receiving messages, unreliable to check if still connected
+		//cout << "CHAR received = " << string(recvbuf) << endl;
 		finalMessage = finalMessage + string(recvbuf);
-		passedTime = difftime(time(0), start);
-		if (passedTime > 5) {
-			iResult = -5;
+		if (recvbuf[0] == '\n' || recvbuf[0] == '\r' || recvbuf[0] == '\0') {
+			if (finalMessage.length() > 2) {
+				//cout << "reading message... " << finalMessage << endl;
+				rtiSim.receivedMessaage(finalMessage);
+				finalMessage = "";
+			}
 		}
-		//cout << "(I received something) = " << finalMessage << " , latest error message =  " << iResult << endl;
-	} while (iResult > -2);
+		
+	} while (isConnected == true);
 	cout << "thread active ended, finalMessage  = " << finalMessage << endl;
-	//closesocket(dedicatedSocket);
-	//WSACleanup();
 }
 
 void RTISimConnectThread::start() {
-	//std::bind(&run, this);
-	//DisplayThread newThread = DisplayThread();
+
 	std::thread threadObj((run));
-	//threadObj = ((run));
 
 	cout << "started thread fine." << endl;
 	
 	threadObj.detach();
-	//threadObj.join();
 
-	cout << " thread was joined, it must have finished." << endl;
-	//threadObj.~thread();
+	cout << " thread was detatched, running on its own now." << endl;
 }
 
+void RTISimConnectThread::closeConnection() {
+	isConnected = false;
+	closesocket(dedicatedSocket);
+	WSACleanup();
+}
 
+void RTISimConnectThread::setDebugOutput(bool setDebugOut) {
+	debugOut = setDebugOut;
+}
 
+void RTISimConnectThread::printLine(string line) {
+	if (debugOut == false)
+		return;
 
+	auto time = std::chrono::system_clock::now();
+	auto since_epoch = time.time_since_epoch();
+	auto millis = std::chrono::duration_cast<std::chrono::milliseconds>(since_epoch);
+	long long now = millis.count();
+
+	cout << now << " [" << tag << "] --- " << line << endl;
+}
 
 
 RTISimConnectThread::~RTISimConnectThread()
 {
 
-	//threadObj.join();
 }
