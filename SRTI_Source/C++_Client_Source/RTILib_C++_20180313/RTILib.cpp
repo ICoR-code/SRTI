@@ -619,7 +619,7 @@ string RTILib::setJsonObject(string originalJson, string nameNewObject, bool con
 
 
 
-string version = "v0.43";
+string version = "v0.50";
 void RTILib::printVersion() {
 	printLine("SRTI Version - " + version);
 }

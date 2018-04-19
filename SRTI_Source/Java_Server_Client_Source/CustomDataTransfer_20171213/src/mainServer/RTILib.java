@@ -607,7 +607,7 @@ public class RTILib {
 		return returnString;
 	}
 
-	private String version = "v0.43";
+	private String version = "v0.50";
 	public void printVersion() {
 		printLine("SRTI Version - " + version);
 	}
