@@ -9,6 +9,8 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.concurrent.TimeUnit;
 
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -29,8 +31,8 @@ public class RTIConnectThread extends Thread {
 	private ArrayList<String> publishName = new ArrayList<String>();
 	private ArrayList<String> subscribeName = new ArrayList<String>();
 	private boolean subscribeToAll = false;
+	private boolean tcpOn = false;
 	
-
 	public RTIConnectThread(Socket mainSocket, ExampleServer.RTIStartThread mainServer) {
 		
 		thisMainSocket = mainSocket;
@@ -38,6 +40,28 @@ public class RTIConnectThread extends Thread {
 		
 		numOfActiveThreads++;
 		currentThreadID = numOfActiveThreads;
+	}
+
+	public RTIConnectThread(Socket mainSocket, ExampleServer.RTIStartThread mainServer, boolean tcpIsOn) {
+		
+		thisMainSocket = mainSocket;
+		thisServer = mainServer;
+		
+		tcpOn = tcpIsOn;
+		
+		numOfActiveThreads++;
+		currentThreadID = numOfActiveThreads;
+		
+		if (tcpOn == true) {
+			new java.util.Timer().scheduleAtFixedRate(
+					new java.util.TimerTask() {
+						@Override
+						public void run() {
+							checkTcpMessages();
+						}
+					}
+					, 5000, 5000);
+		}
 	}
 	
 	public void run() {
@@ -60,7 +84,7 @@ public class RTIConnectThread extends Thread {
 				thisServer.handleReceivedMessage(currentThreadID, userInput);
 			}
 		} catch (Exception e) {
-			printLine("Exception >> " + e.toString());
+			printLine("Exception during thread run >> " + e.toString());
 		}
 		printLine("done running thread.");
 		thisServer.disconnectThread(currentThreadID);
@@ -75,6 +99,7 @@ public class RTIConnectThread extends Thread {
 		return send(name, content, timestamp, "RTI");
 	}
 	
+
 	int send(String name, String content, String timestamp, String source) {
 		try {
 			JsonObject json =  Json.createObjectBuilder()
@@ -82,6 +107,33 @@ public class RTIConnectThread extends Thread {
 					.add("content", content)
 					.add("timestamp", timestamp)
 					.add("source", source)
+					.add("tcp", "" + tcpOn)
+					.build();
+			PrintWriter out;
+			out = new PrintWriter(thisSimSocket.getOutputStream(), true);
+			out.println(json);
+			out.flush();
+			printLine("Sent message " + name + " to " + simName + " with content " + content);
+			
+			if (name.compareTo("RTI_ReceivedMessage") != 0) {
+				handleTcpResponse(name, content, timestamp, source, json.toString());
+			}
+			//printLine("Confirm that socket is still connected = " + thisSimSocket.);
+		} catch (Exception e) {
+			printLine("   IOExceoption error happened here...");
+			e.printStackTrace();
+		}
+		return 0;
+	}
+	
+	int sendWithoutAddingToTcp(String name, String content, String timestamp, String source) {
+		try {
+			JsonObject json =  Json.createObjectBuilder()
+					.add("name", name)
+					.add("content", content)
+					.add("timestamp", timestamp)
+					.add("source", source)
+					.add("tcp", "" + tcpOn)
 					.build();
 			PrintWriter out;
 			out = new PrintWriter(thisSimSocket.getOutputStream(), true);
@@ -89,12 +141,125 @@ public class RTIConnectThread extends Thread {
 			out.flush();
 			printLine("Sent message " + name + " to " + simName + " with content " + content);
 			//printLine("Confirm that socket is still connected = " + thisSimSocket.);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			printLine("   IOExceoption error happened here...");
+		} catch (Exception e) {
+			printLine("   sendWithoutAddingToTcp - IOExceoption error happened here...");
 			e.printStackTrace();
 		}
 		return 0;
+	}
+
+	
+	public class MessageReceived{
+		int sendAttempts = 0;
+		boolean messageReceived = false;
+		String name = "";
+		String content = "";
+		String timestamp = "";
+		String source = "";
+		String message = "";
+		long originalTimeSent = 0;
+	}
+	ArrayList<MessageReceived> tcpMessageBuffer = new ArrayList<MessageReceived>();
+	
+	public void setTcpResponse(boolean setResponse, String message) {
+		Iterator<MessageReceived> i = tcpMessageBuffer.iterator();
+		while (i.hasNext()) {
+			MessageReceived mr = i.next();
+			if (mr.message.compareTo(message) == 0) {
+				// we could just set the variable to "true" and handle removing elsewhere, 
+				// or in best case scenario, we can remove here and never have to worry about checking to resend (list would be empty).
+				i.remove();
+			}
+		}
+	}
+	
+	private int handleTcpResponse(String name, String content, String timestamp, String source, String message) {
+		if (tcpOn == false)
+			return 0;
+		
+		MessageReceived newMessage = new MessageReceived();
+		newMessage.sendAttempts = 1;
+		newMessage.messageReceived = false;
+		newMessage.name = name;
+		newMessage.content = content;
+		newMessage.timestamp = timestamp;
+		newMessage.source = source;
+		newMessage.message = message;
+		newMessage.originalTimeSent = System.currentTimeMillis();
+		tcpMessageBuffer.add(newMessage);
+		
+	
+		/*try {
+			int timeCounterLimit = 500;
+			int timeCounter = 0;
+			int millisWait = 10;
+			while (messageReceived == false) {
+				TimeUnit.MILLISECONDS.sleep(millisWait);
+				timeCounter++;
+				if (timeCounter > timeCounterLimit) {
+					break;
+				}
+			}
+			if (messageReceived == false) {
+				sendAttempts++;
+				if (sendAttempts <= 3) {
+					printLine("Message not confirmed to be received by sim. Send again.");
+					send(name,content,timestamp,source);
+				} else {
+					printLine("After 3 tries, message not received by sim. Give up.");
+					sendAttempts = 0;
+				}
+			} else {
+				sendAttempts = 0;
+			}
+		}
+		catch (Exception e) {
+			printLine("    TCP error happened here...");
+			e.printStackTrace();
+			return -1;
+		}*/
+		
+		return 0;
+	}
+	
+	private void checkTcpMessages() {
+		/* Issue:
+		 * 		- we could have an infinite loop wait for response, but because this class is 1 thread, a loop
+		 * 			in one part of it would prevent other part of the thread (waiting for input) to receive message.
+		 * 		- we could have socket bufferedreader read line within "handleTcpResponse" but then it would 
+		 * 			wait indefinitely, we have no control to send again or move on.
+		 * 		- we could "schedule" a function call, but if it checks a single variable, that variable might have
+		 * 			been changed several times over since then, which could be a timing issue.
+		 * 
+		 * 		- solution: we need to store a list <id, originaltimesent, originalmessage, confirmedreceived(true,false), sendattempts> 
+		 * 			of message for "scheduled" function to then call "resendMessages()", which will then check
+		 * 			the list to resend any messages (or remove those that are too old).
+		 * 		- the issue with this is if 1 message is not received but another message is, the first message
+		 * 			would be resent in a different order (after the second message). Is this acceptable? 
+		 * 		- alternative: keep track of list of old messages, don't remove until they are confirmed to have been
+		 * 			received. When "send()" is called, first check the list and resend all messages in the list.
+		 * 			This way, maintaining order is possible, but it is up to simulation to decide how to handle potential
+		 * 			duplicate messages (if 2nd message is asked to be sent before 1st confirmation is received). This also
+		 * 			means that if a simulation won't send a new expected message until the missing message is received by
+		 * 			the first simulation, then a halt could occur. Universal time management could help control this.
+		 * */
+		if (tcpMessageBuffer.isEmpty())
+			return;
+		
+		Iterator<MessageReceived> it = tcpMessageBuffer.iterator();
+		while (it.hasNext()) {
+			MessageReceived mr = it.next();
+			if (mr.sendAttempts >= 3) {
+				it.remove();
+			}
+		}
+		
+		for (int i = 0; i < tcpMessageBuffer.size(); i++) {
+			if (System.currentTimeMillis() - tcpMessageBuffer.get(i).originalTimeSent > 3000) {
+				tcpMessageBuffer.get(i).sendAttempts++;
+				sendWithoutAddingToTcp(tcpMessageBuffer.get(i).name, tcpMessageBuffer.get(i).content, tcpMessageBuffer.get(i).timestamp, tcpMessageBuffer.get(i).source);
+			}
+		}
 	}
 	
 	public void update(String message) {

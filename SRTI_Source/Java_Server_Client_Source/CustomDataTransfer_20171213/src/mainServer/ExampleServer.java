@@ -1,7 +1,12 @@
 package mainServer;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.StringReader;
 import java.net.InetAddress;
@@ -26,6 +31,7 @@ public class ExampleServer {
 
 		if (server.guiOn == true) {
 			ExampleServerGUI serverGUI = new ExampleServerGUI(server.getHostName(), server.getPortNumber());
+			serverGUI.rtiLib.setDebugOutput(true);
 		}
 	}
 	
@@ -40,14 +46,16 @@ public class ExampleServer {
 	public boolean guiOn = true;
 	public boolean tcpOn = false;
 	public boolean compressOn = false;
-	public double checkConnectionInterval = 0;
+	public boolean retryConnection = false;
+	public int oldMessageLimit = -1;
 	
 	ArrayList<RTIConnectThread> threadList = new ArrayList<RTIConnectThread>();
 	ArrayList<String> messageHistoryList = new ArrayList<String>();
 	
 	public int loadSettingsFile() {
+		printLine("Trying to read settings file.");
 		try {
-			FileReader configStream = new FileReader("launcherconfig.txt");
+			FileReader configStream = new FileReader("settings.txt");
 			BufferedReader configBuffer = new BufferedReader(configStream);
 			String jsonString = "";
 			String line = "";
@@ -63,7 +71,8 @@ public class ExampleServer {
 			guiOn = json.getBoolean("gui");
 			tcpOn = json.getBoolean("tcp");
 			compressOn = json.getBoolean("compress");
-			checkConnectionInterval = json.getJsonNumber("checkConnectionInterval").doubleValue();
+			retryConnection = json.getBoolean("retryConnection");
+			oldMessageLimit = json.getJsonNumber("oldMessageLimit").intValue();
 		} catch (Exception e) {
 			e.printStackTrace();
 			printLine("Error trying to open settings.txt file, will proceed with default values.");
@@ -83,6 +92,18 @@ public class ExampleServer {
 	
 	public int startRTI() {
 				
+		File currentDirectory = new File(".");
+		File[] listOfFiles = currentDirectory.listFiles(new FilenameFilter() {
+			public boolean accept(File directory, String fileName) {
+				boolean startsWith = fileName.startsWith("messagehistorylist_");
+				boolean endsWith = fileName.endsWith(".txt");
+				return startsWith && endsWith;
+			}
+		});
+		for (int i = 0; i < listOfFiles.length; i++) {
+			listOfFiles[i].delete();
+		}
+		
 		try {
 			//hostName = InetAddress.getLoopbackAddress().toString();		//"localhost/127.0.0.1"
 			//hostName = InetAddress.getLocalHost().toString();			//"DESKTOP-8DQHEEH/35.3.63.93"
@@ -98,6 +119,7 @@ public class ExampleServer {
 
 		ServerSocket serverSocket;
 		try {
+			printLine("Try to create socket on this port: " + portNumber);
 			if (portNumber == -1)
 				serverSocket = new ServerSocket(0);
 			else
@@ -148,7 +170,8 @@ public class ExampleServer {
 
 					rtiSocket = serverSocket.accept();
 					printLine("\t Connected!");
-					RTIConnectThread connectThread = new RTIConnectThread(rtiSocket, this);
+					//RTIConnectThread connectThread = new RTIConnectThread(rtiSocket, this);
+					RTIConnectThread connectThread = new RTIConnectThread(rtiSocket, this, tcpOn);
 					connectThread.start();
 					threadList.add(connectThread);
 					
@@ -179,10 +202,29 @@ public class ExampleServer {
 			
 			String name = json.getString("name");
 			String content = json.getString("content");
+			boolean tcp = Boolean.parseBoolean(json.getString("tcp"));
+			
+			if (tcp == true) {
+				if (name.compareTo("RTI_ReceivedMessage") != 0) {
+					for (int i = 0; i < threadList.size(); i++) {
+						if (threadList.get(i).getIndex() == threadIndex) {	
+							threadList.get(i).update("RTI_ReceivedMessage", message);
+						}
+					}
+				}
+			}
 			
 			String rtiUpdateSimString = "";
 			
 			switch (name){
+				case "RTI_ReceivedMessage":
+					// Tell sim it received the message, it can stop waiting for response now.
+					for (int i = 0; i < threadList.size(); i++) {
+						if (threadList.get(i).getIndex() == threadIndex) {	
+							threadList.get(i).setTcpResponse(true, content);
+						}
+					}
+					return;
 				case "RTI_InitializeSim":
 					printLine("received message, use info to intialize sim name...");
 					
@@ -259,7 +301,78 @@ public class ExampleServer {
 						if (threadList.get(i).getIndex() == threadIndex) {
 							threadList.get(i).setSubscribeAll();
 							//additionally, must send all past messages to this one
+							//start with files, then current memory
+							File currentDirectory = new File(".");
+							File[] listOfFiles = currentDirectory.listFiles(new FilenameFilter() {
+								public boolean accept(File directory, String fileName) {
+									boolean startsWith = fileName.startsWith("messagehistorylist_");
+									boolean endsWith = fileName.endsWith(".txt");
+									return startsWith && endsWith;
+								}
+							});
+							for (int j = 0; j < listOfFiles.length; j++) {
+								try {
+									BufferedReader fileReader = new BufferedReader(new FileReader(listOfFiles[j].getName()));
+									String readLine = "";
+									readLine = fileReader.readLine();
+									while (readLine != null){
+										threadList.get(i).update(readLine);
+										readLine = fileReader.readLine();
+									}
+									fileReader.close();
+								} catch (Exception e) {
+									e.printStackTrace();
+									printLine("Some error when trying to read files to get old messages.");
+								}
+							}
 							for (int j = 0; j < messageHistoryList.size(); j++) {
+								threadList.get(i).update(messageHistoryList.get(j));
+							}
+						}
+					}
+					rtiUpdateSimString = buildRTIUpdateSim();
+					//JsonObject jsonContent = Json.createObjectBuilder();
+					for (int i = 0; i < threadList.size(); i++) {
+						threadList.get(i).update(rtiUpdateSimString);
+					}
+					messageHistoryList.add(rtiUpdateSimString);
+					break;
+				case "RTI_SubscribeToMessagePlusHistory":
+					for (int i = 0; i < threadList.size(); i++) {
+						if (threadList.get(i).getIndex() == threadIndex) {
+							String newSubscribeName = Json.createReader(new StringReader(content)).readObject().getString("subscribeTo");
+							threadList.get(i).updateSubscribeTo(newSubscribeName);
+							File currentDirectory = new File(".");
+							File[] listOfFiles = currentDirectory.listFiles(new FilenameFilter() {
+								public boolean accept(File directory, String fileName) {
+									boolean startsWith = fileName.startsWith("messagehistorylist_");
+									boolean endsWith = fileName.endsWith(".txt");
+									return startsWith && endsWith;
+								}
+							});
+							for (int j = 0; j < listOfFiles.length; j++) {
+								try {
+									BufferedReader fileReader = new BufferedReader(new FileReader(listOfFiles[j].getName()));
+									String readLine = "";
+									readLine = fileReader.readLine();
+									while (readLine != null){										
+										String name2 = Json.createReader(new StringReader(readLine)).readObject().getString("name");
+										if (name2.compareTo(newSubscribeName) == 0) {
+											threadList.get(i).update(readLine);
+										}
+										readLine = fileReader.readLine();
+									}
+									fileReader.close();
+								} catch (Exception e) {
+									e.printStackTrace();
+									printLine("Some error when trying to read files to get old messages.");
+								}
+							}
+							for (int j = 0; j < messageHistoryList.size(); j++) {
+								String name2 = Json.createReader(new StringReader(messageHistoryList.get(j))).readObject().getString("name");
+								if (name2.compareTo(newSubscribeName) == 0) {
+									threadList.get(i).update(messageHistoryList.get(j));
+								}
 								threadList.get(i).update(messageHistoryList.get(j));
 							}
 						}
@@ -298,6 +411,24 @@ public class ExampleServer {
 					.build().toString();
 			
 			messageHistoryList.add(newJsonMessage);
+			// what if messageHistoryList is too large? Write to a file to save it for later.
+			// example: 1 message of 100 characters = 100 bytes, so 100 messages = 10 KB, 1,000 messages = 100 KB
+			if (oldMessageLimit > 0 && messageHistoryList.size() > oldMessageLimit) {
+				try {
+					FileWriter exportFile = new FileWriter("messageHistoryList_" + System.currentTimeMillis() + ".txt");
+					String outputString = "";
+					for (int i = 0; i < messageHistoryList.size(); i++) {
+						outputString += messageHistoryList.get(i) + "\n";
+					}
+					exportFile.write(outputString);
+					exportFile.flush();
+					exportFile.close();
+					messageHistoryList.clear();
+				} catch (Exception e) {
+					e.printStackTrace();
+					printLine("Error trying to save older messages to file. Will keep in memory.");
+				}
+			}
 			
 			//send message back out to all sims that are subscribed to it
 			int subscribedToTotal = 0;
@@ -371,6 +502,9 @@ public class ExampleServer {
 		jsonMessageBuilder.add("name", "RTI_UpdateSim");
 		jsonMessageBuilder.add("source", "RTI");
 		jsonMessageBuilder.add("timestamp", "" + System.currentTimeMillis());
+		// to support TCP, add variable here to let RTILib know if it needs to confirm received message
+		jsonMessageBuilder.add("tcp", tcpOn);
+		//
 		jsonMessageObject = jsonMessageBuilder.build();
 		
 		returnString = jsonMessageObject.toString();

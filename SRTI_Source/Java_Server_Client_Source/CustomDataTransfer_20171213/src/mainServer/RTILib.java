@@ -20,6 +20,8 @@ import javax.json.JsonReader;
 import javax.json.JsonValue;
 import javax.json.JsonWriter;
 
+import mainServer.RTIConnectThread.MessageReceived;
+
 public class RTILib {
 	
 	private RTISim thisSim;
@@ -43,6 +45,8 @@ public class RTILib {
 	}
 	//private PriorityQueue<Message> messageQueue = new PriorityQueue<Message>();
 	private ArrayList<Message> messageQueue = new ArrayList<Message>();
+	private int settingsExists = -1;		// -1 => file doesn't exist, 0 = file doesn't exist but defaults are overwritten by RTIServer, 1 = file exists and defaults are overwritten
+	private boolean tcpOn = false;
 	
 	public RTILib(RTISim rtiSim) {
 		thisSim = rtiSim;
@@ -56,6 +60,22 @@ public class RTILib {
 	
 	public void setSimName(String newName) {
 		simName = newName;
+	}
+	
+	public void setTcpOn(boolean tcp) {
+		settingsExists = 1;
+		tcpOn = tcp;
+		
+		if (tcpOn == true) {
+			new java.util.Timer().scheduleAtFixedRate(
+				new java.util.TimerTask() {
+					@Override
+					public void run() {
+						checkTcpMessages();
+					}
+				}
+			, 5000, 5000);
+		}
 	}
 	
 	public int connect() {
@@ -114,6 +134,14 @@ public class RTILib {
 		return 0;
 	}
 	
+	public int subscribeToMessagePlusHistory(String messageName) {
+		JsonObject json = Json.createObjectBuilder()
+				.add("subscribeTo", messageName)
+				.build();
+		publish("RTI_SubscribeToMessagePlusHistory",json.toString());
+		return 0;
+	}
+	
 	public int subscribeToAll() {
 		publish("RTI_SubscribeToAll", "");
 		return 0;
@@ -136,16 +164,22 @@ public class RTILib {
 		// combine into json object when sending
 		printLine("\t\t\t PUBLISH THIS: " + name);
 		try {
+			long timestamp = System.currentTimeMillis();
 			JsonObject json =  Json.createObjectBuilder()
 					.add("name", name)
 					.add("content", content)
-					.add("timestamp", "" + System.currentTimeMillis())
+					.add("timestamp", "" + timestamp)
 					.add("source", simName)
+					.add("tcp", "" + tcpOn)
 					.build();
 			PrintWriter out;
 			out = new PrintWriter(dedicatedRtiSocket.getOutputStream(), true);
 			out.println(json);
 			out.flush();
+			
+			if (name.compareTo("RTI_ReceivedMessage") != 0) {
+				handleTcpResponse(name, content, "" + timestamp, simName, json.toString());
+			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			printLine("   IOExceoption error happened here...");
@@ -156,11 +190,36 @@ public class RTILib {
 		return 0;
 	}
 	
+	public int sendWithoutAddingToTcp(String name, String content, String timestamp, String source) {
+		printLine("\t\t\t PUBLISH THIS: " + name);
+		try {
+			JsonObject json =  Json.createObjectBuilder()
+					.add("name", name)
+					.add("content", content)
+					.add("timestamp", "" + timestamp)
+					.add("source", source)
+					.add("tcp", "" + tcpOn)
+					.build();
+			PrintWriter out;
+			out = new PrintWriter(dedicatedRtiSocket.getOutputStream(), true);
+			out.println(json);
+			out.flush();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			printLine("   IOExceoption error happened here...");
+			e.printStackTrace();
+		}
+		
+		return 0;
+	}
+	
 	public int receivedMessage(String message) {
 		String name = "";
 		String content = "";
 		String timestamp = "";
 		String source = "";
+		// handle tcp if server expects a response
+		String tcp = "";
 		
 		JsonReader reader = Json.createReader(new StringReader(message));
 		JsonObject json = reader.readObject();
@@ -169,6 +228,35 @@ public class RTILib {
 		content = json.getString("content");
 		timestamp = json.getString("timestamp");
 		source = json.getString("source");
+		tcp = json.getString("tcp");
+		
+		if (name.compareTo("RTI_ReceivedMessage")==0) {
+			// Tell sim it received the message, it can stop waiting for response now.
+			setTcpResponse(true, content);
+			return 0;
+		}
+		
+		if (settingsExists == -1) {
+			if (Boolean.parseBoolean(tcp) == true) {
+				tcpOn = true;
+				settingsExists = 0;
+				publish("RTI_ReceivedMessage", message);
+				
+				// below code needs to be repeated in place where "settings" file would be (locally with RTILib)
+					new java.util.Timer().scheduleAtFixedRate(
+							new java.util.TimerTask() {
+								@Override
+								public void run() {
+									checkTcpMessages();
+								}
+							}
+							, 5000, 5000);
+			}
+		} else {
+			if (Boolean.parseBoolean(tcp) == true) {
+				publish("RTI_ReceivedMessage", message);
+			}
+		}
 		
 		//if thisSim is available, call upon api directly, else add message to an ordered queue (ordered based on timestamp)
 		if (thisSim != null) {
@@ -191,6 +279,68 @@ public class RTILib {
 		}
 
 		return 0;
+	}
+	
+	public class MessageReceived{
+		int sendAttempts = 0;
+		boolean messageReceived = false;
+		String name = "";
+		String content = "";
+		String timestamp = "";
+		String source = "";
+		String message = "";
+		long originalTimeSent = 0;
+	}
+	ArrayList<MessageReceived> tcpMessageBuffer = new ArrayList<MessageReceived>();
+	
+	public void setTcpResponse(boolean setResponse, String message) {
+		Iterator<MessageReceived> i = tcpMessageBuffer.iterator();
+		while (i.hasNext()) {
+			MessageReceived mr = i.next();
+			if (mr.message.compareTo(message) == 0) {
+				// we could just set the variable to "true" and handle removing elsewhere, 
+				// or in best case scenario, we can remove here and never have to worry about checking to resend (list would be empty).
+				i.remove();
+			}
+		}
+	}
+	
+	private int handleTcpResponse(String name, String content, String timestamp, String source, String message) {
+		if (tcpOn == false)
+			return 0;
+		
+		MessageReceived newMessage = new MessageReceived();
+		newMessage.sendAttempts = 1;
+		newMessage.messageReceived = false;
+		newMessage.name = name;
+		newMessage.content = content;
+		newMessage.timestamp = timestamp;
+		newMessage.source = source;
+		newMessage.message = message;
+		newMessage.originalTimeSent = System.currentTimeMillis();
+		tcpMessageBuffer.add(newMessage);
+		
+		return 0;
+	}
+	
+	public void checkTcpMessages() {
+		if (tcpMessageBuffer.isEmpty())
+			return;
+		
+		Iterator<MessageReceived> it = tcpMessageBuffer.iterator();
+		while (it.hasNext()) {
+			MessageReceived mr = it.next();
+			if (mr.sendAttempts >= 3) {
+				it.remove();
+			}
+		}
+		
+		for (int i = 0; i < tcpMessageBuffer.size(); i++) {
+			if (System.currentTimeMillis() - tcpMessageBuffer.get(i).originalTimeSent > 3000) {
+				tcpMessageBuffer.get(i).sendAttempts++;
+				sendWithoutAddingToTcp(tcpMessageBuffer.get(i).name, tcpMessageBuffer.get(i).content, tcpMessageBuffer.get(i).timestamp, tcpMessageBuffer.get(i).source);
+			}
+		}
 	}
 	
 	public String getNextMessage() {
@@ -607,9 +757,9 @@ public class RTILib {
 		return returnString;
 	}
 
-	private String version = "v0.50";
+	//private String version = "v0.54";
 	public void printVersion() {
-		printLine("SRTI Version - " + version);
+		printLine("SRTI Version - " + Version.version);
 	}
 	
 	private boolean debugOut = false;

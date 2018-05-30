@@ -92,6 +92,7 @@ public class ExampleServerGUI extends JFrame implements RTISim{
 		
 		rtiLib = new RTILib(this);
 		rtiLib.connect(hostName, portNumber);
+		rtiLib.setTcpOn(true);
 		rtiLib.subscribeToAllPlusHistory();
 	}
 	
@@ -429,7 +430,7 @@ public class ExampleServerGUI extends JFrame implements RTISim{
 		
 		main_panel = new JPanel (new GridLayout(4,3));
 		
-		String title_string = "Hello world!!!";
+		String title_string = "Hello world!!! Version = " + Version.version;
 		String subtitle_string = "This is an example GUI to show a RTI ('Really Thankful Interface'), which is similar to an RTI ('Real Time Interface') as described in an HLA system.";
 		// new JTextArea(numberofrows, numberofcolumns)
 		JTextArea title_area = new JTextArea(6,50);
