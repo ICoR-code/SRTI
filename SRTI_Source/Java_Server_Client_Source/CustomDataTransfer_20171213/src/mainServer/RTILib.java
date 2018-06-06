@@ -1,5 +1,11 @@
 package mainServer;
 
+/*
+ * RTILib.java
+ * 
+ * - main access point for API functions for simulation to take part in SRTI system.
+ * */
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -24,12 +30,18 @@ import mainServer.RTIConnectThread.MessageReceived;
 
 public class RTILib {
 	
+	// name of sim (used as identifier on RTI Server side)
+	private String simName = "<<default sim name>>";
+	
+	// reference to simulation (if applicable)
 	private RTISim thisSim;
+	// socket connection to main RTI Server thread, and to dedicated socket to listen/receive direct messages
 	private Socket rtiSocket;
 	private Socket dedicatedRtiSocket;
+	// thread for dedicated RTI Server communication
 	private RTISimConnectThread readThread;
-	private RTISimConnectThread writeThread;
-	private String simName = "<<default sim name>>";
+	
+	// message queue to store messages until sim retrieves them (used for simulations not implementing "RTISim.java")
 	public class Message implements Comparable{
 		public String name = "";
 		public String timestamp = "";
@@ -43,8 +55,9 @@ public class RTILib {
 			return timestamp.compareTo(((Message)anotherMessage).timestamp);
 		}
 	}
-	//private PriorityQueue<Message> messageQueue = new PriorityQueue<Message>();
 	private ArrayList<Message> messageQueue = new ArrayList<Message>();
+	
+	// settings properties, as of v0.54 does not use an external file, but requires calling function to set property from simulation code
 	private int settingsExists = -1;		// -1 => file doesn't exist, 0 = file doesn't exist but defaults are overwritten by RTIServer, 1 = file exists and defaults are overwritten
 	private boolean tcpOn = false;
 	
@@ -102,10 +115,8 @@ public class RTILib {
 					.add("simName", simName)
 					.build();
 			publish("RTI_InitializeSim", json.toString());
-			//need to also include publish/subscribe info above ^... would be set with "subscribeTo()" and "publishTo()" functions?
 			
 			// do I really need a thread just to write? I only write in the "publish()" function.
-			//writeThread = new RTISimConnectThread()
 			printLine("Connected successfully.");
 		} catch (NumberFormatException e) {
 			printLine("   NumberFormatException error occurred... ");
@@ -181,8 +192,7 @@ public class RTILib {
 				handleTcpResponse(name, content, "" + timestamp, simName, json.toString());
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			printLine("   IOExceoption error happened here...");
+			printLine("   When trying to send message: IOExceoption error happened here...");
 			e.printStackTrace();
 		}
 
@@ -205,8 +215,7 @@ public class RTILib {
 			out.println(json);
 			out.flush();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			printLine("   IOExceoption error happened here...");
+			printLine("   When trying to resend message: IOExceoption error happened here...");
 			e.printStackTrace();
 		}
 		
@@ -241,7 +250,6 @@ public class RTILib {
 				tcpOn = true;
 				settingsExists = 0;
 				publish("RTI_ReceivedMessage", message);
-				
 				// below code needs to be repeated in place where "settings" file would be (locally with RTILib)
 					new java.util.Timer().scheduleAtFixedRate(
 							new java.util.TimerTask() {
@@ -292,7 +300,6 @@ public class RTILib {
 		long originalTimeSent = 0;
 	}
 	ArrayList<MessageReceived> tcpMessageBuffer = new ArrayList<MessageReceived>();
-	
 	public void setTcpResponse(boolean setResponse, String message) {
 		Iterator<MessageReceived> i = tcpMessageBuffer.iterator();
 		while (i.hasNext()) {
@@ -350,7 +357,6 @@ public class RTILib {
 			returnString = null;
 			printLine("getNextMessage is null.");
 		} else {
-			//returnString = messageQueue.poll().originalMessage;
 			returnString = messageQueue.get(0).originalMessage;
 			messageQueue.remove(0);
 			
@@ -376,7 +382,6 @@ public class RTILib {
 			returnString = null;
 			printLine("getNextMessage(millisToWait) is null.");
 		} else {
-			//returnString = messageQueue.poll().originalMessage;
 			returnString = messageQueue.get(0).originalMessage;
 			messageQueue.remove(0);
 			
@@ -402,7 +407,6 @@ public class RTILib {
 			returnString = null;
 			printLine("getNextMessage(millisToWait) is null.");
 		} else {
-			//returnString = messageQueue.poll().originalMessage;
 			returnString = messageQueue.get(0).originalMessage;
 			messageQueue.remove(0);
 			
@@ -418,7 +422,6 @@ public class RTILib {
 			returnString = null;
 			printLine("getNextMessage is null.");
 		} else {
-			//returnString = messageQueue.poll().originalMessage;
 			for (int i = 0; i < messageQueue.size(); i++) {
 				if (messageQueue.get(i).name.compareTo(messageName)==0) {
 					returnString = messageQueue.get(i).originalMessage;
@@ -433,7 +436,6 @@ public class RTILib {
 	
 	public String getNextMessage(String messageName, int millisToWait) {
 		String returnString = null;
-		//printLine("getNextMessage() called...");
 		String debugErr = readThread.getDisconnectedErr();
 		if (debugErr != null) {
 			printLine("WARNING: did you know there might be a disconnect with the RTI? " + debugErr);
@@ -478,7 +480,6 @@ public class RTILib {
 		while (messageQueue.isEmpty()) {
 			
 		}
-		//returnString = messageQueue.poll().originalMessage;
 		returnString = messageQueue.get(0).originalMessage;
 		messageQueue.remove(0);
 		
@@ -522,32 +523,6 @@ public class RTILib {
 		return returnString;
 	}
 	
-	/*public String getJsonValue(String name, String content) {
-		String returnString = "";
-		
-		printLine("asked to read jsonValue with content (" + content + ")");
-		
-		if (content.compareTo("")==0 || content == null) {
-			returnString = null;
-			return returnString;
-		}
-		
-		JsonReader reader = Json.createReader(new StringReader(content));
-		JsonObject json = reader.readObject();
-		
-		if (json.containsKey(name)) {
-			// extra formatting to remove quotes: "json.get(string)" returns different format from "json.getString(string)"
-			returnString = json.get(name).toString();
-		}
-		else {
-			returnString = null;
-		}
-		
-		printLine("asked to read jsonValue for " + name + " " + returnString);
-		
-		return returnString;
-	}*/
-	
 	public String getJsonString(String name, String content) {
 		String returnString = "";
 		
@@ -562,7 +537,6 @@ public class RTILib {
 		if (json.containsKey(name)) {
 			// extra formatting to remove quotes: "json.get(string)" returns different format from "json.getString(string)"
 			returnString = json.getString(name).toString();
-			
 		}
 		else {
 			returnString = null;
@@ -714,20 +688,6 @@ public class RTILib {
 		return returnString;
 	}
 	
-	/*public String setJsonObject(String originalJson, String nameNewObject, Object contentNewArray) {
-		String returnString = "";
-		setJsonObject(originalJson, nameNewObject, contentNewArray.toString());
-		return returnString;
-	}*/
-	
-	/*public String setJsonArray(String originalJson, String nameNewObject, Object contentNewArray) {
-		String returnString = "";
-		setJsonArray(originalJson, nameNewObject, contentNewArray.toString());
-		return returnString;
-	}*/
-	
-	
-	
 	public String setJsonArray(String originalJson, String nameNewObject, String[] contentNewArray) {
 		String returnString = "";
 		
@@ -757,7 +717,6 @@ public class RTILib {
 		return returnString;
 	}
 
-	//private String version = "v0.54";
 	public void printVersion() {
 		printLine("SRTI Version - " + Version.version);
 	}
@@ -768,8 +727,6 @@ public class RTILib {
 		
 		if (readThread != null)
 			readThread.setDebugOutput(setDebugOut);
-		if (writeThread != null)
-			writeThread.setDebugOutput(setDebugOut);
 	}
 	
 	private String tag = "RTILib";
@@ -777,7 +734,9 @@ public class RTILib {
 		if (debugOut == false)
 			return;
 		
-		System.out.println(String.format("%1$32s", "[" + tag + "]" + " --- ") + line);
+		String formatLine = String.format("%1$32s", "[" + tag + "]" + " --- ") + line;
+		Version.printConsole(formatLine);
+		Version.printFile(formatLine);
 	}
 
 }

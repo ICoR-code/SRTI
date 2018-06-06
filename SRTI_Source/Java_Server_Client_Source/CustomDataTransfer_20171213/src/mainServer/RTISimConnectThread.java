@@ -1,5 +1,11 @@
 package mainServer;
 
+/*
+ * RTISimConnectThread.java
+ * 
+ * - equivalent to "RTIConnectThread.java", but for RTILib and simulation side to handle dedicated thread for listening to new messages.
+ * */
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -29,7 +35,6 @@ public class RTISimConnectThread extends Thread{
 				try {
 					printLine("you didn't call 'disconnect()' properly, but we sense that the JVM has closed, so we will force the connection closed.");
 					isConnected = false;
-					//rtiSocket.close();
 				} catch (Exception e) {
 					printLine("tried to force close the socket upon program ending, but something when wrong..." + e.toString());
 				}
@@ -39,33 +44,12 @@ public class RTISimConnectThread extends Thread{
 	
 	boolean isConnected = true;
 	public void run() {
-		/*try {
-			//printLine("trying to connect now...");
-			printLine("Connected to dedicated socket! Now running thread to receive new messages!");
-			
-			//PrintWriter out = new PrintWriter(rtiSocket.getOutputStream(), true);
-			BufferedReader in = new BufferedReader(new InputStreamReader(rtiSocket.getInputStream()));
-			//BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
-			//out.println(tag);
-			//out.flush();
-			//printLine("I sent message with : " + tag);
-			String userInput = in.readLine();
-			while (isConnected == true && userInput.length() <= 0) {
-				rtiLib.receivedMessage(userInput);
-				printLine("ready to read = " + in.ready());
-				userInput = in.readLine();
-				printLine("ready to read = " + in.ready() + "... received input = " + userInput);
-			}
-		} catch (Exception e) {
-			printLine(System.currentTimeMillis() + " Exception (connection closed) >> " + e.toString());
-		}*/
 		printLine("Connected to dedicated socket! Now running thread to receive new messages!");
 		BufferedReader in;
 		try {
 			in = new BufferedReader(new InputStreamReader(rtiSocket.getInputStream()));
 			continuousInput(in);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			printLine(System.currentTimeMillis() + " Exception (some error trying to open the bufferedreader from the RTI...) >> " + e.toString());
 		}
 		
@@ -73,7 +57,6 @@ public class RTISimConnectThread extends Thread{
 	
 	private long crashTimeInMillis = 0;
 	private int numOfRTICrash = 0;
-	
 	private void continuousInput(BufferedReader in) {
 		try {
 			printLine("Connected to dedicated socket! Now running thread to receive new messages!");
@@ -98,7 +81,6 @@ public class RTISimConnectThread extends Thread{
 			numOfRTICrash++;
 		}
 		crashTimeInMillis = System.currentTimeMillis();
-		
 		
 		if (isConnected == true) {
 			if (numOfRTICrash >= 3) {

@@ -1,15 +1,16 @@
 package mainServer;
 
-
-
 /* ExampleServerGUI.java
  * - class that ties to ExampleServer.java logic to show graphic user interface.
  * - uses "Swing" API in Java, requires JDK 1.2 and later. 
  * 		- WARNING: API in Java can vary with each JDK version, requires testing. Otherwise is "100% portable."
  * - handy tutorial: https://www3.ntu.edu.sg/home/ehchua/programming/java/j4a_gui.html#zz-7.
+ * 
+ * - known issue: GUI will sometimes not update to correctly represent the SRTI. 
+ * 					This does not mean the SRTI itself is not active.
+ * 					To resolve GUI, closing the GUI and restarting is necessary.
  * */
 
-//import javax.swing;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -44,12 +45,15 @@ public class ExampleServerGUI extends JFrame implements RTISim{
 	
 	String tag = "ExampleServerGUI";
 	
+	// a variable to confirm if the gui has loaded (currently has no practical purpose in logic)
 	boolean guiLoaded = false;
-	
+	// number of simulations connected to the server (referred to in debugging / gui for user)
 	int numOfApps = 0;
+	// hostname and portnumber needed for simulations to connect to the server (referred to in debugging / gui for user)
 	String hostAddress = "[null]";
 	String hostPort = "[null]";
 	
+	// data structures used to hold messages displayed in gui for user
 	public class ConnectedSim{
 		public String name = "";
 		public ArrayList<String> publishTo = new ArrayList<String>();
@@ -77,32 +81,33 @@ public class ExampleServerGUI extends JFrame implements RTISim{
 	JList listMessagesHistory_list;
 	JTextArea listMessagesContent_area;
 	
-	//RTI Objects
+	//RTI Objects (needed to access API to properly connect to RTI Server)
 	RTILib rtiLib;
 	
-	
+	// constructor (when executing .jar file, ExampleServer.java (the RTI Server) will call this automatically. 
+	// Else, this can be accessed by a simulation to manually open a GUI without starting a new server.
 	public ExampleServerGUI(String hostName, String portNumber) {
 		printLine("Starting GUI (not loaded yet)...");
 		
-		//initializeRandomSimList();
-		//initializeMessageTypeList();
+		//save hostname and portnumber
 		updateHost(hostName, portNumber);
 		
+		// load GUI, format with JSwing
 		setupPanel();
-		
+
+		// connect to RTI Server using same method as any simulation
 		rtiLib = new RTILib(this);
 		rtiLib.connect(hostName, portNumber);
 		rtiLib.setTcpOn(true);
 		rtiLib.subscribeToAllPlusHistory();
 	}
 	
+	
+	// thread to update UI when change occurs to text shown (is supposed to be more safe to "setListData" rather than re-drawing entire UI)
 	Runnable runnableUpdateUI = new Runnable() {
 		public void run() {
 			listAppsPublishTo_list.setListData(listAppsPublishTo_items.toArray());
-			//listAppsPublishTo_list.updateUI();
 			listAppsSubscribeTo_list.setListData(listAppsSubscribeTo_items.toArray());
-			//listAppsSubscribeTo_list.updateUI();
-			
 			
 			String[] listMessagesHistory_string;
 			if (listMessage_selectedIndex >= 0 && listMessage_selectedIndex < listMessages_items.size()) {
@@ -115,46 +120,28 @@ public class ExampleServerGUI extends JFrame implements RTISim{
 				listMessagesHistory_string = new String[0];
 			}
 			listMessagesHistory_list.setListData(listMessagesHistory_string);
-			//listMessagesHistory_list.updateUI();
 			
 			String[] listApps_items_string = new String[listApps_items.size()];
 			for (int i = 0; i < listApps_items_string.length; i++) {
 				listApps_items_string[i] = listApps_items.get(i).name;
 			}
 			listApps_list.setListData(listApps_items_string);
-			//listApps_list.updateUI();
 			
 			String[] listMessages_items_string = new String[listMessages_items.size()];
 			for (int i = 0; i < listMessages_items_string.length; i++) {
 				listMessages_items_string[i] = listMessages_items.get(i).name;
 			}
 			listMessages_list.setListData(listMessages_items_string);
-			//listMessages_list.updateUI();
 		}
 	};
 	
-	public String getSimName() {
-		String returnString = "";
-		returnString = tag;
-		return returnString;
-	}
 	
-	public void setupPanelFromExternal() {
-		SwingUtilities.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				setupPanel();
-			}
-		});
-	}
-	
-	
+	// click handlers to allow user to click on a item to see it's relevant data in a different panel.
 	int listApps_selectedIndex = -1;
 	public class ListAppSelectionHandler implements ListSelectionListener {
 
 		@Override
 		public void valueChanged(ListSelectionEvent arg0) {
-			//printLine("LALALALALALALALALAL");
 			listApps_selectedIndex = listApps_list.getSelectedIndex();
 			
 			if (listApps_selectedIndex < 0 || listApps_selectedIndex > listApps_items.size() - 1) {
@@ -170,12 +157,6 @@ public class ExampleServerGUI extends JFrame implements RTISim{
 			listAppsPublishTo_list.setListData(listAppsPublishTo_items.toArray());
 			listAppsPublishTo_list.updateUI();
 			
-			/*DefaultListModel listModel1 = (DefaultListModel)listAppsPublishTo_list.getModel();
-			listModel1.removeAllElements();
-			for (int i = 0; i < listAppsPublishTo_items.size(); i++) {
-				listModel1.addElement(listAppsPublishTo_items.get(i));
-			}*/
-			
 			if (listApps_items.get(listApps_selectedIndex).subscribeTo.size() > 0) {
 				listAppsSubscribeTo_items = listApps_items.get(listApps_selectedIndex).subscribeTo;
 			} else {
@@ -183,12 +164,6 @@ public class ExampleServerGUI extends JFrame implements RTISim{
 			}
 			listAppsSubscribeTo_list.setListData(listAppsSubscribeTo_items.toArray());
 			listAppsSubscribeTo_list.updateUI();
-			/*DefaultListModel listModel2 = (DefaultListModel)listAppsSubscribeTo_list.getModel();
-			listModel2.removeAllElements();
-			for (int i = 0; i < listAppsSubscribeTo_items.size(); i++) {
-				listModel2.addElement(listAppsSubscribeTo_items.get(i));
-			}*/
-			
 			
 			SwingUtilities.invokeLater(runnableUpdateUI);
 		}
@@ -218,11 +193,6 @@ public class ExampleServerGUI extends JFrame implements RTISim{
 			}
 			listMessagesHistory_list.setListData(listMessagesHistory_string);
 			listMessagesHistory_list.updateUI();
-			/*DefaultListModel listModel = (DefaultListModel)listMessagesHistory_list.getModel();
-			listModel.removeAllElements();
-			for (int i = 0; i < listMessagesHistory_string.length; i++) {
-				listModel.addElement(listMessagesHistory_string[i]);
-			}*/
 			
 			SwingUtilities.invokeLater(runnableUpdateUI);
 		}
@@ -253,7 +223,8 @@ public class ExampleServerGUI extends JFrame implements RTISim{
 		
 	}
 	
-	public void initializeRandomSimList() {
+	// below function used to test GUI with random list of simulations.
+	/*public void initializeRandomSimList() {
 		Random rand = new Random();
 		for (int i = 0; i < 6; i++) {
 			listApps_items.add(new ConnectedSim());
@@ -264,52 +235,6 @@ public class ExampleServerGUI extends JFrame implements RTISim{
 				listApps_items.get(i).subscribeTo.add("data_" + String.format("%04d", j));
 			}
 		}
-	}
-	
-	public void updateSimList() {
-		
-		String[] listApps_items_string = new String[listApps_items.size()];
-		for (int i = 0; i < listApps_items_string.length; i++) {
-			listApps_items_string[i] = listApps_items.get(i).name;
-		}
-		listApps_list.setListData(listApps_items_string);
-		listApps_list.updateUI();
-		/*DefaultListModel listModel1 = (DefaultListModel)listApps_list.getModel();
-		listModel1.removeAllElements();
-		for (int i = 0; i < listApps_items_string.length; i++) {
-			listModel1.addElement(listApps_items_string[i]);
-		}
-		listApps_list.setModel(listModel1);
-*/ 
-		if (listApps_selectedIndex >= listApps_items.size() || listApps_selectedIndex < 0) {
-			listApps_selectedIndex = -1;
-			listAppsPublishTo_items.clear();
-			listAppsPublishTo_list.setListData(listAppsPublishTo_items.toArray());
-			listAppsSubscribeTo_items.clear();
-			listAppsSubscribeTo_list.setListData(listAppsSubscribeTo_items.toArray());
-			listAppsPublishTo_list.updateUI();
-		} else {
-			listAppsPublishTo_items = listApps_items.get(listApps_selectedIndex).publishTo;
-			listAppsPublishTo_list.setListData(listAppsPublishTo_items.toArray());
-			listAppsSubscribeTo_items = listApps_items.get(listApps_selectedIndex).subscribeTo;
-			listAppsSubscribeTo_list.setListData(listAppsSubscribeTo_items.toArray());
-			listAppsSubscribeTo_list.updateUI();
-		}
-		printLine("\t\t\t THIS IS RUNNING ON EDT THREAD: "+ SwingUtilities.isEventDispatchThread());
-		/*DefaultListModel listModel2 = (DefaultListModel)listAppsPublishTo_list.getModel();
-		listModel2.removeAllElements();
-		for (int i = 0; i < listAppsPublishTo_items.size(); i++) {
-			listModel2.addElement(listAppsPublishTo_items.get(i));
-		}
-		listAppsPublishTo_list.setModel(listModel2);
-		DefaultListModel listModel3 = (DefaultListModel)listAppsSubscribeTo_list.getModel();
-		listModel3.removeAllElements();
-		for (int i = 0; i < listAppsSubscribeTo_items.size(); i++) {
-			listModel3.addElement(listAppsSubscribeTo_items.get(i));
-		}
-		listAppsSubscribeTo_list.setModel(listModel3);*/
-		
-		SwingUtilities.invokeLater(runnableUpdateUI);
 	}
 	
 	public void initializeMessageTypeList() {
@@ -359,7 +284,35 @@ public class ExampleServerGUI extends JFrame implements RTISim{
 				}
 			}
 		}
+	}
+	*/
+	
+	// functions to update a list, keeping track if user had previously selected a sim (else, it would reset and be difficult to read info on any sim)
+	public void updateSimList() {
 		
+		String[] listApps_items_string = new String[listApps_items.size()];
+		for (int i = 0; i < listApps_items_string.length; i++) {
+			listApps_items_string[i] = listApps_items.get(i).name;
+		}
+		listApps_list.setListData(listApps_items_string);
+		listApps_list.updateUI();
+
+		if (listApps_selectedIndex >= listApps_items.size() || listApps_selectedIndex < 0) {
+			listApps_selectedIndex = -1;
+			listAppsPublishTo_items.clear();
+			listAppsPublishTo_list.setListData(listAppsPublishTo_items.toArray());
+			listAppsSubscribeTo_items.clear();
+			listAppsSubscribeTo_list.setListData(listAppsSubscribeTo_items.toArray());
+			listAppsPublishTo_list.updateUI();
+		} else {
+			listAppsPublishTo_items = listApps_items.get(listApps_selectedIndex).publishTo;
+			listAppsPublishTo_list.setListData(listAppsPublishTo_items.toArray());
+			listAppsSubscribeTo_items = listApps_items.get(listApps_selectedIndex).subscribeTo;
+			listAppsSubscribeTo_list.setListData(listAppsSubscribeTo_items.toArray());
+			listAppsSubscribeTo_list.updateUI();
+		}
+		
+		SwingUtilities.invokeLater(runnableUpdateUI);
 	}
 	
 	public void updateMessageList() {
@@ -377,11 +330,6 @@ public class ExampleServerGUI extends JFrame implements RTISim{
 			 */
 			listMessages_list.setListData(listMessages_items_string);
 			listMessages_list.updateUI();
-			/*DefaultListModel listModel = (DefaultListModel)listMessages_list.getModel();
-			listModel.removeAllElements();
-			for (int i = 0; i < listMessages_items_string.length; i++) {
-				listModel.addElement(listMessages_items_string[i]);
-			}*/
 		} catch (Exception e) {
 			printLine("error here... why?!??!?!?" + e.getMessage() + " " + e.toString());
 		}
@@ -397,11 +345,6 @@ public class ExampleServerGUI extends JFrame implements RTISim{
 			}
 			listMessagesHistory_list.setListData(listMessagesHistory_string);
 			listMessagesHistory_list.updateUI();
-			/*DefaultListModel listModel = (DefaultListModel)listMessagesHistory_list.getModel();
-			listModel.removeAllElements();
-			for (int i = 0; i < listMessagesHistory_string.length; i++) {
-				listModel.addElement(listMessagesHistory_string[i]);
-			}*/
 			
 			if (listMessageHistory_selectedIndex >= 0 
 					&& listMessageHistory_selectedIndex <= listMessages_items.get(listMessage_selectedIndex).historyContent.size()) {
@@ -413,17 +356,14 @@ public class ExampleServerGUI extends JFrame implements RTISim{
 
 			listMessagesHistory_list.setListData(new String[0]);
 			listMessagesHistory_list.updateUI();
-			/*DefaultListModel listModel = (DefaultListModel)listMessagesHistory_list.getModel();
-			listModel.removeAllElements();*/
 			
 			listMessagesContent_area.setText("");
 		}
 		
 		SwingUtilities.invokeLater(runnableUpdateUI);
-
-		
 	}
 	
+	// initial setting up of GUI panel using Swing api
 	public void setupPanel() {
 		int width = 800;
 		int height = 600;
@@ -432,7 +372,7 @@ public class ExampleServerGUI extends JFrame implements RTISim{
 		
 		String title_string = "Hello world!!! Version = " + Version.version;
 		String subtitle_string = "This is an example GUI to show a RTI ('Really Thankful Interface'), which is similar to an RTI ('Real Time Interface') as described in an HLA system.";
-		// new JTextArea(numberofrows, numberofcolumns)
+
 		JTextArea title_area = new JTextArea(6,50);
 		title_area.setLineWrap(true);
 		title_area.setWrapStyleWord(true);
@@ -451,15 +391,11 @@ public class ExampleServerGUI extends JFrame implements RTISim{
 		instruct_area.setTabSize(2);
 		instruct_area.setText(instruct_string);
 		
-		//JPanel pane01_panel = new JPanel();
-		//pane01_panel.setLayout(new FlowLayout());
 		JTextPane instruct_pane = new JTextPane();
 		instruct_pane.setContentType("text/html");
 		instruct_pane.setEditable(false);
 		instruct_pane.setText(instruct_string);
 		instruct_pane.setMaximumSize(new Dimension(10,10));
-		//pane01_panel.add(instruct_pane);
-		//pane01_panel.setSize(20,20);
 		
 		JPanel buttonPanel = new JPanel();
 		JButton exportMessageHistory_button = new JButton("Export Message History");
@@ -486,7 +422,7 @@ public class ExampleServerGUI extends JFrame implements RTISim{
 					exportFile.flush();
 					exportFile.close();
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
+					
 					e.printStackTrace();
 				}
 				
@@ -506,9 +442,6 @@ public class ExampleServerGUI extends JFrame implements RTISim{
 		numApps_area.setBorder(BorderFactory.createTitledBorder("Data:"));
 		
 		
-		
-		
-
 		String[] listApps_items_string = new String[listApps_items.size()];
 		for (int i = 0; i < listApps_items_string.length; i++) {
 			listApps_items_string[i] = listApps_items.get(i).name;
@@ -516,11 +449,7 @@ public class ExampleServerGUI extends JFrame implements RTISim{
 		JScrollPane listApps_scrollpane = new JScrollPane();
 		listApps_list = new JList();
 		listApps_list.setListData(listApps_items_string);
-		/*DefaultListModel listModel1 = (DefaultListModel)listApps_list.getModel();
-		listModel1.removeAllElements();
-		for (int i = 0; i < listApps_items_string.length; i++) {
-			listModel1.addElement(listApps_items_string[i]);
-		}*/
+
 		listApps_list.addListSelectionListener(new ListAppSelectionHandler());
 		listApps_scrollpane.setViewportView(listApps_list);
 		listApps_scrollpane.setBorder(BorderFactory.createTitledBorder("List of connected apps:"));
@@ -528,22 +457,14 @@ public class ExampleServerGUI extends JFrame implements RTISim{
 		JScrollPane listAppsPublishTo_scrollpane = new JScrollPane();
 		listAppsPublishTo_list = new JList();
 		listAppsPublishTo_list.setListData(listAppsPublishTo_items.toArray());
-		/*DefaultListModel listModel2 = (DefaultListModel)listAppsPublishTo_list.getModel();
-		listModel2.removeAllElements();
-		for (int i = 0; i < listAppsPublishTo_items.size(); i++) {
-			listModel2.addElement(listAppsPublishTo_items.get(i));
-		}*/
+
 		listAppsPublishTo_scrollpane.setViewportView(listAppsPublishTo_list);
 		listAppsPublishTo_scrollpane.setBorder(BorderFactory.createTitledBorder("PUBLISH TO (click on connected app to see):"));
 		
 		JScrollPane listAppsSubscribeTo_scrollpane = new JScrollPane();
 		listAppsSubscribeTo_list = new JList();
 		listAppsSubscribeTo_list.setListData(listAppsSubscribeTo_items.toArray());
-		/*DefaultListModel listModel3 = (DefaultListModel)listAppsSubscribeTo_list.getModel();
-		listModel3.removeAllElements();
-		for (int i = 0; i < listAppsSubscribeTo_items.size(); i++) {
-			listModel3.addElement(listAppsSubscribeTo_items.get(i));
-		}*/
+
 		listAppsSubscribeTo_scrollpane.setViewportView(listAppsSubscribeTo_list);
 		listAppsSubscribeTo_scrollpane.setBorder(BorderFactory.createTitledBorder("SUBSCRIBE TO (click on connected app to see):"));
 		
@@ -554,11 +475,7 @@ public class ExampleServerGUI extends JFrame implements RTISim{
 			listMessages_items_string.add(listMessages_items.get(i).name);
 		}
 		listMessages_list.setListData(listMessages_items_string.toArray());
-		/*DefaultListModel listModel4 = (DefaultListModel)listMessages_list.getModel();
-		listModel4.removeAllElements();
-		for (int i = 0; i < listMessages_items_string.size(); i++) {
-			listModel4.addElement(listMessages_items_string.get(i));
-		}*/
+
 		listMessages_list.addListSelectionListener(new ListMessageSelectionHandler());
 		listMessages_scrollpane.setViewportView(listMessages_list);
 		listMessages_scrollpane.setBorder(BorderFactory.createTitledBorder("List of data messages:"));
@@ -586,7 +503,7 @@ public class ExampleServerGUI extends JFrame implements RTISim{
 		main_panel.add(instruct_pane);					//2
 		main_panel.add(new JPanel(null));				//3
 		main_panel.add(numApps_area);					//4
-		main_panel.add(buttonPanel);				//5
+		main_panel.add(buttonPanel);					//5
 		main_panel.add(new JPanel(null));				//6
 		main_panel.add(listApps_scrollpane);			//7
 		main_panel.add(listAppsPublishTo_scrollpane);	//8
@@ -610,8 +527,6 @@ public class ExampleServerGUI extends JFrame implements RTISim{
 	public void updateHost(String newAddress, String newPort) {
 		hostAddress = newAddress;
 		hostPort = newPort;
-		
-		//setupPanel();
 	}
 	
 	public void updateNumConnected(int newNumConnected) {
@@ -619,7 +534,6 @@ public class ExampleServerGUI extends JFrame implements RTISim{
 		printLine("\t updating number of connected apps = " + numOfApps);
 		
 		numApps_area.setText("Number of applications connected: " + numOfApps);
-		//setupPanel();
 	}
 	
 	public String addNewLine(String subjectString, int width) {
@@ -640,13 +554,16 @@ public class ExampleServerGUI extends JFrame implements RTISim{
 
 	
 	
+	// necessary function to implement "RTISim"
+	public String getSimName() {
+		String returnString = "";
+		returnString = tag;
+		return returnString;
+	}
 	
-	
-	//!!!! Below is RTISim-specific logic
+	//!!!! Below is RTISim-specific logic to handle specific messages from RTI Server 
 	@Override
 	public void receivedMessage(String messageName, String content, String timestamp, String source) {
-		
-		
 		
 		switch(messageName) {
 			case "RTI_UpdateSim":
@@ -714,7 +631,6 @@ public class ExampleServerGUI extends JFrame implements RTISim{
 				break;
 		}
 		
-		//printLine("updating receiveMessage... 1");
 		// in addition to the message received in "RTI_UpdateMessage," (meant to represent all messages) add all other messages that might have been received
 		String contentMessageName = messageName;
 		boolean alreadyListed = false;
@@ -726,17 +642,13 @@ public class ExampleServerGUI extends JFrame implements RTISim{
 				break;
 			}
 		}
-		//printLine("updating receiveMessage... 2");
 		if (alreadyListed == true) {
-			//printLine("updating receiveMessage... 2.1");
 			if (alreadyReceivedMessage(contentMessageName, content, timestamp, source) == false) {
 				listMessages_items.get(existIndex).historyTimestamps.add(timestamp);
 				listMessages_items.get(existIndex).historySource.add(source);
 				listMessages_items.get(existIndex).historyContent.add(content);
 			}
-			//printLine("update receiveMessage... 2.2");
 		} else {
-			//printLine("update receiveMessage... 2.3");
 			MessageHistory newMessageItem = new MessageHistory();
 			newMessageItem.name = contentMessageName;
 			newMessageItem.historyTimestamps = new ArrayList<String>();
@@ -745,12 +657,11 @@ public class ExampleServerGUI extends JFrame implements RTISim{
 			newMessageItem.historyContent = new ArrayList<String>();
 			newMessageItem.historyContent.add(content);
 			listMessages_items.add(newMessageItem);
-			//printLine("update receiveMessage... 2.4");
 		}
 		updateMessageList();
-		//printLine("updating receiveMessage... 3");
 	}
 	
+	// need to be able to decide what to do if duplicate message is received
 	private boolean alreadyReceivedMessage(String name, String content, String timestamp, String source) {
 
 		for(int i = 0; i < listMessages_items.size(); i++) {
@@ -771,7 +682,9 @@ public class ExampleServerGUI extends JFrame implements RTISim{
 	
 	
 	public void printLine(String line) {
-		//System.out.println(String.format("%1$32s", "[" + tag + "]" + " --- ") + line);
+		String formatLine = String.format("%1$32s", "[" + tag + "]" + " --- ") + line;
+		Version.printConsole(formatLine);
+		Version.printFile(formatLine);
 	}
 	
 	public static void main(String[] args) {

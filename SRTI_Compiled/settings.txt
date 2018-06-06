@@ -4,5 +4,7 @@
 "tcp":true,
 "compress":false,
 "retryConnection":false,
-"oldMessageLimit":1000
+"oldMessageLimit":1000,
+"debugConsole":true,
+"debugFile":true
 }

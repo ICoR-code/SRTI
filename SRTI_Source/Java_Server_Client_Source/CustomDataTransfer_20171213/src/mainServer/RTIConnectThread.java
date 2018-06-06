@@ -1,5 +1,9 @@
 package mainServer;
 
+/* RTIConnectThread.java
+ * - separate thread for specific connection with simulation, allows multi-threaded application and live interaction with multiple sims at once
+ * */
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -19,13 +23,16 @@ import javax.json.stream.JsonParser;
 
 public class RTIConnectThread extends Thread {
 	
+	// keep track of thread id to make easier for ExampleServer.java to track which thread made callback
 	static int numOfActiveThreads = 0;
 	int currentThreadID = 0;
 	
+	// reference to socket connections (main socket for new sims to connect to, and dedicated socket for specific sim)
 	private Socket thisMainSocket = null;
 	private Socket thisSimSocket = null;
 	private ExampleServer.RTIStartThread thisServer = null;
 	
+	// specific properties related to this sim
 	private String simName = "";
 	private int numOfSameName = 0;
 	private ArrayList<String> publishName = new ArrayList<String>();
@@ -33,8 +40,8 @@ public class RTIConnectThread extends Thread {
 	private boolean subscribeToAll = false;
 	private boolean tcpOn = false;
 	
+	// two options for constructor below, depending on property settings available
 	public RTIConnectThread(Socket mainSocket, ExampleServer.RTIStartThread mainServer) {
-		
 		thisMainSocket = mainSocket;
 		thisServer = mainServer;
 		
@@ -64,8 +71,8 @@ public class RTIConnectThread extends Thread {
 		}
 	}
 	
+	// main logic of the thread, creates a new dedicated socket and continues to listen for new messages
 	public void run() {
-		
 		try {
 			ServerSocket simServerSocket = new ServerSocket(0);
 			PrintWriter outMainSocket = new PrintWriter(thisMainSocket.getOutputStream(), true);
@@ -88,7 +95,6 @@ public class RTIConnectThread extends Thread {
 		}
 		printLine("done running thread.");
 		thisServer.disconnectThread(currentThreadID);
-		//numOfActiveThreads--;
 	}
 	
 	int send(String name, String content) {
@@ -99,7 +105,7 @@ public class RTIConnectThread extends Thread {
 		return send(name, content, timestamp, "RTI");
 	}
 	
-
+	// prepare and send message using dedicated socket
 	int send(String name, String content, String timestamp, String source) {
 		try {
 			JsonObject json =  Json.createObjectBuilder()
@@ -118,7 +124,6 @@ public class RTIConnectThread extends Thread {
 			if (name.compareTo("RTI_ReceivedMessage") != 0) {
 				handleTcpResponse(name, content, timestamp, source, json.toString());
 			}
-			//printLine("Confirm that socket is still connected = " + thisSimSocket.);
 		} catch (Exception e) {
 			printLine("   IOExceoption error happened here...");
 			e.printStackTrace();
@@ -126,6 +131,7 @@ public class RTIConnectThread extends Thread {
 		return 0;
 	}
 	
+	// same as regular send, but without adding to tcp buffer if trying to resend
 	int sendWithoutAddingToTcp(String name, String content, String timestamp, String source) {
 		try {
 			JsonObject json =  Json.createObjectBuilder()
@@ -140,7 +146,6 @@ public class RTIConnectThread extends Thread {
 			out.println(json);
 			out.flush();
 			printLine("Sent message " + name + " to " + simName + " with content " + content);
-			//printLine("Confirm that socket is still connected = " + thisSimSocket.);
 		} catch (Exception e) {
 			printLine("   sendWithoutAddingToTcp - IOExceoption error happened here...");
 			e.printStackTrace();
@@ -148,7 +153,7 @@ public class RTIConnectThread extends Thread {
 		return 0;
 	}
 
-	
+	// extra logic to handle TCP (check if confirmed that message was received, resend if necessary)
 	public class MessageReceived{
 		int sendAttempts = 0;
 		boolean messageReceived = false;
@@ -187,37 +192,6 @@ public class RTIConnectThread extends Thread {
 		newMessage.message = message;
 		newMessage.originalTimeSent = System.currentTimeMillis();
 		tcpMessageBuffer.add(newMessage);
-		
-	
-		/*try {
-			int timeCounterLimit = 500;
-			int timeCounter = 0;
-			int millisWait = 10;
-			while (messageReceived == false) {
-				TimeUnit.MILLISECONDS.sleep(millisWait);
-				timeCounter++;
-				if (timeCounter > timeCounterLimit) {
-					break;
-				}
-			}
-			if (messageReceived == false) {
-				sendAttempts++;
-				if (sendAttempts <= 3) {
-					printLine("Message not confirmed to be received by sim. Send again.");
-					send(name,content,timestamp,source);
-				} else {
-					printLine("After 3 tries, message not received by sim. Give up.");
-					sendAttempts = 0;
-				}
-			} else {
-				sendAttempts = 0;
-			}
-		}
-		catch (Exception e) {
-			printLine("    TCP error happened here...");
-			e.printStackTrace();
-			return -1;
-		}*/
 		
 		return 0;
 	}
@@ -297,10 +271,7 @@ public class RTIConnectThread extends Thread {
 	}
 	
 	public String getSimName() {
-		//if (numOfSameName == 0)
-			return simName;
-		//else 
-		//	return simName + "_" + String.format("%03d", numOfSameName);
+		return simName;
 	}
 	
 	public String[] getPublishArray() {
@@ -352,6 +323,8 @@ public class RTIConnectThread extends Thread {
 	
 	String tag = "RTIConnectThread";
 	public void printLine(String line) {
-		System.out.println(System.currentTimeMillis() + " " + String.format("%1$32s", "[" + tag + "]" + " --- ") + line);
+		String formatLine = String.format("%1$32s", "[" + tag + "]" + " --- ") + line;
+		Version.printConsole(formatLine);
+		Version.printFile(formatLine);
 	}
 }

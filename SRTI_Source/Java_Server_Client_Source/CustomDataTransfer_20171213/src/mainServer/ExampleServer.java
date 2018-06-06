@@ -1,5 +1,11 @@
 package mainServer;
 
+/* ExampleServer.java
+ * 
+ * - main class for "RTI Server" module of SRTI.
+ * 
+ * */
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileFilter;
@@ -23,12 +29,16 @@ import javax.json.JsonReader;
 
 public class ExampleServer {
 
+	// When opening executable .jar file, this function is called, controls starting RTIServer.
 	public static void main(String args[]) {
 		ExampleServer server = new ExampleServer();		
 
+		// Handle reading "settings.txt" file (same folder location as .jar file) for optional parameters.
 		server.loadSettingsFile();
+		
 		server.startRTI();
 
+		// If "guiOn" is true, also open instance of GUI class (treated as its own RTI Simulation). If "guiOn" is false, any feedback would be through console window (command prompt).
 		if (server.guiOn == true) {
 			ExampleServerGUI serverGUI = new ExampleServerGUI(server.getHostName(), server.getPortNumber());
 			serverGUI.rtiLib.setDebugOutput(true);
@@ -36,24 +46,44 @@ public class ExampleServer {
 	}
 	
 	
-	
-	
-	
 	String tag = "ExampleServer";
 	
-	private String hostName = "localhost";
-	public int portNumber = -1;
-	public boolean guiOn = true;
-	public boolean tcpOn = false;
-	public boolean compressOn = false;
-	public boolean retryConnection = false;
-	public int oldMessageLimit = -1;
 	
+	// settings from "settings.txt" file
+	// (public hostname for sims to connect to RTI Server. Cannot be set, is based on computer and internet modem connection.)
+	private String hostName = "localhost";
+	// portNumber, if > 0, will try to open this port (if available), allows some flexibility in how to find the RTI Server.
+	public int portNumber = -1;
+	// set whether gui for RTI Server should be on.
+	public boolean guiOn = true;
+	// set whether all messages from RTI Server to a simulation requires a confirmation that it was received.
+	public boolean tcpOn = false;
+	// set whether messages from RTI Server are compressed before sending (NOT IMPLEMENTED AS OF 2018-06-01)
+	public boolean compressOn = false;
+	// set whether server will attempt to reconnect to sim if disconnected (NOT IMPLEMENTED AS OF 2018-06-01, NEEDS TO BE IMPLEMENTED ON CLIENT SIDE)
+	public boolean retryConnection = false;
+	// set message limit for active memory, if pass this limit, messages are stored in .txt file for possible future reference.
+	public int oldMessageLimit = -1;
+	// print debug lines to console while system is running
+	public boolean debugConsole = false;
+	// print debug lines to file while system is running
+	public boolean debugFile = false;
+	
+	
+	// individual threads, each dedicated to input/output to a specific connected simulation 
+	// (this class handles main public port to allow sims to connect for first time)
 	ArrayList<RTIConnectThread> threadList = new ArrayList<RTIConnectThread>();
+	
+	// a list that maintains all messages received, so the RTI Server can send older messages if necessary. 
 	ArrayList<String> messageHistoryList = new ArrayList<String>();
 	
-	public int loadSettingsFile() {
+	
+	// Load "settings.txt" to set certain options
+	private int loadSettingsFile() {
 		printLine("Trying to read settings file.");
+		
+		// "settings.txt" is expected to be in JSON format. If not, error may occur trying to open the file.
+		JsonObject json;
 		try {
 			FileReader configStream = new FileReader("settings.txt");
 			BufferedReader configBuffer = new BufferedReader(configStream);
@@ -64,22 +94,49 @@ public class ExampleServer {
 			}
 			jsonString = stringToJson(jsonString);
 			JsonReader reader = Json.createReader(new StringReader(jsonString));
-			JsonObject json = reader.readObject();
+			json = reader.readObject();
 			reader.close();
-			
-			portNumber = json.getJsonNumber("portNumber").intValue();
-			guiOn = json.getBoolean("gui");
-			tcpOn = json.getBoolean("tcp");
-			compressOn = json.getBoolean("compress");
-			retryConnection = json.getBoolean("retryConnection");
-			oldMessageLimit = json.getJsonNumber("oldMessageLimit").intValue();
 		} catch (Exception e) {
 			e.printStackTrace();
-			printLine("Error trying to open settings.txt file, will proceed with default values.");
+			printLine("Error trying to open settings.txt file (maybe doesn't exist or has bad format?), will proceed with default values.");
+			return -1;
 		}
+		
+		// Parse out individual values.
+		// What if a value doesn't exist, or is in the wrong format? That's why we run a loop, so we try to read every value instead of allowing one to break the process.
+		for (int i = 0; i < 8; i++) {
+			try {				
+				if (i == 0)
+					portNumber = json.getJsonNumber("portNumber").intValue();
+				else if (i == 1)
+					guiOn = json.getBoolean("gui");
+				else if (i == 2)
+					tcpOn = json.getBoolean("tcp");
+				else if (i == 3)
+					compressOn = json.getBoolean("compress");
+				else if (i == 4)
+					retryConnection = json.getBoolean("retryConnection");
+				else if (i == 5)
+					oldMessageLimit = json.getJsonNumber("oldMessageLimit").intValue();
+				else if (i == 6)
+					debugConsole = json.getBoolean("debugConsole");
+				else if (i == 7)
+					debugFile = json.getBoolean("debugFile");
+			} catch (Exception e) {
+				e.printStackTrace();
+				printLine("Error trying to open value " + i + " from settings.txt file, will proceed with default value. Refer to source code to determine which variable caused issue.");
+			}
+		}
+		Version.debugConsole = debugConsole;
+		Version.debugFile = debugFile;
+		
+		printLine("Finished reading settings file.");
+		
 		return 0;
 	}
 	
+	
+	// Convert string to json (all this does is remove '\n' characters from reading multi-line string from a file)
 	private String stringToJson(String string) {
 		String returnString = "";
 		for (int i = 0; i < string.length(); i++) {
@@ -90,8 +147,13 @@ public class ExampleServer {
 		return returnString;
 	}
 	
+	
+	// Start up the RTI Server.
 	public int startRTI() {
 				
+		// for "oldMessageLimit," when starting the program, there might be old files storing message history.
+		// REMOVE them to avoid confusion with new instance of the server.
+		// (if multiple instances of RTI Server are being run at the same time, this logic might break ability to recall older messages)
 		File currentDirectory = new File(".");
 		File[] listOfFiles = currentDirectory.listFiles(new FilenameFilter() {
 			public boolean accept(File directory, String fileName) {
@@ -104,19 +166,14 @@ public class ExampleServer {
 			listOfFiles[i].delete();
 		}
 		
+		// Open server socket.
 		try {
-			//hostName = InetAddress.getLoopbackAddress().toString();		//"localhost/127.0.0.1"
-			//hostName = InetAddress.getLocalHost().toString();			//"DESKTOP-8DQHEEH/35.3.63.93"
-			//hostName = InetAddress.getLocalHost().getHostName();		//"DESKTOP-8DQHEEH"
-			hostName = InetAddress.getLocalHost().getHostAddress();		//"35.3.63.93"
-			// if using "ipconfig" command on command prompt, I get IPv4 Address = "35.3.63.93"
+			hostName = InetAddress.getLocalHost().getHostAddress();		//example format: "35.3.63.93"
+			// if using "ipconfig" command on command prompt, can check your system's IPv4 Address = "35.3.63.93"
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			printLine("... error here => " + e);
 			return -1;
 		}
-		
-
 		ServerSocket serverSocket;
 		try {
 			printLine("Try to create socket on this port: " + portNumber);
@@ -126,34 +183,26 @@ public class ExampleServer {
 				serverSocket = new ServerSocket(portNumber);
 			portNumber = serverSocket.getLocalPort();
 		} catch (IOException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
-			return -1;
+			return -2;
 		}
-		
-
 		
 		printLine("This is an example GUI to show a RTI ('Really Thankful Interface'), which is similar to an RTI ('Real Time Interface') as described in an HLA system.");
 		printLine("To connect a simulation to this RTI, please use the following credentials:\n"
 				+ "\t hostname = " + hostName + "\n" 
 				+ "\t\t (or you can use 'localhost' if running simulation on same computer as RTI)" + "\n" 
 				+ "\t portnumber = " + portNumber);
-		
-		/*if (serverGUI != null) {
-			serverGUI.updateHost(hostName, "" + portNumber);
-			serverGUI.setupPanel();
-		}*/
-		
 		printLine("Opening socket connection.");
 		
+		// Open the thread to listen for new connection requests by simulations.
 		RTIStartThread mainThread = new RTIStartThread(serverSocket);
 		mainThread.start();
-		
-		//printLine("Main thread running, just need to connect some apps now...");
 		
 		return 0;
 	}
 	
+	
+	// Inner class to control active thread listening for new connections requests by simulations.
 	public class RTIStartThread extends Thread{
 		
 		ServerSocket serverSocket;
@@ -170,30 +219,25 @@ public class ExampleServer {
 
 					rtiSocket = serverSocket.accept();
 					printLine("\t Connected!");
-					//RTIConnectThread connectThread = new RTIConnectThread(rtiSocket, this);
+					
 					RTIConnectThread connectThread = new RTIConnectThread(rtiSocket, this, tcpOn);
 					connectThread.start();
 					threadList.add(connectThread);
 					
 					printLine("\t Added thread to the list! Now sim size is: " + threadList.size());
-					
-					/*if (serverGUI != null) {
-						serverGUI.updateNumConnected(connectThread.getNumberOfThreads());
-					}*/
 				} catch (Exception e) {
-					printLine("... error here => " + e);
+					printLine("... error here when waiting for connections to server => " + e);
 					try {
 						serverSocket.close();
 					} catch (IOException e1) {
-						// TODO Auto-generated catch block
-						printLine("... error here => " + e1);
-						//return -1;
+						printLine("... error here when trying to force close the server socket => " + e1);
 					}
-					//return -1;
 				}
 			}
 		}
 		
+		
+		// Shared function to handle received messages, and to send them out to other relevant connected simulations.
 		public void handleReceivedMessage(int threadIndex, String message) {
 			printLine("received message from index " + threadIndex + ": " + message);
 			
@@ -236,8 +280,7 @@ public class ExampleServer {
 							numOfDuplicates++;
 						}
 					}
-					
-					
+								
 					// Update sim name to the appropriate thread
 					for (int i = 0; i < threadList.size(); i++) {
 						if (threadList.get(i).getIndex() == threadIndex) {	
@@ -248,7 +291,6 @@ public class ExampleServer {
 					
 					// by default, send out update of current thread list to everyone
 					rtiUpdateSimString = buildRTIUpdateSim();
-					//JsonObject jsonContent = Json.createObjectBuilder();
 					for (int i = 0; i < threadList.size(); i++) {
 						threadList.get(i).update(rtiUpdateSimString);
 					}
@@ -263,7 +305,6 @@ public class ExampleServer {
 						}
 					}
 					rtiUpdateSimString = buildRTIUpdateSim();
-					//JsonObject jsonContent = Json.createObjectBuilder();
 					for (int i = 0; i < threadList.size(); i++) {
 						threadList.get(i).update(rtiUpdateSimString);
 					}
@@ -277,7 +318,6 @@ public class ExampleServer {
 						}
 					}
 					rtiUpdateSimString = buildRTIUpdateSim();
-					//JsonObject jsonContent = Json.createObjectBuilder();
 					for (int i = 0; i < threadList.size(); i++) {
 						threadList.get(i).update(rtiUpdateSimString);
 					}
@@ -290,7 +330,6 @@ public class ExampleServer {
 						}
 					}
 					rtiUpdateSimString = buildRTIUpdateSim();
-					//JsonObject jsonContent = Json.createObjectBuilder();
 					for (int i = 0; i < threadList.size(); i++) {
 						threadList.get(i).update(rtiUpdateSimString);
 					}
@@ -331,7 +370,6 @@ public class ExampleServer {
 						}
 					}
 					rtiUpdateSimString = buildRTIUpdateSim();
-					//JsonObject jsonContent = Json.createObjectBuilder();
 					for (int i = 0; i < threadList.size(); i++) {
 						threadList.get(i).update(rtiUpdateSimString);
 					}
@@ -378,7 +416,6 @@ public class ExampleServer {
 						}
 					}
 					rtiUpdateSimString = buildRTIUpdateSim();
-					//JsonObject jsonContent = Json.createObjectBuilder();
 					for (int i = 0; i < threadList.size(); i++) {
 						threadList.get(i).update(rtiUpdateSimString);
 					}
@@ -390,10 +427,9 @@ public class ExampleServer {
 					break;
 			}
 			
-			// HERE, change "source" if there were more than one, before sending the message back out again.
+			// HERE, change "source" name if there were more than one, before sending the message back out again. This helps handle if running several instances of same simulation.
 			String source = json.getString("source");
 			String timestamp = json.getString("timestamp");
-			
 			for (int i = 0; i < threadList.size(); i++) {
 				if (threadList.get(i).getIndex() == threadIndex) {	
 					int numOfDuplicates = threadList.get(i).getNumOfSameName();
@@ -403,16 +439,17 @@ public class ExampleServer {
 				}
 			}
 			
+			
+			// Add message to history list.
 			String newJsonMessage =  Json.createObjectBuilder()
 					.add("name", name)
 					.add("content", content)
 					.add("timestamp", timestamp)
 					.add("source", source)
 					.build().toString();
-			
 			messageHistoryList.add(newJsonMessage);
 			// what if messageHistoryList is too large? Write to a file to save it for later.
-			// example: 1 message of 100 characters = 100 bytes, so 100 messages = 10 KB, 1,000 messages = 100 KB
+			// example: 1 message of 100 characters = 100 bytes, so 100 messages = 10 KB, 1,000 messages = 100 KB (estimate)
 			if (oldMessageLimit > 0 && messageHistoryList.size() > oldMessageLimit) {
 				try {
 					FileWriter exportFile = new FileWriter("messageHistoryList_" + System.currentTimeMillis() + ".txt");
@@ -430,17 +467,18 @@ public class ExampleServer {
 				}
 			}
 			
-			//send message back out to all sims that are subscribed to it
+			
+			//Send message back out to all sims that are subscribed to it
 			int subscribedToTotal = 0;
 			for (int i = 0; i < threadList.size(); i++) {
 				if (threadList.get(i).isSubscribedTo(name)) {
 					subscribedToTotal ++;
 					threadList.get(i).update(newJsonMessage);
 				}
-				//threadList.get(i).update("RTI_UpdateMessage", message);
 			}
 			printLine("There should be " + subscribedToTotal + " subscribed to message " + name);
 		}
+		
 		
 		public void disconnectThread(int threadIndex) {
 			for (int i = 0; i < threadList.size(); i++) {
@@ -452,7 +490,6 @@ public class ExampleServer {
 			
 			// by default, send out update of current thread list to everyone
 			String rtiUpdateSimString = buildRTIUpdateSim();
-			//JsonObject jsonContent = Json.createObjectBuilder();
 			for (int i = 0; i < threadList.size(); i++) {
 				threadList.get(i).update(rtiUpdateSimString);
 			}
@@ -461,7 +498,7 @@ public class ExampleServer {
 	}
 	
 
-	
+	// Prepare message that summarizes current state of the RTI Server, and connected sims.
 	private String buildRTIUpdateSim() {
 		String returnString = "";
 		JsonObjectBuilder jsonMessageBuilder = Json.createObjectBuilder();
@@ -502,36 +539,10 @@ public class ExampleServer {
 		jsonMessageBuilder.add("name", "RTI_UpdateSim");
 		jsonMessageBuilder.add("source", "RTI");
 		jsonMessageBuilder.add("timestamp", "" + System.currentTimeMillis());
-		// to support TCP, add variable here to let RTILib know if it needs to confirm received message
 		jsonMessageBuilder.add("tcp", tcpOn);
-		//
 		jsonMessageObject = jsonMessageBuilder.build();
 		
 		returnString = jsonMessageObject.toString();
-		return returnString;
-	}
-	
-	private String buildRTIPublishTo(String publishToName) {
-		String returnString = "";
-		JsonObjectBuilder jsonPublishBuilder = Json.createObjectBuilder();
-		JsonObject jsonPublishObject;
-
-		jsonPublishBuilder.add("publishTo", publishToName);
-		jsonPublishObject = jsonPublishBuilder.build();
-
-		returnString = jsonPublishObject.toString();
-		return returnString;
-	}
-	
-	private String buildRTISubscribeTo(String subscribeToName) {
-		String returnString = "";
-		JsonObjectBuilder jsonSubscribeBuilder = Json.createObjectBuilder();
-		JsonObject jsonSubscribeObject;
-
-		jsonSubscribeBuilder.add("subscribeTo", subscribeToName);
-		jsonSubscribeObject = jsonSubscribeBuilder.build();
-
-		returnString = jsonSubscribeObject.toString();
 		return returnString;
 	}
 
@@ -544,6 +555,8 @@ public class ExampleServer {
 	}
 	
 	public void printLine(String line) {
-		System.out.println(String.format("%1$32s", "[" + tag + "]" + " --- ") + line);
+		String formatLine = String.format("%1$32s", "[" + tag + "]" + " --- ") + line;
+		Version.printConsole(formatLine);
+		Version.printFile(formatLine);
 	}
 }
