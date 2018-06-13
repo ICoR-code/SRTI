@@ -300,16 +300,29 @@ public class RTILib {
 		long originalTimeSent = 0;
 	}
 	ArrayList<MessageReceived> tcpMessageBuffer = new ArrayList<MessageReceived>();
-	public void setTcpResponse(boolean setResponse, String message) {
-		Iterator<MessageReceived> i = tcpMessageBuffer.iterator();
-		while (i.hasNext()) {
-			MessageReceived mr = i.next();
-			if (mr.message.compareTo(message) == 0) {
-				// we could just set the variable to "true" and handle removing elsewhere, 
-				// or in best case scenario, we can remove here and never have to worry about checking to resend (list would be empty).
-				i.remove();
+	boolean tcpMessageBufferAvailable = true;
+	public int setTcpResponse(boolean setResponse, String message) {
+		try {
+			while (tcpMessageBufferAvailable == false) {
+				TimeUnit.MILLISECONDS.sleep(100);
 			}
+			
+			tcpMessageBufferAvailable = false;
+			Iterator<MessageReceived> i = tcpMessageBuffer.iterator();
+			while (i.hasNext()) {
+				MessageReceived mr = i.next();
+				if (mr.message.compareTo(message) == 0) {
+					// we could just set the variable to "true" and handle removing elsewhere, 
+					// or in best case scenario, we can remove here and never have to worry about checking to resend (list would be empty).
+					i.remove();
+				}
+			}
+			tcpMessageBufferAvailable = true;
+		} catch (Exception e) {
+			
 		}
+		
+		return 0;
 	}
 	
 	private int handleTcpResponse(String name, String content, String timestamp, String source, String message) {
@@ -325,14 +338,35 @@ public class RTILib {
 		newMessage.source = source;
 		newMessage.message = message;
 		newMessage.originalTimeSent = System.currentTimeMillis();
+		
+		while (tcpMessageBufferAvailable == false) {
+			try {
+				TimeUnit.MILLISECONDS.sleep(100);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		tcpMessageBufferAvailable = false;
 		tcpMessageBuffer.add(newMessage);
+		tcpMessageBufferAvailable = true;
 		
 		return 0;
 	}
 	
-	public void checkTcpMessages() {
+	public int checkTcpMessages() {
 		if (tcpMessageBuffer.isEmpty())
-			return;
+			return 0;
+		
+		while (tcpMessageBufferAvailable == false) {
+			try {
+				TimeUnit.MILLISECONDS.sleep(100);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		tcpMessageBufferAvailable = false;
 		
 		Iterator<MessageReceived> it = tcpMessageBuffer.iterator();
 		while (it.hasNext()) {
@@ -348,19 +382,27 @@ public class RTILib {
 				sendWithoutAddingToTcp(tcpMessageBuffer.get(i).name, tcpMessageBuffer.get(i).content, tcpMessageBuffer.get(i).timestamp, tcpMessageBuffer.get(i).source);
 			}
 		}
+		
+		tcpMessageBufferAvailable = true;
+		
+		return 0;
 	}
 	
 	public String getNextMessage() {
 		String returnString = "";
 		printLine("getNextMessage() called...");
 		if (messageQueue.isEmpty()) {
-			returnString = null;
+			returnString = "";
 			printLine("getNextMessage is null.");
 		} else {
-			returnString = messageQueue.get(0).originalMessage;
-			messageQueue.remove(0);
+			if (messageQueue.get(0) != null && messageQueue.get(0).originalMessage != null) {
+				printLine("getNextMessage was NOT null.");
+				returnString = messageQueue.get(0).originalMessage;
+				messageQueue.remove(0);
+			} else {
+				printLine("getNextMessage was either null, or originalMessage was null. This is a strange occurance...");
+			}
 			
-			printLine("getNextMessage was NOT null.");
 		}
 		return returnString;
 	}
@@ -379,13 +421,16 @@ public class RTILib {
 			}
 		}
 		if (messageQueue.isEmpty()) {
-			returnString = null;
+			returnString = "";
 			printLine("getNextMessage(millisToWait) is null.");
 		} else {
-			returnString = messageQueue.get(0).originalMessage;
-			messageQueue.remove(0);
-			
-			printLine("getNextMessage(millisToWait) was NOT null.");
+			if (messageQueue.get(0) != null && messageQueue.get(0).originalMessage != null) {
+				printLine("getNextMessage(millisToWait) was NOT null.");
+				returnString = messageQueue.get(0).originalMessage;
+				messageQueue.remove(0);
+			} else {
+				printLine("getNextMessage was either null, or originalMessage was null. This is a strange occurance...");
+			}
 		}
 		return returnString;
 	}
@@ -404,38 +449,51 @@ public class RTILib {
 			}
 		}
 		if (messageQueue.isEmpty()) {
-			returnString = null;
+			returnString = "";
 			printLine("getNextMessage(millisToWait) is null.");
 		} else {
-			returnString = messageQueue.get(0).originalMessage;
-			messageQueue.remove(0);
+			if (messageQueue.get(0) != null && messageQueue.get(0).originalMessage != null) {
+				printLine("getNextMessage(millisToWait) was NOT null.");
+				returnString = messageQueue.get(0).originalMessage;
+				messageQueue.remove(0);
+			} else {
+				printLine("getNextMessage was either null, or originalMessage was null. This is a strange occurance...");
+			}
 			
-			printLine("getNextMessage(millisToWait) was NOT null.");
 		}
 		return returnString;
 	}
 	
 	public String getNextMessage(String messageName) {
-		String returnString = null;
+		String returnString = "";
 		printLine("getNextMessage() called...");
 		if (messageQueue.isEmpty()) {
-			returnString = null;
+			returnString = "";
 			printLine("getNextMessage is null.");
 		} else {
 			for (int i = 0; i < messageQueue.size(); i++) {
-				if (messageQueue.get(i).name.compareTo(messageName)==0) {
-					returnString = messageQueue.get(i).originalMessage;
-					messageQueue.remove(i);
-					break;
+				if (messageQueue.get(i) != null) {
+					if (messageQueue.get(i).name != null ) {
+						if (messageQueue.get(i).name.compareTo(messageName)==0) {
+							if (messageQueue.get(i) != null && messageQueue.get(i).originalMessage != null) {
+								printLine("getNextMessage was NOT null.");
+								returnString = messageQueue.get(i).originalMessage;
+								messageQueue.remove(i);
+								break;
+							} else {
+								printLine("getNextMessage was either null, or originalMessage was null. This is a strange occurance...");
+							}
+						}
+					}
 				}
 			}
-			printLine("getNextMessage was NOT null.");
+			
 		}
 		return returnString;
 	}
 	
 	public String getNextMessage(String messageName, int millisToWait) {
-		String returnString = null;
+		String returnString = "";
 		String debugErr = readThread.getDisconnectedErr();
 		if (debugErr != null) {
 			printLine("WARNING: did you know there might be a disconnect with the RTI? " + debugErr);
@@ -452,9 +510,13 @@ public class RTILib {
 			if (messageQueue.isEmpty() == false) {
 				for (int i = 0; i < messageQueue.size(); i++) {
 					if (messageQueue.get(i).name.compareTo(messageName)==0) {
-						returnString = messageQueue.get(i).originalMessage;
-						messageQueue.remove(i);
-						break;
+						if (messageQueue.get(i) != null && messageQueue.get(i).originalMessage != null) {
+							returnString = messageQueue.get(i).originalMessage;
+							messageQueue.remove(i);
+							break;
+						} else {
+							printLine("getNextMessage was either null, or originalMessage was null. This is a strange occurance...");
+						}
 					}
 				}
 			}
@@ -480,8 +542,12 @@ public class RTILib {
 		while (messageQueue.isEmpty()) {
 			
 		}
-		returnString = messageQueue.get(0).originalMessage;
-		messageQueue.remove(0);
+		if (messageQueue.get(0) != null && messageQueue.get(0).originalMessage != null) {
+			returnString = messageQueue.get(0).originalMessage;
+			messageQueue.remove(0);
+		} else {
+			printLine("getNextMessage was either null, or originalMessage was null. This is a strange occurance...");
+		}
 		
 		return returnString;
 	}

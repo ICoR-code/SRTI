@@ -56,14 +56,18 @@ public class ExampleServer {
 	public int portNumber = -1;
 	// set whether gui for RTI Server should be on.
 	public boolean guiOn = true;
+	// set whether "debug" console gui for RTI Server should be on (NOT IMPLEMENTED AS OF 2018-06-01)
+	public boolean debugGuiOn = false;
 	// set whether all messages from RTI Server to a simulation requires a confirmation that it was received.
 	public boolean tcpOn = false;
 	// set whether messages from RTI Server are compressed before sending (NOT IMPLEMENTED AS OF 2018-06-01)
 	public boolean compressOn = false;
 	// set whether server will attempt to reconnect to sim if disconnected (NOT IMPLEMENTED AS OF 2018-06-01, NEEDS TO BE IMPLEMENTED ON CLIENT SIDE)
 	public boolean retryConnection = false;
-	// set message limit for active memory, if pass this limit, messages are stored in .txt file for possible future reference.
+	// set message limit for active memory, if pass this limit, messages are cleared
 	public int oldMessageLimit = -1;
+	// set message limit for active memory, if pass limit, messages are stored in .txt file before clearing
+	public boolean oldMessageArchive = false;
 	// print debug lines to console while system is running
 	public boolean debugConsole = false;
 	// print debug lines to file while system is running
@@ -76,7 +80,8 @@ public class ExampleServer {
 	
 	// a list that maintains all messages received, so the RTI Server can send older messages if necessary. 
 	ArrayList<String> messageHistoryList = new ArrayList<String>();
-	
+	// messageHistoryList size in characters, provides more consistent archive performance
+	int messageHistoryListSize = 0;
 	
 	// Load "settings.txt" to set certain options
 	private int loadSettingsFile() {
@@ -104,16 +109,16 @@ public class ExampleServer {
 		
 		// Parse out individual values.
 		// What if a value doesn't exist, or is in the wrong format? That's why we run a loop, so we try to read every value instead of allowing one to break the process.
-		for (int i = 0; i < 8; i++) {
+		for (int i = 0; i < 10; i++) {
 			try {				
 				if (i == 0)
 					portNumber = json.getJsonNumber("portNumber").intValue();
 				else if (i == 1)
-					guiOn = json.getBoolean("gui");
+					guiOn = json.getBoolean("guiOn");
 				else if (i == 2)
-					tcpOn = json.getBoolean("tcp");
+					tcpOn = json.getBoolean("tcpOn");
 				else if (i == 3)
-					compressOn = json.getBoolean("compress");
+					compressOn = json.getBoolean("compressOn");
 				else if (i == 4)
 					retryConnection = json.getBoolean("retryConnection");
 				else if (i == 5)
@@ -122,6 +127,10 @@ public class ExampleServer {
 					debugConsole = json.getBoolean("debugConsole");
 				else if (i == 7)
 					debugFile = json.getBoolean("debugFile");
+				else if (i == 8) 
+					debugGuiOn = json.getBoolean("debugGuiOn");
+				else if (i == 9)
+					oldMessageArchive = json.getBoolean("oldMessageArchive");
 			} catch (Exception e) {
 				e.printStackTrace();
 				printLine("Error trying to open value " + i + " from settings.txt file, will proceed with default value. Refer to source code to determine which variable caused issue.");
@@ -152,16 +161,17 @@ public class ExampleServer {
 	public int startRTI() {
 				
 		// for "oldMessageLimit," when starting the program, there might be old files storing message history.
-		// REMOVE them to avoid confusion with new instance of the server.
+		// REMOVE them to avoid confusion with new instance of the server (these are meant to be for backup while running, not for debugging archive).
 		// (if multiple instances of RTI Server are being run at the same time, this logic might break ability to recall older messages)
 		File currentDirectory = new File(".");
 		File[] listOfFiles = currentDirectory.listFiles(new FilenameFilter() {
 			public boolean accept(File directory, String fileName) {
-				boolean startsWith = fileName.startsWith("messagehistorylist_");
+				boolean startsWith = fileName.startsWith("messageHistoryList_");
 				boolean endsWith = fileName.endsWith(".txt");
 				return startsWith && endsWith;
 			}
 		});
+		printLine("Found this many files starting with 'messagehistorylist_***.txt' : " + listOfFiles.length);
 		for (int i = 0; i < listOfFiles.length; i++) {
 			listOfFiles[i].delete();
 		}
@@ -295,7 +305,7 @@ public class ExampleServer {
 						threadList.get(i).update(rtiUpdateSimString);
 					}
 					messageHistoryList.add(rtiUpdateSimString);
-					
+					messageHistoryListSize += rtiUpdateSimString.length();
 					break;
 				case "RTI_PublishTo":
 					for (int i = 0; i < threadList.size(); i++) {
@@ -309,6 +319,7 @@ public class ExampleServer {
 						threadList.get(i).update(rtiUpdateSimString);
 					}
 					messageHistoryList.add(rtiUpdateSimString);
+					messageHistoryListSize += rtiUpdateSimString.length();
 					break;
 				case "RTI_SubscribeTo":
 					for (int i = 0; i < threadList.size(); i++) {
@@ -322,6 +333,7 @@ public class ExampleServer {
 						threadList.get(i).update(rtiUpdateSimString);
 					}
 					messageHistoryList.add(rtiUpdateSimString);
+					messageHistoryListSize += rtiUpdateSimString.length();
 					break;
 				case "RTI_SubscribeToAll":
 					for (int i = 0; i < threadList.size(); i++) {
@@ -334,6 +346,7 @@ public class ExampleServer {
 						threadList.get(i).update(rtiUpdateSimString);
 					}
 					messageHistoryList.add(rtiUpdateSimString);
+					messageHistoryListSize += rtiUpdateSimString.length();
 					break;
 				case "RTI_SubscribeToAllPlusHistory":
 					for (int i = 0; i < threadList.size(); i++) {
@@ -344,7 +357,7 @@ public class ExampleServer {
 							File currentDirectory = new File(".");
 							File[] listOfFiles = currentDirectory.listFiles(new FilenameFilter() {
 								public boolean accept(File directory, String fileName) {
-									boolean startsWith = fileName.startsWith("messagehistorylist_");
+									boolean startsWith = fileName.startsWith("messageHistoryList_");
 									boolean endsWith = fileName.endsWith(".txt");
 									return startsWith && endsWith;
 								}
@@ -374,6 +387,7 @@ public class ExampleServer {
 						threadList.get(i).update(rtiUpdateSimString);
 					}
 					messageHistoryList.add(rtiUpdateSimString);
+					messageHistoryListSize += rtiUpdateSimString.length();
 					break;
 				case "RTI_SubscribeToMessagePlusHistory":
 					for (int i = 0; i < threadList.size(); i++) {
@@ -383,7 +397,7 @@ public class ExampleServer {
 							File currentDirectory = new File(".");
 							File[] listOfFiles = currentDirectory.listFiles(new FilenameFilter() {
 								public boolean accept(File directory, String fileName) {
-									boolean startsWith = fileName.startsWith("messagehistorylist_");
+									boolean startsWith = fileName.startsWith("messageHistoryList_");
 									boolean endsWith = fileName.endsWith(".txt");
 									return startsWith && endsWith;
 								}
@@ -420,6 +434,7 @@ public class ExampleServer {
 						threadList.get(i).update(rtiUpdateSimString);
 					}
 					messageHistoryList.add(rtiUpdateSimString);
+					messageHistoryListSize += rtiUpdateSimString.length();
 					break;
 				default:
 					printLine("received message, but don't know what to do with it... " + message);
@@ -448,19 +463,23 @@ public class ExampleServer {
 					.add("source", source)
 					.build().toString();
 			messageHistoryList.add(newJsonMessage);
+			messageHistoryListSize += rtiUpdateSimString.length();
 			// what if messageHistoryList is too large? Write to a file to save it for later.
 			// example: 1 message of 100 characters = 100 bytes, so 100 messages = 10 KB, 1,000 messages = 100 KB (estimate)
-			if (oldMessageLimit > 0 && messageHistoryList.size() > oldMessageLimit) {
+			if (oldMessageLimit > 0 && messageHistoryListSize > oldMessageLimit) {
 				try {
-					FileWriter exportFile = new FileWriter("messageHistoryList_" + System.currentTimeMillis() + ".txt");
-					String outputString = "";
-					for (int i = 0; i < messageHistoryList.size(); i++) {
-						outputString += messageHistoryList.get(i) + "\n";
+					if (oldMessageArchive == true) {
+						FileWriter exportFile = new FileWriter("messageHistoryList_" + System.currentTimeMillis() + ".txt");
+						String outputString = "";
+						for (int i = 0; i < messageHistoryList.size(); i++) {
+							outputString += messageHistoryList.get(i) + "\n";
+						}
+						exportFile.write(outputString);
+						exportFile.flush();
+						exportFile.close();
 					}
-					exportFile.write(outputString);
-					exportFile.flush();
-					exportFile.close();
 					messageHistoryList.clear();
+					messageHistoryListSize = 0;
 				} catch (Exception e) {
 					e.printStackTrace();
 					printLine("Error trying to save older messages to file. Will keep in memory.");

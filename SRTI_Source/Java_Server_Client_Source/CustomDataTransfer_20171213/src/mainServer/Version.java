@@ -17,7 +17,7 @@ public class Version {
 			return;
 		}
 		
-		System.out.println(outputLine);
+		System.out.println(System.currentTimeMillis() + " \t" + outputLine);
 	}
 	
 	public static void printFile(String outputLine) {
@@ -26,7 +26,6 @@ public class Version {
 		}
 		
 		if (textFileName == null) {
-			//textFileName = "SRTI_Debug_" + System.currentTimeMillis() + ".txt";
 			String actualDate = (new SimpleDateFormat("yyyyMMddHHmmss")).format(new Date(System.currentTimeMillis()));
 			textFileName = "SRTI_Debug_" + actualDate + ".txt";
 		}
@@ -34,7 +33,7 @@ public class Version {
 		try {
 			FileWriter exportFile;
 			exportFile = new FileWriter(textFileName, true);
-			exportFile.write(outputLine + "\n");
+			exportFile.write(System.currentTimeMillis() + " \t" + outputLine + "\n");
 			exportFile.flush();
 			exportFile.close();
 		} catch (IOException e) {
