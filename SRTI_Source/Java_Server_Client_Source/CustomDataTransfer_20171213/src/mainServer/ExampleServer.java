@@ -254,9 +254,9 @@ public class ExampleServer {
 			JsonReader reader = Json.createReader(new StringReader(message));
 			JsonObject json = reader.readObject();
 			
-			String name = json.getString("name");
-			String content = json.getString("content");
-			boolean tcp = Boolean.parseBoolean(json.getString("tcp"));
+			String name = json.getString("name", "");
+			String content = json.getString("content", "");
+			boolean tcp = Boolean.parseBoolean(json.getString("tcp", "false"));
 			
 			if (tcp == true) {
 				if (name.compareTo("RTI_ReceivedMessage") != 0) {
@@ -282,7 +282,7 @@ public class ExampleServer {
 				case "RTI_InitializeSim":
 					printLine("received message, use info to intialize sim name...");
 					
-					String newSimName = Json.createReader(new StringReader(content)).readObject().getString("simName");
+					String newSimName = Json.createReader(new StringReader(content)).readObject().getString("simName", "");
 					int numOfDuplicates = 0;
 					// WAIT! First check to see if there is already another sim with the same name, if so, then need to change the name
 					for (int i = 0; i < threadList.size(); i++) {
@@ -310,7 +310,7 @@ public class ExampleServer {
 				case "RTI_PublishTo":
 					for (int i = 0; i < threadList.size(); i++) {
 						if (threadList.get(i).getIndex() == threadIndex) {
-							String newPublishName = Json.createReader(new StringReader(content)).readObject().getString("publishTo");
+							String newPublishName = Json.createReader(new StringReader(content)).readObject().getString("publishTo", "");
 							threadList.get(i).updatePublishTo(newPublishName);
 						}
 					}
@@ -324,7 +324,7 @@ public class ExampleServer {
 				case "RTI_SubscribeTo":
 					for (int i = 0; i < threadList.size(); i++) {
 						if (threadList.get(i).getIndex() == threadIndex) {
-							String newSubscribeName = Json.createReader(new StringReader(content)).readObject().getString("subscribeTo");
+							String newSubscribeName = Json.createReader(new StringReader(content)).readObject().getString("subscribeTo", "");
 							threadList.get(i).updateSubscribeTo(newSubscribeName);
 						}
 					}
@@ -392,7 +392,7 @@ public class ExampleServer {
 				case "RTI_SubscribeToMessagePlusHistory":
 					for (int i = 0; i < threadList.size(); i++) {
 						if (threadList.get(i).getIndex() == threadIndex) {
-							String newSubscribeName = Json.createReader(new StringReader(content)).readObject().getString("subscribeTo");
+							String newSubscribeName = Json.createReader(new StringReader(content)).readObject().getString("subscribeTo", "");
 							threadList.get(i).updateSubscribeTo(newSubscribeName);
 							File currentDirectory = new File(".");
 							File[] listOfFiles = currentDirectory.listFiles(new FilenameFilter() {
@@ -408,7 +408,7 @@ public class ExampleServer {
 									String readLine = "";
 									readLine = fileReader.readLine();
 									while (readLine != null){										
-										String name2 = Json.createReader(new StringReader(readLine)).readObject().getString("name");
+										String name2 = Json.createReader(new StringReader(readLine)).readObject().getString("name", "");
 										if (name2.compareTo(newSubscribeName) == 0) {
 											threadList.get(i).update(readLine);
 										}
@@ -421,7 +421,7 @@ public class ExampleServer {
 								}
 							}
 							for (int j = 0; j < messageHistoryList.size(); j++) {
-								String name2 = Json.createReader(new StringReader(messageHistoryList.get(j))).readObject().getString("name");
+								String name2 = Json.createReader(new StringReader(messageHistoryList.get(j))).readObject().getString("name", "");
 								if (name2.compareTo(newSubscribeName) == 0) {
 									threadList.get(i).update(messageHistoryList.get(j));
 								}
@@ -443,8 +443,8 @@ public class ExampleServer {
 			}
 			
 			// HERE, change "source" name if there were more than one, before sending the message back out again. This helps handle if running several instances of same simulation.
-			String source = json.getString("source");
-			String timestamp = json.getString("timestamp");
+			String source = json.getString("source", "");
+			String timestamp = json.getString("timestamp", "");
 			for (int i = 0; i < threadList.size(); i++) {
 				if (threadList.get(i).getIndex() == threadIndex) {	
 					int numOfDuplicates = threadList.get(i).getNumOfSameName();

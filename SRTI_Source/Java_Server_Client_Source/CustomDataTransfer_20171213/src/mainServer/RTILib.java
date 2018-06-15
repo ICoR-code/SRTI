@@ -54,12 +54,49 @@ public class RTILib {
 				return 0;
 			return timestamp.compareTo(((Message)anotherMessage).timestamp);
 		}
+		
+		public String toString() {
+			String returnString = "";
+			if (name != null) {
+				returnString += "name: " + name;
+			} else {
+				returnString += "name: " + "NULL";
+			}
+			if (timestamp != null) {
+				returnString += "timestamp: " + timestamp;
+			} else {
+				returnString += "timestamp: " + "NULL";
+			}
+			if (source != null) {
+				returnString += "source: " + source;
+			} else {
+				returnString += "source: " + "NULL";
+			}
+			if (content != null) {
+				returnString += "content: " + content;
+			} else {
+				returnString += "content: " + "NULL";
+			}
+			if (originalMessage != null) {
+				returnString += "originalMessage: " + originalMessage;
+			} else {
+				returnString += "originalMessage: " + "NULL";
+			}
+			return returnString;
+		}
 	}
 	private ArrayList<Message> messageQueue = new ArrayList<Message>();
 	
 	// settings properties, as of v0.54 does not use an external file, but requires calling function to set property from simulation code
 	private int settingsExists = -1;		// -1 => file doesn't exist, 0 = file doesn't exist but defaults are overwritten by RTIServer, 1 = file exists and defaults are overwritten
 	private boolean tcpOn = false;
+	// save last used hostname and portnumber, for instance that one needs to reconnect.
+	private String lastHostName = "";
+	private String lastPortNumber = "";
+	// for reference, save the message names we are subscribing to (if we need to reconnect, we want to subscribe again)
+	private ArrayList<String> subscribeHistory = new ArrayList<String>();
+	// boolean to confirm if messages were received recently
+	private boolean serverMessagesReceived = false;
 	
 	public RTILib(RTISim rtiSim) {
 		thisSim = rtiSim;
@@ -86,9 +123,28 @@ public class RTILib {
 					public void run() {
 						checkTcpMessages();
 					}
-				}
-			, 5000, 5000);
+				}, 5000, 5000);
 		}
+	}
+	
+	// set reconnect time limit (if "timeLimit" (milliseconds) passes without receiving any messages from RTI Server, assume disconnected and try to reconnect)
+	public void setReconnectTimeLimit(long timeLimit) {
+		if (timeLimit <= 0)
+			return;
+		
+		new java.util.Timer().scheduleAtFixedRate(
+				new java.util.TimerTask() {
+					@Override
+					public void run() {
+						// if no message was received within this time, reconnect()
+						if (serverMessagesReceived == false) {
+							reconnect();
+						}
+						
+						serverMessagesReceived = false;
+					}
+				}
+			, timeLimit, timeLimit);
 	}
 	
 	public int connect() {
@@ -100,12 +156,59 @@ public class RTILib {
 		
 		printLine("trying to connect now...");
 		try {
-			rtiSocket = new Socket(hostName, Integer.parseInt(portNumber));
+			lastHostName = hostName;
+			lastPortNumber = portNumber;
+			rtiSocket = new Socket(lastHostName, Integer.parseInt(lastPortNumber));
 			
 			BufferedReader in = new BufferedReader(new InputStreamReader(rtiSocket.getInputStream()));
 			String dedicatedHost = in.readLine();
 			String dedicatedPort = in.readLine();
 			printLine("RTI reached. Now connecting to dedicated communication socket: " + dedicatedHost + " " + dedicatedPort);
+			dedicatedRtiSocket = new Socket(dedicatedHost, Integer.parseInt(dedicatedPort));
+			
+			serverMessagesReceived = true;
+			
+			readThread = new RTISimConnectThread(this, dedicatedRtiSocket);
+			readThread.start();
+			
+			JsonObject json = Json.createObjectBuilder()
+					.add("simName", simName)
+					.build();
+			publish("RTI_InitializeSim", json.toString());
+			
+			// do I really need a thread just to write? I only write in the "publish()" function.
+			printLine("Connected successfully.");
+		} catch (NumberFormatException e) {
+			printLine("   NumberFormatException error occurred... ");
+			e.printStackTrace();
+		} catch (UnknownHostException e) {
+			printLine("   UnknownHostException error occurred...");
+			e.printStackTrace();
+		} catch (IOException e) {
+			printLine("   IOException error occurred...");
+			e.printStackTrace();
+		}
+
+		return 0;
+	}
+	
+	public int reconnect() {
+		// create new thread to replace previous thread, then send message "reconnect" to copy info on server side
+		// ... but thread is destroyed on server side when replaced here, so that info is gone
+		//			- this library has to remember what it is subscribed to, and resend information from scratch, rather than reconnecting (special logic) on Server side
+		// ... but messages attempted to be sent to this sim might not be sent again with new connection
+		// 			- its possible this sim hasn't tried to send a message for several minutes, so ALL subscribed messages would have to be resent
+		// ... but what if sim doesn't try to send a message, because still "waiting" for new message?
+		printLine("trying to reconnect now...");
+		try {
+			rtiSocket.close();
+			rtiSocket = new Socket(lastHostName, Integer.parseInt(lastPortNumber));
+			
+			BufferedReader in = new BufferedReader(new InputStreamReader(rtiSocket.getInputStream()));
+			String dedicatedHost = in.readLine();
+			String dedicatedPort = in.readLine();
+			printLine("RTI reached. Now connecting to dedicated communication socket: " + dedicatedHost + " " + dedicatedPort);
+			dedicatedRtiSocket.close();
 			dedicatedRtiSocket = new Socket(dedicatedHost, Integer.parseInt(dedicatedPort));
 			
 			readThread = new RTISimConnectThread(this, dedicatedRtiSocket);
@@ -118,6 +221,74 @@ public class RTILib {
 			
 			// do I really need a thread just to write? I only write in the "publish()" function.
 			printLine("Connected successfully.");
+			
+			// ALSO, because we had to reconnect, we need to resubscribe to most recent version of latest messages.
+			// - We are assuming this simulation needs the most recent message of each, and does not need others.
+			// - We are assuming the simulation can determine for themselves how to handle older or unwanted messages.
+			for (int i = 0; i < subscribeHistory.size(); i++) {
+				JsonObject jsonSubscribe = Json.createObjectBuilder()
+						.add("subscribeTo", subscribeHistory.get(i))
+						.build();
+				publish("RTI_SubscribeToMessagePlusLatest", jsonSubscribe.toString());
+			}
+			
+		} catch (NumberFormatException e) {
+			printLine("   NumberFormatException error occurred... ");
+			e.printStackTrace();
+		} catch (UnknownHostException e) {
+			printLine("   UnknownHostException error occurred...");
+			e.printStackTrace();
+		} catch (IOException e) {
+			printLine("   IOException error occurred...");
+			e.printStackTrace();
+		}
+
+		return 0;
+	}
+	
+	public int reconnect(String lastMessageName, String lastMessageContent) {
+		// create new thread to replace previous thread, then send message "reconnect" to copy info on server side
+		// ... but thread is destroyed on server side when replaced here, so that info is gone
+		//			- this library has to remember what it is subscribed to, and resend information from scratch, rather than reconnecting (special logic) on Server side
+		// ... but messages attempted to be sent to this sim might not be sent again with new connection
+		// 			- its possible this sim hasn't tried to send a message for several minutes, so ALL subscribed messages would have to be resent
+		// ... but what if sim doesn't try to send a message, because still "waiting" for new message?
+		printLine("trying to reconnect (with lastMessage to resend) now...");
+		try {
+			rtiSocket.close();
+			rtiSocket = new Socket(lastHostName, Integer.parseInt(lastPortNumber));
+			
+			BufferedReader in = new BufferedReader(new InputStreamReader(rtiSocket.getInputStream()));
+			String dedicatedHost = in.readLine();
+			String dedicatedPort = in.readLine();
+			printLine("RTI reached. Now connecting to dedicated communication socket: " + dedicatedHost + " " + dedicatedPort);
+			dedicatedRtiSocket.close();
+			dedicatedRtiSocket = new Socket(dedicatedHost, Integer.parseInt(dedicatedPort));
+			
+			readThread = new RTISimConnectThread(this, dedicatedRtiSocket);
+			readThread.start();
+			
+			JsonObject json = Json.createObjectBuilder()
+					.add("simName", simName)
+					.build();
+			publish("RTI_InitializeSim", json.toString());
+			
+			// do I really need a thread just to write? I only write in the "publish()" function.
+			printLine("Connected successfully.");
+			
+			// ALSO, because we had to reconnect, we need to resubscribe to most recent version of latest messages.
+			// - We are assuming this simulation needs the most recent message of each, and does not need others.
+			// - We are assuming the simulation can determine for themselves how to handle older or unwanted messages.
+			for (int i = 0; i < subscribeHistory.size(); i++) {
+				JsonObject jsonSubscribe = Json.createObjectBuilder()
+						.add("subscribeTo", subscribeHistory.get(i))
+						.build();
+				publish("RTI_SubscribeToMessagePlusLatest", jsonSubscribe.toString());
+			}
+			
+			// ALSO, resend the last message
+			publish(lastMessageName, lastMessageContent);
+
 		} catch (NumberFormatException e) {
 			printLine("   NumberFormatException error occurred... ");
 			e.printStackTrace();
@@ -230,14 +401,16 @@ public class RTILib {
 		// handle tcp if server expects a response
 		String tcp = "";
 		
+		serverMessagesReceived = true;
+		
 		JsonReader reader = Json.createReader(new StringReader(message));
 		JsonObject json = reader.readObject();
 		
-		name = json.getString("name");
-		content = json.getString("content");
-		timestamp = json.getString("timestamp");
-		source = json.getString("source");
-		tcp = json.getString("tcp");
+		name = json.getString("name", "");
+		content = json.getString("content", "");
+		timestamp = json.getString("timestamp", "");
+		source = json.getString("source", "");
+		tcp = json.getString("tcp", "");
 		
 		if (name.compareTo("RTI_ReceivedMessage")==0) {
 			// Tell sim it received the message, it can stop waiting for response now.
@@ -372,6 +545,7 @@ public class RTILib {
 		while (it.hasNext()) {
 			MessageReceived mr = it.next();
 			if (mr.sendAttempts >= 3) {
+				reconnect(mr.name, mr.content);
 				it.remove();
 			}
 		}
@@ -401,6 +575,11 @@ public class RTILib {
 				messageQueue.remove(0);
 			} else {
 				printLine("getNextMessage was either null, or originalMessage was null. This is a strange occurance...");
+				if (messageQueue.get(0) == null) {
+					printLine("somehow, messageQueue(0) is NULL, even though messageQueue.isEmpty() is false?");
+				} else {
+					printLine("message at index 0 : " + messageQueue.get(0).toString());
+				}
 			}
 			
 		}
@@ -430,6 +609,11 @@ public class RTILib {
 				messageQueue.remove(0);
 			} else {
 				printLine("getNextMessage was either null, or originalMessage was null. This is a strange occurance...");
+				if (messageQueue.get(0) == null) {
+					printLine("somehow, messageQueue(0) is NULL, even though messageQueue.isEmpty() is false?");
+				} else {
+					printLine("message at index 0 : " + messageQueue.get(0).toString());
+				}
 			}
 		}
 		return returnString;
@@ -458,6 +642,11 @@ public class RTILib {
 				messageQueue.remove(0);
 			} else {
 				printLine("getNextMessage was either null, or originalMessage was null. This is a strange occurance...");
+				if (messageQueue.get(0) == null) {
+					printLine("somehow, messageQueue(0) is NULL, even though messageQueue.isEmpty() is false?");
+				} else {
+					printLine("message at index 0 : " + messageQueue.get(0).toString());
+				}
 			}
 			
 		}
@@ -482,6 +671,11 @@ public class RTILib {
 								break;
 							} else {
 								printLine("getNextMessage was either null, or originalMessage was null. This is a strange occurance...");
+								if (messageQueue.get(i) == null) {
+									printLine("somehow, messageQueue(i) is NULL, even though messageQueue.isEmpty() is false? i = " + i + ", length = " + messageQueue.size());
+								} else {
+									printLine("message at index i (" + i + ") : " + messageQueue.get(i).toString());
+								}
 							}
 						}
 					}
@@ -516,6 +710,11 @@ public class RTILib {
 							break;
 						} else {
 							printLine("getNextMessage was either null, or originalMessage was null. This is a strange occurance...");
+							if (messageQueue.get(i) == null) {
+								printLine("somehow, messageQueue(i) is NULL, even though messageQueue.isEmpty() is false? i = " + i);
+							} else {
+								printLine("message at index i (" + i + ") : " + messageQueue.get(i).toString());
+							}
 						}
 					}
 				}
@@ -547,6 +746,11 @@ public class RTILib {
 			messageQueue.remove(0);
 		} else {
 			printLine("getNextMessage was either null, or originalMessage was null. This is a strange occurance...");
+			if (messageQueue.get(0) == null) {
+				printLine("somehow, messageQueue(0) is NULL, even though messageQueue.isEmpty() is false?");
+			} else {
+				printLine("message at index 0 : " + messageQueue.get(0).toString());
+			}
 		}
 		
 		return returnString;
@@ -570,7 +774,7 @@ public class RTILib {
 				// extra formatting to remove quotes: "json.get(string)" returns different format from "json.getString(string)"
 				JsonValue jvalue = json.get(name);
 				if (jvalue.getValueType() == JsonValue.ValueType.STRING) {
-					returnString = json.getString(name).toString();
+					returnString = json.getString(name, "").toString();
 				} else {
 					returnString = json.get(name).toString();
 				}
@@ -580,6 +784,56 @@ public class RTILib {
 			}
 			
 			printLine("asked to read jsonValue for " + name + " " + returnString);
+		}
+		catch (Exception e) {
+			printLine("something went wrong when trying to get Json object. Returning null.");
+			returnString = null;
+			return returnString;
+		}
+		return returnString;
+	}
+	
+	/* String getJsonObjectFast(String, String)
+	 * - An alternative to "getJsonObject" that does not properly parse out element as a JSON object, but using basic string API in Java.
+	 * - This approach is significantly faster, but not guaranteed to properly parse out duplicate or subobjects in certain cases. 
+	 * - Best for simple messages/objects.
+	 *  */
+	public String getJsonObjectFast(String name, String content) {
+		String returnString = "";
+		printLine("asked to read jsonValue from content (" + content + ")");
+		
+		if (content.compareTo("")==0 || content == null) {
+			returnString = null;
+			return returnString;
+		}
+		
+		try {
+			int positionName = content.indexOf(name);
+			if (positionName == -1) {
+				returnString = null;
+			} else {
+				int positionObject = positionName + 2;	// ":
+				String subString = content.substring(positionObject, content.length());
+				int endIndex = 0;
+				if (subString.charAt(0) == '[') {
+					endIndex = subString.indexOf("],");
+					if (endIndex == -1) {
+						endIndex = subString.indexOf("]}");
+					}
+				} else if (subString.charAt(0) == '\"') {
+					endIndex = subString.indexOf("\",");
+					if (endIndex == -1) {
+						endIndex = subString.indexOf("\"}");
+					}
+				}
+				if (endIndex == -1) {
+					returnString = null;
+				} else {
+					returnString = subString.substring(0,endIndex+1);
+					returnString = getStringNoQuotes(returnString);
+					printLine("asked to read jsonValue for " + name + " " + returnString);
+				}
+			}
 		}
 		catch (Exception e) {
 			printLine("something went wrong when trying to get Json object. Returning null.");
@@ -602,11 +856,49 @@ public class RTILib {
 		
 		if (json.containsKey(name)) {
 			// extra formatting to remove quotes: "json.get(string)" returns different format from "json.getString(string)"
-			returnString = json.getString(name).toString();
+			returnString = json.getString(name, "").toString();
 		}
 		else {
 			returnString = null;
 		}
+		return returnString;
+	}
+	
+	public String getJsonStringFast(String name, String content) {
+		String returnString = "";
+		
+		if (content == "" || content == null) {
+			returnString = null;
+			return returnString;
+		}
+		
+		int positionName = content.indexOf(name);
+		if (positionName == -1) {
+			returnString = null;
+		} else {
+			int positionObject = positionName + 2;	// ":
+			String subString = content.substring(positionObject, content.length());
+			int endIndex = 0;
+			if (subString.charAt(0) == '[') {
+				endIndex = subString.indexOf("],");
+				if (endIndex == -1) {
+					endIndex = subString.indexOf("]}");
+				}
+			} else if (subString.charAt(0) == '\"') {
+				endIndex = subString.indexOf("\",");
+				if (endIndex == -1) {
+					endIndex = subString.indexOf("\"}");
+				}
+			}
+			if (endIndex == -1) {
+				returnString = null;
+			} else {
+				returnString = subString.substring(0,endIndex+1);
+				returnString = getStringNoQuotes(returnString);
+				printLine("asked to read jsonValue for " + name + " " + returnString);
+			}
+		}
+		
 		return returnString;
 	}
 	
@@ -698,7 +990,7 @@ public class RTILib {
 		
 		if (json.containsKey("content")) {
 			// extra formatting to remove quotes: "json.get(string)" returns different format from "json.getString(string)"
-			returnString = json.getString("content").toString();
+			returnString = json.getString("content", "").toString();
 		}
 		else {
 			returnString = null;
@@ -787,22 +1079,19 @@ public class RTILib {
 		printLine("SRTI Version - " + Version.version);
 	}
 	
-	private boolean debugOut = false;
 	public void setDebugOutput(boolean setDebugOut) {
-		debugOut = setDebugOut;
-		
-		if (readThread != null)
-			readThread.setDebugOutput(setDebugOut);
+		Version.debugSimConsole = setDebugOut;
+	}
+	
+	public void setDebugFileOutput(boolean setFileDebugOut) {
+		Version.debugSimFile = setFileDebugOut;
 	}
 	
 	private String tag = "RTILib";
 	public void printLine(String line) {
-		if (debugOut == false)
-			return;
-		
 		String formatLine = String.format("%1$32s", "[" + tag + "]" + " --- ") + line;
-		Version.printConsole(formatLine);
-		Version.printFile(formatLine);
+		Version.printSimConsole(formatLine);
+		Version.printSimFile(formatLine);
 	}
 
 }

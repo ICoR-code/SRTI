@@ -119,15 +119,9 @@ public class RTISimConnectThread extends Thread{
 		}
 	}
 	
-	private boolean debugOut = false;
-	public void setDebugOutput(boolean setDebugOut) {
-		debugOut = setDebugOut;
-	}
-	
 	public void printLine(String line) {
-		if (debugOut == false)
-			return;
-		
-		System.out.println(String.format("%1$32s", "[" + tag + "]" + " --- ") + line);
+		String formatLine = String.format("%1$32s", "[" + tag + "]" + " --- ") + line;
+		Version.printSimConsole(formatLine);
+		Version.printSimFile(formatLine);
 	}
 }
