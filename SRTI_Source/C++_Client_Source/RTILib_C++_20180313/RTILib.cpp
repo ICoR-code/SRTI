@@ -24,7 +24,7 @@ Socket is necessary to connect to the RTI, it's logic in C++ may need to be rewr
 #include <sys/socket.h>
 #endif
 
-/* 
+/*
 	C++ does not have standard JSON parsing library, trying to use "RapidJSON" open-source library
 	- http://rapidjson.org/index.html
 */
@@ -49,7 +49,7 @@ RTISimConnectThread writeThread;
 
 string simName = "<<default sim name>>";
 struct Message {
-	
+
 	string name = "";
 	string timestamp = "";
 	string source = "";
@@ -73,7 +73,7 @@ RTILib::RTILib()
 	thisSim = 0;
 	WSAStartup(MAKEWORD(2, 2), &wsaData);
 	printLine("RTILib() constructor called.");
-	
+
 	//sort(v.begin(), v.end(), v[0].compareTo);
 }
 
@@ -111,7 +111,7 @@ int RTILib::connect(string hostName, string portNumber) {
 		WSACleanup();
 		return -1;
 	}
-	
+
 	iResult = ::connect(rtiSocket, ptr->ai_addr, (int)ptr->ai_addrlen);
 	if (iResult == SOCKET_ERROR) {
 		closesocket(rtiSocket);
@@ -221,7 +221,7 @@ int RTILib::connect(string hostName, string portNumber) {
 	jsonContent1.AddMember("simName", jsonSimName, document.GetAllocator());
 	jsonContent1.Accept(writerOut);
 
-	publish("RTI_InitializeSim", bufferOut.GetString());
+	publish("RTI_InitializeSim", bufferOut.GetString())
 
 	return 0;
 }
@@ -264,7 +264,7 @@ int RTILib::publishTo(string messageName) {
 int RTILib::publish(string name, string content) {
 	int iSendResult = 0;
 	string message = "";
-	
+
 	rapidjson::StringBuffer bufferOut;
 	bufferOut.Clear();
 	rapidjson::Writer<rapidjson::StringBuffer> writerOut(bufferOut);
@@ -273,7 +273,7 @@ int RTILib::publish(string name, string content) {
 	rapidjson::Value jsonTotal(rapidjson::kObjectType);
 	rapidjson::Value jsonNameString(name.c_str(), document.GetAllocator());
 	jsonTotal.AddMember("name", jsonNameString, document.GetAllocator());
-	
+
 	rapidjson::Value jsonContentString(content.c_str(), document.GetAllocator());
 	jsonTotal.AddMember("content", jsonContentString, document.GetAllocator());
 
@@ -286,7 +286,7 @@ int RTILib::publish(string name, string content) {
 
 	jsonTotal.Accept(writerOut);
 	message = bufferOut.GetString();
-	
+
 
 
 	printLine("Trying to publish message now: " + message);
@@ -630,11 +630,11 @@ void RTILib::setDebugOutput(bool setDebugOut) {
 
 	if (&readThread != nullptr) {
 		readThread.setDebugOutput(debugOut);
-	} 
+	}
 	if (&writeThread != nullptr) {
 		writeThread.setDebugOutput(debugOut);
 	}
-	
+
 }
 
 string tag = "RTILib";
@@ -654,11 +654,3 @@ RTILib::~RTILib()
 {
 
 }
-
-
-
-
-
-
-
-

@@ -4,7 +4,7 @@
 	to reference RTILib to connect to an SRTI system.
 
 	WARNING: For testing, this one class has two possible instances of RTILib, to simulate 2 clients from the same class.
-	This causes errors (possibly because of static functions?) where the 2 clients read the same message concurrently, 
+	This causes errors (possibly because of static functions?) where the 2 clients read the same message concurrently,
 	and each will "steal" characters from the other, causing incomplete messages to appear to be received and errors occurring.
 	If using this class, only use 1 RTILib instance at a time.
 */
@@ -26,9 +26,9 @@ int main()
 	//testLib.connect("35.3.75.185", "4200");
 
 	RTILib testLib2 = RTILib();
-	testLib2.setDebugOutput(false);
+	testLib2.setDebugOutput(true);
 	testLib2.setSimName("RTIC++TestAgain_20180313");
-	testLib2.connect("35.3.75.185", "4200");
+	testLib2.connect("localhost", "55137");
 	testLib2.subscribeTo("StoreStatus");
 	int totalTime = 0;
 
@@ -67,4 +67,3 @@ int main()
 	cout << "End RTILib (in C++)." << endl;
     return 0;
 }
-

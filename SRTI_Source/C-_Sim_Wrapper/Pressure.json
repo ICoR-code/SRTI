@@ -1,0 +1,25 @@
+{
+    "hostName": "localhost",
+    "portNumber": "60628",
+    "simulatorName": "PressureSim",
+    "subscribedChannels": {
+        "Scenario": {
+            "oneTime": true,
+            "stepRelation": 0
+        },
+        "WindSpeedGen": {
+            "oneTime": false,
+            "stepRelation": 1
+        },
+        "Damage": {
+            "oneTime": false,
+            "stepRelation": 0
+        }
+    },
+    "publishedChannels": {
+        "Pressure": {
+            "initial": true,
+            "historyDependent": 0
+        }
+    }
+}
