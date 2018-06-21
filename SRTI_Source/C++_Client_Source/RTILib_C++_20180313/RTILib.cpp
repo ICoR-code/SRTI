@@ -221,7 +221,7 @@ int RTILib::connect(string hostName, string portNumber) {
 	jsonContent1.AddMember("simName", jsonSimName, document.GetAllocator());
 	jsonContent1.Accept(writerOut);
 
-	publish("RTI_InitializeSim", bufferOut.GetString())
+	publish("RTI_InitializeSim", bufferOut.GetString());
 
 	return 0;
 }
