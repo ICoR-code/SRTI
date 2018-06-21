@@ -409,7 +409,7 @@ int RTILib::reconnect() {
 	jsonContent1.AddMember("simName", jsonSimName, document.GetAllocator());
 	jsonContent1.Accept(writerOut);
 
-	publish("RTI_InitializeSim", bufferOut.GetString())
+	publish("RTI_InitializeSim", bufferOut.GetString());
 
 	vector<string>::iterator it = subscribeHistory.begin();
 	while (it != subscribeHistory.end()) {

@@ -8,7 +8,7 @@ LIB := $(addprefix $(VPATH), $(LIBSOURCES))
 LIBOBJECTS = $(LIB:.cpp=.o)
 # SOURCES := wrapper.cpp $(LIBSOURCES)
 # OBJECTS := $(SOURCES:.cpp=.o)
-OBJECTS = wrapper.o $(LIBOBJECTS)
+OBJECTS = pressure_sim.o wrapper.o $(LIBOBJECTS)
 LIBS := -lws2_32
 
 
