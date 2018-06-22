@@ -77,6 +77,8 @@ int main() {
                 if (!message.empty()) {
                     rapidjson::Document document;
                     document.Parse(message.c_str());
+                    string content = document["content"].GetString();
+                    document.Parse(content.c_str());
                     simulation.setMessage(channel, document);
                     break;
                 }
@@ -86,9 +88,7 @@ int main() {
         simulation.simulate();
 
         for (string channel: published_channels) {
-            rapidjson::Value &output = simulation.getMessage(channel);
-            // TODO: Publish the message with a Value.
-            // Caveat: rapidjson uses move semantics, so we need to deep copy the value.
+            lib.publish(channel, simulation.getMessage(channel));
         }
 
         ++gstep;
