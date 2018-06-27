@@ -326,5 +326,6 @@ public class RTIConnectThread extends Thread {
 		String formatLine = String.format("%1$32s", "[" + tag + "]" + " --- ") + line;
 		Version.printConsole(formatLine);
 		Version.printFile(formatLine);
+		Version.printDebugGUI(formatLine);
 	}
 }

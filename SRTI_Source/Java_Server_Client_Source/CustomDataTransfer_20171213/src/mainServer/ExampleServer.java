@@ -56,7 +56,7 @@ public class ExampleServer {
 	public int portNumber = -1;
 	// set whether gui for RTI Server should be on.
 	public boolean guiOn = true;
-	// set whether "debug" console gui for RTI Server should be on (NOT IMPLEMENTED AS OF 2018-06-01)
+	// set whether "debug" console gui for RTI Server should be on (IMPLEMENTED AS OF 2018-06-27)
 	public boolean debugGuiOn = false;
 	// set whether all messages from RTI Server to a simulation requires a confirmation that it was received.
 	public boolean tcpOn = false;
@@ -72,7 +72,6 @@ public class ExampleServer {
 	public boolean debugConsole = false;
 	// print debug lines to file while system is running
 	public boolean debugFile = false;
-	
 	
 	// individual threads, each dedicated to input/output to a specific connected simulation 
 	// (this class handles main public port to allow sims to connect for first time)
@@ -109,7 +108,7 @@ public class ExampleServer {
 		
 		// Parse out individual values.
 		// What if a value doesn't exist, or is in the wrong format? That's why we run a loop, so we try to read every value instead of allowing one to break the process.
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < 11; i++) {
 			try {				
 				if (i == 0)
 					portNumber = json.getJsonNumber("portNumber").intValue();
@@ -138,6 +137,7 @@ public class ExampleServer {
 		}
 		Version.debugConsole = debugConsole;
 		Version.debugFile = debugFile;
+		Version.setDebugGUI(debugGuiOn);
 		
 		printLine("Finished reading settings file.");
 		
@@ -425,7 +425,71 @@ public class ExampleServer {
 								if (name2.compareTo(newSubscribeName) == 0) {
 									threadList.get(i).update(messageHistoryList.get(j));
 								}
-								threadList.get(i).update(messageHistoryList.get(j));
+							}
+						}
+					}
+					rtiUpdateSimString = buildRTIUpdateSim();
+					for (int i = 0; i < threadList.size(); i++) {
+						threadList.get(i).update(rtiUpdateSimString);
+					}
+					messageHistoryList.add(rtiUpdateSimString);
+					messageHistoryListSize += rtiUpdateSimString.length();
+					break;
+				case "RTI_SubscribeToMessagePlusLatest":
+					for (int i = 0; i < threadList.size(); i++) {
+						if (threadList.get(i).getIndex() == threadIndex) {
+							String newSubscribeName = Json.createReader(new StringReader(content)).readObject().getString("subscribeTo", "");
+							threadList.get(i).updateSubscribeTo(newSubscribeName);
+							File currentDirectory = new File(".");
+							File[] listOfFiles = currentDirectory.listFiles(new FilenameFilter() {
+								public boolean accept(File directory, String fileName) {
+									boolean startsWith = fileName.startsWith("messageHistoryList_");
+									boolean endsWith = fileName.endsWith(".txt");
+									return startsWith && endsWith;
+								}
+							});
+							String messageHistoryLatest = "";
+							String messageHistoryLatestTimestamp = "";
+							for (int j = 0; j < listOfFiles.length; j++) {
+								try {
+									BufferedReader fileReader = new BufferedReader(new FileReader(listOfFiles[j].getName()));
+									String readLine = "";
+									readLine = fileReader.readLine();
+									while (readLine != null){										
+										JsonObject tempJsonObject = Json.createReader(new StringReader(readLine)).readObject();
+										String name2 = tempJsonObject.getString("name", "");
+										if (name2.compareTo(newSubscribeName) == 0) {
+											if (messageHistoryLatest.length() <= 1) {
+												messageHistoryLatest = readLine;
+												messageHistoryLatestTimestamp = tempJsonObject.getString("timestamp");
+											} else if (Long.parseLong(tempJsonObject.getString("timestamp")) > Long.parseLong(messageHistoryLatestTimestamp)) {
+												messageHistoryLatest = readLine;
+												messageHistoryLatestTimestamp = tempJsonObject.getString("timestamp");
+											}
+										}
+										readLine = fileReader.readLine();
+									}
+									fileReader.close();
+								} catch (Exception e) {
+									e.printStackTrace();
+									printLine("Some error when trying to read files to get old messages.");
+								}
+							}
+							for (int j = 0; j < messageHistoryList.size(); j++) {
+								JsonObject tempJsonObject = Json.createReader(new StringReader(messageHistoryList.get(j))).readObject();
+								String name2 = tempJsonObject.getString("name", "");
+								if (name2.compareTo(newSubscribeName) == 0) {
+									if (messageHistoryLatest.length() <= 1) {
+										messageHistoryLatest = messageHistoryList.get(j);
+										messageHistoryLatestTimestamp = tempJsonObject.getString("timestamp");
+									} else if (Long.parseLong(tempJsonObject.getString("timestamp")) > Long.parseLong(messageHistoryLatestTimestamp)) {
+										messageHistoryLatest = messageHistoryList.get(j);
+										messageHistoryLatestTimestamp = tempJsonObject.getString("timestamp");
+									}
+								}
+							}
+							if (messageHistoryLatest.length() > 1) {
+								threadList.get(i).update(messageHistoryLatest);
 							}
 						}
 					}
@@ -577,5 +641,6 @@ public class ExampleServer {
 		String formatLine = String.format("%1$32s", "[" + tag + "]" + " --- ") + line;
 		Version.printConsole(formatLine);
 		Version.printFile(formatLine);
+		Version.printDebugGUI(formatLine);
 	}
 }
