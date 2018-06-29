@@ -26,9 +26,9 @@ int main()
 	//testLib.connect("35.3.75.185", "4200");
 
 	RTILib testLib2 = RTILib();
-	testLib2.setDebugOutput(false);
+	testLib2.setDebugOutput(true);
 	testLib2.setSimName("RTIC++TestAgain_20180313");
-	testLib2.connect("35.3.75.185", "4200");
+	testLib2.connect("localhost", "4200");
 	testLib2.subscribeTo("StoreStatus");
 	int totalTime = 0;
 

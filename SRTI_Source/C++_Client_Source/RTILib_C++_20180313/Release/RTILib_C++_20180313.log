@@ -1,19 +1,25 @@
 ﻿  stdafx.cpp
   RTILib.cpp
-RTILib.cpp(296): warning C4018: '<': signed/unsigned mismatch
-RTILib.cpp(400): warning C4018: '<': signed/unsigned mismatch
-RTILib.cpp(421): warning C4018: '<': signed/unsigned mismatch
-RTILib.cpp(494): warning C4018: '<': signed/unsigned mismatch
-RTILib.cpp(505): warning C4018: '<': signed/unsigned mismatch
+RTILib.cpp(554): warning C4018: '<': signed/unsigned mismatch
+RTILib.cpp(622): warning C4018: '<': signed/unsigned mismatch
+RTILib.cpp(752): warning C4244: '=': conversion from '__int64' to 'long', possible loss of data
+RTILib.cpp(791): warning C4244: 'initializing': conversion from '__int64' to 'long', possible loss of data
+RTILib.cpp(851): warning C4018: '<': signed/unsigned mismatch
+RTILib.cpp(872): warning C4018: '<': signed/unsigned mismatch
+RTILib.cpp(983): warning C4018: '<': signed/unsigned mismatch
+RTILib.cpp(994): warning C4018: '<': signed/unsigned mismatch
   RTILibC20180313.cpp
 RTILibC20180313.cpp(37): warning C4244: 'initializing': conversion from 'time_t' to 'long', possible loss of data
 RTILibC20180313.cpp(38): warning C4244: 'initializing': conversion from 'time_t' to 'long', possible loss of data
 RTILibC20180313.cpp(40): warning C4244: '=': conversion from 'double' to 'long', possible loss of data
+  RTIReconnectThread.cpp
   RTISim.cpp
   RTISimConnectThread.cpp
   RTISimExample.cpp
+  RTITcpThread.cpp
+  Version.cpp
   Generating code
-  All 150 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  All 340 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
   Finished generating code
-  RTILib_C++_20180313.vcxproj -> C:\Users\hlynk\Desktop\UMich\ICoR\Workspace-CPlusPlus\RTILib_C++_20180313\Release\SRTI_v050.dll
-  RTILib_C++_20180313.vcxproj -> C:\Users\hlynk\Desktop\UMich\ICoR\Workspace-CPlusPlus\RTILib_C++_20180313\Release\SRTI_v050.pdb (Full PDB)
+  RTILib_C++_20180313.vcxproj -> C:\Users\hlynk\Desktop\UMich\ICoR\Workspace-CPlusPlus\RTILib_C++_20180313\Release\SRTI_v061.dll
+  RTILib_C++_20180313.vcxproj -> C:\Users\hlynk\Desktop\UMich\ICoR\Workspace-CPlusPlus\RTILib_C++_20180313\Release\SRTI_v061.pdb (Full PDB)

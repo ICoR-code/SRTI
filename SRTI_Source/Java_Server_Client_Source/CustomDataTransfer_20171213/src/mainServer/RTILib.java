@@ -26,8 +26,6 @@ import javax.json.JsonReader;
 import javax.json.JsonValue;
 import javax.json.JsonWriter;
 
-import mainServer.RTIConnectThread.MessageReceived;
-
 public class RTILib {
 	
 	// name of sim (used as identifier on RTI Server side)
