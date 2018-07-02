@@ -24,9 +24,9 @@ private:
     map<string, rapidjson::Value &> input;
     map<string, rapidjson::Value &> output;
 
-    int history_size;
+    map<string, int> history_size;
 
-    vector<rapidjson::Value> history;
+    map<string, vector<rapidjson::Value> > history;
 
     void updateHistory();
 

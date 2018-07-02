@@ -1,6 +1,7 @@
 #pragma once
 #include "RTISim.h"
 #include <string>
+#include "rapidjson/document.h"
 //#include <vector>
 //#include <deque>
 
@@ -25,6 +26,7 @@ public:
 	int subscribeToAllPlusHistory();
 	int publishTo(string messageName);
 	int publish(string name, string content);
+	int publish(string name, rapidjson::Value &);
 	int receivedMessaage(string message);
 	string getNextMessage();
 	string getNextMessage(int millisToWait);
@@ -51,4 +53,3 @@ public:
 	void printLine(string line);
 	~RTILib();
 };
-

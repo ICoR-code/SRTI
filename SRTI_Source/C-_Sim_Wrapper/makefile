@@ -1,4 +1,4 @@
-EXEC = simulation
+EXEC = $(sim)
 CXX = g++
 CXXFLAGS = -Wall -std=c++11
 LIBSOURCES := RTILib.cpp stdafx.cpp RTISim.cpp RTISimConnectThread.cpp
@@ -8,7 +8,7 @@ LIB := $(addprefix $(VPATH), $(LIBSOURCES))
 LIBOBJECTS = $(LIB:.cpp=.o)
 # SOURCES := wrapper.cpp $(LIBSOURCES)
 # OBJECTS := $(SOURCES:.cpp=.o)
-OBJECTS = pressure_sim.o wrapper.o $(LIBOBJECTS)
+OBJECTS = $(addprefix $(sim), _sim.o) wrapper.o $(LIBOBJECTS)
 LIBS := -lws2_32
 
 
@@ -28,7 +28,9 @@ $(EXEC): $(OBJECTS)
 # RTILib.o: RTILib.cpp
 # 	$(CXX) $(CXXFLAGS) -c $<
 
-
+generate: generate.o
+	$(CXX) $(CXXFLAGS) -o generate generate.o
+	generate $(sim)
 
 
 
@@ -36,4 +38,6 @@ $(EXEC): $(OBJECTS)
 
 clean:
 	del *.o
-	del $(EXEC).exe
+	del ..\\C++_Client_Source\\RTILib_C++_20180313\\*.o
+	del $(sim).exe
+	del generate.exe

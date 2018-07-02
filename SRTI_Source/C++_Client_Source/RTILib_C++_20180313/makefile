@@ -18,3 +18,4 @@ $(EXEC): $(OBJECTS)
 
 clean:
 	del *.o
+	del $(EXEC).exe
