@@ -71,12 +71,15 @@ struct Message {
 	string name = "";
 	string timestamp = "";
 	string source = "";
+	// We may want to change the type of content to rapidjson::Value later.
 	string content = "";
 	string originalMessage = "";
 	bool compareTo(Message i, Message j) {
 		return (i.timestamp.compare(j.timestamp));
 	}
 };
+//vector<Message> messageQueue;
+
 deque<Message> messageQueue;
 
 // settings properties, as of v054 does not use an external file, but requires calling function to st property from simulation code
@@ -641,18 +644,73 @@ int RTILib::sendWithoutAddingToTcp(string name, string content, string timestamp
 	return 0;
 }
 
-int RTILib::receivedMessage(string message) {
-	string name = "";
-	string content = "";
-	string timestamp = "";
-	string source = "";
-	string tcp = "";
+int RTILib::publish(string name, rapidjson::Value &value) {
+	int iSendResult = 0;
+	string message = "";
 
-	serverMessagesReceived = true;
+	rapidjson::StringBuffer bufferOut;
+	bufferOut.Clear();
+	rapidjson::Writer<rapidjson::StringBuffer> writerOut(bufferOut);
+	rapidjson::Document document;
+
+	rapidjson::Value jsonTotal(rapidjson::kObjectType);
+
+	rapidjson::Value jsonNameString(name.c_str(), document.GetAllocator());
+	jsonTotal.AddMember("name", jsonNameString, document.GetAllocator());
+
+	rapidjson::Value copied_value(value, document.GetAllocator());
+	jsonTotal.AddMember("content", copied_value, document.GetAllocator());
+
+	long long timestamp = std::chrono::time_point_cast<std::chrono::milliseconds>(std::chrono::system_clock::now()).time_since_epoch().count();
+	rapidjson::Value jsonTimestampString(to_string(timestamp).c_str(), document.GetAllocator());
+	jsonTotal.AddMember("timestamp",jsonTimestampString, document.GetAllocator());
+
+	rapidjson::Value jsonSimName(simName.c_str(), document.GetAllocator());
+	jsonTotal.AddMember("source", jsonSimName, document.GetAllocator());
+
+	jsonTotal.Accept(writerOut);
+	message = bufferOut.GetString();
+
+
+
+	printLine("Trying to publish message now: " + message);
+
+	int messageSize = message.length() + 1;
+	char recvbuf[1] = { '\0' };
+	for (int i = 0; i < message.length(); i++) {
+		recvbuf[0] = message[i];
+		iSendResult = send(dedicatedRtiSocket, recvbuf, 1, 0);
+		if (iSendResult <= 0) {
+			printLine("Error when trying to send message at " + to_string(i));
+			printLine("Error was = " + to_string(iSendResult));
+			return -1;
+		}
+	}
+	recvbuf[0] = '\n';
+	iSendResult = send(dedicatedRtiSocket, recvbuf, 1, 0);
+	if (iSendResult <= 0) {
+		printLine("Error when trying to send message at very end.");
+		printLine("Error was = " + to_string(iSendResult));
+		//closesocket(dedicatedRtiSocket);
+		//WSACleanup();
+		return -1;
+	}
+
+	printLine("Successfully published message.");
+
+	return 0;
+}
+
+int RTILib::receivedMessaage(string message) {
 
 	rapidjson::StringStream s(message.c_str());
 	rapidjson::Document document;
 	document.ParseStream(s);
+
+	string name = "";
+	string content = "";
+	string timestamp = "";
+	string source = "";
 
 	name = document["name"].GetString();
 	content = document["content"].GetString();
@@ -686,6 +744,7 @@ int RTILib::receivedMessage(string message) {
 	}
 
 	if (thisSim != 0) {
+		// TODO: is this callback necessary? Also, what about concurrency?
 		thisSim->receivedMessage(name, content, timestamp, source);
 	}
 	else {
