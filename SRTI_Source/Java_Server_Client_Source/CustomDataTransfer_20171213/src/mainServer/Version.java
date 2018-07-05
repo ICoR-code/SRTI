@@ -7,8 +7,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.swing.SwingUtilities;
+
 public class Version {
-	public static String version = "v0.58";
+	public static String version = "v0.61";
 	
 	public static String textFileName = null;
 	public static boolean debugConsole = false;
@@ -17,6 +19,9 @@ public class Version {
 	public static String textFileSimName = null;
 	public static boolean debugSimConsole = false;
 	public static boolean debugSimFile = false;
+	public static boolean debugGUISimName = false;
+	
+	private static ExampleDebugGUI debugGUI = null;
 	
 	//private static List<String> debugOutBuffer = new ArrayList<String>();
 	
@@ -95,6 +100,39 @@ public class Version {
 			exportFile.close();
 		} catch (IOException e) {
 			e.printStackTrace();
+		}
+	}
+
+	public static void printSimDebugGUI(String outputLine) {
+		if (debugGUISimName == false || debugGUI == null) {
+			return;
+		}
+		
+		debugGUI.UpdateText(System.currentTimeMillis() + " \t" + outputLine + "\n");
+		
+	}
+	
+	public static void printDebugGUI(String outputLine) {
+		if (debugGUISimName == false || debugGUI == null) {
+			return;
+		}
+		
+		debugGUI.UpdateText(System.currentTimeMillis() + " \t" + outputLine + "\n");
+		
+	}
+	
+	
+	public static void setDebugGUI(boolean setGUI) {
+		debugGUISimName = setGUI;
+		
+		if (debugGUISimName == true) {
+			SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					debugGUI = new ExampleDebugGUI();
+					debugGUI.setupPanel();
+				}
+			});
 		}
 	}
 }

@@ -1,11 +1,17 @@
+/*
+	RTISimConnectThread.cpp
+
+	- allows separate dedicated thread for listening to new messages.
+*/
+
 
 #include "stdafx.h"
 #include "RTISimConnectThread.h"
 #include "RTILib.h"
+#include "Version.h"
 #include <iostream>
 #include <thread>
 #include <time.h>
-//#include <string>
 
 #ifdef _WIN32
 #include <winsock2.h>
@@ -49,12 +55,11 @@ void run() {
 	do {
 		iResult = recv(dedicatedSocket, recvbuf, 1, 0);
 		//issue: 'recv' will return 0 or -1 often, even when still capable of receiving messages, unreliable to check if still connected
-		//cout << "CHAR received = " << string(recvbuf) << endl;
 		finalMessage = finalMessage + string(recvbuf);
 		if (recvbuf[0] == '\n' || recvbuf[0] == '\r' || recvbuf[0] == '\0') {
 			if (finalMessage.length() > 2) {
 				//cout << "reading message... " << finalMessage << endl;
-				rtiSim.receivedMessaage(finalMessage);
+				rtiSim.receivedMessage(finalMessage);
 				finalMessage = "";
 			}
 		}
@@ -80,20 +85,10 @@ void RTISimConnectThread::closeConnection() {
 	WSACleanup();
 }
 
-void RTISimConnectThread::setDebugOutput(bool setDebugOut) {
-	debugOut = setDebugOut;
-}
-
 void RTISimConnectThread::printLine(string line) {
-	if (debugOut == false)
-		return;
-
-	auto time = std::chrono::system_clock::now();
-	auto since_epoch = time.time_since_epoch();
-	auto millis = std::chrono::duration_cast<std::chrono::milliseconds>(since_epoch);
-	long long now = millis.count();
-
-	cout << now << " [" << tag << "] --- " << line << endl;
+	string formatLine = "[" + tag + "] \t" + " --- " + line;
+	Version::printSimConsole(formatLine);
+	Version::printSimFile(formatLine);
 }
 
 

@@ -123,5 +123,6 @@ public class RTISimConnectThread extends Thread{
 		String formatLine = String.format("%1$32s", "[" + tag + "]" + " --- ") + line;
 		Version.printSimConsole(formatLine);
 		Version.printSimFile(formatLine);
+		Version.printSimDebugGUI(formatLine);
 	}
 }

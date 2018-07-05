@@ -26,8 +26,6 @@ import javax.json.JsonReader;
 import javax.json.JsonValue;
 import javax.json.JsonWriter;
 
-import mainServer.RTIConnectThread.MessageReceived;
-
 public class RTILib {
 	
 	// name of sim (used as identifier on RTI Server side)
@@ -313,6 +311,8 @@ public class RTILib {
 				.add("subscribeTo", messageName)
 				.build();
 		publish("RTI_SubscribeTo",json.toString());
+		
+		subscribeHistory.add(messageName);
 		return 0;
 	}
 	
@@ -321,6 +321,18 @@ public class RTILib {
 				.add("subscribeTo", messageName)
 				.build();
 		publish("RTI_SubscribeToMessagePlusHistory",json.toString());
+		
+		subscribeHistory.add(messageName);
+		return 0;
+	}
+	
+	public int subscribeToMessagePlusLatest(String messageName) {
+		JsonObject jsonSubscribe = Json.createObjectBuilder()
+				.add("subscribeTo", messageName)
+				.build();
+		publish("RTI_SubscribeToMessagePlusLatest", jsonSubscribe.toString());
+		
+		subscribeHistory.add(messageName);
 		return 0;
 	}
 	
@@ -1087,11 +1099,16 @@ public class RTILib {
 		Version.debugSimFile = setFileDebugOut;
 	}
 	
+	public void setDebugGUI(boolean setGUIOut) {
+		Version.setDebugGUI(setGUIOut);
+	}
+	
 	private String tag = "RTILib";
 	public void printLine(String line) {
 		String formatLine = String.format("%1$32s", "[" + tag + "]" + " --- ") + line;
 		Version.printSimConsole(formatLine);
 		Version.printSimFile(formatLine);
+		Version.printSimDebugGUI(formatLine);
 	}
 
 }
