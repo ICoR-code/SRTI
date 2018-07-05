@@ -1,7 +1,7 @@
 EXEC = $(sim)
 CXX = g++
 CXXFLAGS = -Wall -std=c++11
-LIBSOURCES := RTILib.cpp stdafx.cpp RTISim.cpp RTISimConnectThread.cpp
+LIBSOURCES := RTILib.cpp stdafx.cpp RTISim.cpp RTISimConnectThread.cpp RTIReconnectThread.cpp Version.cpp RTITcpThread.cpp
 # LIBDIR := ../C++_Client_Source/RTILIB_C++_20180313/
 VPATH = ../C++_Client_Source/RTILib_C++_20180313/
 LIB := $(addprefix $(VPATH), $(LIBSOURCES))

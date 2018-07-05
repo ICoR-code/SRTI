@@ -63,6 +63,9 @@ void generateSimFile(string name)
 {
     CodeGenerator code(name, "_sim.cpp");
 
+    stringstream class_name;
+    class_name << char(toupper(name[0])) << name.substr(1) << "Sim";
+
     ifstream ifs_global("Global.json");
     string content_global(
         (istreambuf_iterator<char> (ifs_global)),
@@ -73,7 +76,7 @@ void generateSimFile(string name)
 
     ifs_global.close();
 
-    ifstream ifs_simulation("Pressure.json");
+    ifstream ifs_simulation(class_name.str().substr(0, name.size()) + ".json");
     string content_simulation(
         (istreambuf_iterator<char> (ifs_simulation)),
         (istreambuf_iterator<char> ()) );
@@ -83,8 +86,7 @@ void generateSimFile(string name)
 
     ifs_simulation.close();
 
-    stringstream class_name;
-    class_name << char(toupper(name[0])) << name.substr(1) << "Sim";
+
 
     code.printLine("#include \"" + name + "_sim.hpp\"");
     code.printLine();
