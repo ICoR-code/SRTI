@@ -1,29 +1,8 @@
 {
-    "Scenario": {
-        "gstep": "int",
-        "nbuildings": "int",
-        "location": ["double"],
-        "buildingInfo": ["double"]
+    "Sum": {
+        "value": "int"
     },
-    "WindSpeedGen": {
-        "gstep": "int",
-        "gstep_time": "double",
-        "nbuildings": "int",
-        "gspeed": ["double"],
-        "gvz": ["double"]
-    },
-    "Pressure": {
-        "gstep": "int",
-        "gstep_time": "double",
-        "nbuildings": "int",
-        "gpressure": ["double"],
-        "gvz": ["double"]
-    },
-    "Damage": {
-        "gstep": "int",
-        "gstep_time": "double",
-        "nbuildings": "int",
-        "gdamage": ["double"],
-        "gsng": ["double"]
+    "Difference": {
+        "value": "int"
     }
 }

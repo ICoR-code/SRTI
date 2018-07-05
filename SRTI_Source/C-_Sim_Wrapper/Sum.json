@@ -1,0 +1,17 @@
+{
+    "hostName": "localhost",
+    "portNumber": "4200",
+    "simulatorName": "SumSim",
+    "subscribedChannels": {
+        "Difference": {
+            "oneTime": false,
+            "stepRelation": 0
+        }
+    },
+    "publishedChannels": {
+        "Sum": {
+            "initial": true,
+            "historyDependent": 0
+        }
+    }
+}
