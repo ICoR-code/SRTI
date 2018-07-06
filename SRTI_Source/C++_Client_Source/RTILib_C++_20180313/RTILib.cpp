@@ -573,6 +573,10 @@ int RTILib::publish(string name, string content) {
 
 	printLine("Successfully published message.");
 
+	if (name.compare("RTI_ReceivedMessage") != 0){
+		handleTcpResponse(name, content, to_string(timestamp).c_str(), simName, message);
+	}
+
 	return 0;
 }
 
@@ -585,13 +589,21 @@ int RTILib::publish(string name, rapidjson::Value &value) {
 	rapidjson::Writer<rapidjson::StringBuffer> writerOut(bufferOut);
 	rapidjson::Document document;
 
+	rapidjson::StringBuffer value_buffer;
+	value_buffer.Clear();
+	rapidjson::Writer<rapidjson::StringBuffer> value_writer(value_buffer);
+	value.Accept(value_writer);
+
 	rapidjson::Value jsonTotal(rapidjson::kObjectType);
 
 	rapidjson::Value jsonNameString(name.c_str(), document.GetAllocator());
 	jsonTotal.AddMember("name", jsonNameString, document.GetAllocator());
 
-	rapidjson::Value copied_value(value, document.GetAllocator());
-	jsonTotal.AddMember("content", copied_value, document.GetAllocator());
+	// rapidjson::Value copied_value(value, document.GetAllocator());
+	// jsonTotal.AddMember("content", copied_value, document.GetAllocator());
+
+	rapidjson::Value jsonContentString(value_buffer.GetString(), document.GetAllocator());
+	jsonTotal.AddMember("content", jsonContentString, document.GetAllocator());
 
 	long long timestamp = std::chrono::time_point_cast<std::chrono::milliseconds>(std::chrono::system_clock::now()).time_since_epoch().count();
 	rapidjson::Value jsonTimestampString(to_string(timestamp).c_str(), document.GetAllocator());
@@ -627,12 +639,6 @@ int RTILib::publish(string name, rapidjson::Value &value) {
 	}
 
 	printLine("Successfully published message.");
-
-	if (name.compare("RTI_ReceivedMessage") != 0){
-		handleTcpResponse(name, content, to_string(timestamp).c_str(), simName, message);
-	}
-
-	return 0;
 }
 
 int RTILib::sendWithoutAddingToTcp(string name, string content, string timestamp, string source) {
@@ -699,7 +705,7 @@ int RTILib::sendWithoutAddingToTcp(string name, string content, string timestamp
 	return 0;
 }
 
-int RTILib::receivedMessaage(string message) {
+int RTILib::receivedMessage(string message) {
 
 	rapidjson::StringStream s(message.c_str());
 	rapidjson::Document document;
@@ -709,6 +715,7 @@ int RTILib::receivedMessaage(string message) {
 	string content = "";
 	string timestamp = "";
 	string source = "";
+	string tcp = "";
 
 	name = document["name"].GetString();
 	content = document["content"].GetString();
