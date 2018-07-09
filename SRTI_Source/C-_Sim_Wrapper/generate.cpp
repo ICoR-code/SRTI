@@ -287,8 +287,16 @@ void generateWrapper(string sim_name)
     code.indent();
     code.printLine("for (auto &channel: simulation_settings[\"subscribedChannels\"].GetObject()) {");
     code.indent();
-    code.printLine("lib.subscribeTo(channel.name.GetString());");
+    code.printLine("if (channel.value[\"oneTime\"].GetBool()) {");
+    code.indent();
+    code.printLine("one_time_channels.push_back(channel.name.GetString());");
+    code.deindent();
+    code.printLine("} else {");
+    code.indent();
     code.printLine("subscribed_channels.push_back(channel.name.GetString());");
+    code.deindent();
+    code.printLine("}");
+    code.printLine("lib.subscribeTo(channel.name.GetString());");
     code.deindent();
     code.printLine("}");
     code.deindent();
@@ -299,15 +307,7 @@ void generateWrapper(string sim_name)
     code.indent();
     code.printLine("for (auto &channel: simulation_settings[\"publishedChannels\"].GetObject()) {");
     code.indent();
-    code.printLine("if (channel.value[\"oneTime\"].GetBool()) {");
-    code.indent();
-    code.printLine("one_time_channels.push_back(channel.name.GetString());");
-    code.deindent();
-    code.printLine("} else {");
-    code.indent();
     code.printLine("published_channels.push_back(channel.name.GetString());");
-    code.deindent();
-    code.printLine("}");
     code.deindent();
     code.printLine("}");
     code.deindent();
@@ -398,6 +398,11 @@ void generateWrapper(string sim_name)
     code.printLine("}");
 }
 
+bool exists(string file_name)
+{
+    ifstream file(file_name);
+    return file.good();
+}
 
 int main(int argc, char *argv[])
 {
@@ -406,8 +411,11 @@ int main(int argc, char *argv[])
     }
 
     string name = argv[1];
-    generateSimHeader(name);
-    generateSimFile(name);
+
+    if (!exists(name + "_sim.hpp"))
+        generateSimHeader(name);
+    if (!exists(name + "_sim.cpp"))
+        generateSimFile(name);
     generateWrapper(name);
 
     return 0;
