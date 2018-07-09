@@ -7,7 +7,7 @@
 #include "rapidjson/document.h"
 
 #include "../C++_Client_Source/RTILib_C++_20180313/RTILib.h"
-#include "difference_sim.hpp"
+#include "sum_sim.hpp"
 
 using namespace std;
 
@@ -22,7 +22,7 @@ int main() {
     global_settings.Parse(content_global.c_str());
     ifs_global.close();
 
-    ifstream ifs_simulation("Difference.json");
+    ifstream ifs_simulation("Sum.json");
     string content_simulation(
         (istreambuf_iterator<char> (ifs_simulation)),
         (istreambuf_iterator<char> ()) );
@@ -43,7 +43,7 @@ int main() {
     vector<string> one_time_channels;
     vector<string> published_channels;
 
-    DifferenceSim simulation;
+    SumSim simulation;
 
     RTILib lib = RTILib();
     lib.setDebugOutput(true);
@@ -52,18 +52,18 @@ int main() {
 
     if (simulation_settings.HasMember("subscribedChannels")) {
         for (auto &channel: simulation_settings["subscribedChannels"].GetObject()) {
+            if (channel.value["oneTime"].GetBool()) {
+                one_time_channels.push_back(channel.name.GetString());
+            } else {
+                subscribed_channels.push_back(channel.name.GetString());
+            }
             lib.subscribeTo(channel.name.GetString());
-            subscribed_channels.push_back(channel.name.GetString());
         }
     }
 
     if (simulation_settings.HasMember("publishedChannels")) {
         for (auto &channel: simulation_settings["publishedChannels"].GetObject()) {
-            if (channel.value["oneTime"].GetBool()) {
-                one_time_channels.push_back(channel.name.GetString());
-            } else {
-                published_channels.push_back(channel.name.GetString());
-            }
+            published_channels.push_back(channel.name.GetString());
         }
     }
 

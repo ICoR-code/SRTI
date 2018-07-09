@@ -16,6 +16,7 @@ SumSim::~SumSim() {
 }
 
 rapidjson::Value & SumSim::getMessage(string message_name) {
+    assert(!output.at("Sum").IsNull());
     assert(!output.at(message_name).IsNull());
     return output.at(message_name);
 }
@@ -63,6 +64,7 @@ void SumSim::generateInitialMessage() {
 
     s_value.AddMember("value", sum, doc.GetAllocator());
     output.at("Sum") = s_value;
+    assert(!output.at("Sum").IsNull());
 
     updateHistory();
 }

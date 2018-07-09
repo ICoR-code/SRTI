@@ -12,7 +12,7 @@ OBJECTS = $(addprefix $(sim), _sim.o) wrapper.o $(LIBOBJECTS)
 LIBS := -lws2_32
 
 
-all: $(EXEC)
+all: generate $(EXEC)
 
 .SECONDEXPANSION:
 
