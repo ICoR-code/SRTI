@@ -26,8 +26,6 @@ import javax.json.JsonReader;
 import javax.json.JsonValue;
 import javax.json.JsonWriter;
 
-import mainServer.RTIConnectThread.MessageReceived;
-
 public class RTILib {
 	
 	// name of sim (used as identifier on RTI Server side)
@@ -313,6 +311,8 @@ public class RTILib {
 				.add("subscribeTo", messageName)
 				.build();
 		publish("RTI_SubscribeTo",json.toString());
+		
+		subscribeHistory.add(messageName);
 		return 0;
 	}
 	
@@ -321,6 +321,18 @@ public class RTILib {
 				.add("subscribeTo", messageName)
 				.build();
 		publish("RTI_SubscribeToMessagePlusHistory",json.toString());
+		
+		subscribeHistory.add(messageName);
+		return 0;
+	}
+	
+	public int subscribeToMessagePlusLatest(String messageName) {
+		JsonObject jsonSubscribe = Json.createObjectBuilder()
+				.add("subscribeTo", messageName)
+				.build();
+		publish("RTI_SubscribeToMessagePlusLatest", jsonSubscribe.toString());
+		
+		subscribeHistory.add(messageName);
 		return 0;
 	}
 	
@@ -756,6 +768,39 @@ public class RTILib {
 		return returnString;
 	}
 	
+	public String waitForNextMessage(String messageName) {
+		String returnString = "";
+		printLine("will immediately return message if there is specific message in the buffer, else will wait until the queue gets a value.");
+		while (returnString =="") {
+			if (messageQueue.isEmpty() == false) {
+				for (int i = 0; i < messageQueue.size(); i++) {
+					if (messageQueue.get(i).name.compareTo(messageName)==0) {
+						if (messageQueue.get(i) != null && messageQueue.get(i).originalMessage != null) {
+							returnString = messageQueue.get(i).originalMessage;
+							messageQueue.remove(i);
+							break;
+						} else {
+							printLine("getNextMessage was either null, or originalMessage was null. This is a strange occurance...");
+							if (messageQueue.get(i) == null) {
+								printLine("somehow, messageQueue(i) is NULL, even though messageQueue.isEmpty() is false? i = " + i);
+							} else {
+								printLine("message at index i (" + i + ") : " + messageQueue.get(i).toString());
+							}
+						}
+					}
+				}
+			}
+			try {
+				TimeUnit.MILLISECONDS.sleep(10);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+
+		return returnString;
+	
+	}
+	
 	public String getJsonObject(String name, String content) {
 		String returnString = "";
 		
@@ -1087,11 +1132,16 @@ public class RTILib {
 		Version.debugSimFile = setFileDebugOut;
 	}
 	
+	public void setDebugGUI(boolean setGUIOut) {
+		Version.setDebugGUI(setGUIOut);
+	}
+	
 	private String tag = "RTILib";
 	public void printLine(String line) {
 		String formatLine = String.format("%1$32s", "[" + tag + "]" + " --- ") + line;
 		Version.printSimConsole(formatLine);
 		Version.printSimFile(formatLine);
+		Version.printSimDebugGUI(formatLine);
 	}
 
 }

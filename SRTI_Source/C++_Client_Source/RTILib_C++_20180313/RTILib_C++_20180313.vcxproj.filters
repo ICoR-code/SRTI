@@ -147,6 +147,15 @@
     <ClInclude Include="..\..\..\..\..\rapidjson-master\include\rapidjson\error\error.h">
       <Filter>Header Files\rapidjson</Filter>
     </ClInclude>
+    <ClInclude Include="RTITcpThread.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Version.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RTIReconnectThread.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -165,6 +174,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="RTISim.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RTITcpThread.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Version.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RTIReconnectThread.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

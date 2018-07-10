@@ -17,11 +17,8 @@ class RTISimConnectThread
 
 private:
 	string tag = "RTISimConnectThread";
-	bool debugOut = false;
 
 public:
-	//SOCKET dedicatedSocket;
-
 	RTISimConnectThread();
 	RTISimConnectThread(RTILib rtiSim, SOCKET dedicatedSocket);
 	void start();

@@ -16,16 +16,28 @@ public:
 
 	RTILib();
 	RTILib(RTISim * rtiSim);
+	void setTcpOn(bool tcp);
 	void setSimName(string newName);
+	void setReconnectTimeLimit(long timeLimit);
+	bool getServerMessagesReceived();
+	void setServerMessagesReceived(bool reset);
 	int connect();
 	int connect(string hostName, string portNumber);
+	int reconnect();
+	int reconnect(string lastMessageName, string lastMessageContent);
 	int disconnect();
 	int subscribeTo(string messageName);
+	int subscribeToMessagePlusHistory(string messageName);
+	int subscribeToMessagePlusLatest(string messageName);
 	int subscribeToAll();
 	int subscribeToAllPlusHistory();
 	int publishTo(string messageName);
 	int publish(string name, string content);
-	int receivedMessaage(string message);
+	int sendWithoutAddingToTcp(string name, string content, string timestamp, string source);
+	int receivedMessage(string message);
+	int setTcpResponse(bool setResponse, string message);
+	int handleTcpResponse(string name, string content, string timestamp, string source, string message);
+	int checkTcpMessages();
 	string getNextMessage();
 	string getNextMessage(int millisToWait);
 	string getNextMessage(string messageName);
@@ -33,6 +45,7 @@ public:
 	string waitForNextMessage();
 	string getJsonObject(string name, string content);
 	string getJsonString(string name, string content);
+	string getJsonStringFast(string name, string content);
 	string* getJsonArray(string content);
 	string getStringNoQuotes(string content);
 	string getMessageName(string originalMessage);
@@ -48,6 +61,7 @@ public:
 	string setJsonObject(string originalJson, string nameNewObject, string contentNewObject);
 	void printVersion();
 	void setDebugOutput(bool setDebugOut);
+	void setDebugFileOutput(bool setDebugOut);
 	void printLine(string line);
 	~RTILib();
 };
