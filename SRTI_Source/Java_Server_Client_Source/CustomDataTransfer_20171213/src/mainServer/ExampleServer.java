@@ -525,6 +525,7 @@ public class ExampleServer {
 					.add("content", content)
 					.add("timestamp", timestamp)
 					.add("source", source)
+					.add("tcp", "" + tcp)
 					.build().toString();
 			messageHistoryList.add(newJsonMessage);
 			messageHistoryListSize += rtiUpdateSimString.length();
@@ -622,7 +623,7 @@ public class ExampleServer {
 		jsonMessageBuilder.add("name", "RTI_UpdateSim");
 		jsonMessageBuilder.add("source", "RTI");
 		jsonMessageBuilder.add("timestamp", "" + System.currentTimeMillis());
-		jsonMessageBuilder.add("tcp", tcpOn);
+		jsonMessageBuilder.add("tcp", "" + tcpOn);
 		jsonMessageObject = jsonMessageBuilder.build();
 		
 		returnString = jsonMessageObject.toString();

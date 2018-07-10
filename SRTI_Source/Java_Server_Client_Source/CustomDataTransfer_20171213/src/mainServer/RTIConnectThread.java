@@ -252,6 +252,7 @@ public class RTIConnectThread extends Thread {
 	
 	public void updateSimName(String newSimName) {
 		simName = newSimName;
+		tag = originalTag + "_" + newSimName;
 	}
 	
 	public void updatePublishTo(String newPublishName) {
@@ -321,6 +322,7 @@ public class RTIConnectThread extends Thread {
 		return numOfSameName;
 	}
 	
+	String originalTag = "RTIConnectThread";
 	String tag = "RTIConnectThread";
 	public void printLine(String line) {
 		String formatLine = String.format("%1$32s", "[" + tag + "]" + " --- ") + line;
