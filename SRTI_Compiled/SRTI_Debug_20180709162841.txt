@@ -1,0 +1,103 @@
+1531168121624 	            [ExampleServer] --- Finished reading settings file.
+1531168121626 	            [ExampleServer] --- Found this many files starting with 'messagehistorylist_***.txt' : 0
+1531168121640 	            [ExampleServer] --- Try to create socket on this port: 4200
+1531168121644 	            [ExampleServer] --- This is an example GUI to show a RTI ('Really Thankful Interface'), which is similar to an RTI ('Real Time Interface') as described in an HLA system.
+1531168121644 	            [ExampleServer] --- To connect a simulation to this RTI, please use the following credentials:
+	 hostname = 172.25.233.17
+		 (or you can use 'localhost' if running simulation on same computer as RTI)
+	 portnumber = 4200
+1531168121645 	            [ExampleServer] --- Opening socket connection.
+1531168121647 	            [ExampleServer] --- Waiting for simulations to connect to me...
+1531168121841 	         [ExampleServerGUI] --- Starting GUI (not loaded yet)...
+1531168122111 	         [ExampleServerGUI] --- Loaded GUI panel, should be visible now.
+1531168122134 	            [ExampleServer] --- 	 Connected!
+1531168122138 	            [ExampleServer] --- 	 Added thread to the list! Now sim size is: 1
+1531168122139 	            [ExampleServer] --- Waiting for simulations to connect to me...
+1531168122141 	         [RTIConnectThread] --- 	 Not done connecting yet! Waiting for app to connect to dedicated port = 172.25.233.17 57597
+1531168122142 	         [RTIConnectThread] --- 	 Really connected! Let's get to work!
+1531168122144 	         [RTIConnectThread] --- 1: waiting for input... 
+1531168122151 	         [RTIConnectThread] --- I RECEIVED INPUT! It was : {"name":"RTI_InitializeSim","content":"{\"simName\":\"ExampleServerGUI\"}","timestamp":"1531168122150","source":"ExampleServerGUI","tcp":"false"}
+1531168122152 	            [ExampleServer] --- received message from index 1: {"name":"RTI_InitializeSim","content":"{\"simName\":\"ExampleServerGUI\"}","timestamp":"1531168122150","source":"ExampleServerGUI","tcp":"false"}
+1531168122153 	            [ExampleServer] --- received message, use info to intialize sim name...
+1531168122160 	         [RTIConnectThread] --- 			UPDATE: {"content":"[{\"name\":\"ExampleServerGUI\",\"publishTo\":[],\"subscribeTo\":[]}]","name":"RTI_UpdateSim","source":"RTI","timestamp":"1531168122160","tcp":false}
+1531168122165 	         [RTIConnectThread] --- Sent message RTI_UpdateSim to ExampleServerGUI with content [{"name":"ExampleServerGUI","publishTo":[],"subscribeTo":[]}]
+1531168122166 	         [ExampleServerGUI] ---  Received message of name RTI_UpdateSim, I'll use it!
+1531168122167 	            [ExampleServer] --- There should be 0 subscribed to message RTI_InitializeSim
+1531168122168 	         [ExampleServerGUI] --- 	 updating number of connected apps = 1
+1531168122169 	         [RTIConnectThread] --- I RECEIVED INPUT! It was : {"name":"RTI_SubscribeToAllPlusHistory","content":"","timestamp":"1531168122152","source":"ExampleServerGUI","tcp":"true"}
+1531168122170 	            [ExampleServer] --- received message from index 1: {"name":"RTI_SubscribeToAllPlusHistory","content":"","timestamp":"1531168122152","source":"ExampleServerGUI","tcp":"true"}
+1531168122174 	         [RTIConnectThread] --- Sent message RTI_ReceivedMessage to ExampleServerGUI with content {"name":"RTI_SubscribeToAllPlusHistory","content":"","timestamp":"1531168122152","source":"ExampleServerGUI","tcp":"true"}
+1531168122176 	         [ExampleServerGUI] --- PUBLISHTO : []
+1531168122176 	         [RTIConnectThread] --- 			UPDATE: {"content":"[{\"name\":\"ExampleServerGUI\",\"publishTo\":[],\"subscribeTo\":[]}]","name":"RTI_UpdateSim","source":"RTI","timestamp":"1531168122160","tcp":false}
+1531168122179 	         [ExampleServerGUI] --- SUBSCRIBETO : []
+1531168122179 	         [RTIConnectThread] --- Sent message RTI_UpdateSim to ExampleServerGUI with content [{"name":"ExampleServerGUI","publishTo":[],"subscribeTo":[]}]
+1531168122181 	         [ExampleServerGUI] --- Now currently this many connected apps: 1
+1531168122181 	         [RTIConnectThread] --- 			UPDATE: {"name":"RTI_InitializeSim","content":"{\"simName\":\"ExampleServerGUI\"}","timestamp":"1531168122150","source":"ExampleServerGUI"}
+1531168122184 	         [RTIConnectThread] --- Sent message RTI_InitializeSim to ExampleServerGUI with content {"simName":"ExampleServerGUI"}
+1531168122187 	         [RTIConnectThread] --- 			UPDATE: {"content":"[{\"name\":\"ExampleServerGUI\",\"publishTo\":[],\"subscribeTo\":[\"<<ALL>>\"]}]","name":"RTI_UpdateSim","source":"RTI","timestamp":"1531168122187","tcp":false}
+1531168122191 	         [RTIConnectThread] --- Sent message RTI_UpdateSim to ExampleServerGUI with content [{"name":"ExampleServerGUI","publishTo":[],"subscribeTo":["<<ALL>>"]}]
+1531168122192 	         [RTIConnectThread] --- 			UPDATE: {"name":"RTI_SubscribeToAllPlusHistory","content":"","timestamp":"1531168122152","source":"ExampleServerGUI"}
+1531168122195 	         [RTIConnectThread] --- Sent message RTI_SubscribeToAllPlusHistory to ExampleServerGUI with content 
+1531168122196 	            [ExampleServer] --- There should be 1 subscribed to message RTI_SubscribeToAllPlusHistory
+1531168122263 	         [ExampleServerGUI] ---  Received message of name RTI_UpdateSim, I'll use it!
+1531168122265 	         [ExampleServerGUI] --- 	 updating number of connected apps = 1
+1531168122268 	         [ExampleServerGUI] --- PUBLISHTO : []
+1531168122272 	         [ExampleServerGUI] --- SUBSCRIBETO : []
+1531168122274 	         [ExampleServerGUI] --- Now currently this many connected apps: 1
+1531168122280 	         [ExampleServerGUI] ---  Received message of name RTI_InitializeSim but I don't know what to do with it...
+1531168122284 	         [ExampleServerGUI] ---  Received message of name RTI_UpdateSim, I'll use it!
+1531168122286 	         [ExampleServerGUI] --- 	 updating number of connected apps = 1
+1531168122291 	         [ExampleServerGUI] --- PUBLISHTO : []
+1531168122293 	         [ExampleServerGUI] --- SUBSCRIBETO : ["<<ALL>>"]
+1531168122295 	         [ExampleServerGUI] --- Now currently this many connected apps: 1
+1531168122303 	         [ExampleServerGUI] ---  Received message of name RTI_SubscribeToAllPlusHistory but I don't know what to do with it...
+1531168125732 	            [ExampleServer] --- 	 Connected!
+1531168125733 	            [ExampleServer] --- 	 Added thread to the list! Now sim size is: 2
+1531168125734 	         [RTIConnectThread] --- 	 Not done connecting yet! Waiting for app to connect to dedicated port = 172.25.233.17 57600
+1531168125735 	            [ExampleServer] --- Waiting for simulations to connect to me...
+1531168125736 	         [RTIConnectThread] --- 	 Really connected! Let's get to work!
+1531168125737 	         [RTIConnectThread] --- 2: waiting for input... 
+1531168125773 	         [RTIConnectThread] --- I RECEIVED INPUT! It was : {"name":"RTI_InitializeSim","content":"{\"simName\":\"SumSim\"}","timestamp":"1531168125747","source":"SumSim","tcp":"false"}
+1531168125775 	            [ExampleServer] --- received message from index 2: {"name":"RTI_InitializeSim","content":"{\"simName\":\"SumSim\"}","timestamp":"1531168125747","source":"SumSim","tcp":"false"}
+1531168125776 	            [ExampleServer] --- received message, use info to intialize sim name...
+1531168125780 	         [RTIConnectThread] --- 			UPDATE: {"content":"[{\"name\":\"ExampleServerGUI\",\"publishTo\":[],\"subscribeTo\":[\"<<ALL>>\"]},{\"name\":\"SumSim\",\"publishTo\":[],\"subscribeTo\":[]}]","name":"RTI_UpdateSim","source":"RTI","timestamp":"1531168125780","tcp":false}
+1531168125783 	         [RTIConnectThread] --- Sent message RTI_UpdateSim to ExampleServerGUI with content [{"name":"ExampleServerGUI","publishTo":[],"subscribeTo":["<<ALL>>"]},{"name":"SumSim","publishTo":[],"subscribeTo":[]}]
+1531168125785 	         [ExampleServerGUI] ---  Received message of name RTI_UpdateSim, I'll use it!
+1531168125785 	         [RTIConnectThread] --- 			UPDATE: {"content":"[{\"name\":\"ExampleServerGUI\",\"publishTo\":[],\"subscribeTo\":[\"<<ALL>>\"]},{\"name\":\"SumSim\",\"publishTo\":[],\"subscribeTo\":[]}]","name":"RTI_UpdateSim","source":"RTI","timestamp":"1531168125780","tcp":false}
+1531168125787 	         [ExampleServerGUI] --- 	 updating number of connected apps = 2
+1531168125788 	         [RTIConnectThread] --- Sent message RTI_UpdateSim to SumSim with content [{"name":"ExampleServerGUI","publishTo":[],"subscribeTo":["<<ALL>>"]},{"name":"SumSim","publishTo":[],"subscribeTo":[]}]
+1531168125790 	         [RTIConnectThread] --- 			UPDATE: {"name":"RTI_InitializeSim","content":"{\"simName\":\"SumSim\"}","timestamp":"1531168125747","source":"SumSim"}
+1531168125793 	         [RTIConnectThread] --- Sent message RTI_InitializeSim to ExampleServerGUI with content {"simName":"SumSim"}
+1531168125794 	         [ExampleServerGUI] --- PUBLISHTO : []
+1531168125794 	            [ExampleServer] --- There should be 1 subscribed to message RTI_InitializeSim
+1531168125796 	         [RTIConnectThread] --- I RECEIVED INPUT! It was : {"name":"RTI_SubscribeTo","content":"{\"subscribeTo\":\"Difference\"}","timestamp":"1531168125774","source":"SumSim","tcp":"false"}
+1531168125797 	            [ExampleServer] --- received message from index 2: {"name":"RTI_SubscribeTo","content":"{\"subscribeTo\":\"Difference\"}","timestamp":"1531168125774","source":"SumSim","tcp":"false"}
+1531168125798 	         [ExampleServerGUI] --- SUBSCRIBETO : ["<<ALL>>"]
+1531168125802 	         [RTIConnectThread] --- 			UPDATE: {"content":"[{\"name\":\"ExampleServerGUI\",\"publishTo\":[],\"subscribeTo\":[\"<<ALL>>\"]},{\"name\":\"SumSim\",\"publishTo\":[],\"subscribeTo\":[\"Difference\"]}]","name":"RTI_UpdateSim","source":"RTI","timestamp":"1531168125801","tcp":false}
+1531168125803 	         [ExampleServerGUI] --- PUBLISHTO : []
+1531168125805 	         [RTIConnectThread] --- Sent message RTI_UpdateSim to ExampleServerGUI with content [{"name":"ExampleServerGUI","publishTo":[],"subscribeTo":["<<ALL>>"]},{"name":"SumSim","publishTo":[],"subscribeTo":["Difference"]}]
+1531168125806 	         [ExampleServerGUI] --- SUBSCRIBETO : []
+1531168125806 	         [RTIConnectThread] --- 			UPDATE: {"content":"[{\"name\":\"ExampleServerGUI\",\"publishTo\":[],\"subscribeTo\":[\"<<ALL>>\"]},{\"name\":\"SumSim\",\"publishTo\":[],\"subscribeTo\":[\"Difference\"]}]","name":"RTI_UpdateSim","source":"RTI","timestamp":"1531168125801","tcp":false}
+1531168125808 	         [ExampleServerGUI] --- Now currently this many connected apps: 2
+1531168125810 	         [RTIConnectThread] --- Sent message RTI_UpdateSim to SumSim with content [{"name":"ExampleServerGUI","publishTo":[],"subscribeTo":["<<ALL>>"]},{"name":"SumSim","publishTo":[],"subscribeTo":["Difference"]}]
+1531168125812 	         [RTIConnectThread] --- 			UPDATE: {"name":"RTI_SubscribeTo","content":"{\"subscribeTo\":\"Difference\"}","timestamp":"1531168125774","source":"SumSim"}
+1531168125815 	         [RTIConnectThread] --- Sent message RTI_SubscribeTo to ExampleServerGUI with content {"subscribeTo":"Difference"}
+1531168125816 	            [ExampleServer] --- There should be 1 subscribed to message RTI_SubscribeTo
+1531168125818 	         [ExampleServerGUI] ---  Received message of name RTI_InitializeSim but I don't know what to do with it...
+1531168125824 	         [ExampleServerGUI] ---  Received message of name RTI_UpdateSim, I'll use it!
+1531168125825 	         [ExampleServerGUI] --- 	 updating number of connected apps = 2
+1531168125829 	         [ExampleServerGUI] --- PUBLISHTO : []
+1531168125840 	         [ExampleServerGUI] --- SUBSCRIBETO : ["<<ALL>>"]
+1531168125846 	         [ExampleServerGUI] --- PUBLISHTO : []
+1531168125849 	         [ExampleServerGUI] --- SUBSCRIBETO : ["Difference"]
+1531168125852 	         [ExampleServerGUI] --- Now currently this many connected apps: 2
+1531168125863 	         [ExampleServerGUI] ---  Received message of name RTI_SubscribeTo but I don't know what to do with it...
+1531168126990 	         [RTIConnectThread] --- Exception during thread run >> java.net.SocketException: Connection reset
+1531168126991 	         [RTIConnectThread] --- done running thread.
+1531168126993 	         [RTIConnectThread] --- 			UPDATE: {"content":"[{\"name\":\"ExampleServerGUI\",\"publishTo\":[],\"subscribeTo\":[\"<<ALL>>\"]}]","name":"RTI_UpdateSim","source":"RTI","timestamp":"1531168126993","tcp":false}
+1531168126995 	         [RTIConnectThread] --- Sent message RTI_UpdateSim to ExampleServerGUI with content [{"name":"ExampleServerGUI","publishTo":[],"subscribeTo":["<<ALL>>"]}]
+1531168126996 	         [ExampleServerGUI] ---  Received message of name RTI_UpdateSim, I'll use it!
+1531168126997 	         [ExampleServerGUI] --- 	 updating number of connected apps = 1
+1531168127000 	         [ExampleServerGUI] --- PUBLISHTO : []
+1531168127003 	         [ExampleServerGUI] --- SUBSCRIBETO : ["<<ALL>>"]
+1531168127004 	         [ExampleServerGUI] --- Now currently this many connected apps: 1
