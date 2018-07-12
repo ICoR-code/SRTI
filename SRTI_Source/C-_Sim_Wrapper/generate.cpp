@@ -199,7 +199,6 @@ void generateSimFile(string name)
     code.printLine();
 
     code.printLine("void " + class_name.str() + "::" +
-<<<<<<< HEAD
         "setMessage(string message_name, string &message) {"
     );
     code.indent();
@@ -321,10 +320,6 @@ void generateWrapper(string sim_name)
     code.printLine();
     code.printLine("RTILib lib = RTILib();");
     code.printLine("lib.setDebugOutput(true);");
-<<<<<<< HEAD
-    // code.printLine("lib.setDebugFileOutput(true);");
-=======
->>>>>>> 1f10e294ebf165ee7b1fa777a93e84c04cd4eab3
     code.printLine("lib.setSimName(simulation_name);");
     code.printLine("lib.connect(host_name, port_number);");
     code.printLine();
@@ -375,12 +370,7 @@ void generateWrapper(string sim_name)
     code.printLine("rapidjson::Document document;");
     code.printLine("document.Parse(message.c_str());");
     code.printLine("string content = document[\"content\"].GetString();");
-<<<<<<< HEAD
     code.printLine("simulation.setMessage(channel, content);");
-=======
-    code.printLine("document.Parse(content.c_str());");
-    code.printLine("simulation.setMessage(channel, document);");
->>>>>>> 1f10e294ebf165ee7b1fa777a93e84c04cd4eab3
     code.printLine("break;");
     code.deindent();
     code.printLine("}");
