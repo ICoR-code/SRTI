@@ -2,10 +2,10 @@
 
 
 DifferenceSim::DifferenceSim() {
-    input.insert(pair <string, rapidjson::Value &> ("Sum", rapidjson::Value().Move()));
+    input.insert(pair <string, rapidjson::Value> ("Sum", rapidjson::Value()));
 
-    output.insert(pair <string, rapidjson::Value &> ("Difference", rapidjson::Value().Move()));
-    history_size.insert(pair <string, int> ("Difference", 0));
+    output.insert(pair <string, rapidjson::Value> ("Difference", rapidjson::Value(rapidjson::kObjectType)));
+    output.at("Difference").AddMember("value", rapidjson::Value(0), doc.GetAllocator());    history_size.insert(pair <string, int> ("Difference", 0));
     history.insert(pair <string, vector<rapidjson::Value> >
         ("Difference", vector<rapidjson::Value>(0))
     );
@@ -24,9 +24,13 @@ void DifferenceSim::setMessage(string message_name, rapidjson::Value& value) {
     input.at(message_name) = value;
 }
 
+void DifferenceSim::setMessage(string message_name, string &message) {
+    doc.Parse(message.c_str());
+    input.at(message_name) = doc.GetObject();
+}
+
 void DifferenceSim::updateHistory() {
-    rapidjson::Document d;
-    rapidjson::Document::AllocatorType &a = d.GetAllocator();
+    rapidjson::Document::AllocatorType &a = doc.GetAllocator();
     for (auto &value: history) {
         auto &messages = value.second;
         if (messages.size() > 0) {
@@ -44,25 +48,12 @@ void DifferenceSim::simulate() {
     rapidjson::Value &s_value = input.at("Sum");
     int sum = s_value["value"].GetInt();
 
-    int difference = sum - 1;
-
-    rapidjson::Document doc;
-    rapidjson::Value d_value(rapidjson::kObjectType);
-
-    d_value.AddMember("value", difference, doc.GetAllocator());
-    output.at("Difference") = d_value;
+    output.at("Difference")["value"] = sum - 1;
 
     updateHistory();
 }
 
 void DifferenceSim::generateInitialMessage() {
-    int difference = 10;
-
-    rapidjson::Document doc;
-    rapidjson::Value d_value(rapidjson::kObjectType);
-
-    d_value.AddMember("value", difference, doc.GetAllocator());
-    output.at("Difference") = d_value;
-
+    output.at("Difference")["value"] = 10;
     updateHistory();
 }

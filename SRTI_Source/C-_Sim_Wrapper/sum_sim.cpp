@@ -1,10 +1,15 @@
 #include "sum_sim.hpp"
+#include <iostream>
+
+using namespace std;
 
 
 SumSim::SumSim() {
-    input.insert(pair <string, rapidjson::Value &> ("Difference", rapidjson::Value().Move()));
+    input.insert(pair <string, rapidjson::Value> ("Difference", rapidjson::Value()));
 
-    output.insert(pair <string, rapidjson::Value &> ("Sum", rapidjson::Value().Move()));
+    output.insert(pair <string, rapidjson::Value> ("Sum", rapidjson::Value(rapidjson::kObjectType)));
+    output.at("Sum").AddMember("value", rapidjson::Value(0), doc.GetAllocator());
+
     history_size.insert(pair <string, int> ("Sum", 0));
     history.insert(pair <string, vector<rapidjson::Value> >
         ("Sum", vector<rapidjson::Value>(0))
@@ -16,7 +21,6 @@ SumSim::~SumSim() {
 }
 
 rapidjson::Value & SumSim::getMessage(string message_name) {
-    assert(!output.at("Sum").IsNull());
     assert(!output.at(message_name).IsNull());
     return output.at(message_name);
 }
@@ -25,9 +29,13 @@ void SumSim::setMessage(string message_name, rapidjson::Value& value) {
     input.at(message_name) = value;
 }
 
+void SumSim::setMessage(string message_name, string &message) {
+    doc.Parse(message.c_str());
+    input.at(message_name) = doc.GetObject();
+}
+
 void SumSim::updateHistory() {
-    rapidjson::Document d;
-    rapidjson::Document::AllocatorType &a = d.GetAllocator();
+    rapidjson::Document::AllocatorType &a = doc.GetAllocator();
     for (auto &value: history) {
         auto &messages = value.second;
         if (messages.size() > 0) {
@@ -47,24 +55,13 @@ void SumSim::simulate() {
 
     int sum = difference + 1;
 
-    rapidjson::Document doc;
-    rapidjson::Value s_value(rapidjson::kObjectType);
-
-    s_value.AddMember("value", sum, doc.GetAllocator());
-    output.at("Sum") = s_value;
+    output.at("Sum")["value"] = sum;
 
     updateHistory();
 }
 
 void SumSim::generateInitialMessage() {
     int sum = 0;
-
-    rapidjson::Document doc;
-    rapidjson::Value s_value(rapidjson::kObjectType);
-
-    s_value.AddMember("value", sum, doc.GetAllocator());
-    output.at("Sum") = s_value;
-    assert(!output.at("Sum").IsNull());
-
+    output.at("Sum")["value"] = sum;
     updateHistory();
 }

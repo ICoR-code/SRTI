@@ -42,13 +42,15 @@ void generateSimHeader(string name)
 
     code.printLine("rapidjson::Value & getMessage(string);");
     code.printLine("void setMessage(string, rapidjson::Value &);");
+    code.printLine("void setMessage(string, string &);");
     code.printLine();
 
     code.printLine("void generateInitialMessage();");
     code.printLine();
     code.printRawLine("private:");
-    code.printLine("map<string, rapidjson::Value &> input;");
-    code.printLine("map<string, rapidjson::Value &> output;");
+    code.printLine("rapidjson::Document doc;");
+    code.printLine("map<string, rapidjson::Value> input;");
+    code.printLine("map<string, rapidjson::Value> output;");
     code.printLine();
     code.printLine("map<string, int> history_size;");
     code.printLine();
@@ -57,6 +59,24 @@ void generateSimHeader(string name)
     code.printLine("void updateHistory();");
     code.printLine();
     code.printRawLine("};");
+}
+
+string getDefaultValueByType(string type)
+{
+    if (type == "int") {
+        return "0";
+    }
+    if (type == "double") {
+        return "0.0";
+    }
+    if (type == "bool") {
+        return "false";
+    }
+    if (type[0] == '[') {
+        return "kArrayType";
+    }
+
+    return "";
 }
 
 void generateSimFile(string name)
@@ -100,9 +120,9 @@ void generateSimFile(string name)
             //     channel.name.GetString() + "\", rapidjson::Value().Move()));");
 
             code.printIndent();
-            code.printRaw("input.insert(pair <string, rapidjson::Value &> (\"");
+            code.printRaw("input.insert(pair <string, rapidjson::Value> (\"");
             code.printRaw(channel.name.GetString());
-            code.printRaw("\", rapidjson::Value().Move()));\n");
+            code.printRaw("\", rapidjson::Value()));\n");
         }
     }
     code.printLine();
@@ -115,9 +135,20 @@ void generateSimFile(string name)
             //     channel.name.GetString() + "\", ));");
 
             code.printIndent();
-            code.printRaw("output.insert(pair <string, rapidjson::Value &> (\"");
+            code.printRaw("output.insert(pair <string, rapidjson::Value> (\"");
             code.printRaw(channel.name.GetString());
-            code.printRaw("\", rapidjson::Value().Move()));\n");
+            code.printRaw("\", rapidjson::Value(rapidjson::kObjectType)));\n");
+
+            for (auto &member: global_settings[channel.name.GetString()].GetObject()) {
+                code.printIndent();
+                code.printRaw("output.at(\"");
+                code.printRaw(channel.name.GetString());
+                code.printRaw("\").AddMember(\"");
+                code.printRaw(member.name.GetString());
+                code.printRaw("\", rapidjson::Value(");
+                code.printRaw(getDefaultValueByType(member.value.GetString()));
+                code.printRaw("), doc.GetAllocator());");
+            }
 
             code.printIndent();
             code.printRaw("history_size.insert(pair <string, int> (\"");
@@ -168,11 +199,20 @@ void generateSimFile(string name)
     code.printLine();
 
     code.printLine("void " + class_name.str() + "::" +
+        "setMessage(string message_name, string &message) {"
+    );
+    code.indent();
+    code.printLine("doc.Parse(message.c_str());");
+    code.printLine("input.at(message_name) = doc.GetObject();");
+    code.deindent();
+    code.printLine("}");
+    code.printLine();
+
+    code.printLine("void " + class_name.str() + "::" +
         "updateHistory() {"
     );
     code.indent();
-    code.printLine("rapidjson::Document d;");
-    code.printLine("rapidjson::Document::AllocatorType &a = d.GetAllocator();");
+    code.printLine("rapidjson::Document::AllocatorType &a = doc.GetAllocator();");
     code.printLine("for (auto &value: history) {");
     code.indent();
     code.printLine("auto &messages = value.second;");
@@ -279,6 +319,7 @@ void generateWrapper(string sim_name)
     code.printLine();
     code.printLine("RTILib lib = RTILib();");
     code.printLine("lib.setDebugOutput(true);");
+    // code.printLine("lib.setDebugFileOutput(true);");
     code.printLine("lib.setSimName(simulation_name);");
     code.printLine("lib.connect(host_name, port_number);");
     code.printLine();
@@ -329,8 +370,7 @@ void generateWrapper(string sim_name)
     code.printLine("rapidjson::Document document;");
     code.printLine("document.Parse(message.c_str());");
     code.printLine("string content = document[\"content\"].GetString();");
-    code.printLine("document.Parse(content.c_str());");
-    code.printLine("simulation.setMessage(channel, document);");
+    code.printLine("simulation.setMessage(channel, content);");
     code.printLine("break;");
     code.deindent();
     code.printLine("}");

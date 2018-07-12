@@ -17,12 +17,14 @@ public:
 
     rapidjson::Value & getMessage(string);
     void setMessage(string, rapidjson::Value &);
+    void setMessage(string, string &);
 
     void generateInitialMessage();
 
 private:
-    map<string, rapidjson::Value &> input;
-    map<string, rapidjson::Value &> output;
+    rapidjson::Document doc;
+    map<string, rapidjson::Value> input;
+    map<string, rapidjson::Value> output;
 
     map<string, int> history_size;
 

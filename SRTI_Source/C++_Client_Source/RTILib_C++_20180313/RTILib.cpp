@@ -78,8 +78,6 @@ struct Message {
 		return (i.timestamp.compare(j.timestamp));
 	}
 };
-//vector<Message> messageQueue;
-
 deque<Message> messageQueue;
 
 // settings properties, as of v054 does not use an external file, but requires calling function to st property from simulation code
@@ -568,68 +566,8 @@ int RTILib::publish(string name, string content) {
 	if (iSendResult <= 0) {
 		printLine("Error when trying to send message at very end.");
 		printLine("Error was = " + to_string(iSendResult));
-		return -1;
-	}
-
-	printLine("Successfully published message.");
-}
-
-int RTILib::sendWithoutAddingToTcp(string name, string content, string timestamp, string source) {
-
-	printLine("\t\t\t PUBLISH THIS: " + name);
-
-	int iSendResult = 0;
-	string message = "";
-
-	rapidjson::StringBuffer bufferOut;
-	bufferOut.Clear();
-	rapidjson::Writer<rapidjson::StringBuffer> writerOut(bufferOut);
-	rapidjson::Document document;
-
-	rapidjson::Value jsonTotal(rapidjson::kObjectType);
-	rapidjson::Value jsonNameString(name.c_str(), document.GetAllocator());
-	jsonTotal.AddMember("name", jsonNameString, document.GetAllocator());
-
-	rapidjson::Value jsonContentString(content.c_str(), document.GetAllocator());
-	jsonTotal.AddMember("content", jsonContentString, document.GetAllocator());
-
-	rapidjson::Value jsonTimestampString(timestamp.c_str(), document.GetAllocator());
-	jsonTotal.AddMember("timestamp", jsonTimestampString, document.GetAllocator());
-
-	rapidjson::Value jsonSimName(source.c_str(), document.GetAllocator());
-	jsonTotal.AddMember("source", jsonSimName, document.GetAllocator());
-
-	string tcpOnString = "";
-	if (tcpOn == true) {
-		tcpOnString = "true";
-	}
-	else {
-		tcpOnString = "false";
-	}
-	rapidjson::Value jsonTcpOn(tcpOnString.c_str(), document.GetAllocator());
-	jsonTotal.AddMember("tcp", jsonTcpOn, document.GetAllocator());
-
-	jsonTotal.Accept(writerOut);
-	message = bufferOut.GetString();
-
-	printLine("Trying to publish message now: " + message);
-
-	int messageSize = message.length() + 1;
-	char recvbuf[1] = { '\0' };
-	for (int i = 0; i < message.length(); i++) {
-		recvbuf[0] = message[i];
-		iSendResult = send(dedicatedRtiSocket, recvbuf, 1, 0);
-		if (iSendResult <= 0) {
-			printLine("Error when trying to send message at " + to_string(i));
-			printLine("Error was = " + to_string(iSendResult));
-			return -1;
-		}
-	}
-	recvbuf[0] = '\n';
-	iSendResult = send(dedicatedRtiSocket, recvbuf, 1, 0);
-	if (iSendResult <= 0) {
-		printLine("Error when trying to send message at very end.");
-		printLine("Error was = " + to_string(iSendResult));
+		//closesocket(dedicatedRtiSocket);
+		//WSACleanup();
 		return -1;
 	}
 
@@ -697,8 +635,68 @@ int RTILib::publish(string name, rapidjson::Value &value) {
 	if (iSendResult <= 0) {
 		printLine("Error when trying to send message at very end.");
 		printLine("Error was = " + to_string(iSendResult));
-		//closesocket(dedicatedRtiSocket);
-		//WSACleanup();
+		return -1;
+	}
+
+	printLine("Successfully published message.");
+}
+
+int RTILib::sendWithoutAddingToTcp(string name, string content, string timestamp, string source) {
+
+	printLine("\t\t\t PUBLISH THIS: " + name);
+
+	int iSendResult = 0;
+	string message = "";
+
+	rapidjson::StringBuffer bufferOut;
+	bufferOut.Clear();
+	rapidjson::Writer<rapidjson::StringBuffer> writerOut(bufferOut);
+	rapidjson::Document document;
+
+	rapidjson::Value jsonTotal(rapidjson::kObjectType);
+	rapidjson::Value jsonNameString(name.c_str(), document.GetAllocator());
+	jsonTotal.AddMember("name", jsonNameString, document.GetAllocator());
+
+	rapidjson::Value jsonContentString(content.c_str(), document.GetAllocator());
+	jsonTotal.AddMember("content", jsonContentString, document.GetAllocator());
+
+	rapidjson::Value jsonTimestampString(timestamp.c_str(), document.GetAllocator());
+	jsonTotal.AddMember("timestamp", jsonTimestampString, document.GetAllocator());
+
+	rapidjson::Value jsonSimName(source.c_str(), document.GetAllocator());
+	jsonTotal.AddMember("source", jsonSimName, document.GetAllocator());
+
+	string tcpOnString = "";
+	if (tcpOn == true) {
+		tcpOnString = "true";
+	}
+	else {
+		tcpOnString = "false";
+	}
+	rapidjson::Value jsonTcpOn(tcpOnString.c_str(), document.GetAllocator());
+	jsonTotal.AddMember("tcp", jsonTcpOn, document.GetAllocator());
+
+	jsonTotal.Accept(writerOut);
+	message = bufferOut.GetString();
+
+	printLine("Trying to publish message now: " + message);
+
+	int messageSize = message.length() + 1;
+	char recvbuf[1] = { '\0' };
+	for (int i = 0; i < message.length(); i++) {
+		recvbuf[0] = message[i];
+		iSendResult = send(dedicatedRtiSocket, recvbuf, 1, 0);
+		if (iSendResult <= 0) {
+			printLine("Error when trying to send message at " + to_string(i));
+			printLine("Error was = " + to_string(iSendResult));
+			return -1;
+		}
+	}
+	recvbuf[0] = '\n';
+	iSendResult = send(dedicatedRtiSocket, recvbuf, 1, 0);
+	if (iSendResult <= 0) {
+		printLine("Error when trying to send message at very end.");
+		printLine("Error was = " + to_string(iSendResult));
 		return -1;
 	}
 
@@ -762,7 +760,7 @@ int RTILib::receivedMessage(string message) {
 		newMessage.source = source;
 		newMessage.originalMessage = message;
 		messageQueue.push_back(newMessage);
-		printLine("Received new message, messageQueue now has this many: " + messageQueue.size());
+		printLine("Received new message, messageQueue now has this many: " + to_string(messageQueue.size()));
 	}
 
 	return 0;

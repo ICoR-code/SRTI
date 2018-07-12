@@ -40,8 +40,6 @@ public:
 	int setTcpResponse(bool setResponse, string message);
 	int handleTcpResponse(string name, string content, string timestamp, string source, string message);
 	int checkTcpMessages();
-	int publish(string name, rapidjson::Value &);
-	int receivedMessaage(string message);
 	string getNextMessage();
 	string getNextMessage(int millisToWait);
 	string getNextMessage(string messageName);
