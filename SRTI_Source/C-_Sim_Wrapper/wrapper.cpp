@@ -7,7 +7,11 @@
 #include "rapidjson/document.h"
 
 #include "../C++_Client_Source/RTILib_C++_20180313/RTILib.h"
+<<<<<<< HEAD
 #include "difference_sim.hpp"
+=======
+#include "sum_sim.hpp"
+>>>>>>> 1f10e294ebf165ee7b1fa777a93e84c04cd4eab3
 
 using namespace std;
 
@@ -22,7 +26,11 @@ int main() {
     global_settings.Parse(content_global.c_str());
     ifs_global.close();
 
+<<<<<<< HEAD
     ifstream ifs_simulation("Difference.json");
+=======
+    ifstream ifs_simulation("Sum.json");
+>>>>>>> 1f10e294ebf165ee7b1fa777a93e84c04cd4eab3
     string content_simulation(
         (istreambuf_iterator<char> (ifs_simulation)),
         (istreambuf_iterator<char> ()) );
@@ -43,7 +51,11 @@ int main() {
     vector<string> one_time_channels;
     vector<string> published_channels;
 
+<<<<<<< HEAD
     DifferenceSim simulation;
+=======
+    SumSim simulation;
+>>>>>>> 1f10e294ebf165ee7b1fa777a93e84c04cd4eab3
 
     RTILib lib = RTILib();
     lib.setDebugOutput(true);
@@ -78,7 +90,12 @@ int main() {
                 rapidjson::Document document;
                 document.Parse(message.c_str());
                 string content = document["content"].GetString();
+<<<<<<< HEAD
                 simulation.setMessage(channel, content);
+=======
+                document.Parse(content.c_str());
+                simulation.setMessage(channel, document);
+>>>>>>> 1f10e294ebf165ee7b1fa777a93e84c04cd4eab3
                 break;
             }
         }

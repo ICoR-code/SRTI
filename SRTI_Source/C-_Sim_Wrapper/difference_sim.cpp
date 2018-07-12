@@ -5,7 +5,8 @@ DifferenceSim::DifferenceSim() {
     input.insert(pair <string, rapidjson::Value> ("Sum", rapidjson::Value()));
 
     output.insert(pair <string, rapidjson::Value> ("Difference", rapidjson::Value(rapidjson::kObjectType)));
-    output.at("Difference").AddMember("value", rapidjson::Value(0), doc.GetAllocator());    history_size.insert(pair <string, int> ("Difference", 0));
+    output.at("Difference").AddMember("value", rapidjson::Value(0), doc.GetAllocator());
+    history_size.insert(pair <string, int> ("Difference", 0));
     history.insert(pair <string, vector<rapidjson::Value> >
         ("Difference", vector<rapidjson::Value>(0))
     );
