@@ -1,0 +1,17 @@
+{
+    "hostName": "localhost",
+    "portNumber": "4200",
+    "simulatorName": "main.difference_sim",
+    "subscribedChannels": {
+        "Sum": {
+            "oneTime": false,
+            "stepRelation": 0
+        }
+    },
+    "publishedChannels": {
+        "Difference": {
+            "initial": true,
+            "historyDependent": 0
+        }
+    }
+}
