@@ -33,7 +33,7 @@ Socket is necessary to connect to the RTI, it's logic in C++ may need to be rewr
 #include <sys/socket.h>
 #endif
 
-/* 
+/*
 	C++ does not have standard JSON parsing library, trying to use "RapidJSON" open-source library
 	- http://rapidjson.org/index.html
 */
@@ -67,10 +67,11 @@ RTITcpThread tcpThread;
 RTIReconnectThread reconnectThread;
 
 // message queue to store messages until sim retrieves them (used for simulations not implementing "RTISim.java")
-struct Message {	
+struct Message {
 	string name = "";
 	string timestamp = "";
 	string source = "";
+	// We may want to change the type of content to rapidjson::Value later.
 	string content = "";
 	string originalMessage = "";
 	bool compareTo(Message i, Message j) {
@@ -162,7 +163,7 @@ int RTILib::connect(string hostName, string portNumber) {
 		WSACleanup();
 		return -1;
 	}
-	
+
 	iResult = ::connect(rtiSocket, ptr->ai_addr, (int)ptr->ai_addrlen);
 	if (iResult == SOCKET_ERROR) {
 		closesocket(rtiSocket);
@@ -512,7 +513,7 @@ int RTILib::publishTo(string messageName) {
 int RTILib::publish(string name, string content) {
 	int iSendResult = 0;
 	string message = "";
-	
+
 	rapidjson::StringBuffer bufferOut;
 	bufferOut.Clear();
 	rapidjson::Writer<rapidjson::StringBuffer> writerOut(bufferOut);
@@ -521,7 +522,7 @@ int RTILib::publish(string name, string content) {
 	rapidjson::Value jsonTotal(rapidjson::kObjectType);
 	rapidjson::Value jsonNameString(name.c_str(), document.GetAllocator());
 	jsonTotal.AddMember("name", jsonNameString, document.GetAllocator());
-	
+
 	rapidjson::Value jsonContentString(content.c_str(), document.GetAllocator());
 	jsonTotal.AddMember("content", jsonContentString, document.GetAllocator());
 
@@ -544,7 +545,76 @@ int RTILib::publish(string name, string content) {
 
 	jsonTotal.Accept(writerOut);
 	message = bufferOut.GetString();
-	
+
+
+
+	printLine("Trying to publish message now: " + message);
+
+	int messageSize = message.length() + 1;
+	char recvbuf[1] = { '\0' };
+	for (int i = 0; i < message.length(); i++) {
+		recvbuf[0] = message[i];
+		iSendResult = send(dedicatedRtiSocket, recvbuf, 1, 0);
+		if (iSendResult <= 0) {
+			printLine("Error when trying to send message at " + to_string(i));
+			printLine("Error was = " + to_string(iSendResult));
+			return -1;
+		}
+	}
+	recvbuf[0] = '\n';
+	iSendResult = send(dedicatedRtiSocket, recvbuf, 1, 0);
+	if (iSendResult <= 0) {
+		printLine("Error when trying to send message at very end.");
+		printLine("Error was = " + to_string(iSendResult));
+		//closesocket(dedicatedRtiSocket);
+		//WSACleanup();
+		return -1;
+	}
+
+	printLine("Successfully published message.");
+
+	if (name.compare("RTI_ReceivedMessage") != 0){
+		handleTcpResponse(name, content, to_string(timestamp).c_str(), simName, message);
+	}
+
+	return 0;
+}
+
+int RTILib::publish(string name, rapidjson::Value &value) {
+	int iSendResult = 0;
+	string message = "";
+
+	rapidjson::StringBuffer bufferOut;
+	bufferOut.Clear();
+	rapidjson::Writer<rapidjson::StringBuffer> writerOut(bufferOut);
+	rapidjson::Document document;
+
+	rapidjson::StringBuffer value_buffer;
+	value_buffer.Clear();
+	rapidjson::Writer<rapidjson::StringBuffer> value_writer(value_buffer);
+	value.Accept(value_writer);
+
+	rapidjson::Value jsonTotal(rapidjson::kObjectType);
+
+	rapidjson::Value jsonNameString(name.c_str(), document.GetAllocator());
+	jsonTotal.AddMember("name", jsonNameString, document.GetAllocator());
+
+	// rapidjson::Value copied_value(value, document.GetAllocator());
+	// jsonTotal.AddMember("content", copied_value, document.GetAllocator());
+
+	rapidjson::Value jsonContentString(value_buffer.GetString(), document.GetAllocator());
+	jsonTotal.AddMember("content", jsonContentString, document.GetAllocator());
+
+	long long timestamp = std::chrono::time_point_cast<std::chrono::milliseconds>(std::chrono::system_clock::now()).time_since_epoch().count();
+	rapidjson::Value jsonTimestampString(to_string(timestamp).c_str(), document.GetAllocator());
+	jsonTotal.AddMember("timestamp",jsonTimestampString, document.GetAllocator());
+
+	rapidjson::Value jsonSimName(simName.c_str(), document.GetAllocator());
+	jsonTotal.AddMember("source", jsonSimName, document.GetAllocator());
+
+	jsonTotal.Accept(writerOut);
+	message = bufferOut.GetString();
+
 
 
 	printLine("Trying to publish message now: " + message);
@@ -569,12 +639,6 @@ int RTILib::publish(string name, string content) {
 	}
 
 	printLine("Successfully published message.");
-
-	if (name.compare("RTI_ReceivedMessage") != 0){
-		handleTcpResponse(name, content, to_string(timestamp).c_str(), simName, message);
-	}
-
-	return 0;
 }
 
 int RTILib::sendWithoutAddingToTcp(string name, string content, string timestamp, string source) {
@@ -583,7 +647,7 @@ int RTILib::sendWithoutAddingToTcp(string name, string content, string timestamp
 
 	int iSendResult = 0;
 	string message = "";
-	
+
 	rapidjson::StringBuffer bufferOut;
 	bufferOut.Clear();
 	rapidjson::Writer<rapidjson::StringBuffer> writerOut(bufferOut);
@@ -642,17 +706,16 @@ int RTILib::sendWithoutAddingToTcp(string name, string content, string timestamp
 }
 
 int RTILib::receivedMessage(string message) {
+
+	rapidjson::StringStream s(message.c_str());
+	rapidjson::Document document;
+	document.ParseStream(s);
+
 	string name = "";
 	string content = "";
 	string timestamp = "";
 	string source = "";
 	string tcp = "";
-
-	serverMessagesReceived = true;
-
-	rapidjson::StringStream s(message.c_str());
-	rapidjson::Document document;
-	document.ParseStream(s);
 
 	name = document["name"].GetString();
 	content = document["content"].GetString();
@@ -686,6 +749,7 @@ int RTILib::receivedMessage(string message) {
 	}
 
 	if (thisSim != 0) {
+		// TODO: is this callback necessary? Also, what about concurrency?
 		thisSim->receivedMessage(name, content, timestamp, source);
 	}
 	else {
@@ -696,7 +760,7 @@ int RTILib::receivedMessage(string message) {
 		newMessage.source = source;
 		newMessage.originalMessage = message;
 		messageQueue.push_back(newMessage);
-		printLine("Received new message, messageQueue now has this many: " + messageQueue.size());
+		printLine("Received new message, messageQueue now has this many: " + to_string(messageQueue.size()));
 	}
 
 	return 0;
@@ -1133,11 +1197,3 @@ RTILib::~RTILib()
 {
 
 }
-
-
-
-
-
-
-
-

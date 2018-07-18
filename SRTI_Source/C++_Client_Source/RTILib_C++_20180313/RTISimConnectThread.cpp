@@ -63,7 +63,7 @@ void run() {
 				finalMessage = "";
 			}
 		}
-		
+
 	} while (isConnected == true);
 	cout << "thread active ended, finalMessage  = " << finalMessage << endl;
 }
@@ -73,7 +73,7 @@ void RTISimConnectThread::start() {
 	std::thread threadObj((run));
 
 	cout << "started thread fine." << endl;
-	
+
 	threadObj.detach();
 
 	cout << " thread was detatched, running on its own now." << endl;

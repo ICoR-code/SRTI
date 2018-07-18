@@ -4,9 +4,8 @@
 class RTIReconnectThread
 {
 public:
-	RTIReconnectThread::RTIReconnectThread();
+	RTIReconnectThread();
 	RTIReconnectThread(RTILib rtiLib, long timeLimit);
 	void start();
 	~RTIReconnectThread();
 };
-
