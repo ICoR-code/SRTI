@@ -405,8 +405,7 @@ void generateWrapper(string sim_name)
     code.printLine("rapidjson::Document document;");
     code.printLine("document.Parse(message.c_str());");
     code.printLine("string content = document[\"content\"].GetString();");
-    code.printLine("document.Parse(content.c_str());");
-    code.printLine("simulation.setMessage(channel, document);");
+    code.printLine("simulation.setMessage(channel, content);");
     code.printLine("break;");
     code.deindent();
     code.printLine("}");

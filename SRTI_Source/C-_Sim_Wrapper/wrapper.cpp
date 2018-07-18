@@ -100,8 +100,7 @@ int main() {
                     rapidjson::Document document;
                     document.Parse(message.c_str());
                     string content = document["content"].GetString();
-                    document.Parse(content.c_str());
-                    simulation.setMessage(channel, document);
+                    simulation.setMessage(channel, content);
                     break;
                 }
             }
