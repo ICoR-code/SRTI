@@ -1,0 +1,21 @@
+{
+    "hostName": "localhost",
+    "portNumber": "4200",
+    "simulatorName": "CSim",
+    "subscribedChannels": {
+        "TimeStamp": {
+            "oneTime": false,
+            "stepRelation": 0
+        },
+        "B": {
+            "oneTime": false,
+            "stepRelation": 0
+        }
+    },
+    "publishedChannels": {
+        "C": {
+            "initial": false,
+            "historyDependent": 0
+        }
+    }
+}
