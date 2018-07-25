@@ -7,7 +7,7 @@
 #include "rapidjson/document.h"
 
 #include "../C++_Client_Source/RTILib_C++_20180313/RTILib.h"
-#include "sum_sim.hpp"
+#include "difference_sim.hpp"
 
 using namespace std;
 
@@ -22,7 +22,7 @@ int main() {
     global_settings.Parse(content_global.c_str());
     ifs_global.close();
 
-    ifstream ifs_simulation("Sum.json");
+    ifstream ifs_simulation("Difference.json");
     string content_simulation(
         (istreambuf_iterator<char> (ifs_simulation)),
         (istreambuf_iterator<char> ()) );
@@ -43,12 +43,12 @@ int main() {
     vector<string> one_time_channels;
     vector<string> published_channels;
 
-    SumSim simulation;
+    DifferenceSim simulation;
 
     RTILib lib = RTILib();
     lib.setDebugOutput(true);
     lib.setSimName(simulation_name);
-    lib.connectToServer(host_name, port_number);
+    lib.connect(host_name, port_number);
 
     if (simulation_settings.HasMember("subscribedChannels")) {
         for (auto &channel: simulation_settings["subscribedChannels"].GetObject()) {

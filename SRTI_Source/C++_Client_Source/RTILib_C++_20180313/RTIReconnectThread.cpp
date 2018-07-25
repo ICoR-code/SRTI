@@ -23,7 +23,7 @@ void runReconnectThread() {
 		std::this_thread::sleep_for(std::chrono::milliseconds(timeLimit));
 
 		if (rtiSimReconnect.getServerMessagesReceived() == false) {
-			rtiSimReconnect.reconnect();
+			rtiSimReconnect.reconnectToServer();
 		}
 
 		rtiSimReconnect.setServerMessagesReceived(false);

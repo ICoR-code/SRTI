@@ -28,7 +28,7 @@ int main()
 	RTILib testLib2 = RTILib();
 	testLib2.setDebugOutput(true);
 	testLib2.setSimName("RTIC++TestAgain_20180313");
-	testLib2.connect("localhost", "4200");
+	testLib2.connectToServer("localhost", "4200");
 	testLib2.subscribeTo("StoreStatus");
 	int totalTime = 0;
 
@@ -36,9 +36,10 @@ int main()
 	long passedTime = 0;
 	long timeToSendMessage = time(0);
 	long start = time(0);
-	do {
+	do 
+	{
 		passedTime = difftime(time(0), start);
-		if (passedTime > 20) {
+		if (passedTime > 0.00001) {
 			iResult = -5;
 		}
 
@@ -51,7 +52,8 @@ int main()
 		//}
 
 		string receivedMessage = testLib2.getNextMessage("StoreStatus");
-		if (receivedMessage.length() > 2) {
+		if (receivedMessage.length() > 2) 
+		{
 			cout << "MESSAGE = " << receivedMessage << endl;
 			string receivedContent = testLib2.getMessageContent(receivedMessage);
 			cout << "MESSAGE CONTENT = " << receivedContent << endl;

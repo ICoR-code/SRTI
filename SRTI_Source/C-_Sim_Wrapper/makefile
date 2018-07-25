@@ -9,7 +9,7 @@ LIBOBJECTS = $(LIB:.cpp=.o)
 # SOURCES := wrapper.cpp $(LIBSOURCES)
 # OBJECTS := $(SOURCES:.cpp=.o)
 OBJECTS = $(addprefix $(sim), _sim.o) wrapper.o $(LIBOBJECTS)
-LIBS := -lws2_32
+LIBS := -lpthread
 
 
 all: generate $(EXEC)
@@ -17,7 +17,7 @@ all: generate $(EXEC)
 .SECONDEXPANSION:
 
 $(LIBOBJECTS) : $$(patsubst %.o, %.cpp, $$@)
-	$(CXX) -c -o $@ $(CFLAGS) $<
+	$(CXX) $(CXXFLAGS) -c -o $@ $(CFLAGS) $<
 
 $(EXEC): $(OBJECTS)
 	$(CXX) $(CXXFLAGS) -o $(EXEC) $(OBJECTS) $(LIBS)
@@ -30,14 +30,14 @@ $(EXEC): $(OBJECTS)
 
 generate: generate.o
 	$(CXX) $(CXXFLAGS) -o generate generate.o
-	generate $(sim)
+	./generate $(sim)
 
 
 
 .PHONY: all clean
 
 clean:
-	del *.o
-	del ..\\C++_Client_Source\\RTILib_C++_20180313\\*.o
-	del $(sim).exe
-	del generate.exe
+	rm ./*.o
+	# rm ../C++_Client_Source/RTILib_C++_20180313/*.o
+	rm $(sim)
+	rm ./generate

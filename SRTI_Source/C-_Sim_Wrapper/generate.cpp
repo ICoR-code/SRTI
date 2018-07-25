@@ -321,7 +321,7 @@ void generateWrapper(string sim_name)
     code.printLine("RTILib lib = RTILib();");
     code.printLine("lib.setDebugOutput(true);");
     code.printLine("lib.setSimName(simulation_name);");
-    code.printLine("lib.connect(host_name, port_number);");
+    code.printLine("lib.connectToServer(host_name, port_number);");
     code.printLine();
 
     code.printLine("if (simulation_settings.HasMember(\"subscribedChannels\")) {");

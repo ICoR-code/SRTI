@@ -1,4 +1,7 @@
 #include "sum_sim.hpp"
+#include <iostream>
+
+using namespace std;
 
 
 SumSim::SumSim() {
@@ -6,6 +9,7 @@ SumSim::SumSim() {
 
     output.insert(pair <string, rapidjson::Value> ("Sum", rapidjson::Value(rapidjson::kObjectType)));
     output.at("Sum").AddMember("value", rapidjson::Value(0), doc.GetAllocator());
+
     history_size.insert(pair <string, int> ("Sum", 0));
     history.insert(pair <string, vector<rapidjson::Value> >
         ("Sum", vector<rapidjson::Value>(0))
@@ -46,13 +50,13 @@ void SumSim::updateHistory() {
 }
 
 void SumSim::simulate() {
-
     rapidjson::Value &d_value = input.at("Difference");
     int difference = d_value["value"].GetInt();
 
     int sum = difference + 1;
 
     output.at("Sum")["value"] = sum;
+
     updateHistory();
 }
 

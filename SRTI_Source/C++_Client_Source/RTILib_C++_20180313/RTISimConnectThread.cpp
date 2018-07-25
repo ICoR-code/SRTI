@@ -13,12 +13,43 @@
 #include <thread>
 #include <time.h>
 
-#ifdef _WIN32
-#include <winsock2.h>
-#include <ws2tcpip.h>
-#pragma comment(lib, "Ws2_32.lib")
-#else
-#include <sys/socket.h>
+// #ifdef _WIN32
+// #include <winsock2.h>
+// #include <ws2tcpip.h>
+// #pragma comment(lib, "Ws2_32.lib")
+// #else
+// #include <sys/socket.h>
+// #endif
+
+#ifdef _WIN64
+  //define something for Windows (64-bit)
+  #include <winsock2.h>
+  #include <ws2tcpip.h>
+  #pragma comment(lib, "Ws2_32.lib")
+#elif _WIN32
+  //define something for Windows (32-bit)
+  #include <winsock2.h>
+  #include <ws2tcpip.h>
+  #pragma comment(lib, "Ws2_32.lib")
+#elif __APPLE__
+  #include "TargetConditionals.h"
+  #if TARGET_OS_IPHONE && TARGET_IPHONE_SIMULATOR
+      // define something for simulator   
+  #elif TARGET_OS_IPHONE
+      // define something for iphone  
+  #else
+      #define TARGET_OS_OSX 1
+      // define something for OSX
+  #endif
+#elif __linux
+  // linux
+  #include <sys/types.h>
+  #include <sys/socket.h> 
+  #include <unistd.h>
+#elif __unix // all unices not caught above
+    // Unix
+#elif __posix
+    // POSIX
 #endif
 
 using namespace std;
@@ -28,7 +59,8 @@ using namespace std;
 //#endif
 
 RTILib rtiSim;
-SOCKET dedicatedSocket;
+// SOCKET dedicatedSocket;
+int dedicatedSocket;
 std::thread threadObj;
 bool isConnected = false;
 
@@ -36,7 +68,13 @@ RTISimConnectThread::RTISimConnectThread()
 {
 }
 
-RTISimConnectThread::RTISimConnectThread(RTILib newRtiSim, SOCKET newDedicatedSocket) {
+// RTISimConnectThread::RTISimConnectThread(RTILib newRtiSim, SOCKET newDedicatedSocket) {
+// 	dedicatedSocket = newDedicatedSocket;
+// 	rtiSim = newRtiSim;
+// 	isConnected = true;
+// }
+
+RTISimConnectThread::RTISimConnectThread(RTILib newRtiSim, int newDedicatedSocket) {
 	dedicatedSocket = newDedicatedSocket;
 	rtiSim = newRtiSim;
 	isConnected = true;
@@ -81,8 +119,9 @@ void RTISimConnectThread::start() {
 
 void RTISimConnectThread::closeConnection() {
 	isConnected = false;
-	closesocket(dedicatedSocket);
-	WSACleanup();
+	// closesocket(dedicatedSocket);
+	close(dedicatedSocket);
+	// WSACleanup();
 }
 
 void RTISimConnectThread::printLine(string line) {

@@ -50,6 +50,7 @@ void DifferenceSim::simulate() {
     int sum = s_value["value"].GetInt();
 
     output.at("Difference")["value"] = sum - 1;
+
     updateHistory();
 }
 

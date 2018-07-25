@@ -22,10 +22,10 @@ public:
 	void setReconnectTimeLimit(long timeLimit);
 	bool getServerMessagesReceived();
 	void setServerMessagesReceived(bool reset);
-	int connect();
-	int connect(string hostName, string portNumber);
-	int reconnect();
-	int reconnect(string lastMessageName, string lastMessageContent);
+	int connectToServer();
+	int connectToServer(string hostName, string portNumber);
+	int reconnectToServer();
+	int reconnectToServer(string lastMessageName, string lastMessageContent);
 	int disconnect();
 	int subscribeTo(string messageName);
 	int subscribeToMessagePlusHistory(string messageName);
@@ -65,5 +65,6 @@ public:
 	void setDebugOutput(bool setDebugOut);
 	void setDebugFileOutput(bool setDebugOut);
 	void printLine(string line);
+	void error(const char* msg);
 	~RTILib();
 };

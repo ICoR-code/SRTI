@@ -25,14 +25,48 @@ C++ does not have a single cross-platform standard library for using socket comm
 
 Socket is necessary to connect to the RTI, it's logic in C++ may need to be rewritten by user to ensure compatibility with chosen platform.
 */
-#ifdef _WIN32
-#include <winsock2.h>
-#include <ws2tcpip.h>
-#pragma comment(lib, "Ws2_32.lib")
-#else
-#include <sys/socket.h>
-#endif
+// #ifdef _WIN32
+// #include <winsock2.h>
+// #include <ws2tcpip.h>
+// #pragma comment(lib, "Ws2_32.lib")
+// #else
+// #include <sys/socket.h>
+// #endif
 
+#ifdef _WIN64
+  //define something for Windows (64-bit)
+  #include <winsock2.h>
+  #include <ws2tcpip.h>
+  #pragma comment(lib, "Ws2_32.lib")
+#elif _WIN32
+  //define something for Windows (32-bit)
+  #include <winsock2.h>
+  #include <ws2tcpip.h>
+  #pragma comment(lib, "Ws2_32.lib")
+#elif __APPLE__
+  #include "TargetConditionals.h"
+  #if TARGET_OS_IPHONE && TARGET_IPHONE_SIMULATOR
+      // define something for simulator   
+  #elif TARGET_OS_IPHONE
+      // define something for iphone  
+  #else
+      #define TARGET_OS_OSX 1
+      // define something for OSX
+  #endif
+#elif __linux
+  // linux
+  #include <sys/types.h>
+  #include <sys/socket.h> 
+  #include <unistd.h>
+  #include <netinet/in.h>
+  #include <netdb.h>
+  #include <stdlib.h> 
+  #include <string.h>
+#elif __unix // all unices not caught above
+    // Unix
+#elif __posix
+    // POSIX
+#endif
 /*
 	C++ does not have standard JSON parsing library, trying to use "RapidJSON" open-source library
 	- http://rapidjson.org/index.html
@@ -48,7 +82,7 @@ using namespace std;
 #endif
 
 
-WSADATA wsaData;
+// WSADATA wsaData;
 
 
 // name of sim (used as identifier on RTI Server side)
@@ -57,8 +91,11 @@ string simName = "<<default sim name>>";
 // reference to simulation (if applicable)
 RTISim *thisSim;
 // socket connection to main RTI Server thread, and to dedicated socket to listen/receive direct messages
-SOCKET rtiSocket;
-SOCKET dedicatedRtiSocket;
+// SOCKET rtiSocket;
+// SOCKET dedicatedRtiSocket;
+
+int rtiSocket;
+int dedicatedRtiSocket;
 // thread for dedicated RTI Server communication
 RTISimConnectThread readThread;
 // thread to check tcp messages were sent successfully (unlike Java, needs its own "thread" class to call function at regular interval)
@@ -90,32 +127,36 @@ bool serverMessagesReceived = false;
 
 RTILib::RTILib(RTISim * rtiSim) {
 	thisSim = rtiSim;
-	WSAStartup(MAKEWORD(2, 2), &wsaData);
+	// WSAStartup(MAKEWORD(2, 2), &wsaData);
 	simName = thisSim->getSimName();
 }
 
 RTILib::RTILib()
 {
 	thisSim = 0;
-	WSAStartup(MAKEWORD(2, 2), &wsaData);
+	// WSAStartup(MAKEWORD(2, 2), &wsaData);
 	printLine("RTILib() constructor called.");
 }
 
-void RTILib::setTcpOn(bool tcp) {
+void RTILib::setTcpOn(bool tcp) 
+{
 	settingsExists = 1;
 	tcpOn = tcp;
 
-	if (tcpOn == true) {
+	if (tcpOn == true) 
+	{
 		tcpThread = RTITcpThread(*this);
 		tcpThread.start();
 	}
 }
 
-void RTILib::setSimName(string newName) {
+void RTILib::setSimName(string newName) 
+{
 	simName = newName;
 }
 
-void RTILib::setReconnectTimeLimit(long timeLimit) {
+void RTILib::setReconnectTimeLimit(long timeLimit) 
+{
 	if (timeLimit <= 0)
 		return;
 
@@ -123,142 +164,293 @@ void RTILib::setReconnectTimeLimit(long timeLimit) {
 	reconnectThread.start();
 }
 
-void RTILib::setServerMessagesReceived(bool set) {
+void RTILib::setServerMessagesReceived(bool set) 
+{
 	serverMessagesReceived = set;
 }
 
-bool RTILib::getServerMessagesReceived() {
+bool RTILib::getServerMessagesReceived() 
+{
 	return serverMessagesReceived;
 }
 
-int RTILib::connect() {
+int RTILib::connectToServer() 
+{
 	printLine("asked to connect without a hostName or portNumber... can't really do anything, then.");
 	return 0;
 }
 
-int RTILib::connect(string hostName, string portNumber) {
+// int RTILib::connect(string hostName, string portNumber) {
+// 	printLine("trying to connect now...");
+
+// 	lastHostName = hostName;
+// 	lastPortNumber = portNumber;
+
+// 	//Using Winsock for sockets: https://msdn.microsoft.com/en-us/library/ms738545(VS.85).aspx
+// 	struct addrinfo *result = NULL, *ptr = NULL, hints;
+// 	ZeroMemory(&hints, sizeof(hints));
+// 	hints.ai_family = AF_UNSPEC;
+// 	hints.ai_socktype = SOCK_STREAM;
+// 	hints.ai_protocol = IPPROTO_TCP;
+// 	int iResult = getaddrinfo(hostName.c_str(), portNumber.c_str(), &hints, &result);
+// 	if (iResult != 0) {
+// 		printLine("Socket connection failed, errno = " + iResult);
+// 		return -1;
+// 	}
+
+// 	rtiSocket = INVALID_SOCKET;
+// 	ptr = result;
+// 	rtiSocket = socket(ptr->ai_family, ptr->ai_socktype, ptr->ai_protocol);
+// 	if (rtiSocket == INVALID_SOCKET) {
+// 		printLine("Error at socket(): " + WSAGetLastError());
+// 		freeaddrinfo(result);
+// 		WSACleanup();
+// 		return -1;
+// 	}
+
+// 	iResult = ::connect(rtiSocket, ptr->ai_addr, (int)ptr->ai_addrlen);
+// 	if (iResult == SOCKET_ERROR) {
+// 		closesocket(rtiSocket);
+// 		rtiSocket = INVALID_SOCKET;
+// 	}
+// 	freeaddrinfo(result);
+// 	if (rtiSocket == INVALID_SOCKET) {
+// 		printLine("Unable to connect to server.");
+// 		WSACleanup();
+// 		return -1;
+// 	}
+
+// 	string firstMessage = "";
+// 	string dedicatedHost = "";
+// 	string dedicatedPort = "";
+
+// 	char recvbuf[2] = { '\0' };
+
+// 	do {
+// 		iResult = recv(rtiSocket, recvbuf, 1, 0);
+// 		if (iResult > 0) {
+// 			if (recvbuf[0] == '\n' || recvbuf[0] == '\r' || recvbuf[0] == '\0') {
+// 				if (recvbuf[0] == '\n') {
+// 					//printLine("\\n was sent...");
+// 				}
+// 				if (recvbuf[0] == '\r') {
+// 					//printLine("\\r was sent...");
+// 				}
+// 				if (recvbuf[0] == '\0') {
+// 					//printLine("\\0 was sent...");
+// 				}
+// 				if (dedicatedHost == "") {
+// 					dedicatedHost = firstMessage;
+// 					firstMessage = "";
+// 				}
+// 				else {
+// 					dedicatedPort = firstMessage;
+// 					firstMessage = "";
+// 					if (dedicatedPort.length() > 1) {
+// 						iResult = 0;
+// 					}
+// 				}
+// 			}
+// 			else {
+// 				firstMessage = firstMessage + string(recvbuf);
+// 			}
+
+// 			for (int i = 0; i < 2; i++) {
+// 				recvbuf[i] = '\0';
+// 			}
+// 		}
+// 		else if (iResult == 0) {
+// 			printLine("Socket connection was closed.");
+// 		}
+// 		else {
+// 			printLine("recv failed.");
+// 		}
+// 	} while (iResult > 0);
+
+// 	serverMessagesReceived = true;
+
+// 	printLine("RTI reached. Now connecting to dedicated communication socket: " + dedicatedHost + " " + dedicatedPort);
+
+// 	struct addrinfo *dedicatedResult = NULL, *dedicatedPtr = NULL, dedicatedHints;
+// 	ZeroMemory(&dedicatedHints, sizeof(dedicatedHints));
+// 	hints.ai_family = AF_UNSPEC;
+// 	hints.ai_socktype = SOCK_STREAM;
+// 	hints.ai_protocol = IPPROTO_TCP;
+// 	iResult = getaddrinfo(dedicatedHost.c_str(), dedicatedPort.c_str(), &dedicatedHints, &dedicatedResult);
+// 	if (iResult != 0) {
+// 		printLine("Socket connection failed, errno = " + iResult);
+// 		return -1;
+// 	}
+// 	dedicatedRtiSocket = INVALID_SOCKET;
+// 	dedicatedPtr = dedicatedResult;
+// 	dedicatedRtiSocket = socket(dedicatedPtr->ai_family, dedicatedPtr->ai_socktype, dedicatedPtr->ai_protocol);
+// 	if (dedicatedRtiSocket == INVALID_SOCKET) {
+// 		printLine("Error at socket(): " + WSAGetLastError());
+// 		freeaddrinfo(dedicatedResult);
+// 		WSACleanup();
+// 		return -1;
+// 	}
+// 	iResult = ::connect(dedicatedRtiSocket, dedicatedPtr->ai_addr, (int)dedicatedPtr->ai_addrlen);
+// 	if (iResult == SOCKET_ERROR) {
+// 		closesocket(dedicatedRtiSocket);
+// 		dedicatedRtiSocket = INVALID_SOCKET;
+// 	}
+// 	freeaddrinfo(dedicatedResult);
+// 	if (dedicatedRtiSocket == INVALID_SOCKET) {
+// 		printLine("Unable to connect to server.");
+// 		WSACleanup();
+// 		return -1;
+// 	}
+
+// 	readThread = RTISimConnectThread(*this, dedicatedRtiSocket);
+// 	readThread.start();
+
+
+// 	string jsonContent;
+// 	rapidjson::StringBuffer bufferOut;
+// 	bufferOut.Clear();
+// 	rapidjson::Writer<rapidjson::StringBuffer> writerOut(bufferOut);
+// 	rapidjson::Document document;
+// 	rapidjson::Value jsonContent1(rapidjson::kObjectType);
+// 	rapidjson::Value jsonSimName(simName.c_str(), document.GetAllocator());
+// 	jsonContent1.AddMember("simName", jsonSimName, document.GetAllocator());
+// 	jsonContent1.Accept(writerOut);
+
+// 	publish("RTI_InitializeSim", bufferOut.GetString());
+
+// 	return 0;
+// }
+
+//linux version
+int RTILib::connectToServer(string hostName, string portNumber) 
+{
 	printLine("trying to connect now...");
 
 	lastHostName = hostName;
 	lastPortNumber = portNumber;
 
-	//Using Winsock for sockets: https://msdn.microsoft.com/en-us/library/ms738545(VS.85).aspx
-	struct addrinfo *result = NULL, *ptr = NULL, hints;
-	ZeroMemory(&hints, sizeof(hints));
-	hints.ai_family = AF_UNSPEC;
-	hints.ai_socktype = SOCK_STREAM;
-	hints.ai_protocol = IPPROTO_TCP;
-	int iResult = getaddrinfo(hostName.c_str(), portNumber.c_str(), &hints, &result);
-	if (iResult != 0) {
-		printLine("Socket connection failed, errno = " + iResult);
-		return -1;
-	}
+	//Using linux socket
+    int sockfd, portno, n;
+    struct sockaddr_in serv_addr;
+    struct hostent *server;
 
-	rtiSocket = INVALID_SOCKET;
-	ptr = result;
-	rtiSocket = socket(ptr->ai_family, ptr->ai_socktype, ptr->ai_protocol);
-	if (rtiSocket == INVALID_SOCKET) {
-		printLine("Error at socket(): " + WSAGetLastError());
-		freeaddrinfo(result);
-		WSACleanup();
-		return -1;
-	}
+    sockfd = socket(AF_INET, SOCK_STREAM, 0);
+	if (sockfd < 0) 
+	    error("ERROR opening socket");
+    rtiSocket = sockfd;
 
-	iResult = ::connect(rtiSocket, ptr->ai_addr, (int)ptr->ai_addrlen);
-	if (iResult == SOCKET_ERROR) {
-		closesocket(rtiSocket);
-		rtiSocket = INVALID_SOCKET;
-	}
-	freeaddrinfo(result);
-	if (rtiSocket == INVALID_SOCKET) {
-		printLine("Unable to connect to server.");
-		WSACleanup();
-		return -1;
-	}
+    server = gethostbyname(lastHostName.c_str());
+    if (server == NULL) {
+        fprintf(stderr,"ERROR, no such host\n");
+        exit(0);
+    }
+
+    bzero((char *) &serv_addr, sizeof(serv_addr));
+    serv_addr.sin_family = AF_INET;
+    bcopy((char *)server->h_addr, 
+          (char *)&serv_addr.sin_addr.s_addr,
+          server->h_length
+         );
+    portno = atoi(lastPortNumber.c_str());
+    serv_addr.sin_port = htons(portno);
+
+    if (connect(sockfd, (struct sockaddr*)&serv_addr, sizeof(serv_addr)) < 0) 
+        error("ERROR connecting");
+
 
 	string firstMessage = "";
 	string dedicatedHost = "";
 	string dedicatedPort = "";
 
 	char recvbuf[2] = { '\0' };
+	int iResult = 0;
 
 	do {
 		iResult = recv(rtiSocket, recvbuf, 1, 0);
-		if (iResult > 0) {
-			if (recvbuf[0] == '\n' || recvbuf[0] == '\r' || recvbuf[0] == '\0') {
-				if (recvbuf[0] == '\n') {
-					//printLine("\\n was sent...");
+		if (iResult > 0) 
+		{
+			if (recvbuf[0] == '\n' || recvbuf[0] == '\r' || recvbuf[0] == '\0') 
+			{
+				if (recvbuf[0] == '\n') 
+				{
+					printLine("\\n was sent...");
 				}
-				if (recvbuf[0] == '\r') {
-					//printLine("\\r was sent...");
+				if (recvbuf[0] == '\r') 
+				{
+					printLine("\\r was sent...");
 				}
-				if (recvbuf[0] == '\0') {
-					//printLine("\\0 was sent...");
+				if (recvbuf[0] == '\0') 
+				{
+					printLine("\\0 was sent...");
 				}
-				if (dedicatedHost == "") {
+				if (dedicatedHost == "") 
+				{
 					dedicatedHost = firstMessage;
 					firstMessage = "";
 				}
-				else {
+				else 
+				{
 					dedicatedPort = firstMessage;
 					firstMessage = "";
-					if (dedicatedPort.length() > 1) {
+					if (dedicatedPort.length() > 1) 
+					{
 						iResult = 0;
 					}
 				}
 			}
-			else {
+			else 
+			{
 				firstMessage = firstMessage + string(recvbuf);
 			}
 
-			for (int i = 0; i < 2; i++) {
+			for (int i = 0; i < 2; i++) 
+			{
 				recvbuf[i] = '\0';
 			}
 		}
-		else if (iResult == 0) {
+		else if (iResult == 0) 
+		{
 			printLine("Socket connection was closed.");
 		}
-		else {
+		else 
+		{
 			printLine("recv failed.");
 		}
+
 	} while (iResult > 0);
 
 	serverMessagesReceived = true;
 
 	printLine("RTI reached. Now connecting to dedicated communication socket: " + dedicatedHost + " " + dedicatedPort);
+    int dedicatedSockfd, dedicatedPortno, dedicatedN;
+    struct sockaddr_in dedicatedServ_addr;
+    struct hostent *dedicatedServer;
 
-	struct addrinfo *dedicatedResult = NULL, *dedicatedPtr = NULL, dedicatedHints;
-	ZeroMemory(&dedicatedHints, sizeof(dedicatedHints));
-	hints.ai_family = AF_UNSPEC;
-	hints.ai_socktype = SOCK_STREAM;
-	hints.ai_protocol = IPPROTO_TCP;
-	iResult = getaddrinfo(dedicatedHost.c_str(), dedicatedPort.c_str(), &dedicatedHints, &dedicatedResult);
-	if (iResult != 0) {
-		printLine("Socket connection failed, errno = " + iResult);
-		return -1;
-	}
-	dedicatedRtiSocket = INVALID_SOCKET;
-	dedicatedPtr = dedicatedResult;
-	dedicatedRtiSocket = socket(dedicatedPtr->ai_family, dedicatedPtr->ai_socktype, dedicatedPtr->ai_protocol);
-	if (dedicatedRtiSocket == INVALID_SOCKET) {
-		printLine("Error at socket(): " + WSAGetLastError());
-		freeaddrinfo(dedicatedResult);
-		WSACleanup();
-		return -1;
-	}
-	iResult = ::connect(dedicatedRtiSocket, dedicatedPtr->ai_addr, (int)dedicatedPtr->ai_addrlen);
-	if (iResult == SOCKET_ERROR) {
-		closesocket(dedicatedRtiSocket);
-		dedicatedRtiSocket = INVALID_SOCKET;
-	}
-	freeaddrinfo(dedicatedResult);
-	if (dedicatedRtiSocket == INVALID_SOCKET) {
-		printLine("Unable to connect to server.");
-		WSACleanup();
-		return -1;
-	}
+    dedicatedSockfd = socket(AF_INET, SOCK_STREAM, 0);
+	if (dedicatedSockfd < 0) 
+	    error("ERROR opening dedicated socket");
+    dedicatedRtiSocket = dedicatedSockfd;
 
-	readThread = RTISimConnectThread(*this, dedicatedRtiSocket);
+    dedicatedServer = gethostbyname(dedicatedHost.c_str());
+    if (dedicatedServer == NULL) {
+        fprintf(stderr,"ERROR, no such host for dedicated connection\n");
+        exit(0);
+    }
+
+    bzero((char *) &dedicatedServ_addr, sizeof(dedicatedServ_addr));
+    dedicatedServ_addr.sin_family = AF_INET;
+    bcopy((char *)dedicatedServer->h_addr, 
+          (char *)&dedicatedServ_addr.sin_addr.s_addr,
+          dedicatedServer->h_length
+         );
+    dedicatedPortno = atoi(dedicatedPort.c_str());
+    dedicatedServ_addr.sin_port = htons(dedicatedPortno);
+
+    if (connect(dedicatedSockfd, (struct sockaddr*)&dedicatedServ_addr, sizeof(dedicatedServ_addr)) < 0) 
+        error("ERROR connecting dedicated socket to the server");
+
+
+	readThread = RTISimConnectThread(*this, dedicatedSockfd);
 	readThread.start();
 
 
@@ -277,86 +469,266 @@ int RTILib::connect(string hostName, string portNumber) {
 	return 0;
 }
 
-int RTILib::reconnect() {
+
+// int RTILib::reconnect() {
+// 	printLine("trying to reconnect now...");
+
+// 	//Using Winsock for sockets: https://msdn.microsoft.com/en-us/library/ms738545(VS.85).aspx
+// 	struct addrinfo *result = NULL, *ptr = NULL, hints;
+// 	ZeroMemory(&hints, sizeof(hints));
+// 	hints.ai_family = AF_UNSPEC;
+// 	hints.ai_socktype = SOCK_STREAM;
+// 	hints.ai_protocol = IPPROTO_TCP;
+// 	int iResult = getaddrinfo(lastHostName.c_str(), lastPortNumber.c_str(), &hints, &result);
+// 	if (iResult != 0) {
+// 		printLine("Socket connection failed, errno = " + iResult);
+// 		return -1;
+// 	}
+
+// 	rtiSocket = INVALID_SOCKET;
+// 	ptr = result;
+// 	rtiSocket = socket(ptr->ai_family, ptr->ai_socktype, ptr->ai_protocol);
+// 	if (rtiSocket == INVALID_SOCKET) {
+// 		printLine("Error at socket(): " + WSAGetLastError());
+// 		freeaddrinfo(result);
+// 		WSACleanup();
+// 		return -1;
+// 	}
+
+// 	iResult = ::connect(rtiSocket, ptr->ai_addr, (int)ptr->ai_addrlen);
+// 	if (iResult == SOCKET_ERROR) {
+// 		closesocket(rtiSocket);
+// 		rtiSocket = INVALID_SOCKET;
+// 	}
+// 	freeaddrinfo(result);
+// 	if (rtiSocket == INVALID_SOCKET) {
+// 		printLine("Unable to connect to server.");
+// 		WSACleanup();
+// 		return -1;
+// 	}
+
+// 	string firstMessage = "";
+// 	string dedicatedHost = "";
+// 	string dedicatedPort = "";
+
+// 	char recvbuf[2] = { '\0' };
+
+// 	do {
+// 		iResult = recv(rtiSocket, recvbuf, 1, 0);
+// 		if (iResult > 0) 
+// 		{
+// 			if (recvbuf[0] == '\n' || recvbuf[0] == '\r' || recvbuf[0] == '\0') 
+// 			{
+// 				if (recvbuf[0] == '\n') 
+// 				{
+// 					//printLine("\\n was sent...");
+// 				}
+// 				if (recvbuf[0] == '\r') 
+// 				{
+// 					//printLine("\\r was sent...");
+// 				}
+// 				if (recvbuf[0] == '\0') 
+// 				{
+// 					//printLine("\\0 was sent...");
+// 				}
+// 				if (dedicatedHost == "") 
+// 				{
+// 					dedicatedHost = firstMessage;
+// 					firstMessage = "";
+// 				}
+// 				else 
+// 				{
+// 					dedicatedPort = firstMessage;
+// 					firstMessage = "";
+// 					if (dedicatedPort.length() > 1) 
+// 					{
+// 						iResult = 0;
+// 					}
+// 				}
+// 			}
+// 			else 
+// 			{
+// 				firstMessage = firstMessage + string(recvbuf);
+// 			}
+
+// 			for (int i = 0; i < 2; i++) 
+// 			{
+// 				recvbuf[i] = '\0';
+// 			}
+// 		}
+// 		else if (iResult == 0) 
+// 		{
+// 			printLine("Socket connection was closed.");
+// 		}
+// 		else 
+// 		{
+// 			printLine("recv failed.");
+// 		}
+// 	} while (iResult > 0);
+
+
+
+// 	printLine("RTI reached. Now connecting to dedicated communication socket: " + dedicatedHost + " " + dedicatedPort);
+
+
+
+// 	struct addrinfo *dedicatedResult = NULL, *dedicatedPtr = NULL, dedicatedHints;
+// 	ZeroMemory(&dedicatedHints, sizeof(dedicatedHints));
+// 	hints.ai_family = AF_UNSPEC;
+// 	hints.ai_socktype = SOCK_STREAM;
+// 	hints.ai_protocol = IPPROTO_TCP;
+// 	iResult = getaddrinfo(dedicatedHost.c_str(), dedicatedPort.c_str(), &dedicatedHints, &dedicatedResult);
+// 	if (iResult != 0) {
+// 		printLine("Socket connection failed, errno = " + iResult);
+// 		return -1;
+// 	}
+// 	dedicatedRtiSocket = INVALID_SOCKET;
+// 	dedicatedPtr = dedicatedResult;
+// 	dedicatedRtiSocket = socket(dedicatedPtr->ai_family, dedicatedPtr->ai_socktype, dedicatedPtr->ai_protocol);
+// 	if (dedicatedRtiSocket == INVALID_SOCKET) {
+// 		printLine("Error at socket(): " + WSAGetLastError());
+// 		freeaddrinfo(dedicatedResult);
+// 		WSACleanup();
+// 		return -1;
+// 	}
+// 	iResult = ::connect(dedicatedRtiSocket, dedicatedPtr->ai_addr, (int)dedicatedPtr->ai_addrlen);
+// 	if (iResult == SOCKET_ERROR) {
+// 		closesocket(dedicatedRtiSocket);
+// 		dedicatedRtiSocket = INVALID_SOCKET;
+// 	}
+// 	freeaddrinfo(dedicatedResult);
+// 	if (dedicatedRtiSocket == INVALID_SOCKET) {
+// 		printLine("Unable to connect to server.");
+// 		WSACleanup();
+// 		return -1;
+// 	}
+
+// 	readThread = RTISimConnectThread(*this, dedicatedRtiSocket);
+// 	readThread.start();
+
+
+// 	string jsonContent;
+// 	rapidjson::StringBuffer bufferOut;
+// 	bufferOut.Clear();
+// 	rapidjson::Writer<rapidjson::StringBuffer> writerOut(bufferOut);
+// 	rapidjson::Document document;
+// 	rapidjson::Value jsonContent1(rapidjson::kObjectType);
+// 	rapidjson::Value jsonSimName(simName.c_str(), document.GetAllocator());
+// 	jsonContent1.AddMember("simName", jsonSimName, document.GetAllocator());
+// 	jsonContent1.Accept(writerOut);
+
+// 	publish("RTI_InitializeSim", bufferOut.GetString());
+
+// 	vector<string>::iterator it = subscribeHistory.begin();
+// 	while (it != subscribeHistory.end()) {
+
+// 		rapidjson::StringBuffer bufferOut;
+// 		bufferOut.Clear();
+// 		rapidjson::Writer<rapidjson::StringBuffer> writerOut(bufferOut);
+// 		rapidjson::Document document;
+
+// 		rapidjson::Value jsonContent(rapidjson::kObjectType);
+// 		rapidjson::Value jsonMessageName((*it).c_str(), document.GetAllocator());
+// 		jsonContent.AddMember("subscribeTo", jsonMessageName, document.GetAllocator());
+// 		jsonContent.Accept(writerOut);
+
+// 		publish("RTI_SubscribeToMessagePlusLatest", bufferOut.GetString());
+// 	}
+
+// 	return 0;
+// }
+
+
+int RTILib::reconnectToServer() 
+{
 	printLine("trying to reconnect now...");
 
-	//Using Winsock for sockets: https://msdn.microsoft.com/en-us/library/ms738545(VS.85).aspx
-	struct addrinfo *result = NULL, *ptr = NULL, hints;
-	ZeroMemory(&hints, sizeof(hints));
-	hints.ai_family = AF_UNSPEC;
-	hints.ai_socktype = SOCK_STREAM;
-	hints.ai_protocol = IPPROTO_TCP;
-	int iResult = getaddrinfo(lastHostName.c_str(), lastPortNumber.c_str(), &hints, &result);
-	if (iResult != 0) {
-		printLine("Socket connection failed, errno = " + iResult);
-		return -1;
-	}
+	//Using linux socket
 
-	rtiSocket = INVALID_SOCKET;
-	ptr = result;
-	rtiSocket = socket(ptr->ai_family, ptr->ai_socktype, ptr->ai_protocol);
-	if (rtiSocket == INVALID_SOCKET) {
-		printLine("Error at socket(): " + WSAGetLastError());
-		freeaddrinfo(result);
-		WSACleanup();
-		return -1;
-	}
+    int sockfd, portno, n;
+    struct sockaddr_in serv_addr;
+    struct hostent *server;
 
-	iResult = ::connect(rtiSocket, ptr->ai_addr, (int)ptr->ai_addrlen);
-	if (iResult == SOCKET_ERROR) {
-		closesocket(rtiSocket);
-		rtiSocket = INVALID_SOCKET;
-	}
-	freeaddrinfo(result);
-	if (rtiSocket == INVALID_SOCKET) {
-		printLine("Unable to connect to server.");
-		WSACleanup();
-		return -1;
-	}
+    sockfd = socket(AF_INET, SOCK_STREAM, 0);
+	if (sockfd < 0) 
+	    error("ERROR opening socket(reconnecting)");
+    rtiSocket = sockfd;
+
+    server = gethostbyname(lastHostName.c_str());
+    if (server == NULL) {
+        fprintf(stderr,"ERROR, no such host(reconnecting)\n");
+        exit(0);
+    }
+
+    bzero((char *) &serv_addr, sizeof(serv_addr));
+    serv_addr.sin_family = AF_INET;
+    bcopy((char *)server->h_addr, 
+          (char *)&serv_addr.sin_addr.s_addr,
+          server->h_length
+         );
+    portno = atoi(lastPortNumber.c_str());
+    serv_addr.sin_port = htons(portno);
+
+    if (connect(sockfd, (struct sockaddr*)&serv_addr, sizeof(serv_addr)) < 0) 
+        error("ERROR connecting(reconnecting)");
+
 
 	string firstMessage = "";
 	string dedicatedHost = "";
 	string dedicatedPort = "";
 
 	char recvbuf[2] = { '\0' };
+	int iResult = 0;
 
 	do {
-		iResult = recv(rtiSocket, recvbuf, 1, 0);
-		if (iResult > 0) {
-			if (recvbuf[0] == '\n' || recvbuf[0] == '\r' || recvbuf[0] == '\0') {
-				if (recvbuf[0] == '\n') {
+		iResult = recv(sockfd, recvbuf, 1, 0);
+		if (iResult > 0) 
+		{
+			if (recvbuf[0] == '\n' || recvbuf[0] == '\r' || recvbuf[0] == '\0') 
+			{
+				if (recvbuf[0] == '\n') 
+				{
 					//printLine("\\n was sent...");
 				}
-				if (recvbuf[0] == '\r') {
+				if (recvbuf[0] == '\r') 
+				{
 					//printLine("\\r was sent...");
 				}
-				if (recvbuf[0] == '\0') {
+				if (recvbuf[0] == '\0') 
+				{
 					//printLine("\\0 was sent...");
 				}
-				if (dedicatedHost == "") {
+				if (dedicatedHost == "") 
+				{
 					dedicatedHost = firstMessage;
 					firstMessage = "";
 				}
-				else {
+				else 
+				{
 					dedicatedPort = firstMessage;
 					firstMessage = "";
-					if (dedicatedPort.length() > 1) {
+					if (dedicatedPort.length() > 1) 
+					{
 						iResult = 0;
 					}
 				}
 			}
-			else {
+			else 
+			{
 				firstMessage = firstMessage + string(recvbuf);
 			}
 
-			for (int i = 0; i < 2; i++) {
+			for (int i = 0; i < 2; i++) 
+			{
 				recvbuf[i] = '\0';
 			}
 		}
-		else if (iResult == 0) {
+		else if (iResult == 0) 
+		{
 			printLine("Socket connection was closed.");
 		}
-		else {
+		else 
+		{
 			printLine("recv failed.");
 		}
 	} while (iResult > 0);
@@ -365,38 +737,35 @@ int RTILib::reconnect() {
 
 	printLine("RTI reached. Now connecting to dedicated communication socket: " + dedicatedHost + " " + dedicatedPort);
 
-	struct addrinfo *dedicatedResult = NULL, *dedicatedPtr = NULL, dedicatedHints;
-	ZeroMemory(&dedicatedHints, sizeof(dedicatedHints));
-	hints.ai_family = AF_UNSPEC;
-	hints.ai_socktype = SOCK_STREAM;
-	hints.ai_protocol = IPPROTO_TCP;
-	iResult = getaddrinfo(dedicatedHost.c_str(), dedicatedPort.c_str(), &dedicatedHints, &dedicatedResult);
-	if (iResult != 0) {
-		printLine("Socket connection failed, errno = " + iResult);
-		return -1;
-	}
-	dedicatedRtiSocket = INVALID_SOCKET;
-	dedicatedPtr = dedicatedResult;
-	dedicatedRtiSocket = socket(dedicatedPtr->ai_family, dedicatedPtr->ai_socktype, dedicatedPtr->ai_protocol);
-	if (dedicatedRtiSocket == INVALID_SOCKET) {
-		printLine("Error at socket(): " + WSAGetLastError());
-		freeaddrinfo(dedicatedResult);
-		WSACleanup();
-		return -1;
-	}
-	iResult = ::connect(dedicatedRtiSocket, dedicatedPtr->ai_addr, (int)dedicatedPtr->ai_addrlen);
-	if (iResult == SOCKET_ERROR) {
-		closesocket(dedicatedRtiSocket);
-		dedicatedRtiSocket = INVALID_SOCKET;
-	}
-	freeaddrinfo(dedicatedResult);
-	if (dedicatedRtiSocket == INVALID_SOCKET) {
-		printLine("Unable to connect to server.");
-		WSACleanup();
-		return -1;
-	}
+    int dedicatedSockfd, dedicatedPortno, dedicatedN;
+    struct sockaddr_in dedicatedServ_addr;
+    struct hostent *dedicatedServer;
 
-	readThread = RTISimConnectThread(*this, dedicatedRtiSocket);
+    dedicatedSockfd = socket(AF_INET, SOCK_STREAM, 0);
+	if (dedicatedSockfd < 0) 
+	    error("ERROR opening dedicated socket");
+	dedicatedRtiSocket = dedicatedSockfd;
+
+    dedicatedServer = gethostbyname(dedicatedHost.c_str());
+    if (dedicatedServer == NULL) {
+        fprintf(stderr,"ERROR, no such host for dedicated connection\n");
+        exit(0);
+    }
+
+    bzero((char *) &dedicatedServ_addr, sizeof(dedicatedServ_addr));
+    dedicatedServ_addr.sin_family = AF_INET;
+    bcopy((char *)dedicatedServer->h_addr, 
+          (char *)&dedicatedServ_addr.sin_addr.s_addr,
+          dedicatedServer->h_length
+         );
+    dedicatedPortno = atoi(dedicatedPort.c_str());
+    dedicatedServ_addr.sin_port = htons(dedicatedPortno);
+
+    if (connect(dedicatedSockfd, (struct sockaddr*)&dedicatedServ_addr, sizeof(dedicatedServ_addr)) < 0) 
+        error("ERROR connecting dedicated socket to the server");
+
+
+	readThread = RTISimConnectThread(*this, dedicatedSockfd);
 	readThread.start();
 
 
@@ -413,7 +782,8 @@ int RTILib::reconnect() {
 	publish("RTI_InitializeSim", bufferOut.GetString());
 
 	vector<string>::iterator it = subscribeHistory.begin();
-	while (it != subscribeHistory.end()) {
+	while (it != subscribeHistory.end()) 
+	{
 
 		rapidjson::StringBuffer bufferOut;
 		bufferOut.Clear();
@@ -431,18 +801,22 @@ int RTILib::reconnect() {
 	return 0;
 }
 
-int RTILib::reconnect(string lastMessageName, string lastMessageContent) {
-	reconnect();
+
+int RTILib::reconnectToServer(string lastMessageName, string lastMessageContent) 
+{
+	reconnectToServer();
 	publish(lastMessageName, lastMessageContent);
 	return 0;
 }
 
-int RTILib::disconnect() {
+int RTILib::disconnect() 
+{
 	readThread.closeConnection();
 	return 0;
 }
 
-int RTILib::subscribeTo(string messageName) {
+int RTILib::subscribeTo(string messageName) 
+{
 	rapidjson::StringBuffer bufferOut;
 	bufferOut.Clear();
 	rapidjson::Writer<rapidjson::StringBuffer> writerOut(bufferOut);
@@ -459,7 +833,8 @@ int RTILib::subscribeTo(string messageName) {
 	return 0;
 }
 
-int RTILib::subscribeToMessagePlusHistory(string messageName) {
+int RTILib::subscribeToMessagePlusHistory(string messageName) 
+{
 	rapidjson::StringBuffer bufferOut;
 	bufferOut.Clear();
 	rapidjson::Writer<rapidjson::StringBuffer> writerOut(bufferOut);
@@ -476,7 +851,8 @@ int RTILib::subscribeToMessagePlusHistory(string messageName) {
 	return 0;
 }
 
-int RTILib::subscribeToMessagePlusLatest(string messageName) {
+int RTILib::subscribeToMessagePlusLatest(string messageName) 
+{
 
 	rapidjson::StringBuffer bufferOut;
 	bufferOut.Clear();
@@ -495,22 +871,26 @@ int RTILib::subscribeToMessagePlusLatest(string messageName) {
 	return 0;
 }
 
-int RTILib::subscribeToAll() {
+int RTILib::subscribeToAll() 
+{
 	publish("RTI_SubscribeToAll", "");
 	return 0;
 }
 
-int RTILib::subscribeToAllPlusHistory() {
+int RTILib::subscribeToAllPlusHistory() 
+{
 	publish("RTI_SubscribeToAllPlusHistory", "");
 	return 0;
 }
 
-int RTILib::publishTo(string messageName) {
+int RTILib::publishTo(string messageName) 
+{
 	// not used yet... currently, all sims have unrestricted access to publish any message without qualifications
 	return 0;
 }
 
-int RTILib::publish(string name, string content) {
+int RTILib::publish(string name, string content) 
+{
 	int iSendResult = 0;
 	string message = "";
 
@@ -534,10 +914,12 @@ int RTILib::publish(string name, string content) {
 	jsonTotal.AddMember("source", jsonSimName, document.GetAllocator());
 
 	string tcpOnString = "";
-	if (tcpOn == true) {
+	if (tcpOn == true) 
+	{
 		tcpOnString = "true";
 	}
-	else {
+	else 
+	{
 		tcpOnString = "false";
 	}
 	rapidjson::Value jsonTcpOn(tcpOnString.c_str(), document.GetAllocator());
@@ -580,7 +962,8 @@ int RTILib::publish(string name, string content) {
 	return 0;
 }
 
-int RTILib::publish(string name, rapidjson::Value &value) {
+int RTILib::publish(string name, rapidjson::Value &value) 
+{
 	int iSendResult = 0;
 	string message = "";
 
@@ -641,7 +1024,8 @@ int RTILib::publish(string name, rapidjson::Value &value) {
 	printLine("Successfully published message.");
 }
 
-int RTILib::sendWithoutAddingToTcp(string name, string content, string timestamp, string source) {
+int RTILib::sendWithoutAddingToTcp(string name, string content, string timestamp, string source) 
+{
 
 	printLine("\t\t\t PUBLISH THIS: " + name);
 
@@ -705,7 +1089,8 @@ int RTILib::sendWithoutAddingToTcp(string name, string content, string timestamp
 	return 0;
 }
 
-int RTILib::receivedMessage(string message) {
+int RTILib::receivedMessage(string message) 
+{
 
 	rapidjson::StringStream s(message.c_str());
 	rapidjson::Document document;
@@ -766,7 +1151,8 @@ int RTILib::receivedMessage(string message) {
 	return 0;
 }
 
-struct MessageReceived {
+struct MessageReceived 
+{
 	int sendAttempts = 0;
 	bool messageReceived = false;
 	string name = "";
@@ -778,7 +1164,8 @@ struct MessageReceived {
 };
 vector<MessageReceived> tcpMessageBuffer;
 bool tcpMessageBufferAvailable = true;
-int RTILib::setTcpResponse(bool setResponse, string message) {
+int RTILib::setTcpResponse(bool setResponse, string message) 
+{
 
 	while (tcpMessageBufferAvailable == false) {
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -800,7 +1187,8 @@ int RTILib::setTcpResponse(bool setResponse, string message) {
 	return 0;
 }
 
-int RTILib::handleTcpResponse(string name, string content, string timestamp, string source, string message) {
+int RTILib::handleTcpResponse(string name, string content, string timestamp, string source, string message) 
+{
 	if (tcpOn == false) {
 		return 0;
 	}
@@ -826,7 +1214,8 @@ int RTILib::handleTcpResponse(string name, string content, string timestamp, str
 	return 0;
 }
 
-int RTILib::checkTcpMessages() {
+int RTILib::checkTcpMessages() 
+{
 
 	if (tcpMessageBuffer.empty() == true) {
 		return 0;
@@ -842,7 +1231,7 @@ int RTILib::checkTcpMessages() {
 	while (it != tcpMessageBuffer.end()) {
 
 		if ((*it).sendAttempts >= 3) {
-			reconnect((*it).name, (*it).content);
+			reconnectToServer((*it).name, (*it).content);
 			it = tcpMessageBuffer.erase(it);
 		}
 		else {
@@ -864,7 +1253,8 @@ int RTILib::checkTcpMessages() {
 	return 0;
 }
 
-string RTILib::getNextMessage() {
+string RTILib::getNextMessage() 
+{
 	string returnString = "";
 	printLine("getNextMessage() called...");
 
@@ -880,7 +1270,8 @@ string RTILib::getNextMessage() {
 	return returnString;
 }
 
-string RTILib::getNextMessage(int millisToWait) {
+string RTILib::getNextMessage(int millisToWait) 
+{
 	string returnString = "";
 	printLine("getNextMessage() called...");
 	for (int i = 0; i < millisToWait; i += 10) {
@@ -902,7 +1293,8 @@ string RTILib::getNextMessage(int millisToWait) {
 	return returnString;
 }
 
-string RTILib::getNextMessage(string messageName) {
+string RTILib::getNextMessage(string messageName) 
+{
 	string returnString = "";
 
 	printLine("getNextMessage() called...");
@@ -926,7 +1318,8 @@ string RTILib::getNextMessage(string messageName) {
 	return returnString;
 }
 
-string RTILib::getNextMessage(string messageName, int millisToWait) {
+string RTILib::getNextMessage(string messageName, int millisToWait) 
+{
 	string returnString = "";
 
 	printLine("getNextMessage() called...");
@@ -1181,7 +1574,8 @@ void RTILib::setDebugOutput(bool setDebugOut) {
 	Version::setDebugSimConsole(setDebugOut);
 }
 
-void RTILib::setDebugFileOutput(bool setFileDebugOut) {
+void RTILib::setDebugFileOutput(bool setFileDebugOut) 
+{
 	Version::setDebugSimFile(setFileDebugOut);
 }
 
@@ -1193,6 +1587,11 @@ void RTILib::printLine(string line) {
 	Version::printSimFile(formatLine);
 }
 
+void RTILib::error(const char* msg)
+{
+    perror(msg);
+    exit(0);	
+}
 RTILib::~RTILib()
 {
 
