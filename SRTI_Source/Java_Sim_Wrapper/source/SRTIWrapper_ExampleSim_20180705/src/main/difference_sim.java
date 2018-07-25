@@ -53,6 +53,31 @@ public class difference_sim {
 		value = value - 1;
 	}
 	
+	public void setMessageCustom(int newValue) {
+		value = newValue;
+	}
+	
+	public void setMessageCustom2(int newValue, int positive) {
+		value = newValue * positive;
+	}
+	
+	public void setMessageCustom3(int positive) {
+		value = value * positive;
+	}
+	
+	public int getMessageCustom() {
+		return value;
+	}
+	
+	public void simulateCustom() {
+		value = value - 1;
+	}
+	
+	public void generateInitialMessageCustom() {
+		value = 10;
+		updateHistory();
+	}
+	
 	void updateHistory() {
 
 	}
