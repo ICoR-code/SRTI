@@ -7,17 +7,18 @@ import javax.json.JsonNumber;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 
-public class difference_sim {
+public class sum_sim {
 
 	private int value = 0;
 	private int[] values;
 	
 	public static void main(String [] args) {
-		difference_sim d = new difference_sim();
+		sum_sim d = new sum_sim();
 		d.generateInitialMessage();
+		System.out.println("done");
 	}
 	
-	public difference_sim() {
+	public sum_sim() {
 		
 	}
 	
@@ -55,11 +56,11 @@ public class difference_sim {
 	}
 	
 	public void simulate() {
-		value = value - 1;
+		value = value + 2;
 		
 		if (values != null) {
 			for (int i = 0; i < values.length; i++) {
-				values[i] = values[i] - 1;
+				values[i] = values[i] + 2;
 			}
 		}
 	}
@@ -85,11 +86,11 @@ public class difference_sim {
 	}
 	
 	public void simulateCustom() {
-		value = value - 1;
+		value = value + 2;
 		
 		if (values != null) {
 			for (int i = 0; i < values.length; i++) {
-				values[i] = values[i] - 1;
+				values[i] = values[i] + 2;
 			}
 		}
 	}

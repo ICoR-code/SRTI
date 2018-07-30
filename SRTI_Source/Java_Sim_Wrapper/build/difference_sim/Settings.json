@@ -1,4 +1,4 @@
 {
-    "global": "Global.json",
-    "configuration": "Difference.json"
+    "global": "GlobalArray.json",
+    "configuration": "DifferenceArray.json"
 }

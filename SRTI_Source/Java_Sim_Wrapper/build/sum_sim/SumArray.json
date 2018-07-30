@@ -1,0 +1,31 @@
+{
+    "hostName": "localhost",
+    "portNumber": "4200",
+    "simulatorName": "main.sum_sim",
+    "subscribedChannels": {
+        "Difference": {
+            "oneTime": false,
+            "stepRelation": 0,
+			"functionChannel": [
+            	{
+            		"functionName": "setMessageCustomArray",
+            		"0": "value"
+            	}
+            ]
+        }
+    },
+    "publishedChannels": {
+        "Sum": {
+            "initial": true,
+            "historyDependent": 0,
+            "functionChannel": [
+            	{
+            		"functionName": "getMessageCustomArray",
+            		"functionKeyName": "value"
+            	}
+            ]
+        }
+    },
+	"initializeFunction": "generateInitialMessageCustom",
+    "simulateFunction": "simulateCustom"
+}
