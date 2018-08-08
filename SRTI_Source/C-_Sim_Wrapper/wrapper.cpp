@@ -7,9 +7,10 @@
 #include "rapidjson/document.h"
 
 #include "../C++_Client_Source/RTILib_C++_20180313/RTILib.h"
-#include "fibonacci_sim.hpp"
+#include "double_sim.hpp"
 
 using namespace std;
+namespace rj = rapidjson;
 
 int main() {
     // Parse setting files
@@ -18,16 +19,16 @@ int main() {
         (istreambuf_iterator<char> (ifs_global)),
         (istreambuf_iterator<char> ()) );
 
-    rapidjson::Document global_settings;
+    rj::Document global_settings;
     global_settings.Parse(content_global.c_str());
     ifs_global.close();
 
-    ifstream ifs_simulation("Fibonacci.json");
+    ifstream ifs_simulation("Double.json");
     string content_simulation(
         (istreambuf_iterator<char> (ifs_simulation)),
         (istreambuf_iterator<char> ()) );
 
-    rapidjson::Document simulation_settings;
+    rj::Document simulation_settings;
     simulation_settings.Parse(content_simulation.c_str());
     ifs_simulation.close();
 
@@ -43,10 +44,10 @@ int main() {
     vector<string> one_time_channels;
     vector<string> published_channels;
 
-    FibonacciSim simulation;
+    DoubleSim simulation;
 
     RTILib lib = RTILib();
-    lib.setDebugOutput(true);
+    lib.setDebugOutput(false);
     lib.setSimName(simulation_name);
     lib.connect(host_name, port_number);
 
@@ -67,6 +68,12 @@ int main() {
         }
     }
 
+    int max_iteration = -1;
+    if (simulation_settings.HasMember("maxIteration")) {
+        assert(simulation_settings["maxIteration"].IsUint());
+        max_iteration = simulation_settings["maxIteration"].GetInt();
+    }
+
     int gstep = 0;
     const int kTimeToWait = 50;
 
@@ -75,7 +82,7 @@ int main() {
         while (true) {
             string message = lib.getNextMessage(channel, kTimeToWait);
             if (!message.empty()) {
-                rapidjson::Document document;
+                rj::Document document;
                 document.Parse(message.c_str());
                 string content = document["content"].GetString();
                 simulation.setMessage(channel, content);
@@ -92,12 +99,16 @@ int main() {
     }
 
     while (true) {
+        if (max_iteration >= 0 && max_iteration <= gstep) {
+            break;
+        }
+
         // Wait for every message to arrive
         for (string channel: subscribed_channels) {
             while (true) {
                 string message = lib.getNextMessage(channel, kTimeToWait);
                 if (!message.empty()) {
-                    rapidjson::Document document;
+                    rj::Document document;
                     document.Parse(message.c_str());
                     string content = document["content"].GetString();
                     simulation.setMessage(channel, content);

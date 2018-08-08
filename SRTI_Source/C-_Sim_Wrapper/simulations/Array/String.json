@@ -1,0 +1,18 @@
+{
+    "hostName": "localhost",
+    "portNumber": "4200",
+    "simulatorName": "StringSim",
+    "maxIteration": 26,
+    "subscribedChannels": {
+        "Double": {
+            "oneTime": false,
+            "stepRelation": 0
+        }
+    },
+    "publishedChannels": {
+        "String": {
+            "initial": true,
+            "historyDependent": 1
+        }
+    }
+}

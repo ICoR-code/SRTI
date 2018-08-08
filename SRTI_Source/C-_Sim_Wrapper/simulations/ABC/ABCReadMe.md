@@ -14,6 +14,6 @@
 
 ## Diagram
 + Initial A
-+ A -> A, B, C
++ A -> B, C
 + B -> C
 + C -> A
