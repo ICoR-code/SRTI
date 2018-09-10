@@ -9,8 +9,8 @@ import javax.json.JsonReader;
 
 public class sum_sim {
 
-	private int value = 0;
-	private int[] values;
+	public int value = 0;
+	public int[][] values = { {0,1,0,0}, {0,0,2,0}, {0,0,0,3}};
 	
 	public static void main(String [] args) {
 		sum_sim d = new sum_sim();
@@ -51,18 +51,18 @@ public class sum_sim {
 		}
 	}
 	
-	public void setMessageCustomArray(int [] newValues) {
+	/*public void setMessageCustomArray(int [] newValues) {
 		values = newValues;
-	}
+	}*/
 	
 	public void simulate() {
 		value = value + 2;
 		
-		if (values != null) {
+		/*if (values != null) {
 			for (int i = 0; i < values.length; i++) {
 				values[i] = values[i] + 2;
 			}
-		}
+		}*/
 	}
 	
 	public void setMessageCustom(int newValue) {
@@ -81,27 +81,27 @@ public class sum_sim {
 		return value;
 	}
 	
-	public int[] getMessageCustomArray() {
+	/*public int[] getMessageCustomArray() {
 		return values;
-	}
+	}*/
 	
 	public void simulateCustom() {
 		value = value + 2;
 		
-		if (values != null) {
+		/*if (values != null) {
 			for (int i = 0; i < values.length; i++) {
 				values[i] = values[i] + 2;
 			}
-		}
+		}*/
 	}
 	
 	public void generateInitialMessageCustom() {
 		value = 10;
 		
-		values = new int[5];
+		/*values = new int[5];
 		for (int i = 0; i < values.length; i++) {
 			values[i] = 10;
-		}
+		}*/
 		updateHistory();
 	}
 	

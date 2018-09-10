@@ -1,4 +1,4 @@
 {
-    "global": "GlobalArray.json",
-    "configuration": "SumArray.json"
+    "global": "GlobalVar.json",
+    "configuration": "SumVar.json"
 }

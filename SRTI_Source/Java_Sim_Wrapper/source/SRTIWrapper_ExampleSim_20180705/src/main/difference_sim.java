@@ -9,8 +9,8 @@ import javax.json.JsonReader;
 
 public class difference_sim {
 
-	private int value = 0;
-	private int[] values;
+	public int value = 0;
+	public int[][] values = { {1,1,1,1}, {1,1,1,1}, {1,1,1,1}};
 	
 	public static void main(String [] args) {
 		difference_sim d = new difference_sim();
@@ -50,18 +50,10 @@ public class difference_sim {
 		}
 	}
 	
-	public void setMessageCustomArray(int [] newValues) {
-		values = newValues;
-	}
 	
 	public void simulate() {
 		value = value - 1;
 		
-		if (values != null) {
-			for (int i = 0; i < values.length; i++) {
-				values[i] = values[i] - 1;
-			}
-		}
 	}
 	
 	public void setMessageCustom(int newValue) {
@@ -80,28 +72,15 @@ public class difference_sim {
 		return value;
 	}
 	
-	public int[] getMessageCustomArray() {
-		return values;
-	}
 	
 	public void simulateCustom() {
 		value = value - 1;
 		
-		if (values != null) {
-			for (int i = 0; i < values.length; i++) {
-				values[i] = values[i] - 1;
-			}
-		}
 	}
 	
 	public void generateInitialMessageCustom() {
 		value = 10;
 		
-		values = new int[5];
-		for (int i = 0; i < values.length; i++) {
-			values[i] = 10;
-		}
-		updateHistory();
 	}
 	
 	void updateHistory() {

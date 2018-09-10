@@ -2,132 +2,25 @@ package main;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.StringReader;
 import java.lang.reflect.Array;
-import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.concurrent.TimeUnit;
 
 import javax.json.Json;
 import javax.json.JsonArray;
+import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
+import javax.json.JsonValue;
 
 import mainServer.RTILib;
 
-/*
- * File format:
- * 
- * Configuration.txt {
- * HostName
- * 127.0.1.1
- * PortNum
- * 43959
- * 
- * SimulatorName
- * PressureSim_srti
- * ChannelsToBeSubscribed
- * Scenario
- * WindSpeed
- * Damage
- * StepRelationship
- * 0 1 0		???
- * ChannelsToBePublished
- * Pressure
- * 
- *} 
- * 
- *MsgDefinition.txt {
- *msg_Scenario
- *string
- *gstep
- *string
- *nbuildings
- *string
- *location
- *string
- *buildinginfo
- *
- *... XXX
- *
- *}
- * 
- * XXXXXXXXXXXXXXXXXXX
- * 
- * Connection.txt
- * {
- * HostName
- * 127.0.1.1
- * PortNum
- * 43959
- * }
- * 
- * Configuration.txt
- * {
- * 
- * SimulatorName
- * PressureSim_srti
- * ChannelsToBeSubscribed
- * Scenario
- * ScenarioFunction0
- * WindSpeed
- * WindFunction0
- * Damage
- * DamageFunction0
- * ChannelsToBePublished
- * Pressure
- * PressureFunction0_gstep
- * PressureFunction0_pres
- * 
- * SimulatorName
- * WindSpeed_srti
- * ChannelsToBeSubscribed
- * Scenario
- * ScnarioFunction1
- * Pressure
- * PressureFunction1
- * ChannelsToBePublished
- * WindSpeed
- * WindSpeedFunction1_gstep
- * WindSpeedFunction1_pres
- * 
- * ...
- * 
- * }
- * 
- * MsgDefinition.txt{
- * 
- * Name
- * Scenario
- * Values
- * long
- * gstep
- * int
- * value
- * int[]
- * history
- * 
- * Name
- * WindSpeed
- * Values
- * ...
- * 
- * 
- * }
- * 
- *
- * 
- * */
 
 public class Wrapper {
 
@@ -148,11 +41,17 @@ public class Wrapper {
 	private Class simulationClass;
 	private Object simulation;
 	private Method[] simMethods;
+	private Field[] simVars;
 
 	public class FunctionChannel{
 		public String functionName = "";
 		public Map<Integer, String> functionParameters;
 		public String functionKeyName = "";
+	}
+	
+	public class VarChannel{
+		public String varName = "";
+		public String valueName = "";
 	}
 	
 	public class Channel{
@@ -167,9 +66,9 @@ public class Wrapper {
 		public boolean initial = false;
 		public int historyDependent = 0;
 		
-		//!!!! EXTRA (Java, 2018-07-18)
 		public ArrayList<FunctionChannel> functionChannels;
-		//!!!!
+		
+		public ArrayList<VarChannel> varChannels;
 	}
 	private ArrayList<Channel> subscribedChannels = new ArrayList<Channel>();
 	private ArrayList<Channel> publishedChannels = new ArrayList<Channel>();
@@ -187,12 +86,6 @@ public class Wrapper {
 		public ArrayList<String> elementTypes;
 	}
 	private ArrayList<MessageDefinition> messageDefinitionList = new ArrayList<MessageDefinition>();
-	
-	public class FunctionCall{
-		public String messageName;
-		public Object[] parameters;
-	}
-	private ArrayList<FunctionCall> functionBuffer = new ArrayList<FunctionCall>();
 	
 	private RTILib lib;
 	
@@ -219,6 +112,7 @@ public class Wrapper {
 			simulationClass = Class.forName(simulation_name);
 			simulation = simulationClass.newInstance();
 			simMethods = simulationClass.getMethods();
+			simVars = simulationClass.getDeclaredFields();
 			
 			lib.setDebugOutput(true);
 			lib.setSimName(simulation_name);
@@ -236,21 +130,19 @@ public class Wrapper {
 				while(true) {
 					String message = lib.getNextMessage(channel, kTimeToWait);
 					if (!message.isEmpty() || message.length() > 2) {
-						HandleSubscribeMessageComplex(channel, message);
-						//HandleSubscribeMessageSimple(channel, message);
+						HandleSubscribeMessageVar(channel, message);
 						break;
 					}
 				}
 			}
 			
 			System.out.println("Testing initialized channels.");
-			//HandleInitializeSimple();
-			HandleInitializeComplex();
+			HandleInitializeSimple();
+
 			for (Channel channel: publishedChannels) {
 				// if message is an initial type, then publish
 				if (channel.initial) {
-					//HandlePublishMessageSimple(channel.channelName);
-					HandlePublishMessageComplex(channel.channelName);
+					HandlePublishMessageVar(channel.channelName);
 				}
 			}
 			
@@ -261,24 +153,17 @@ public class Wrapper {
 						System.out.println("Receiving subscribed message : " + channel);
 						String message = lib.getNextMessage(channel, kTimeToWait);
 						if (!message.isEmpty() && message.length() > 2) {
-							// same as parse message to "setMessage()" above.
-							HandleSubscribeMessageComplex(channel, message);
-							//HandleSubscribeMessageSimple(channel, message);
+							HandleSubscribeMessageVar(channel, message);
 							break;
 						}
 					}
 				}
-				System.out.println("Received all expected messages for a timestep.");
-				HandleSubscribeMessageComplexSend();
 				
-				//HandleSimulateSimple();
-				System.out.println("Simulate!");
-				HandleSimulateComplex();
-				
+				HandleSimulateSimple();
+
 				for (String channel: published_channels) {
 					System.out.println("Handle publishing message : " + channel);
-					//HandlePublishMessageSimple(channel);
-					HandlePublishMessageComplex(channel);
+					HandlePublishMessageVar(channel);
 				}
 				
 				++gstep;
@@ -294,170 +179,52 @@ public class Wrapper {
 		System.out.println("Ending SRTI clients with third-party simulations.");
 		
 	}
-	
-	
-	public void HandleSubscribeMessageSimple(String channel, String message) {
-		String content = lib.getMessageContent(message);
-		Object[] params = {channel, content};
-		InvokeFunction("setMessage", params);
-	}
-	
-	public void HandleSubscribeMessageComplex(String channel, String message) {
-		/* As of 2018-07-12,
-		 * C++ version of wrapper relies on passing json object directly.
-		 * We will test passing string instead here in Java.
-		 * */
+
+	public void HandleSubscribeMessageVar(String channel, String message) {
 		String content = lib.getMessageContent(message);
 
-		ArrayList<String> messageNameList = new ArrayList<String>();
-		ArrayList<Object[]> parameterList = new ArrayList<Object[]>();
-		ArrayList<Integer> parameterMaxSize = new ArrayList<Integer>();
-		
-		// set max size of array of parameters
 		for (int i = 0; i < subscribedChannels.size(); i++) {
 			if (subscribedChannels.get(i).channelName.compareTo(channel) == 0) {
-				if (subscribedChannels.get(i).functionChannels.size() > 0) {
-					for (int j = 0; j < subscribedChannels.get(i).functionChannels.size(); j++) {
-						String functionName = subscribedChannels.get(i).functionChannels.get(j).functionName;
-						if (messageNameList.contains(functionName)) {
-							int index = messageNameList.indexOf(functionName);
-							Set<Integer> parameterIndexes = subscribedChannels.get(i).functionChannels.get(j).functionParameters.keySet();
-							for (Integer pIndex : parameterIndexes) {
-								if (parameterMaxSize.get(index) < pIndex) {
-									parameterMaxSize.set(index, pIndex);
-								}
-							}
-						} else {
-							messageNameList.add(functionName);
-							parameterMaxSize.add(0);
-							int index = messageNameList.indexOf(functionName);
-							Set<Integer> parameterIndexes = subscribedChannels.get(i).functionChannels.get(j).functionParameters.keySet();
-							for (Integer pIndex : parameterIndexes) {
-								if (parameterMaxSize.get(index) < pIndex) {
-									parameterMaxSize.set(index, pIndex);
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-		
-		for (int i = 0; i < messageNameList.size(); i++) {
-			parameterList.add(new Object[parameterMaxSize.get(i) + 1]);
-		}
-		
-		// set values into parameters array
-		for (int i = 0; i < messageNameList.size(); i++) {
-			if (subscribedChannels.get(i).channelName.compareTo(channel) == 0) {
-				if (subscribedChannels.get(i).functionChannels.size() > 0) {
-					for (int j = 0; j < subscribedChannels.get(i).functionChannels.size(); j++) {
-						String functionName = subscribedChannels.get(i).functionChannels.get(j).functionName;
-						int index = messageNameList.indexOf(functionName);
-						Set<Integer> parameterIndexes = subscribedChannels.get(i).functionChannels.get(j).functionParameters.keySet();
-						for (Integer pIndex : parameterIndexes) {
-							//if (parameterMaxSize.get(index) < pIndex) {
-							//	parameterMaxSize.set(index, pIndex);
-							//}
-							//System.out.println("i = " + i + " j = " + j + " pIndex = " + pIndex + " parameterList.size() = " + parameterList.size() 
-							//	+ " subscribedChannels.size() = " + subscribedChannels.size() + " functionChannels.size() = " + subscribedChannels.get(i).functionChannels.size()
-							//	+ " functionParameters.size() = " + subscribedChannels.get(i).functionChannels.get(j).functionParameters.size());
-							// need to get the expected type from the message, and cast it here so it can be passed successfully to the function later.
-							String pType = "default";
-							String pName = subscribedChannels.get(i).functionChannels.get(j).functionParameters.get(pIndex);
-							for (int k = 0; k < messageDefinitionList.size(); k++) {
-								if (messageDefinitionList.get(k).messageName.compareTo(channel) == 0) {
-									//pType
-									pType = messageDefinitionList.get(k).elementTypes.get(messageDefinitionList.get(k).elementNames.indexOf(pName));
-								}
-							}
-							if (lib.isJsonArray(pName, content) == true) {
-								parameterList.get(i)[pIndex] = convertFromString(lib.getJsonArray(lib.getJsonObject(pName, content)), pType);
-							} else {
-								parameterList.get(i)[pIndex] = convertFromString(lib.getJsonObject(pName, content), pType);
-							}
-						}
-					}
-				}
-			}
-		}
-		
-		// add (or modify if already exists) to global list
-		for (int i = 0; i < messageNameList.size(); i++) {
-			boolean alreadyInBuffer = false;
-			for (int j = 0; j < functionBuffer.size(); j++) {
-				if (functionBuffer.get(j).messageName.compareTo(messageNameList.get(i)) == 0) {
-					alreadyInBuffer = true;
-					for (int k = 0; k < parameterList.get(i).length; k++) {
-						if (parameterList.get(i)[k] != null) {
-							functionBuffer.get(j).parameters[k] = parameterList.get(i)[k];
-						}
-					}
-					break;
-				}
-			}
-			if (alreadyInBuffer == false) {
-				FunctionCall f = new FunctionCall();
-				f.messageName = messageNameList.get(i);
-				f.parameters = parameterList.get(i);
-				functionBuffer.add(f);
-			}
-		}
-		
-		
-		/*
-		for (int i = 0; i < subscribedChannels.size(); i++) {
-			if (subscribedChannels.get(i).channelName.compareTo(channel) == 0) {
-				if (subscribedChannels.get(i).functionChannels.size() > 0) {
-					for (int j = 0; j < subscribedChannels.get(i).functionChannels.size(); j++) {
-						String functionName = subscribedChannels.get(i).functionChannels.get(j).functionName;
-						ArrayList<Object> contentParameters = new ArrayList<Object>();
-						int parameterIndex = 0;
-						String parameterName = subscribedChannels.get(i).functionChannels.get(j).functionParameters.get("" + parameterIndex);
-						while (parameterName.length() > 0) {
-							String parameter = lib.getJsonObject(parameterName, content);
-							MessageDefinition messageDef = null;
-							for (MessageDefinition md: messageDefinitionList) {
-								if (md.messageName.compareTo(channel) == 0) {
-									messageDef = md;
-									break;
-								}
-							}
-							contentParameters.add(convertFromString(parameter, messageDef.elementTypes.get(messageDef.elementNames.indexOf(parameterName))));
-							parameterIndex++;
-							parameterName = subscribedChannels.get(i).functionChannels.get(j).functionParameters.get("" + parameterIndex);
-						}
-						Object[] params = contentParameters.toArray();
-						InvokeFunction(functionName, params);
-					}
-				} else {
-					Object[] params = {channel, content};
-					InvokeFunction("setMessage", params);
-				}
-			}
-		}
-		*/
-		
-	}
+				if (subscribedChannels.get(i).varChannels.size() > 0) {
+					for (int j = 0; j < subscribedChannels.get(i).varChannels.size(); j++) {
+						String valueName = subscribedChannels.get(i).varChannels.get(j).valueName;
+						String varName = subscribedChannels.get(i).varChannels.get(j).varName;
+						for (int k = 0; k < simVars.length; k++) {
+							if (simVars[k].getName().compareTo(varName) == 0) {
+								String obString = lib.getJsonObject(valueName, content);
+								String obStringNoQ = GetStringNoQuotes(obString);
+								JsonReader reader = Json.createReader(new StringReader(obStringNoQ));
 
-	public void HandleSubscribeMessageComplexSend() {
-		/* Future development:
-		 * - if using "HandleSubscribeMessageComplex()" instead of "HandleSubscribeMessageSimple()",
-		 * 		individual parameters can be defined to attribute to specific functions in a specific order.
-		 * 		But what if a single function in the simulation is meant to accept input from 2 or more messages simultaneously?
-		 * 		We would have to store function names and their parameters in a buffer in "HandleSubscribeMessageComplex()",
-		 * 		and then use this function to call them after all expected messages are received.
-		 * */
-		System.out.println("HandleSubscribeMessageComplexSend() called.");
-		if (functionBuffer.isEmpty() == false) {
-			for (FunctionCall f: functionBuffer) {
-				System.out.println("Calling function = " + f.messageName);
-				InvokeFunction(f.messageName, f.parameters);
+								boolean isOfArray = false;
+								try {
+									JsonValue jValue = reader.read();
+									isOfArray = jValue instanceof JsonArray;
+								} catch (Exception e) {
+									isOfArray = false;
+								}
+								
+								if (valueName.compareTo("") == 0) {
+									SetVar(simVars[k], content);
+								} else if (isOfArray) {
+									JsonReader reader2 = Json.createReader(new StringReader(obStringNoQ));
+									JsonArray jsonA = reader2.readArray();
+									Object obArray = SetVarArray(simVars[k], jsonA, 1);
+									try {
+										simVars[k].set(simulation, obArray);
+									} catch (Exception e) {
+										e.printStackTrace();
+									}
+								} else {
+									SetVar(simVars[k], lib.getJsonObject(valueName, content));
+								}
+							}
+						}
+					}
+				}
 			}
-			functionBuffer.clear();
-		}
+		}	
 	}
-	
+						
 	public void HandleInitializeSimple() {
 		InvokeFunction("generateInitialMessage");
 	}
@@ -474,72 +241,38 @@ public class Wrapper {
 		InvokeFunction(simulateFunction);
 	}
 	
-	public void HandlePublishMessageSimple(String channel) {
-		Object[] params = {channel};
-		String getMessage = (String)InvokeFunction("getMessage", params);
-		System.out.println("Publish simple message = " + getMessage);
-		lib.publish(channel, getMessage);
-	}
-	
-	public void HandlePublishMessageComplex(String channel) {
-		/* For the complex version, multiple functions might contribute to a message to be published.
-		 * - map<String, Object> = <"name": "value">
-		 * - value = function();
-		 * 		- assume no parameters in sim functions that provide values
-		 * 
-		 * - in Difference.json,
-		 * 		- under "publishedChannels", add "functionChannel" array with "functionName" and "key"
-		 * - can "publish" after each "publishedChannel" is read, doesn't need to wait for others. 
-		 * 		- just get every required value, put into message, publish.
-		 * 		- with Subscribe, had to receive multiple messages from server that are split between functions in simulation. Publish has more instant access.
-		 * */
-		
-		// check publishedChannels, 
-		//		channel = publishedChannels.get(i).channelName
-		// 		String message = "";
-		boolean sentMessage = false;
+	public void HandlePublishMessageVar(String channel) {
 		String message = "";
-		for (int i = 0; i < publishedChannels.size(); i++) {
-			if (publishedChannels.get(i).channelName.compareTo(channel) == 0) {
-				for (int j = 0; j < publishedChannels.get(i).functionChannels.size(); j++) {
-					System.out.println("PublishMessageComplex : calling function = " + publishedChannels.get(i).functionChannels.get(i).functionName);
-					Object invokeFunctionObject = InvokeFunction(publishedChannels.get(i).functionChannels.get(i).functionName);
-					System.out.println("PublishMessageComplex object = " + invokeFunctionObject);
-					if (invokeFunctionObject.getClass().isArray() == true) {
-						System.out.println("Publishing message... THIS IS AN ARRAY!");
-						System.out.println("Array object = " + invokeFunctionObject);
-						//Object[] invokeFunctionArray = (Object[])invokeFunctionObject;
-						//String[] stringValues = (String[])invokeFunctionArray[0];
-						Object[] invokeFunctionArray = new Object[Array.getLength(invokeFunctionObject)];
-						String[] stringValues = new String[invokeFunctionArray.length];
-						for (int k = 0; k < invokeFunctionArray.length; k++) {
-							invokeFunctionArray[k] = Array.get(invokeFunctionObject, k);
-							stringValues[k] = "" + invokeFunctionArray[k];
+		try {
+			for (int i = 0; i < publishedChannels.size(); i++) {
+				if (publishedChannels.get(i).channelName.compareTo(channel) == 0) {
+					for (int j = 0; j < publishedChannels.get(i).varChannels.size(); j++) {
+						for (int k = 0; k < simVars.length; k++) {
+							if (publishedChannels.get(i).varChannels.get(j).varName.compareTo(simVars[k].getName()) == 0) {
+								if (simVars[k].getType().isArray() == true) {
+									message = lib.setJsonObject(message,
+										publishedChannels.get(i).varChannels.get(j).valueName, 
+										"" + MakeJsonArray(simVars[k].get(simulation)).toString());
+								} else {
+									message = lib.setJsonObject(message, 
+										publishedChannels.get(i).varChannels.get(j).valueName, "" + simVars[k].get(simulation));
+								}
+								break;
+							}
 						}
-						//System.out.println("New array = " + invokeFunctionArray[0]);
-						
-						message = lib.setJsonArray(message, 
-								publishedChannels.get(i).functionChannels.get(j).functionKeyName, 
-								stringValues);
-					} else {
-						message = lib.setJsonObject
-								(message, 
-								publishedChannels.get(i).functionChannels.get(j).functionKeyName, 
-								"" + invokeFunctionObject);//(Integer)(InvokeFunction(publishedChannels.get(i).functionChannels.get(i).functionName)));
 					}
+					//WARNING: C++ wrapper seems to assume non-string values where appropriate in messages.
+					// This is fine if simulations make message directly, but contradicts original "setJsonObject" function in RTILib, causing an assertion error.
+					// C++ should be updated to support both.
+					lib.publish(channel, message);
+					break;
 				}
-				//WARNING: C++ wrapper seems to assume non-string values where appropriate in messages.
-				// This is fine if simulations make message directly, but contradicts original "setJsonObject" function in RTILib, causing an assertion error.
-				// C++ should be updated to support both.
-				lib.publish(channel, message);
-				sentMessage = true;
-				break;
 			}
+		} catch (Exception e) {
+			System.out.println("Had trouble publishing message : " + channel);
+			e.printStackTrace();
 		}
-		
-		if (sentMessage == false) {
-			HandlePublishMessageSimple(channel);
-		}
+
 	}
 	
 	public Object InvokeFunction(String functionName) {
@@ -555,11 +288,11 @@ public class Wrapper {
 			try {
 				returnObject = getMethod.invoke(simulation);
 			} catch (Exception e) {
-				System.out.println("Something is wrong trying to call funciton " + functionName + ", closing now...");
+				System.out.println("Something is wrong trying to call funciton " + functionName + "...");
 				e.printStackTrace();
 			}
 		} else {
-			System.out.println("Something is wrong trying to invoke 'getMessage' from simulaiton...");
+			System.out.println("Can't find function ' " + functionName + " ' from simulaiton, not calling it...");
 		}
 		
 		return returnObject;
@@ -576,392 +309,127 @@ public class Wrapper {
 		}
 		if (getMethod != null) {
 			try {
-				System.out.println("Sending parameters to function...");
-				for (int i = 0; i < params.length; i++) {
-					System.out.println("parameter at " + i + " is = " + params[i].getClass().getName());
-					System.out.println("expected type = " + getMethod.getParameterTypes()[i].getName());
-				}
 				returnObject = getMethod.invoke(simulation, params);
 			} catch (Exception e) {
-				System.out.println("Something is wrong trying to call function " + functionName + ", closing now...");
+				System.out.println("Something is wrong trying to call function ' " + functionName + " ' ...");
 				e.printStackTrace();
 			}
 		} else {
-			System.out.println("Something is wrong trying to invoke 'getMessage' from simulaiton...");
+			System.out.println("Can't find function ' " + functionName + " ' from simulaiton, not calling it...");
 		}
 		
 		return returnObject;
 	}
 
-	public Object convertFromString(Object originalObject, Class newObjectType) {
-		Object returnObject = null;
-		
-		String classType = newObjectType.getTypeName();
-		System.out.println("convertFromString 1 = " + originalObject + " " + classType);
-		try {
-			if (newObjectType.isArray() == false) {
-				if (classType.contains("int")|| classType.contains("java.lang.Integer")) {
-					returnObject = Integer.parseInt(getStringNoQuotes("" + originalObject));
-				} else if (classType.contains("long") || classType.contains("java.lang.Long")) {
-					returnObject = Long.parseLong(getStringNoQuotes("" + originalObject));
-				} else if (classType.contains("float") || classType.contains("java.lang.Float")) {
-					returnObject = Float.parseFloat(getStringNoQuotes("" + originalObject));
-				} else if (classType.contains("double") || classType.contains("java.lang.Double")) {
-					returnObject = Double.parseDouble(getStringNoQuotes("" + originalObject));
-				} else if (classType.contains("boolean") || classType.contains("java.lang.Boolean")) {
-					returnObject = Boolean.parseBoolean(getStringNoQuotes("" + originalObject));
-				} else if (classType.contains("String") || classType.contains("java.lang.String")) {
-					returnObject = getStringNoQuotes("" + originalObject);
-				} else {
-					returnObject = newObjectType.cast(originalObject);
-				}
-			} 
-		} catch (Exception e) {
-			System.out.println("Some serious error trying to convert the object.");
-			e.printStackTrace();
-		}
-		
-		return returnObject;
-	}
-	
-	public Object convertFromString(Object originalObject, String newObjectType) {
-		Object returnObject = null;
-		
-		String classType = newObjectType;
-		System.out.println("convertFromString 2 = " + originalObject + " " + classType);
-		try {
-				if (classType.contains("int")|| classType.contains("java.lang.Integer")) {
-					returnObject = Integer.parseInt(getStringNoQuotes("" + originalObject));
-				} else if (classType.contains("long") || classType.contains("java.lang.Long")) {
-					returnObject = Long.parseLong(getStringNoQuotes("" + originalObject));
-				} else if (classType.contains("float") || classType.contains("java.lang.Float")) {
-					returnObject = Float.parseFloat(getStringNoQuotes("" + originalObject));
-				} else if (classType.contains("double") || classType.contains("java.lang.Double")) {
-					returnObject = Double.parseDouble(getStringNoQuotes("" + originalObject));
-				} else if (classType.contains("boolean") || classType.contains("java.lang.Boolean")) {
-					returnObject = Boolean.parseBoolean(getStringNoQuotes("" + originalObject));
-				} else if (classType.contains("String") || classType.contains("java.lang.String")) {
-					returnObject = getStringNoQuotes("" + originalObject);
-				} else {
-					returnObject = getStringNoQuotes("" + originalObject);
-				}
-		} catch (Exception e) {
-			System.out.println("Some serious error trying to convert the object.");
-			e.printStackTrace();
-		}
-		
-		return returnObject;
-	}
-	
-	/*public Object[] convertFromString(Object[] originalObject, Class newObjectType) {
-		Object [] returnObject = null;
-		//returnObject = new Object[originalObject.length];
-		//returnObject = new Object[10];
-		
-	
-
-		String classType = newObjectType.getTypeName();
-		System.out.println("convertFromString 3 = " + originalObject + " " + classType);
-		try {
-			if (newObjectType.isArray() == true) {
-				if (classType.contains("int")|| classType.contains("java.lang.Integer")) {
-					returnObject = new Integer[originalObject.length];
-					//returnObject = ArrayUtils.
-					//Arrays.stream(returnObject).mapToInt(Integer::intValue).toArray();//new int[5];
-					int [] newInt = new int[5];
-					return newInt;
-				} else if (classType.contains("long") || classType.contains("java.lang.Long")) {
-					returnObject = new Long[originalObject.length];
-				} else if (classType.contains("float") || classType.contains("java.lang.Float")) {
-					returnObject = new Float[originalObject.length];
-				} else if (classType.contains("double") || classType.contains("java.lang.Double")) {
-					returnObject = new Double[originalObject.length];
-				} else if (classType.contains("boolean") || classType.contains("java.lang.Boolean")) {
-					returnObject = new Boolean[originalObject.length];
-				} else if (classType.contains("String") || classType.contains("java.lang.String")) {
-					returnObject = new String[originalObject.length];
-				} else {
-					returnObject = new Object[originalObject.length];
-				}
-				
-				for (int i = 0; i < originalObject.length; i++) {
-					if (classType.contains("int")|| classType.contains("java.lang.Integer")) {
-						returnObject[i] = Integer.parseInt(getStringNoQuotes("" + originalObject[i]));
-					} else if (classType.contains("long") || classType.contains("java.lang.Long")) {
-						returnObject[i] = Long.parseLong(getStringNoQuotes("" + originalObject[i]));
-					} else if (classType.contains("float") || classType.contains("java.lang.Float")) {
-						returnObject[i] = Float.parseFloat(getStringNoQuotes("" + originalObject[i]));
-					} else if (classType.contains("double") || classType.contains("java.lang.Double")) {
-						returnObject[i] = Double.parseDouble(getStringNoQuotes("" + originalObject[i]));
-					} else if (classType.contains("boolean") || classType.contains("java.lang.Boolean")) {
-						returnObject[i] = Boolean.parseBoolean(getStringNoQuotes("" + originalObject[i]));
-					} else if (classType.contains("String") || classType.contains("java.lang.String")) {
-						returnObject[i] = getStringNoQuotes("" + originalObject[i]);
-					} else {
-						returnObject[i] = newObjectType.cast(originalObject[i]);
-					}
-				}
-			} 
-		} catch (Exception e) {
-			System.out.println("Some serious error trying to convert the object.");
-			e.printStackTrace();
-		}
-		
-		return returnObject;
-	}
-	
-	public Object[] convertFromString(Object[] originalObject, String newObjectType) {
-		Object [] returnObject = null;
-		//returnObject = new Object[originalObject.length];
-		
-		Object g;
-		g = new int[5];
-		
-		String classType = newObjectType;
-		System.out.println("convertFromString 4 = " + originalObject + " " + classType);
-		try {
-			if (classType.contains("int")|| classType.contains("java.lang.Integer")) {
-				returnObject = new Integer[originalObject.length];
-			} else if (classType.contains("long") || classType.contains("java.lang.Long")) {
-				returnObject = new Long[originalObject.length];
-			} else if (classType.contains("float") || classType.contains("java.lang.Float")) {
-				returnObject = new Float[originalObject.length];
-			} else if (classType.contains("double") || classType.contains("java.lang.Double")) {
-				returnObject = new Double[originalObject.length];
-			} else if (classType.contains("boolean") || classType.contains("java.lang.Boolean")) {
-				returnObject = new Boolean[originalObject.length];
-			} else if (classType.contains("String") || classType.contains("java.lang.String")) {
-				returnObject = new String[originalObject.length];
-			} else {
-				returnObject = new Object[originalObject.length];
-			}
-			
-				for (int i = 0; i < originalObject.length; i++) {
-					if (classType.contains("int")|| classType.contains("java.lang.Integer")) {
-						returnObject[i] = Integer.parseInt(getStringNoQuotes("" + originalObject[i]));
-					} else if (classType.contains("long") || classType.contains("java.lang.Long")) {
-						returnObject[i] = Long.parseLong(getStringNoQuotes("" + originalObject[i]));
-					} else if (classType.contains("float") || classType.contains("java.lang.Float")) {
-						returnObject[i] = Float.parseFloat(getStringNoQuotes("" + originalObject[i]));
-					} else if (classType.contains("double") || classType.contains("java.lang.Double")) {
-						returnObject[i] = Double.parseDouble(getStringNoQuotes("" + originalObject[i]));
-					} else if (classType.contains("boolean") || classType.contains("java.lang.Boolean")) {
-						returnObject[i] = Boolean.parseBoolean(getStringNoQuotes("" + originalObject[i]));
-					} else if (classType.contains("String") || classType.contains("java.lang.String")) {
-						returnObject[i] = getStringNoQuotes("" + originalObject[i]);
-					} else {
-						returnObject[i] = getStringNoQuotes("" + originalObject[i]);
-					}
-				}
-		} catch (Exception e) {
-			System.out.println("Some serious error trying to convert the object.");
-			e.printStackTrace();
-		}
-		
-		return returnObject;
-	}*/
-	
-	public Object convertFromString(Object[] originalObject, Class newObjectType) {
-		Object returnObject = null;
-		
-		String classType = newObjectType.getTypeName();
-		System.out.println("convertFromString 3 = " + originalObject + " " + classType);
-		try {
-				// in Java, (int array) != (Integer array), so we need to set the array type carefully to pass to sim function
-				
-				if (classType.contains("java.lang.Integer")) {
-					Integer[] ob = new Integer[originalObject.length];
-					for (int i = 0; i < originalObject.length; i++) {
-						ob[i] = Integer.parseInt(getStringNoQuotes("" + originalObject[i]));
-					}
-					returnObject = ob;
-				} else if (classType.contains("java.lang.Long")) {
-					Long[] ob = new Long[originalObject.length];
-					for (int i = 0; i < originalObject.length; i++) {
-						ob[i] = Long.parseLong(getStringNoQuotes("" + originalObject[i]));
-					}
-					returnObject = ob;
-				} else if (classType.contains("java.lang.Float")) {
-					Float[] ob = new Float[originalObject.length];
-					for (int i = 0; i < originalObject.length; i++) {
-						ob[i] = Float.parseFloat(getStringNoQuotes("" + originalObject[i]));
-					}
-					returnObject = ob;
-				} else if (classType.contains("java.lang.Double")) {
-					Double[] ob = new Double[originalObject.length];
-					for (int i = 0; i < originalObject.length; i++) {
-						ob[i] = Double.parseDouble(getStringNoQuotes("" + originalObject[i]));
-					}
-					returnObject = ob;
-				} else if (classType.contains("java.lang.Boolean")) {
-					Boolean[] ob = new Boolean[originalObject.length];
-					for (int i = 0; i < originalObject.length; i++) {
-						ob[i] = Boolean.parseBoolean(getStringNoQuotes("" + originalObject[i]));
-					}
-					returnObject = ob;
-				} else if (classType.contains("java.lang.String")) {
-					String[] ob = new String[originalObject.length];
-					for (int i = 0; i < originalObject.length; i++) {
-						ob[i] = (getStringNoQuotes("" + originalObject[i]));
-					}
-					returnObject = ob;
-				}
-				else if (classType.contains("int")) {
-					int[] ob = new int[originalObject.length];
-					for (int i = 0; i < originalObject.length; i++) {
-						ob[i] = Integer.parseInt(getStringNoQuotes("" + originalObject[i]));
-					}
-					returnObject = ob;
-				} else if (classType.contains("long")) {
-					long[] ob = new long[originalObject.length];
-					for (int i = 0; i < originalObject.length; i++) {
-						ob[i] = Long.parseLong(getStringNoQuotes("" + originalObject[i]));
-					}
-					returnObject = ob;
-				} else if (classType.contains("float")) {
-					float[] ob = new float[originalObject.length];
-					for (int i = 0; i < originalObject.length; i++) {
-						ob[i] = Float.parseFloat(getStringNoQuotes("" + originalObject[i]));
-					}
-					returnObject = ob;
-				} else if (classType.contains("double")) {
-					double[] ob = new double[originalObject.length];
-					for (int i = 0; i < originalObject.length; i++) {
-						ob[i] = Double.parseDouble(getStringNoQuotes("" + originalObject[i]));
-					}
-					returnObject = ob;
-				} else if (classType.contains("boolean")) {
-					boolean[] ob = new boolean[originalObject.length];
-					for (int i = 0; i < originalObject.length; i++) {
-						ob[i] = Boolean.parseBoolean(getStringNoQuotes("" + originalObject[i]));
-					}
-					returnObject = ob;
-				} else if (classType.contains("String")) {
-					String[] ob = new String[originalObject.length];
-					for (int i = 0; i < originalObject.length; i++) {
-						ob[i] = (getStringNoQuotes("" + originalObject[i]));
-					}
-					returnObject = ob;
-				} else {
-					Object[] ob = new Object[originalObject.length];
-					for (int i = 0; i < originalObject.length; i++) {
-						ob[i] = newObjectType.cast(originalObject[i]);
-					}
-					returnObject = ob;
-				}
-
-		} catch (Exception e) {
-			System.out.println("Some serious error trying to convert the object.");
-			e.printStackTrace();
-		}
-		
-		return returnObject;
-	}
-	
-	public Object convertFromString(Object[] originalObject, String newObjectType) {
-		Object returnObject = null;
-		
-		String classType = newObjectType;
-		System.out.println("convertFromString 3 = " + originalObject + " " + classType);
-		try {
-				// in Java, (int array) != (Integer array), so we need to set the array type carefully to pass to sim function
-				
-				if (classType.contains("java.lang.Integer")) {
-					Integer[] ob = new Integer[originalObject.length];
-					for (int i = 0; i < originalObject.length; i++) {
-						ob[i] = Integer.parseInt(getStringNoQuotes("" + originalObject[i]));
-					}
-					returnObject = ob;
-				} else if (classType.contains("java.lang.Long")) {
-					Long[] ob = new Long[originalObject.length];
-					for (int i = 0; i < originalObject.length; i++) {
-						ob[i] = Long.parseLong(getStringNoQuotes("" + originalObject[i]));
-					}
-					returnObject = ob;
-				} else if (classType.contains("java.lang.Float")) {
-					Float[] ob = new Float[originalObject.length];
-					for (int i = 0; i < originalObject.length; i++) {
-						ob[i] = Float.parseFloat(getStringNoQuotes("" + originalObject[i]));
-					}
-					returnObject = ob;
-				} else if (classType.contains("java.lang.Double")) {
-					Double[] ob = new Double[originalObject.length];
-					for (int i = 0; i < originalObject.length; i++) {
-						ob[i] = Double.parseDouble(getStringNoQuotes("" + originalObject[i]));
-					}
-					returnObject = ob;
-				} else if (classType.contains("java.lang.Boolean")) {
-					Boolean[] ob = new Boolean[originalObject.length];
-					for (int i = 0; i < originalObject.length; i++) {
-						ob[i] = Boolean.parseBoolean(getStringNoQuotes("" + originalObject[i]));
-					}
-					returnObject = ob;
-				} else if (classType.contains("java.lang.String")) {
-					String[] ob = new String[originalObject.length];
-					for (int i = 0; i < originalObject.length; i++) {
-						ob[i] = (getStringNoQuotes("" + originalObject[i]));
-					}
-					returnObject = ob;
-				}
-				else if (classType.contains("int")) {
-					int[] ob = new int[originalObject.length];
-					for (int i = 0; i < originalObject.length; i++) {
-						ob[i] = Integer.parseInt(getStringNoQuotes("" + originalObject[i]));
-					}
-					returnObject = ob;
-				} else if (classType.contains("long")) {
-					long[] ob = new long[originalObject.length];
-					for (int i = 0; i < originalObject.length; i++) {
-						ob[i] = Long.parseLong(getStringNoQuotes("" + originalObject[i]));
-					}
-					returnObject = ob;
-				} else if (classType.contains("float")) {
-					float[] ob = new float[originalObject.length];
-					for (int i = 0; i < originalObject.length; i++) {
-						ob[i] = Float.parseFloat(getStringNoQuotes("" + originalObject[i]));
-					}
-					returnObject = ob;
-				} else if (classType.contains("double")) {
-					double[] ob = new double[originalObject.length];
-					for (int i = 0; i < originalObject.length; i++) {
-						ob[i] = Double.parseDouble(getStringNoQuotes("" + originalObject[i]));
-					}
-					returnObject = ob;
-				} else if (classType.contains("boolean")) {
-					boolean[] ob = new boolean[originalObject.length];
-					for (int i = 0; i < originalObject.length; i++) {
-						ob[i] = Boolean.parseBoolean(getStringNoQuotes("" + originalObject[i]));
-					}
-					returnObject = ob;
-				} else if (classType.contains("String")) {
-					String[] ob = new String[originalObject.length];
-					for (int i = 0; i < originalObject.length; i++) {
-						ob[i] = (getStringNoQuotes("" + originalObject[i]));
-					}
-					returnObject = ob;
-				} else {
-					Object[] ob = new Object[originalObject.length];
-					for (int i = 0; i < originalObject.length; i++) {
-						ob[i] = (getStringNoQuotes("" + originalObject[i]));
-					}
-					returnObject = ob;
-				}
-				
-		} catch (Exception e) {
-			System.out.println("Some serious error trying to convert the object.");
-			e.printStackTrace();
-		}
-		
-		return returnObject;
-	}
-	
-	public String getStringNoQuotes(String originalString) {
+	public String GetStringNoQuotes(String originalString) {
 		
 		if (originalString.charAt(0) == '\"' && originalString.charAt(originalString.length() - 1) == '\"') {
 			originalString = originalString.substring(1, originalString.length() - 1);
 		}
 		
 		return originalString;
+	}
+
+	public void SetVar(Field setVar, Object originalObject) {
+		String classType = setVar.getType().getTypeName();
+		
+		try {
+			if (setVar.getType().isArray() == false) {
+				if (classType.contains("int")|| classType.contains("java.lang.Integer")) {
+					setVar.setInt(simulation, Integer.parseInt(GetStringNoQuotes("" + originalObject)));
+				} else if (classType.contains("long") || classType.contains("java.lang.Long")) {
+					setVar.setLong(simulation, Long.parseLong(GetStringNoQuotes("" + originalObject)));
+				} else if (classType.contains("float") || classType.contains("java.lang.Float")) {
+					setVar.setFloat(simulation, Float.parseFloat(GetStringNoQuotes("" + originalObject)));
+				} else if (classType.contains("double") || classType.contains("java.lang.Double")) {
+					setVar.setDouble(simulation, Double.parseDouble(GetStringNoQuotes("" + originalObject)));
+				} else if (classType.contains("boolean") || classType.contains("java.lang.Boolean")) {
+					setVar.setBoolean(simulation, Boolean.parseBoolean(GetStringNoQuotes("" + originalObject)));
+				} else if (classType.contains("String") || classType.contains("java.lang.String")) {
+					setVar.set(simulation, GetStringNoQuotes("" + originalObject));
+				} else {
+					setVar.set(simulation, setVar.getType().cast(originalObject));
+				}
+			} else {
+				//SetVarArray(setVar, originalObject);//setVar.set(simulation, originalObject);
+				//Object obArray = Array.newInstance(setVar.getType().getComponentType(), originalObject.)
+			}
+		} catch (Exception e) {
+			System.out.println("Some serious error trying to convert the object.");
+			e.printStackTrace();
+		}
+		
+	}
+	
+	public Object SetVarArray(Field setVar, JsonArray jA, int depth) {
+		
+		Class cType = setVar.getType();
+		for (int i = 0; i < depth; i++) {
+			cType = cType.getComponentType();
+		}
+		
+		Object returnObject = Array.newInstance(cType, jA.size());
+		
+		for (int i = 0; i < jA.size(); i++) {
+
+			JsonValue jV = jA.get(i);
+			if (jV instanceof JsonArray) {
+				Array.set(returnObject, i, SetVarArray(setVar, jA.getJsonArray(i), depth + 1));
+			} else {
+				String classType = cType.getName();
+				if (classType.contains("int")|| classType.contains("java.lang.Integer")) {
+					Array.set(returnObject, i, Integer.parseInt(jA.getString(i)));
+				} else if (classType.contains("long") || classType.contains("java.lang.Long")) {
+					Array.set(returnObject, i,  Long.parseLong(jA.getString(i)));
+				} else if (classType.contains("float") || classType.contains("java.lang.Float")) {
+					Array.set(returnObject, i, Float.parseFloat(jA.getString(i)));
+				} else if (classType.contains("double") || classType.contains("java.lang.Double")) {
+					Array.set(returnObject, i, Double.parseDouble(jA.getString(i)));
+				} else if (classType.contains("boolean") || classType.contains("java.lang.Boolean")) {
+					Array.set(returnObject, i, Boolean.parseBoolean(jA.getString(i)));
+				} else if (classType.contains("String") || classType.contains("java.lang.String")) {
+					Array.set(returnObject, i, GetStringNoQuotes("" + jA.getString(i)));
+				} else {
+					Array.set(returnObject, i, jA.getString(i));
+				}
+			}
+		}
+		
+		return returnObject;
+		
+	}
+	
+	public JsonArray MakeJsonArray(Object o) {
+		JsonArray ja;
+		
+		// should first check "o.getClass.isArray()" before calling "makeJsonArray(o)
+		
+		JsonArrayBuilder jb = Json.createArrayBuilder();
+		for (int i = 0; i < Array.getLength(o); i++) {
+			if (o == null) {
+				jb.add("");
+			} else if (Array.get(o,i).getClass().isArray()) {
+				jb.add((JsonValue) MakeJsonArray(Array.get(o, i)));
+			} else {
+				/* Why do I convert this value to a string?
+				 *   "JsonArrayBuilder.add(ob)" requires that ob is a primitive type, or a JsonValue.
+				 *   By default, Java seems to save Object as the java version.
+				 *   	For example, after int i = 5; Object o = i;, the type of o is "java.lang.Integer".
+				 *   JsonArrayBuilder does not natively accept this as input, but it does accept String.
+				 *   
+				 *   An alternative would be to add "if" statements in "makeJsonArray" 
+				 *   and store temporary variable for all possible types (int, float, double, long, bool, etc.)
+				 *   and directly add this variable to JavaArrayBuilder.
+				 * 
+				 * */
+				jb.add("" + Array.get(o, i));
+			}
+		}
+		ja = jb.build();
+		
+		System.out.println("Json Array made: " + ja.toString());
+		
+		return ja;
 	}
 	
 	public int ReadInitialSettingsFile() {
@@ -986,6 +454,7 @@ public class Wrapper {
 			}
 			else {
 				System.out.println("Missing 'configuration' in settings file.");
+				bufferedReader.close();
 				return -2;
 			}
 			
@@ -995,8 +464,10 @@ public class Wrapper {
 			}
 			else {
 				System.out.println("Missing 'global' in settings file.");
+				bufferedReader.close();
 				return -2;
 			}
+			bufferedReader.close();
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1052,6 +523,7 @@ public class Wrapper {
 				messageDefinitionList.add(messageDefinition);
 			}
 			
+			bufferedReader.close();
 			System.out.println("Read message definitions, finished.");
 			
 		} catch (Exception e) {
@@ -1085,6 +557,7 @@ public class Wrapper {
 			}
 			else {
 				System.out.println("Missing 'hostName' in simulation configuration file.");
+				bufferedReader.close();
 				return -2;
 			}
 			
@@ -1092,6 +565,7 @@ public class Wrapper {
 				port_number = json.getString("portNumber", "").toString();
 			}else {
 				System.out.println("Missing 'portNumber' in simulation configuration file.");
+				bufferedReader.close();
 				return -2;
 			}
 			
@@ -1099,9 +573,11 @@ public class Wrapper {
 				simulation_name = json.getString("simulatorName", "").toString();
 			}else {
 				System.out.println("Missing 'simulatorName' in simulation configuration file.");
+				bufferedReader.close();
 				return -2;
 			}
 			
+			//System.out.println("Reading 'subscribedChannels' from file.");
 			if (json.containsKey("subscribedChannels")) {
 				JsonObject subChannelList = json.getJsonObject("subscribedChannels");
 				Iterator<String> it = subChannelList.keySet().iterator();
@@ -1137,6 +613,18 @@ public class Wrapper {
 						}
 					}
 					
+					if (subChannel.containsKey("varChannel") == true) {
+						JsonArray varChannelArray = subChannel.getJsonArray("varChannel");
+						newChannel.varChannels = new ArrayList<VarChannel>();
+						for (int i = 0; i < varChannelArray.size(); i++) {
+							VarChannel varChannel = new VarChannel();
+							JsonObject varChannelObject = varChannelArray.getJsonObject(i);
+							varChannel.valueName = varChannelObject.getString("valueName");
+							varChannel.varName = varChannelObject.getString("varName");
+							newChannel.varChannels.add(varChannel);
+						}
+					}
+					
 					subscribedChannels.add(newChannel);
 					
 					if (oneTime == true) {
@@ -1147,6 +635,7 @@ public class Wrapper {
 				}
 			}
 			
+			//System.out.println("Reading 'publishedChannels' from file.");
 			if (json.containsKey("publishedChannels")) {
 				JsonObject pubChannelList = json.getJsonObject("publishedChannels");
 				Iterator<String> it = pubChannelList.keySet().iterator();
@@ -1174,11 +663,26 @@ public class Wrapper {
 						}
 					}
 					
+					if (pubChannel.containsKey("varChannel") == true) {
+						JsonArray varChannelArray = pubChannel.getJsonArray("varChannel");
+						newChannel.varChannels = new ArrayList<VarChannel>();
+						for (int i = 0; i < varChannelArray.size(); i++) {
+							VarChannel varChannel = new VarChannel();
+							JsonObject varChannelObject = varChannelArray.getJsonObject(i);
+							varChannel.valueName = varChannelObject.getString("valueName");
+							varChannel.varName = varChannelObject.getString("varName");
+							newChannel.varChannels.add(varChannel);
+						}
+					}
+					
 					publishedChannels.add(newChannel);
+					//System.out.println("");
 					
 					published_channels.add(pubChannelName);
 				}
 			}
+			
+			//System.out.println("Finished reading settings from file."); 
 			
 			if (json.containsKey("initializeFunction")) {
 				initializeFunction = json.getString("initializeFunction");
@@ -1192,7 +696,8 @@ public class Wrapper {
 				simulateFunction = "simulate";
 			}
 			
-			//System.out.println("Read simulation settings, finished.");
+			bufferedReader.close();
+			System.out.println("Read simulation settings, finished.");
 			
 		} catch (Exception e) {
 			e.printStackTrace();
