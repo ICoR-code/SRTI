@@ -1,0 +1,39 @@
+{
+    "hostName": "localhost",
+    "portNumber": "4200",
+    "simulatorName": "main.difference_sim",
+    "subscribedChannels": {
+        "Sum": {
+            "oneTime": false,
+            "stepRelation": 0,
+			"varChannel":[
+				{
+					"valueName": "value",
+					"varName": "value"
+				}, 
+				{
+					"valueName": "values",
+					"varName": "values"
+				}
+			]
+        }
+    },
+    "publishedChannels": {
+        "Difference": {
+            "initial": true,
+            "historyDependent": 0,
+			"varChannel":[
+				{
+					"valueName": "value",
+					"varName": "value"
+				}, 
+				{
+					"valueName": "values",
+					"varName": "values"
+				}
+			]
+        }
+    },
+	"initializeFunction": "generateInitialMessageCustom",
+    "simulateFunction": "simulate"
+}
