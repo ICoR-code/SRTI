@@ -122,7 +122,7 @@ public class Wrapper {
 			int kTimeToWait = 50;
 			
 			for (Channel channel: subscribedChannels) {
-				lib.subscribeTo(channel.channelName);
+				lib.subscribeToMessagePlusHistory(channel.channelName);
 			}
 			
 			System.out.println("Testing one-time channels.");
@@ -137,7 +137,7 @@ public class Wrapper {
 			}
 			
 			System.out.println("Testing initialized channels.");
-			HandleInitializeSimple();
+			HandleInitializeComplex();
 
 			for (Channel channel: publishedChannels) {
 				// if message is an initial type, then publish
@@ -150,7 +150,7 @@ public class Wrapper {
 			while (true) {
 				for (String channel: subscribed_channels) {
 					while (true) {
-						System.out.println("Receiving subscribed message : " + channel);
+						System.out.println("Checking for subscribed message : " + channel);
 						String message = lib.getNextMessage(channel, kTimeToWait);
 						if (!message.isEmpty() && message.length() > 2) {
 							HandleSubscribeMessageVar(channel, message);
@@ -159,8 +159,8 @@ public class Wrapper {
 					}
 				}
 				
-				HandleSimulateSimple();
-
+				HandleSimulateComplex();
+				
 				for (String channel: published_channels) {
 					System.out.println("Handle publishing message : " + channel);
 					HandlePublishMessageVar(channel);

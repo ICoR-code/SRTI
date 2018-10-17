@@ -40,7 +40,7 @@ pubChannelNames = fieldnames(configVal.publishedChannels(1));
 
 %% subscribe to messages
 for i = 1:length(subChannelNames)
-    rtiLib.subscribeTo(subChannelNames(i));
+    rtiLib.subscribeToMessagePlusHistory(subChannelNames(i));
 end
 
 %% receive one-time messages, required before starting anything
@@ -97,16 +97,19 @@ while true
     %% received subscribed messages
     for i = 1:length(subChannelNames)
         subChannel = getfield(configVal.subscribedChannels(1), char(subChannelNames(i)));
-        nextMessage = rtiLib.waitForNextMessage(subChannelNames(i));
-        if ~isempty(nextMessage)
-            for j = 1:length(subChannel.varChannel)
-                 subChannelOb = subChannel.varChannel(j);
-                 subChannelObValue = subChannelOb.valueName;
-                 subChannelObVar = subChannelOb.varName;
-                 setValueJson = jsondecode(char(nextMessage));
-                 setValueContentJson = jsondecode(setValueJson.content);
-                 eval ("setValue = " + "setValueContentJson." + subChannelObValue + ";");
-                 eval("obj." + subChannelObVar + " = " + setValue + ";");
+        %% don't receive one-time messages again (these are meant to be for initialize-content)
+        if subChannel.oneTime == false
+            nextMessage = rtiLib.waitForNextMessage(subChannelNames(i));
+            if ~isempty(nextMessage)
+                for j = 1:length(subChannel.varChannel)
+                     subChannelOb = subChannel.varChannel(j);
+                     subChannelObValue = subChannelOb.valueName;
+                     subChannelObVar = subChannelOb.varName;
+                     setValueJson = jsondecode(char(nextMessage));
+                     setValueContentJson = jsondecode(setValueJson.content);
+                     eval ("setValue = " + "setValueContentJson." + subChannelObValue + ";");
+                     eval("obj." + subChannelObVar + " = " + setValue + ";");
+                end
             end
         end
     end
