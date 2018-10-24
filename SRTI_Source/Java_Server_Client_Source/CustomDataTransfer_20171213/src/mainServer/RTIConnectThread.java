@@ -40,6 +40,8 @@ public class RTIConnectThread extends Thread {
 	private boolean subscribeToAll = false;
 	private boolean tcpOn = false;
 	
+	private int nextTimestep = -1;
+	
 	// two options for constructor below, depending on property settings available
 	public RTIConnectThread(Socket mainSocket, ExampleServer.RTIStartThread mainServer) {
 		thisMainSocket = mainSocket;
@@ -316,6 +318,14 @@ public class RTIConnectThread extends Thread {
 	
 	public void setNumOfSameName (int newNumOfSameName) {
 		numOfSameName = newNumOfSameName;
+	}
+	
+	public void setNextTimestep(int newTimestep) {
+		nextTimestep = newTimestep;
+	}
+	
+	public int getNextTimestep() {
+		return nextTimestep;
 	}
 	
 	public int getNumOfSameName () {

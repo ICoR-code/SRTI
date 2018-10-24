@@ -10,7 +10,7 @@ import java.util.List;
 import javax.swing.SwingUtilities;
 
 public class Version {
-	public static String version = "v0.61";
+	public static String version = "v0.63";
 	
 	public static String textFileName = null;
 	public static boolean debugConsole = false;

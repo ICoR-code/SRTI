@@ -89,6 +89,8 @@ public class Wrapper {
 	
 	private RTILib lib;
 	
+	private int timestep = 0;
+	
 	public void StartSRTI() {
 		
 		System.out.println("Starting SRTI clients with third-party simulations.");
@@ -122,7 +124,7 @@ public class Wrapper {
 			int kTimeToWait = 50;
 			
 			for (Channel channel: subscribedChannels) {
-				lib.subscribeTo(channel.channelName);
+				lib.subscribeToMessagePlusHistory(channel.channelName);
 			}
 			
 			System.out.println("Testing one-time channels.");
@@ -137,7 +139,7 @@ public class Wrapper {
 			}
 			
 			System.out.println("Testing initialized channels.");
-			HandleInitializeSimple();
+			HandleInitializeComplex();
 
 			for (Channel channel: publishedChannels) {
 				// if message is an initial type, then publish
@@ -148,9 +150,18 @@ public class Wrapper {
 			
 			System.out.println("Beginning loop.");
 			while (true) {
+				System.out.println("Waiting for RTI_StartStep message...");
+				while(true) {
+					String message = lib.getNextMessage("RTI_StartStep", kTimeToWait);
+					if (!message.isEmpty() && message.length() > 2) {
+						timestep = Integer.parseInt(lib.getJsonString("timestep", lib.getMessageContent(message)));
+						break;
+					}
+				}
+				
 				for (String channel: subscribed_channels) {
 					while (true) {
-						System.out.println("Receiving subscribed message : " + channel);
+						System.out.println("Checking for subscribed message : " + channel);
 						String message = lib.getNextMessage(channel, kTimeToWait);
 						if (!message.isEmpty() && message.length() > 2) {
 							HandleSubscribeMessageVar(channel, message);
@@ -159,12 +170,17 @@ public class Wrapper {
 					}
 				}
 				
-				HandleSimulateSimple();
-
+				HandleSimulateComplex();
+				
 				for (String channel: published_channels) {
 					System.out.println("Handle publishing message : " + channel);
 					HandlePublishMessageVar(channel);
 				}
+				
+				// Somehow, we should try to allow for more "variable" timesteps here, rather than just ( + 1). 
+				// This doesn't necessarily handle different events depending on the timestep (publishing different messages, running different simulate functions, etc.) 
+				String finishContent = lib.setJsonObject("", "nextStep", timestep + 1);
+				lib.publish("RTI_FinishStep", finishContent);
 				
 				++gstep;
 			}

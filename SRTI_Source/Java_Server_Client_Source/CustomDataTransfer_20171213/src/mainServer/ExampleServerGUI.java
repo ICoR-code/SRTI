@@ -403,7 +403,7 @@ public class ExampleServerGUI extends JFrame implements RTISim{
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				printLine("<<YOU CLICKED BUTTON>>");
+				printLine("<<YOU CLICKED BUTTON to print history>>");
 				try {
 					FileWriter exportFile = new FileWriter("messagehistory_" + System.currentTimeMillis() + ".txt");
 					
@@ -430,7 +430,18 @@ public class ExampleServerGUI extends JFrame implements RTISim{
 			}
 			
 		});
+		                                          //"Export Message History"
+		JButton sendStartRequest_button = new JButton("Send Start Request To All");
+		sendStartRequest_button.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				printLine("<<YOU CLICKED BUTTON to send start request>>");
+				rtiLib.publish("RTI_StartSim", "");
+			}
+		});
 		buttonPanel.add(exportMessageHistory_button);
+		buttonPanel.add(sendStartRequest_button);
 		
 		String numApps_string = "Number of applications connected: " + numOfApps;
 		numApps_area = new JTextArea(2, 50);

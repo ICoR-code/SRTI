@@ -801,6 +801,34 @@ public class RTILib {
 	
 	}
 	
+	public boolean isJsonArray(String name, String content) {
+		boolean returnValue = false;
+		
+		if (content.compareTo("")==0 || content == null) {
+			returnValue = false;
+			return returnValue;
+		}
+		
+		try {
+			JsonReader reader = Json.createReader(new StringReader(content));
+			JsonObject json = reader.readObject();
+			JsonValue jValue = json.get(name);
+			
+			// what if the JSONNArray is surrounded by quotes?
+			if (jValue instanceof JsonArray) {
+				returnValue = true;
+			}
+
+		}
+		catch (Exception e) {
+			printLine("something went wrong when trying to get Json object. Returning null.");
+			returnValue = false;
+			return returnValue;
+		}
+		
+		return returnValue;
+	}
+	
 	public String getJsonObject(String name, String content) {
 		String returnString = "";
 		

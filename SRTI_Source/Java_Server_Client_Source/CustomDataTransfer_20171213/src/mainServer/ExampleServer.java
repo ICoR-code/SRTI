@@ -82,6 +82,9 @@ public class ExampleServer {
 	// messageHistoryList size in characters, provides more consistent archive performance
 	int messageHistoryListSize = 0;
 	
+	// variable to sync timestep across sim system
+	int globalTimestep = 0;
+	
 	// Load "settings.txt" to set certain options
 	private int loadSettingsFile() {
 		printLine("Trying to read settings file.");
@@ -500,8 +503,49 @@ public class ExampleServer {
 					messageHistoryList.add(rtiUpdateSimString);
 					messageHistoryListSize += rtiUpdateSimString.length();
 					break;
+				case "RTI_StartSim":
+					// send initial "RTI_BeginStep" to all sims	
+					globalTimestep = 0;
+					String rtiStartStepString = buildRTIStartStep();
+					for (int i = 0; i < threadList.size(); i++) {
+						threadList.get(i).update(rtiStartStepString);
+					}
+					messageHistoryList.add(rtiStartStepString);
+					messageHistoryListSize += rtiStartStepString.length();
+					break;
+				case "RTI_FinishStep":
+					JsonReader finishStepContent = Json.createReader(new StringReader(content));
+					int nextStep = Integer.parseInt(finishStepContent.readObject().getString("nextStep"));
+					for (int i = 0; i < threadList.size(); i++) {
+						if (threadList.get(i).getIndex() == threadIndex) {	
+							threadList.get(i).setNextTimestep(nextStep);
+						}
+					}
+					
+					int minNextStep = -2;
+					for (int i = 0; i < threadList.size(); i++) {
+						if (threadList.get(i).getNextTimestep() < minNextStep || minNextStep == -2) {
+							minNextStep = threadList.get(i).getNextTimestep();
+						}
+					}
+					if (minNextStep == -1) {
+						// we haven't received "RTI_FinishStep" from everyone yet, just move on.
+					} else {
+						globalTimestep = minNextStep;
+						rtiStartStepString = buildRTIStartStep();
+						for (int i = 0; i < threadList.size(); i++) {
+							if (threadList.get(i).getNextTimestep() == minNextStep) {
+								threadList.get(i).setNextTimestep(-1);
+								threadList.get(i).update(rtiStartStepString);
+							}
+						}
+						messageHistoryList.add(rtiStartStepString);
+						messageHistoryListSize += rtiStartStepString.length();
+					}
+					
+					break;
 				default:
-					printLine("received message, but don't know what to do with it... " + message);
+					printLine("received message, but not SRTI proprietary message, so up to sims to understand it... " + message);
 					// if not a special RTI message, then search for sim thread that subscribed to it, and send out to them using "send(,)".
 					break;
 			}
@@ -630,6 +674,22 @@ public class ExampleServer {
 		return returnString;
 	}
 
+	private String buildRTIStartStep() {
+		String returnString = "";
+		String content = "";
+		// content should include what "timestep" to start (whether or not this is fully necessary on "Wrapper" or "Sim" side is unknown.
+		JsonObjectBuilder jsonContent = Json.createObjectBuilder().add("timestep", "" + globalTimestep);
+		content = jsonContent.build().toString();
+		JsonObjectBuilder jsonMessageBuilder = Json.createObjectBuilder()
+				.add("name", "RTI_StartStep")
+				.add("content", content)
+				.add("source", "RTI")
+				.add("timestamp", "" + System.currentTimeMillis())
+				.add("tcp", "" + tcpOn);
+		returnString = jsonMessageBuilder.build().toString();
+		return returnString;
+	}
+	
 	public String getHostName() {
 		return hostName;
 	}
