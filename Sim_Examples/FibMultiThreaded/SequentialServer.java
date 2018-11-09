@@ -82,8 +82,17 @@ class EventComparator implements Comparator<Event> {
 }
 */
 
+abstract class EventManager {
+    abstract public void publish(String channel, double time, String eventdata);
+    abstract public Event  receive(String channel) throws InterruptedException;
+}
 
-class EventQueue {
+
+
+/* This class implements the timing logic. This particular one implements the sequential logic. Events
+   are delivered in strict time-sequence. */
+
+class EventQueue extends EventManager {
     PriorityQueue<Event> eventQueue;
     public EventQueue() {
 	eventQueue = new PriorityQueue<Event>();
@@ -205,16 +214,22 @@ class Fib1 extends SimulationEntity {
     public void execute(SimulationEntityManager m) throws InterruptedException {
 	int value = 1;
 	
+	// Send out outputs that don't require inputs
 	m.publish("fib2", Integer.toString(value));
-	// System.out.println("fib1 publishes value = " + value);
+
+
 	while (!m.isTerminated()) {
-	    System.out.println("fib1 waiting to receive");
+
+	    // Receive inputs
 	    String data = m.receive("fib1");
 	    int receivedval = new Integer(data);
 	    System.out.println("fib1 receives value = " + receivedval + " at time = " + m.getTime());
+
+	    // Compute and advance time (optional)
 	    value = value + receivedval;
 	    m.advanceTime(1);
-	    // System.out.println("fib1 publishes value = " + value);
+
+	    // Send outputs
 	    m.publish("fib2", Integer.toString(value));
 	}
     }
@@ -229,13 +244,17 @@ class Fib2 extends SimulationEntity {
 
     public void execute(SimulationEntityManager m) throws InterruptedException {
 	while (!m.isTerminated()) {
-	    // System.out.println("fib2 waiting to receive");
+
+	    // Receive input
 	    String data = m.receive("fib2");
 	    int receivedval = new Integer(data);
 	    System.out.println("fib2 receives value = " + receivedval + " at time = " + m.getTime());
+
+	    // Compute and update state with the inputs, optionally advancing time.
 	    value = value + receivedval;
 	    m.advanceTime(2);
-	    // System.out.println("fib2 publishes value = " + value);
+
+	    // Send out outputs
 	    m.publish("fib1", Integer.toString(value));
 	}
     }
