@@ -5,6 +5,22 @@ import java.lang.String;
 import java.util.PriorityQueue;
 import java.util.Objects;
 
+
+/*
+ The following classes are infrastructure classes. They can be moved to a separate file.
+ -- Event
+ -- EventQueue
+ -- SimulationEntityManager
+ -- SimulationEntity
+
+
+ The following classes are modified by the simulation modeler: 
+
+ -- Fib1: Models the first simulation entity. It generates a value. Then, it loops, receiving a value from fib2, accumulating it in a local value, and then sending that value to Fib2.
+ -- Fib2: similar to Fib1, except that it does not generate a value initially.
+ -- SequentialServer: Launches Fib1 and Fib2 and sets the max simulation time.
+ */
+
 class Event implements Comparable<Event> {
     public String channel = "";
     public double time = 0;
@@ -227,7 +243,7 @@ class Fib2 extends SimulationEntity {
 
 
 
-public class Server {
+public class SequentialServer {
     // Server Methods: 
     //      -- void subscribe(channel): client subscribes to a channel
     //      -- void publish(channel, eventtime, eventdata): client publishes
