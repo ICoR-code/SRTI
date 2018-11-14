@@ -169,7 +169,7 @@ class SimulationEntityManager extends Thread {
 
     // Advance time by t if t is positive. Avoid rollback of time.
     // This is called by the simulation entity instance if it wants to advance time.
-    public void advanceTime(double t) {
+    public void timeTaken(double t) {
 	if (vt + t > vt) {
 	    vt = vt + t;
 	}
@@ -227,7 +227,7 @@ class Fib1 extends SimulationEntity {
 
 	    // Compute and advance time (optional)
 	    value = value + receivedval;
-	    m.advanceTime(1);
+	    m.timeTaken(1);
 
 	    // Send outputs
 	    m.publish("fib2", Integer.toString(value));
@@ -252,7 +252,7 @@ class Fib2 extends SimulationEntity {
 
 	    // Compute and update state with the inputs, optionally advancing time.
 	    value = value + receivedval;
-	    m.advanceTime(2);
+	    // m.timeTaken(2);
 
 	    // Send out outputs
 	    m.publish("fib1", Integer.toString(value));
