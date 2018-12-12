@@ -15,10 +15,12 @@ import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.StringReader;
+import java.net.BindException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 import javax.json.Json;
 import javax.json.JsonArray;
@@ -38,10 +40,18 @@ public class ExampleServer {
 		
 		server.startRTI();
 
+		try {
+			TimeUnit.MILLISECONDS.sleep(250);
+		} catch (InterruptedException e) {
+			server.printLine(e.getMessage());
+			e.printStackTrace();
+		}
+		
 		// If "guiOn" is true, also open instance of GUI class (treated as its own RTI Simulation). If "guiOn" is false, any feedback would be through console window (command prompt).
 		if (server.guiOn == true) {
 			ExampleServerGUI serverGUI = new ExampleServerGUI(server.getHostName(), server.getPortNumber());
 			serverGUI.rtiLib.setDebugOutput(true);
+			serverGUI.messageLimit = oldMessageGUILimit;
 		}
 	}
 	
@@ -51,36 +61,40 @@ public class ExampleServer {
 	
 	// settings from "settings.txt" file
 	// (public hostname for sims to connect to RTI Server. Cannot be set, is based on computer and internet modem connection.)
-	private String hostName = "localhost";
+	private static String hostName = "localhost";
 	// portNumber, if > 0, will try to open this port (if available), allows some flexibility in how to find the RTI Server.
-	public int portNumber = -1;
+	public static int portNumber = -1;
 	// set whether gui for RTI Server should be on.
-	public boolean guiOn = true;
+	public static boolean guiOn = true;
 	// set whether "debug" console gui for RTI Server should be on (IMPLEMENTED AS OF 2018-06-27)
-	public boolean debugGuiOn = false;
+	public static boolean debugGuiOn = false;
 	// set whether all messages from RTI Server to a simulation requires a confirmation that it was received.
-	public boolean tcpOn = false;
+	public static boolean tcpOn = false;
 	// set whether messages from RTI Server are compressed before sending (NOT IMPLEMENTED AS OF 2018-06-01)
-	public boolean compressOn = false;
+	public static boolean compressOn = false;
 	// set whether server will attempt to reconnect to sim if disconnected (NOT IMPLEMENTED AS OF 2018-06-01, NEEDS TO BE IMPLEMENTED ON CLIENT SIDE)
-	public boolean retryConnection = false;
+	public static boolean retryConnection = false;
 	// set message limit for active memory, if pass this limit, messages are cleared
-	public int oldMessageLimit = -1;
+	public static int oldMessageLimit = -1;
 	// set message limit for active memory, if pass limit, messages are stored in .txt file before clearing
-	public boolean oldMessageArchive = false;
+	public static boolean oldMessageArchive = false;
 	// print debug lines to console while system is running
-	public boolean debugConsole = false;
+	public static boolean debugConsole = false;
 	// print debug lines to file while system is running
-	public boolean debugFile = false;
+	public static boolean debugFile = false;
+	// to prevent potential issues with concurrent access, allow user to set to false at expense of speed
+	public static boolean concurrentProcessing = true;
+	// variable for Server to prevent RAM overuse... but what about message list saved in GUI?
+	public static int oldMessageGUILimit = -1;
 	
 	// individual threads, each dedicated to input/output to a specific connected simulation 
 	// (this class handles main public port to allow sims to connect for first time)
 	ArrayList<RTIConnectThread> threadList = new ArrayList<RTIConnectThread>();
 	
 	// a list that maintains all messages received, so the RTI Server can send older messages if necessary. 
-	ArrayList<String> messageHistoryList = new ArrayList<String>();
+	private ArrayList<String> messageHistoryList = new ArrayList<String>();
 	// messageHistoryList size in characters, provides more consistent archive performance
-	int messageHistoryListSize = 0;
+	private int messageHistoryListSize = 0;
 	
 	// Load "settings.txt" to set certain options
 	private int loadSettingsFile() {
@@ -100,6 +114,8 @@ public class ExampleServer {
 			JsonReader reader = Json.createReader(new StringReader(jsonString));
 			json = reader.readObject();
 			reader.close();
+			configBuffer.close();
+			configStream.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 			printLine("Error trying to open settings.txt file (maybe doesn't exist or has bad format?), will proceed with default values.");
@@ -108,7 +124,7 @@ public class ExampleServer {
 		
 		// Parse out individual values.
 		// What if a value doesn't exist, or is in the wrong format? That's why we run a loop, so we try to read every value instead of allowing one to break the process.
-		for (int i = 0; i < 11; i++) {
+		for (int i = 0; i < 15; i++) {
 			try {				
 				if (i == 0)
 					portNumber = json.getJsonNumber("portNumber").intValue();
@@ -130,6 +146,10 @@ public class ExampleServer {
 					debugGuiOn = json.getBoolean("debugGuiOn");
 				else if (i == 9)
 					oldMessageArchive = json.getBoolean("oldMessageArchive");
+				else if (i == 10)
+					concurrentProcessing = json.getBoolean("concurrentProcessing");
+				else if (i == 11)
+					oldMessageGUILimit = json.getJsonNumber("oldMessageGUILimit").intValue();
 			} catch (Exception e) {
 				e.printStackTrace();
 				printLine("Error trying to open value " + i + " from settings.txt file, will proceed with default value. Refer to source code to determine which variable caused issue.");
@@ -190,7 +210,14 @@ public class ExampleServer {
 			if (portNumber == -1)
 				serverSocket = new ServerSocket(0);
 			else
-				serverSocket = new ServerSocket(portNumber);
+			{
+				try {
+					serverSocket = new ServerSocket(portNumber);
+				} catch (BindException e2) {
+					printLine("Port not available for use, will open on some other port.");
+					serverSocket = new ServerSocket(0);
+				}
+			}
 			portNumber = serverSocket.getLocalPort();
 		} catch (IOException e1) {
 			e1.printStackTrace();
@@ -225,12 +252,12 @@ public class ExampleServer {
 		public void run() {
 			while (true) {
 				try {
-					printLine("Waiting for simulations to connect to me...");
+					printLine("Open for business! Waiting for simulations to connect to me...");
 
 					rtiSocket = serverSocket.accept();
 					printLine("\t Connected!");
 					
-					RTIConnectThread connectThread = new RTIConnectThread(rtiSocket, this, tcpOn);
+					RTIConnectThread connectThread = new RTIConnectThread(rtiSocket, this, tcpOn, concurrentProcessing);
 					connectThread.start();
 					threadList.add(connectThread);
 					
@@ -249,14 +276,18 @@ public class ExampleServer {
 		
 		// Shared function to handle received messages, and to send them out to other relevant connected simulations.
 		public void handleReceivedMessage(int threadIndex, String message) {
-			printLine("received message from index " + threadIndex + ": " + message);
+			printLine("received message from index " + threadIndex);// + ": " + message);
 			
 			JsonReader reader = Json.createReader(new StringReader(message));
 			JsonObject json = reader.readObject();
+			reader.close();
 			
 			String name = json.getString("name", "");
 			String content = json.getString("content", "");
 			boolean tcp = Boolean.parseBoolean(json.getString("tcp", "false"));
+			
+			boolean sendUpdate = false;
+			boolean sendStart = false;
 			
 			if (tcp == true) {
 				if (name.compareTo("RTI_ReceivedMessage") != 0) {
@@ -268,7 +299,7 @@ public class ExampleServer {
 				}
 			}
 			
-			String rtiUpdateSimString = "";
+			//String rtiUpdateSimString = "";
 			
 			switch (name){
 				case "RTI_ReceivedMessage":
@@ -280,7 +311,7 @@ public class ExampleServer {
 					}
 					return;
 				case "RTI_InitializeSim":
-					printLine("received message, use info to intialize sim name...");
+					//printLine("received message, use info to intialize sim name...");
 					
 					String newSimName = Json.createReader(new StringReader(content)).readObject().getString("simName", "");
 					int numOfDuplicates = 0;
@@ -300,12 +331,7 @@ public class ExampleServer {
 					}
 					
 					// by default, send out update of current thread list to everyone
-					rtiUpdateSimString = buildRTIUpdateSim();
-					for (int i = 0; i < threadList.size(); i++) {
-						threadList.get(i).update(rtiUpdateSimString);
-					}
-					messageHistoryList.add(rtiUpdateSimString);
-					messageHistoryListSize += rtiUpdateSimString.length();
+					sendUpdate = true;
 					break;
 				case "RTI_PublishTo":
 					for (int i = 0; i < threadList.size(); i++) {
@@ -314,12 +340,7 @@ public class ExampleServer {
 							threadList.get(i).updatePublishTo(newPublishName);
 						}
 					}
-					rtiUpdateSimString = buildRTIUpdateSim();
-					for (int i = 0; i < threadList.size(); i++) {
-						threadList.get(i).update(rtiUpdateSimString);
-					}
-					messageHistoryList.add(rtiUpdateSimString);
-					messageHistoryListSize += rtiUpdateSimString.length();
+					sendUpdate = true;
 					break;
 				case "RTI_SubscribeTo":
 					for (int i = 0; i < threadList.size(); i++) {
@@ -328,12 +349,7 @@ public class ExampleServer {
 							threadList.get(i).updateSubscribeTo(newSubscribeName);
 						}
 					}
-					rtiUpdateSimString = buildRTIUpdateSim();
-					for (int i = 0; i < threadList.size(); i++) {
-						threadList.get(i).update(rtiUpdateSimString);
-					}
-					messageHistoryList.add(rtiUpdateSimString);
-					messageHistoryListSize += rtiUpdateSimString.length();
+					sendUpdate = true;
 					break;
 				case "RTI_SubscribeToAll":
 					for (int i = 0; i < threadList.size(); i++) {
@@ -341,12 +357,7 @@ public class ExampleServer {
 							threadList.get(i).setSubscribeAll();
 						}
 					}
-					rtiUpdateSimString = buildRTIUpdateSim();
-					for (int i = 0; i < threadList.size(); i++) {
-						threadList.get(i).update(rtiUpdateSimString);
-					}
-					messageHistoryList.add(rtiUpdateSimString);
-					messageHistoryListSize += rtiUpdateSimString.length();
+					sendUpdate = true;
 					break;
 				case "RTI_SubscribeToAllPlusHistory":
 					for (int i = 0; i < threadList.size(); i++) {
@@ -382,12 +393,7 @@ public class ExampleServer {
 							}
 						}
 					}
-					rtiUpdateSimString = buildRTIUpdateSim();
-					for (int i = 0; i < threadList.size(); i++) {
-						threadList.get(i).update(rtiUpdateSimString);
-					}
-					messageHistoryList.add(rtiUpdateSimString);
-					messageHistoryListSize += rtiUpdateSimString.length();
+					sendUpdate = true;
 					break;
 				case "RTI_SubscribeToMessagePlusHistory":
 					for (int i = 0; i < threadList.size(); i++) {
@@ -428,12 +434,7 @@ public class ExampleServer {
 							}
 						}
 					}
-					rtiUpdateSimString = buildRTIUpdateSim();
-					for (int i = 0; i < threadList.size(); i++) {
-						threadList.get(i).update(rtiUpdateSimString);
-					}
-					messageHistoryList.add(rtiUpdateSimString);
-					messageHistoryListSize += rtiUpdateSimString.length();
+					sendUpdate = true;
 					break;
 				case "RTI_SubscribeToMessagePlusLatest":
 					for (int i = 0; i < threadList.size(); i++) {
@@ -493,18 +494,19 @@ public class ExampleServer {
 							}
 						}
 					}
-					rtiUpdateSimString = buildRTIUpdateSim();
-					for (int i = 0; i < threadList.size(); i++) {
-						threadList.get(i).update(rtiUpdateSimString);
-					}
-					messageHistoryList.add(rtiUpdateSimString);
-					messageHistoryListSize += rtiUpdateSimString.length();
+					sendUpdate = true;
+					break;
+				case "RTI_StartSim":
+					// send initial "RTI_BeginStep" to all sims
+					//globalTimestep = 0;
+					sendStart = true;
 					break;
 				default:
-					printLine("received message, but don't know what to do with it... " + message);
+					//printLine("received message, but not SRTI proprietary message, so up to sims to understand it... " + message);
 					// if not a special RTI message, then search for sim thread that subscribed to it, and send out to them using "send(,)".
 					break;
 			}
+			
 			
 			// HERE, change "source" name if there were more than one, before sending the message back out again. This helps handle if running several instances of same simulation.
 			String source = json.getString("source", "");
@@ -519,6 +521,23 @@ public class ExampleServer {
 			}
 			
 			
+			if (sendUpdate == true) {
+				String rtiUpdateSimString = buildRTIUpdateSim();
+				for (int i = 0; i < threadList.size(); i++) {
+					threadList.get(i).update(rtiUpdateSimString);
+				}
+				messageHistoryList.add(rtiUpdateSimString);
+				messageHistoryListSize += rtiUpdateSimString.length();
+			}
+			if (sendStart == true) {
+				String rtiStartStepString = buildRTIStartStep();
+				for (int i = 0; i < threadList.size(); i++) {
+					threadList.get(i).update(rtiStartStepString);
+					//threadList.get(i).setExpectingFinish(true);
+				}
+				messageHistoryList.add(rtiStartStepString);
+				messageHistoryListSize += rtiStartStepString.length();
+			}
 			// Add message to history list.
 			String newJsonMessage =  Json.createObjectBuilder()
 					.add("name", name)
@@ -528,10 +547,10 @@ public class ExampleServer {
 					.add("tcp", "" + tcp)
 					.build().toString();
 			messageHistoryList.add(newJsonMessage);
-			messageHistoryListSize += rtiUpdateSimString.length();
+			messageHistoryListSize += newJsonMessage.length();
 			// what if messageHistoryList is too large? Write to a file to save it for later.
 			// example: 1 message of 100 characters = 100 bytes, so 100 messages = 10 KB, 1,000 messages = 100 KB (estimate)
-			if (oldMessageLimit > 0 && messageHistoryListSize > oldMessageLimit) {
+			if (oldMessageLimit > 0 && messageHistoryListSize > oldMessageLimit) {		
 				try {
 					if (oldMessageArchive == true) {
 						FileWriter exportFile = new FileWriter("messageHistoryList_" + System.currentTimeMillis() + ".txt");
@@ -552,6 +571,7 @@ public class ExampleServer {
 			}
 			
 			
+			
 			//Send message back out to all sims that are subscribed to it
 			int subscribedToTotal = 0;
 			for (int i = 0; i < threadList.size(); i++) {
@@ -561,6 +581,7 @@ public class ExampleServer {
 				}
 			}
 			printLine("There should be " + subscribedToTotal + " subscribed to message " + name);
+			
 		}
 		
 		
@@ -577,8 +598,24 @@ public class ExampleServer {
 			for (int i = 0; i < threadList.size(); i++) {
 				threadList.get(i).update(rtiUpdateSimString);
 			}
-			messageHistoryList.add(rtiUpdateSimString);
+			//messageHistoryList.add(rtiUpdateSimString);
 		}
+	}
+	
+	private String buildRTIStartStep() {
+		String returnString = "";
+		String content = "";
+		// content should include what "timestep" to start (whether or not this is fully necessary on "Wrapper" or "Sim" side is unknown)
+		JsonObjectBuilder jsonContent = Json.createObjectBuilder().add("timestep", "" + 0);
+		content = jsonContent.build().toString();
+		JsonObjectBuilder jsonMessageBuilder = Json.createObjectBuilder()
+				.add("name", "RTI_StartStep")
+				.add("content", content)
+				.add("source", "RTI")
+				.add("timestamp", "" + System.currentTimeMillis())
+				.add("tcp", "" + tcpOn);
+		returnString = jsonMessageBuilder.build().toString();
+		return returnString;
 	}
 	
 

@@ -2,6 +2,8 @@ package mainServer;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -10,7 +12,7 @@ import java.util.List;
 import javax.swing.SwingUtilities;
 
 public class Version {
-	public static String version = "v0.61";
+	public static String version = "v0.71";
 	
 	public static String textFileName = null;
 	public static boolean debugConsole = false;
@@ -23,6 +25,8 @@ public class Version {
 	
 	private static ExampleDebugGUI debugGUI = null;
 	
+	private static Version v = null;
+	
 	//private static List<String> debugOutBuffer = new ArrayList<String>();
 	
 	public static void printConsole(String outputLine) {
@@ -30,7 +34,10 @@ public class Version {
 			return;
 		}
 		
-		System.out.println(System.currentTimeMillis() + " \t" + outputLine);
+		double mem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+		mem = mem / 1000000f;
+		
+		System.out.println(System.currentTimeMillis() + " \t" + String.format("%.2f", mem) + "MB RAM\t" + outputLine);
 	}
 	
 	public static void printFile(String outputLine) {
@@ -38,15 +45,57 @@ public class Version {
 			return;
 		}
 		
-		if (textFileName == null) {
-			String actualDate = (new SimpleDateFormat("yyyyMMddHHmmss")).format(new Date(System.currentTimeMillis()));
-			textFileName = "SRTI_Debug_" + actualDate + ".txt";
+		if (v == null) {
+			v = new Version();
+		}
+		synchronized(v) {
+			v.printToFile(outputLine);
+		}
+		/*
+		try {
+			// 2018-11-24: triggers "OutOfMemoryError: Java heap space" if file gets too big... therefore, check file size and make new file when necessary.
+			if (textFileName == null || Files.size(Paths.get(textFileName)) > 100000000) {
+				String actualDate = (new SimpleDateFormat("yyyyMMddHHmmss")).format(new Date(System.currentTimeMillis()));
+				textFileName = "SRTI_Debug_" + actualDate + ".txt";
+			}
+		} catch (IOException e1) {
+			e1.printStackTrace();
 		}
 		
 		try {
 			FileWriter exportFile;
 			exportFile = new FileWriter(textFileName, true);
-			exportFile.write(System.currentTimeMillis() + " \t" + outputLine + "\n");
+			double mem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+			mem = mem / 1000000f;
+			exportFile.write(System.currentTimeMillis() + " \t" + String.format("%.2f", mem) + "MB RAM\t" + outputLine + "\n");
+			exportFile.flush();
+			exportFile.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}*/
+	}
+	
+	private void printToFile(String outputLine) {
+		try {
+			// 2018-12-12: issue when calling from Matlab: exception claims "file does not exist".
+			if (textFileName != null && Files.exists(Paths.get(textFileName)) == false) {
+				return;
+			}
+			// 2018-11-24: triggers "OutOfMemoryError: Java heap space" if file gets too big... therefore, check file size and make new file when necessary.
+			if (textFileName == null || Files.size(Paths.get(textFileName)) > 100000000) {
+				String actualDate = (new SimpleDateFormat("yyyyMMddHHmmssSSS")).format(new Date(System.currentTimeMillis()));
+				textFileName = "SRTI_Debug_" + actualDate + ".txt";
+			}
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		
+		FileWriter exportFile;
+		try {
+			exportFile = new FileWriter(textFileName, true);
+			double mem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+			mem = mem / 1000000f;
+			exportFile.write(System.currentTimeMillis() + " \t" + String.format("%.2f", mem) + "\tMB RAM\t" + outputLine + "\n");
 			exportFile.flush();
 			exportFile.close();
 		} catch (IOException e) {
@@ -67,35 +116,54 @@ public class Version {
 			return;
 		}
 		
-		if (textFileSimName == null) {
-			String actualDate = (new SimpleDateFormat("yyyyMMddHHmmss")).format(new Date(System.currentTimeMillis()));
-			textFileSimName = "SRTI_Debug_Sim_" + actualDate + ".txt";
+		if (v == null) {
+			v = new Version();
+		}
+		synchronized(v) {
+			v.printToSimFile(outputLine);
+		}
+		/*try {
+			if (textFileSimName == null || Files.size(Paths.get(textFileSimName)) > 100000000) {
+				String actualDate = (new SimpleDateFormat("yyyyMMddHHmmss")).format(new Date(System.currentTimeMillis()));
+				textFileSimName = "SRTI_Debug_Sim_" + actualDate + ".txt";
+			}
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}
 		
 		try {
-			/* Code to hold debug messages in a buffer, write to file in chunks.
-			 * Debug messages are relatively small, so this method is noticeably fast in comparison to opening file every time. 
-			 * But risk that last several lines won't be written.
-			 * 
-			 * debugOutBuffer.add(System.currentTimeMillis() + " \t" + outputLine + "\n");
-			
-			if (debugOutBuffer.size() > 100000) {
-				FileWriter exportFile;
-				exportFile = new FileWriter(textFileSimName, true);
-				for (int i = 0; i < debugOutBuffer.size(); i++) {
-					if (debugOutBuffer.get(i) != null)
-						exportFile.write(debugOutBuffer.get(i));
-					else 
-						exportFile.write("something weird happened, we couldn't print out the debug buffer at output : " + i + ", size = " + debugOutBuffer.size());
-				}
-				exportFile.flush();
-				exportFile.close();
-				debugOutBuffer.clear();
-			}*/
-			
 			FileWriter exportFile;
 			exportFile = new FileWriter(textFileSimName, true);
 			exportFile.write(System.currentTimeMillis() + " \t" + outputLine + "\n");
+			exportFile.flush();
+			exportFile.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}*/
+	}
+	
+	private void printToSimFile(String outputLine) {
+		try {
+			// 2018-12-12: issue when calling from Matlab: exception claims "file does not exist".
+			if (textFileSimName != null && Files.exists(Paths.get(textFileSimName)) == false) {
+				return;
+			}
+			// 2018-11-24: triggers "OutOfMemoryError: Java heap space" if file gets too big... therefore, check file size and make new file when necessary.
+			if (textFileSimName == null || Files.size(Paths.get(textFileSimName)) > 100000000) {
+				String actualDate = (new SimpleDateFormat("yyyyMMddHHmmssSSS")).format(new Date(System.currentTimeMillis()));
+				textFileSimName = "SRTI_Debug_Sim_" + actualDate + ".txt";
+			}
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		
+		FileWriter exportFile;
+		try {
+			exportFile = new FileWriter(textFileSimName, true);
+			double mem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+			mem = mem / 1000000f;
+			exportFile.write(System.currentTimeMillis() + " \t" + String.format("%.2f", mem) + "\tMB RAM\t" + outputLine + "\n");
 			exportFile.flush();
 			exportFile.close();
 		} catch (IOException e) {

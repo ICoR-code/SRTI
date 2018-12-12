@@ -83,6 +83,7 @@ public class ExampleServerGUI extends JFrame implements RTISim{
 	
 	//RTI Objects (needed to access API to properly connect to RTI Server)
 	RTILib rtiLib;
+	public int messageLimit = -1;
 	
 	// constructor (when executing .jar file, ExampleServer.java (the RTI Server) will call this automatically. 
 	// Else, this can be accessed by a simulation to manually open a GUI without starting a new server.
@@ -403,7 +404,7 @@ public class ExampleServerGUI extends JFrame implements RTISim{
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				printLine("<<YOU CLICKED BUTTON>>");
+				printLine("<<YOU CLICKED BUTTON to print history>>");
 				try {
 					FileWriter exportFile = new FileWriter("messagehistory_" + System.currentTimeMillis() + ".txt");
 					
@@ -425,12 +426,19 @@ public class ExampleServerGUI extends JFrame implements RTISim{
 					
 					e.printStackTrace();
 				}
-				
-				
 			}
 			
 		});
+		JButton sendStartRequest_button = new JButton("Send Start Request To All");
+		sendStartRequest_button.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				printLine("<<YOU CLICKED BUTTON to send start request>>");
+				rtiLib.publish("RTI_StartSim", "");
+			}
+		});
 		buttonPanel.add(exportMessageHistory_button);
+		buttonPanel.add(sendStartRequest_button);
 		
 		String numApps_string = "Number of applications connected: " + numOfApps;
 		numApps_area = new JTextArea(2, 50);
@@ -569,7 +577,7 @@ public class ExampleServerGUI extends JFrame implements RTISim{
 			case "RTI_UpdateSim":
 				//need to parse out each "sim," its "publish" and "subscribe" messages
 				//total number of sims and total list of messages can be calculated after.
-				printLine(" Received message of name " + messageName + ", I'll use it!");
+				//printLine(" Received message of name " + messageName + ", I'll use it!");
 				listApps_items.clear();
 				
 				updateNumConnected(rtiLib.getJsonArray(content).length);
@@ -578,14 +586,14 @@ public class ExampleServerGUI extends JFrame implements RTISim{
 					newSim.name = rtiLib.getStringNoQuotes(rtiLib.getJsonObject("name",rtiLib.getJsonArray(content)[i]));
 					newSim.publishTo = new ArrayList<String>();
 					String publishToJson = rtiLib.getJsonObject("publishTo", rtiLib.getJsonArray(content)[i]).toString();
-					printLine("PUBLISHTO : " + publishToJson);
+					//printLine("PUBLISHTO : " + publishToJson);
 					for (int j = 0; j < rtiLib.getJsonArray(publishToJson).length; j++) {
 						newSim.publishTo.add(rtiLib.getStringNoQuotes(rtiLib.getJsonArray(publishToJson)[j]));
 					}
 					newSim.subscribeTo = new ArrayList<String>();
 
 					String subscribeToJson = rtiLib.getJsonObject("subscribeTo", rtiLib.getJsonArray(content)[i]).toString();
-					printLine("SUBSCRIBETO : " + subscribeToJson);
+					//printLine("SUBSCRIBETO : " + subscribeToJson);
 					for (int j = 0; j <  rtiLib.getJsonArray(subscribeToJson).length; j++) {
 						newSim.subscribeTo.add(rtiLib.getStringNoQuotes(rtiLib.getJsonArray(subscribeToJson)[j]));
 					}
@@ -597,7 +605,7 @@ public class ExampleServerGUI extends JFrame implements RTISim{
 				break;
 			case "RTI_UpdateMessage":
 				//need to parse out "messageName" and "content," then add to the appropriate list history here.
-				printLine(" Received message of name " + messageName + ", I'll use it!");
+				//printLine(" Received message of name " + messageName + ", I'll use it!");
 				//technically, both "RTI_UpdateMessage" and the original message in the content need to be updated (note: not all sims should subscribe to RTI_UpdateMessage by default)
 				String contentMessageName = rtiLib.getJsonObject("name", content);
 				boolean alreadyListed = false;
@@ -627,7 +635,7 @@ public class ExampleServerGUI extends JFrame implements RTISim{
 				updateMessageList();
 				break;
 			default:
-				printLine(" Received message of name " + messageName + " but I don't know what to do with it...");
+				//printLine(" Received message of name " + messageName + " but I don't know what to do with it...");
 				break;
 		}
 		
@@ -647,6 +655,37 @@ public class ExampleServerGUI extends JFrame implements RTISim{
 				listMessages_items.get(existIndex).historyTimestamps.add(timestamp);
 				listMessages_items.get(existIndex).historySource.add(source);
 				listMessages_items.get(existIndex).historyContent.add(content);
+				
+				if (messageLimit > 0) {
+					//printLine("Checking Message limit = " + messageLimit + " for listMessages_items.size() = " + listMessages_items.size());
+					while (listMessages_items.size() > messageLimit) {
+						listMessages_items.remove(0);
+					}
+					
+					/*while(listApps_items.size() > messageLimit) {
+						listApps_items.remove(0);
+					}
+					
+					while(listAppsPublishTo_items.size() > messageLimit) {
+						listAppsPublishTo_items.remove(0);
+					}
+					
+					while(listAppsSubscribeTo_items.size() > messageLimit) {
+						listAppsSubscribeTo_items.remove(0);
+					}*/
+					
+					for (int i = 0; i < listMessages_items.size(); i++) {
+						//printLine("Message limit history for " + listMessages_items.get(i).name + " is " + listMessages_items.get(i).historySource.size());
+						while(listMessages_items.get(i).historySource.size() > messageLimit) {
+							listMessages_items.get(i).historySource.remove(0);
+							listMessages_items.get(i).historyContent.remove(0);
+							listMessages_items.get(i).historyTimestamps.remove(0);
+						}
+					}
+					
+					
+					
+				}
 			}
 		} else {
 			MessageHistory newMessageItem = new MessageHistory();
@@ -657,6 +696,37 @@ public class ExampleServerGUI extends JFrame implements RTISim{
 			newMessageItem.historyContent = new ArrayList<String>();
 			newMessageItem.historyContent.add(content);
 			listMessages_items.add(newMessageItem);
+			
+			if (messageLimit > 0) {
+				//printLine("Checking Message limit = " + messageLimit + " for listMessages_items.size() = " + listMessages_items.size());
+				while (listMessages_items.size() > messageLimit) {
+					listMessages_items.remove(0);
+				}
+				
+				/*while(listApps_items.size() > messageLimit) {
+					listApps_items.remove(0);
+				}
+				
+				while(listAppsPublishTo_items.size() > messageLimit) {
+					listAppsPublishTo_items.remove(0);
+				}
+				
+				while(listAppsSubscribeTo_items.size() > messageLimit) {
+					listAppsSubscribeTo_items.remove(0);
+				}*/
+				
+				for (int i = 0; i < listMessages_items.size(); i++) {
+					//printLine("Message limit history for " + listMessages_items.get(i).name + " is " + listMessages_items.get(i).historySource.size());
+					while(listMessages_items.get(i).historySource.size() > messageLimit) {
+						listMessages_items.get(i).historySource.remove(0);
+						listMessages_items.get(i).historyContent.remove(0);
+						listMessages_items.get(i).historyTimestamps.remove(0);
+					}
+				}
+				
+				
+				
+			}
 		}
 		updateMessageList();
 	}

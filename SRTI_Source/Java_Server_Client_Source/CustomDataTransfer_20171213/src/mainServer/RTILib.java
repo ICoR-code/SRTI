@@ -159,7 +159,8 @@ public class RTILib {
 			rtiSocket = new Socket(lastHostName, Integer.parseInt(lastPortNumber));
 			
 			BufferedReader in = new BufferedReader(new InputStreamReader(rtiSocket.getInputStream()));
-			String dedicatedHost = in.readLine();
+			in.readLine();
+			String dedicatedHost = lastHostName; //in.readLine();
 			String dedicatedPort = in.readLine();
 			printLine("RTI reached. Now connecting to dedicated communication socket: " + dedicatedHost + " " + dedicatedPort);
 			dedicatedRtiSocket = new Socket(dedicatedHost, Integer.parseInt(dedicatedPort));
@@ -203,7 +204,8 @@ public class RTILib {
 			rtiSocket = new Socket(lastHostName, Integer.parseInt(lastPortNumber));
 			
 			BufferedReader in = new BufferedReader(new InputStreamReader(rtiSocket.getInputStream()));
-			String dedicatedHost = in.readLine();
+			in.readLine();
+			String dedicatedHost = lastHostName; //in.readLine();
 			String dedicatedPort = in.readLine();
 			printLine("RTI reached. Now connecting to dedicated communication socket: " + dedicatedHost + " " + dedicatedPort);
 			dedicatedRtiSocket.close();
@@ -233,12 +235,15 @@ public class RTILib {
 		} catch (NumberFormatException e) {
 			printLine("   NumberFormatException error occurred... ");
 			e.printStackTrace();
+			return -1;
 		} catch (UnknownHostException e) {
 			printLine("   UnknownHostException error occurred...");
 			e.printStackTrace();
+			return -2;
 		} catch (IOException e) {
 			printLine("   IOException error occurred...");
 			e.printStackTrace();
+			return -3;
 		}
 
 		return 0;
@@ -257,7 +262,8 @@ public class RTILib {
 			rtiSocket = new Socket(lastHostName, Integer.parseInt(lastPortNumber));
 			
 			BufferedReader in = new BufferedReader(new InputStreamReader(rtiSocket.getInputStream()));
-			String dedicatedHost = in.readLine();
+			in.readLine();
+			String dedicatedHost = lastHostName; //in.readLine();
 			String dedicatedPort = in.readLine();
 			printLine("RTI reached. Now connecting to dedicated communication socket: " + dedicatedHost + " " + dedicatedPort);
 			dedicatedRtiSocket.close();
@@ -374,8 +380,8 @@ public class RTILib {
 			if (name.compareTo("RTI_ReceivedMessage") != 0) {
 				handleTcpResponse(name, content, "" + timestamp, simName, json.toString());
 			}
-		} catch (IOException e) {
-			printLine("   When trying to send message: IOExceoption error happened here...");
+		} catch (Exception e) {
+			printLine("   When trying to send message: Exception error happened here... " + e.getMessage());
 			e.printStackTrace();
 		}
 
@@ -397,8 +403,8 @@ public class RTILib {
 			out = new PrintWriter(dedicatedRtiSocket.getOutputStream(), true);
 			out.println(json);
 			out.flush();
-		} catch (IOException e) {
-			printLine("   When trying to resend message: IOExceoption error happened here...");
+		} catch (Exception e) {
+			printLine("   When trying to resend message: Exceoption error happened here... " + e.getMessage());
 			e.printStackTrace();
 		}
 		
@@ -581,17 +587,32 @@ public class RTILib {
 			returnString = "";
 			printLine("getNextMessage is null.");
 		} else {
-			if (messageQueue.get(0) != null && messageQueue.get(0).originalMessage != null) {
-				printLine("getNextMessage was NOT null.");
-				returnString = messageQueue.get(0).originalMessage;
-				messageQueue.remove(0);
-			} else {
-				printLine("getNextMessage was either null, or originalMessage was null. This is a strange occurance...");
-				if (messageQueue.get(0) == null) {
-					printLine("somehow, messageQueue(0) is NULL, even though messageQueue.isEmpty() is false?");
-				} else {
-					printLine("message at index 0 : " + messageQueue.get(0).toString());
+			String debugLine = "";
+			//for debugging, print out queue before and after 
+			for (int i = 0; i < messageQueue.size(); i++) {
+				try {
+					debugLine += messageQueue.get(i).name + "\t";
+				} catch (Exception e) {
+					debugLine += "(exception when trying to access)" + "\t";
 				}
+			}
+			printLine("queue before checking message: size = " + messageQueue.size() + " ... " + debugLine);
+			
+			try {
+				if (messageQueue.get(0) != null && messageQueue.get(0).originalMessage != null) {
+					printLine("getNextMessage was NOT null.");
+					returnString = messageQueue.get(0).originalMessage;
+					messageQueue.remove(0);
+				} else {
+					printLine("getNextMessage was either null, or originalMessage was null. This is a strange occurance...");
+					if (messageQueue.get(0) == null) {
+						printLine("somehow, messageQueue(0) is NULL, even though messageQueue.isEmpty() is false?");
+					} else {
+						printLine("message at index 0 : " + messageQueue.get(0).toString());
+					}
+				}
+			} catch (Exception e) {
+				printLine("some strange issue occurred when trying to getNextMessage (name == null, message == null, etc.) at list index " +0 + " out of " +messageQueue.size() + "... return nothing and continue without breaking sim.");
 			}
 			
 		}
@@ -615,17 +636,32 @@ public class RTILib {
 			returnString = "";
 			printLine("getNextMessage(millisToWait) is null.");
 		} else {
-			if (messageQueue.get(0) != null && messageQueue.get(0).originalMessage != null) {
-				printLine("getNextMessage(millisToWait) was NOT null.");
-				returnString = messageQueue.get(0).originalMessage;
-				messageQueue.remove(0);
-			} else {
-				printLine("getNextMessage was either null, or originalMessage was null. This is a strange occurance...");
-				if (messageQueue.get(0) == null) {
-					printLine("somehow, messageQueue(0) is NULL, even though messageQueue.isEmpty() is false?");
-				} else {
-					printLine("message at index 0 : " + messageQueue.get(0).toString());
+			String debugLine = "";
+			//for debugging, print out queue before and after 
+			for (int i = 0; i < messageQueue.size(); i++) {
+				try {
+					debugLine += messageQueue.get(i).name + "\t";
+				} catch (Exception e) {
+					debugLine += "(exception when trying to access)" + "\t";
 				}
+			}
+			printLine("queue before checking message: size = " + messageQueue.size() + " ... " + debugLine);
+			
+			try {
+				if (messageQueue.get(0) != null && messageQueue.get(0).originalMessage != null) {
+					printLine("getNextMessage(millisToWait) was NOT null.");
+					returnString = messageQueue.get(0).originalMessage;
+					messageQueue.remove(0);
+				} else {
+					printLine("getNextMessage was either null, or originalMessage was null. This is a strange occurance...");
+					if (messageQueue.get(0) == null) {
+						printLine("somehow, messageQueue(0) is NULL, even though messageQueue.isEmpty() is false?");
+					} else {
+						printLine("message at index 0 : " + messageQueue.get(0).toString());
+					}
+				}
+			} catch (Exception e) {
+				printLine("some strange issue occurred when trying to getNextMessage (name == null, message == null, etc.) at list index " + 0 + " out of " +messageQueue.size() + "... return nothing and continue without breaking sim.");
 			}
 		}
 		return returnString;
@@ -648,17 +684,32 @@ public class RTILib {
 			returnString = "";
 			printLine("getNextMessage(millisToWait) is null.");
 		} else {
-			if (messageQueue.get(0) != null && messageQueue.get(0).originalMessage != null) {
-				printLine("getNextMessage(millisToWait) was NOT null.");
-				returnString = messageQueue.get(0).originalMessage;
-				messageQueue.remove(0);
-			} else {
-				printLine("getNextMessage was either null, or originalMessage was null. This is a strange occurance...");
-				if (messageQueue.get(0) == null) {
-					printLine("somehow, messageQueue(0) is NULL, even though messageQueue.isEmpty() is false?");
-				} else {
-					printLine("message at index 0 : " + messageQueue.get(0).toString());
+			try {
+				String debugLine = "";
+				//for debugging, print out queue before and after 
+				for (int i = 0; i < messageQueue.size(); i++) {
+					try {
+						debugLine += messageQueue.get(i).name + "\t";
+					} catch (Exception e) {
+						debugLine += "(exception when trying to access)" + "\t";
+					}
 				}
+				printLine("queue before checking message: size = " + messageQueue.size() + " ... " + debugLine);
+				if (messageQueue.get(0) != null && messageQueue.get(0).originalMessage != null) {
+					printLine("getNextMessage(millisToWait) was NOT null.");
+					returnString = messageQueue.get(0).originalMessage;
+					messageQueue.remove(0);
+				} else {
+					printLine("getNextMessage was either null, or originalMessage was null. This is a strange occurance...");
+					if (messageQueue.get(0) == null) {
+						printLine("somehow, messageQueue(0) is NULL, even though messageQueue.isEmpty() is false?");
+					} else {
+						printLine("message at index 0 : " + messageQueue.get(0).toString());
+					}
+				}
+				
+			} catch (Exception e) {
+				printLine("some strange issue occurred when trying to getNextMessage (name == null, message == null, etc.) at list index " + 0 + " out of " +messageQueue.size() + "... return nothing and continue without breaking sim.");
 			}
 			
 		}
@@ -672,25 +723,41 @@ public class RTILib {
 			returnString = "";
 			printLine("getNextMessage is null.");
 		} else {
+			
+			String debugLine = "";
+			//for debugging, print out queue before and after 
 			for (int i = 0; i < messageQueue.size(); i++) {
-				if (messageQueue.get(i) != null) {
-					if (messageQueue.get(i).name != null ) {
-						if (messageQueue.get(i).name.compareTo(messageName)==0) {
-							if (messageQueue.get(i) != null && messageQueue.get(i).originalMessage != null) {
-								printLine("getNextMessage was NOT null.");
-								returnString = messageQueue.get(i).originalMessage;
-								messageQueue.remove(i);
-								break;
-							} else {
-								printLine("getNextMessage was either null, or originalMessage was null. This is a strange occurance...");
-								if (messageQueue.get(i) == null) {
-									printLine("somehow, messageQueue(i) is NULL, even though messageQueue.isEmpty() is false? i = " + i + ", length = " + messageQueue.size());
+				try {
+					debugLine += messageQueue.get(i).name + "\t";
+				} catch (Exception e) {
+					debugLine += "(exception when trying to access)" + "\t";
+				}
+			}
+			printLine("queue before checking message: size = " + messageQueue.size() + " ... " + debugLine);
+			
+			for (int i = 0; i < messageQueue.size(); i++) {
+				try {
+					//if (messageQueue.get(i) != null) {
+					//	if (messageQueue.get(i).name != null ) {
+							if (messageQueue.get(i).name.compareTo(messageName)==0) {
+								if (messageQueue.get(i) != null && messageQueue.get(i).originalMessage != null) {
+									printLine("getNextMessage was NOT null.");
+									returnString = messageQueue.get(i).originalMessage;
+									messageQueue.remove(i);
+									break;
 								} else {
-									printLine("message at index i (" + i + ") : " + messageQueue.get(i).toString());
+									printLine("getNextMessage was either null, or originalMessage was null. This is a strange occurance...");
+									if (messageQueue.get(i) == null) {
+										printLine("somehow, messageQueue(i) is NULL, even though messageQueue.isEmpty() is false? i = " + i + ", length = " + messageQueue.size());
+									} else {
+										printLine("message at index i (" + i + ") : " + messageQueue.get(i).toString());
+									}
 								}
 							}
-						}
-					}
+					//	}
+					//}
+				} catch (Exception e) {
+					printLine("some strange issue occurred when trying to getNextMessage (name == null, message == null, etc.) at list index " + i + " out of " +messageQueue.size() + "... return nothing and continue without breaking sim.");
 				}
 			}
 			
@@ -709,25 +776,33 @@ public class RTILib {
 		String debugLine = "";
 		//for debugging, print out queue before and after 
 		for (int i = 0; i < messageQueue.size(); i++) {
-			debugLine += messageQueue.get(i).name + "\t";
+			try {
+				debugLine += messageQueue.get(i).name + "\t";
+			} catch (Exception e) {
+				debugLine += "(exception when trying to access)" + "\t";
+			}
 		}
 		printLine("queue before checking message: size = " + messageQueue.size() + " ... " + debugLine);
 		for (int j = 0; j < millisToWait; j+=10) {
 			if (messageQueue.isEmpty() == false) {
 				for (int i = 0; i < messageQueue.size(); i++) {
-					if (messageQueue.get(i).name.compareTo(messageName)==0) {
-						if (messageQueue.get(i) != null && messageQueue.get(i).originalMessage != null) {
-							returnString = messageQueue.get(i).originalMessage;
-							messageQueue.remove(i);
-							break;
-						} else {
-							printLine("getNextMessage was either null, or originalMessage was null. This is a strange occurance...");
-							if (messageQueue.get(i) == null) {
-								printLine("somehow, messageQueue(i) is NULL, even though messageQueue.isEmpty() is false? i = " + i);
+					try {
+						if (messageQueue.get(i).name.compareTo(messageName)==0) {
+							if (messageQueue.get(i) != null && messageQueue.get(i).originalMessage != null) {
+								returnString = messageQueue.get(i).originalMessage;
+								messageQueue.remove(i);
+								break;
 							} else {
-								printLine("message at index i (" + i + ") : " + messageQueue.get(i).toString());
+								printLine("getNextMessage was either null, or originalMessage was null. This is a strange occurance...");
+								if (messageQueue.get(i) == null) {
+									printLine("somehow, messageQueue(i) is NULL, even though messageQueue.isEmpty() is false? i = " + i);
+								} else {
+									printLine("message at index i (" + i + ") : " + messageQueue.get(i).toString());
+								}
 							}
 						}
+					} catch (Exception e) {
+						printLine("some strange issue occurred when trying to getNextMessage (name == null, message == null, etc.) at list index " + i + " out of " +messageQueue.size() + "... return nothing and continue without breaking sim.");
 					}
 				}
 			}
@@ -738,10 +813,10 @@ public class RTILib {
 			}
 		}
 		//for debugging, print out queue before and after 
-		debugLine = "";
+		/*debugLine = "";
 		for (int i = 0; i < messageQueue.size(); i++) {
 			debugLine += messageQueue.get(i).name + "\t";
-		}
+		}*/
 		//printLine("queue after checking message: size = " + messageQueue.size() + " ... " + debugLine);
 		//printLine("confirm socket is still connected = " + readThread.rtiSocket.isConnected());
 		return returnString;
@@ -774,19 +849,23 @@ public class RTILib {
 		while (returnString =="") {
 			if (messageQueue.isEmpty() == false) {
 				for (int i = 0; i < messageQueue.size(); i++) {
-					if (messageQueue.get(i).name.compareTo(messageName)==0) {
-						if (messageQueue.get(i) != null && messageQueue.get(i).originalMessage != null) {
-							returnString = messageQueue.get(i).originalMessage;
-							messageQueue.remove(i);
-							break;
-						} else {
-							printLine("getNextMessage was either null, or originalMessage was null. This is a strange occurance...");
-							if (messageQueue.get(i) == null) {
-								printLine("somehow, messageQueue(i) is NULL, even though messageQueue.isEmpty() is false? i = " + i);
+					try {
+						if (messageQueue.get(i).name.compareTo(messageName)==0) {
+							if (messageQueue.get(i) != null && messageQueue.get(i).originalMessage != null) {
+								returnString = messageQueue.get(i).originalMessage;
+								messageQueue.remove(i);
+								break;
 							} else {
-								printLine("message at index i (" + i + ") : " + messageQueue.get(i).toString());
+								printLine("getNextMessage was either null, or originalMessage was null. This is a strange occurance...");
+								if (messageQueue.get(i) == null) {
+									printLine("somehow, messageQueue(i) is NULL, even though messageQueue.isEmpty() is false? i = " + i);
+								} else {
+									printLine("message at index i (" + i + ") : " + messageQueue.get(i).toString());
+								}
 							}
 						}
+					} catch (Exception e) {
+						printLine("some strange issue occurred when trying to getNextMessage (name == null, message == null, etc.) at list index " + i + " out of " +messageQueue.size() + "... return nothing and continue without breaking sim.");
 					}
 				}
 			}

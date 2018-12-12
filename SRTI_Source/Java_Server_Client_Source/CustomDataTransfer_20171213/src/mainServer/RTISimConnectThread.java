@@ -86,6 +86,7 @@ public class RTISimConnectThread extends Thread{
 			if (numOfRTICrash >= 3) {
 				printLine("Something serious is wrong with the connection to the RTI. Shut down the thread.");
 				System.out.println("Something serious is wrong with the connection to the RTI. Shut down the thread.");
+				rtiLib.reconnect();
 			} else {
 				continuousInput(in);
 				return;

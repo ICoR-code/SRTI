@@ -39,6 +39,7 @@ public class RTIConnectThread extends Thread {
 	private ArrayList<String> subscribeName = new ArrayList<String>();
 	private boolean subscribeToAll = false;
 	private boolean tcpOn = false;
+	private boolean concurrentProcessing = true;
 	
 	// two options for constructor below, depending on property settings available
 	public RTIConnectThread(Socket mainSocket, ExampleServer.RTIStartThread mainServer) {
@@ -49,12 +50,13 @@ public class RTIConnectThread extends Thread {
 		currentThreadID = numOfActiveThreads;
 	}
 
-	public RTIConnectThread(Socket mainSocket, ExampleServer.RTIStartThread mainServer, boolean tcpIsOn) {
+	public RTIConnectThread(Socket mainSocket, ExampleServer.RTIStartThread mainServer, boolean tcpIsOn, boolean concurrentProcess) {
 		
 		thisMainSocket = mainSocket;
 		thisServer = mainServer;
 		
 		tcpOn = tcpIsOn;
+		concurrentProcessing = concurrentProcess;
 		
 		numOfActiveThreads++;
 		currentThreadID = numOfActiveThreads;
@@ -88,7 +90,20 @@ public class RTIConnectThread extends Thread {
 			printLine(currentThreadID + ": waiting for input... ");
 			while ((userInput = in.readLine()) != null) {
 				printLine("I RECEIVED INPUT! It was : " + userInput);
-				thisServer.handleReceivedMessage(currentThreadID, userInput);
+				//printLine("(now, just wait until 'handleRecievedMessage' function is ready to use...)");
+				// Use "synchronized" to ensure other threads cannot call this function while it is in use.
+				// Is this necessary? Testing shows function CAN be called by multiple threads at same time... but may sometimes cause a thread to break for unknown reasons.
+				// 		Using "synchonized" is safer... although it should be noticeably slower from "server" side, and gets worse for larger systems.
+				//		Issue originally found when approximately 1,200 x 6 messages are saved in server history, each up to 7,000 characters long, 1 byte per character => 50.4 MB?
+				//synchronized(thisServer) {
+				if (concurrentProcessing == true) {
+					thisServer.handleReceivedMessage(currentThreadID, userInput);
+				} else {
+					synchronized(thisServer) {
+						thisServer.handleReceivedMessage(currentThreadID, userInput);
+					}
+				}
+				//}
 			}
 		} catch (Exception e) {
 			printLine("Exception during thread run >> " + e.toString());
@@ -119,7 +134,7 @@ public class RTIConnectThread extends Thread {
 			out = new PrintWriter(thisSimSocket.getOutputStream(), true);
 			out.println(json);
 			out.flush();
-			printLine("Sent message " + name + " to " + simName + " with content " + content);
+			printLine("Sent message " + name + " to " + simName);// + " with content " + content);
 			
 			if (name.compareTo("RTI_ReceivedMessage") != 0) {
 				handleTcpResponse(name, content, timestamp, source, json.toString());
@@ -145,7 +160,7 @@ public class RTIConnectThread extends Thread {
 			out = new PrintWriter(thisSimSocket.getOutputStream(), true);
 			out.println(json);
 			out.flush();
-			printLine("Sent message " + name + " to " + simName + " with content " + content);
+			printLine("Sent message " + name + " to " + simName);// + " with content " + content);
 		} catch (Exception e) {
 			printLine("   sendWithoutAddingToTcp - IOExceoption error happened here...");
 			e.printStackTrace();
@@ -237,7 +252,7 @@ public class RTIConnectThread extends Thread {
 	}
 	
 	public void update(String message) {
-		printLine("\t\t\tUPDATE: " + message);
+		//printLine("\t\t\tUPDATE: " + message);
 		String name = Json.createReader(new StringReader(message)).readObject().getString("name");
 		String content = Json.createReader(new StringReader(message)).readObject().getString("content");
 		String timestamp = Json.createReader(new StringReader(message)).readObject().getString("timestamp");
