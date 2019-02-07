@@ -421,60 +421,80 @@ public class RTILib {
 		
 		serverMessagesReceived = true;
 		
-		JsonReader reader = Json.createReader(new StringReader(message));
-		JsonObject json = reader.readObject();
+		StringReader stringInput = null;
+		try {
+			stringInput = new StringReader(message);
+			JsonReader reader = Json.createReader(stringInput);
+			JsonObject json = reader.readObject();
 		
-		name = json.getString("name", "");
-		content = json.getString("content", "");
-		timestamp = json.getString("timestamp", "");
-		source = json.getString("source", "");
-		tcp = json.getString("tcp", "");
-		
-		if (name.compareTo("RTI_ReceivedMessage")==0) {
-			// Tell sim it received the message, it can stop waiting for response now.
-			setTcpResponse(true, content);
-			return 0;
-		}
-		
-		if (settingsExists == -1) {
-			if (Boolean.parseBoolean(tcp) == true) {
-				tcpOn = true;
-				settingsExists = 0;
-				publish("RTI_ReceivedMessage", message);
-				// below code needs to be repeated in place where "settings" file would be (locally with RTILib)
-					new java.util.Timer().scheduleAtFixedRate(
-							new java.util.TimerTask() {
-								@Override
-								public void run() {
-									checkTcpMessages();
+			
+			
+			name = json.getString("name", "");
+			content = json.getString("content", "");
+			timestamp = json.getString("timestamp", "");
+			source = json.getString("source", "");
+			tcp = json.getString("tcp", "");
+			
+			stringInput.close();
+			reader.close();
+			
+			if (name.compareTo("RTI_ReceivedMessage")==0) {
+				// Tell sim it received the message, it can stop waiting for response now.
+				setTcpResponse(true, content);
+				return 0;
+			}
+			
+			if (settingsExists == -1) {
+				if (Boolean.parseBoolean(tcp) == true) {
+					tcpOn = true;
+					settingsExists = 0;
+					publish("RTI_ReceivedMessage", message);
+					// below code needs to be repeated in place where "settings" file would be (locally with RTILib)
+						new java.util.Timer().scheduleAtFixedRate(
+								new java.util.TimerTask() {
+									@Override
+									public void run() {
+										checkTcpMessages();
+									}
 								}
-							}
-							, 5000, 5000);
+								, 5000, 5000);
+				}
+			} else {
+				if (Boolean.parseBoolean(tcp) == true) {
+					publish("RTI_ReceivedMessage", message);
+				}
 			}
-		} else {
-			if (Boolean.parseBoolean(tcp) == true) {
-				publish("RTI_ReceivedMessage", message);
+			
+			//if thisSim is available, call upon api directly, else add message to an ordered queue (ordered based on timestamp)
+			if (thisSim != null) {
+				thisSim.receivedMessage(name, content, timestamp, source);
+			} else {
+				Message newMessage = new Message();
+				newMessage.name = name;
+				newMessage.content = content;
+				newMessage.timestamp = timestamp;
+				newMessage.source = source;
+				newMessage.originalMessage = message;
+				messageQueue.add(newMessage);
+				/* (no point to sort list any more, we just iterate through whole array list anyway...)
+				try {
+					Collections.sort(messageQueue);
+				} catch (Exception e) {
+					printLine("For some reason, unable to sort the list due to Collections.sort(messageQueue) giving an error of NoSuchElementException... " + e.getMessage());
+				}*/
+				printLine("Received new message, messageQueue now has this many: " + messageQueue.size());
 			}
-		}
 		
-		//if thisSim is available, call upon api directly, else add message to an ordered queue (ordered based on timestamp)
-		if (thisSim != null) {
-			thisSim.receivedMessage(name, content, timestamp, source);
-		} else {
-			Message newMessage = new Message();
-			newMessage.name = name;
-			newMessage.content = content;
-			newMessage.timestamp = timestamp;
-			newMessage.source = source;
-			newMessage.originalMessage = message;
-			messageQueue.add(newMessage);
-			/* (no point to sort list any more, we just iterate through whole array list anyway...)
-			try {
-				Collections.sort(messageQueue);
-			} catch (Exception e) {
-				printLine("For some reason, unable to sort the list due to Collections.sort(messageQueue) giving an error of NoSuchElementException... " + e.getMessage());
-			}*/
-			printLine("Received new message, messageQueue now has this many: " + messageQueue.size());
+			
+		} catch (Exception e) {
+			printLine("ERROR OCCURRED when trying to parse received message as json:");
+			printLine("      >> original message length: " + message.length());
+			String messageOut = message;
+			if (message.length() > 1000) {
+				messageOut = message.substring(0,500) + "   ...   " + message.substring(message.length() - 500, message.length());
+			}
+			printLine("      >> original message: " + messageOut);
+			e.printStackTrace();
 		}
 
 		return 0;
@@ -599,16 +619,18 @@ public class RTILib {
 			printLine("queue before checking message: size = " + messageQueue.size() + " ... " + debugLine);
 			
 			try {
-				if (messageQueue.get(0) != null && messageQueue.get(0).originalMessage != null) {
-					printLine("getNextMessage was NOT null.");
-					returnString = messageQueue.get(0).originalMessage;
-					messageQueue.remove(0);
-				} else {
-					printLine("getNextMessage was either null, or originalMessage was null. This is a strange occurance...");
-					if (messageQueue.get(0) == null) {
-						printLine("somehow, messageQueue(0) is NULL, even though messageQueue.isEmpty() is false?");
+				synchronized(messageQueue) {
+					if (messageQueue.get(0) != null && messageQueue.get(0).originalMessage != null) {
+						printLine("getNextMessage was NOT null.");
+						returnString = messageQueue.get(0).originalMessage;
+						messageQueue.remove(0);
 					} else {
-						printLine("message at index 0 : " + messageQueue.get(0).toString());
+						printLine("getNextMessage was either null, or originalMessage was null. This is a strange occurance...");
+						if (messageQueue.get(0) == null) {
+							printLine("somehow, messageQueue(0) is NULL, even though messageQueue.isEmpty() is false?");
+						} else {
+							printLine("message at index 0 : " + messageQueue.get(0).toString());
+						}
 					}
 				}
 			} catch (Exception e) {
@@ -648,16 +670,18 @@ public class RTILib {
 			printLine("queue before checking message: size = " + messageQueue.size() + " ... " + debugLine);
 			
 			try {
-				if (messageQueue.get(0) != null && messageQueue.get(0).originalMessage != null) {
-					printLine("getNextMessage(millisToWait) was NOT null.");
-					returnString = messageQueue.get(0).originalMessage;
-					messageQueue.remove(0);
-				} else {
-					printLine("getNextMessage was either null, or originalMessage was null. This is a strange occurance...");
-					if (messageQueue.get(0) == null) {
-						printLine("somehow, messageQueue(0) is NULL, even though messageQueue.isEmpty() is false?");
+				synchronized(messageQueue) {
+					if (messageQueue.get(0) != null && messageQueue.get(0).originalMessage != null) {
+						printLine("getNextMessage(millisToWait) was NOT null.");
+						returnString = messageQueue.get(0).originalMessage;
+						messageQueue.remove(0);
 					} else {
-						printLine("message at index 0 : " + messageQueue.get(0).toString());
+						printLine("getNextMessage was either null, or originalMessage was null. This is a strange occurance...");
+						if (messageQueue.get(0) == null) {
+							printLine("somehow, messageQueue(0) is NULL, even though messageQueue.isEmpty() is false?");
+						} else {
+							printLine("message at index 0 : " + messageQueue.get(0).toString());
+						}
 					}
 				}
 			} catch (Exception e) {
@@ -695,16 +719,18 @@ public class RTILib {
 					}
 				}
 				printLine("queue before checking message: size = " + messageQueue.size() + " ... " + debugLine);
-				if (messageQueue.get(0) != null && messageQueue.get(0).originalMessage != null) {
-					printLine("getNextMessage(millisToWait) was NOT null.");
-					returnString = messageQueue.get(0).originalMessage;
-					messageQueue.remove(0);
-				} else {
-					printLine("getNextMessage was either null, or originalMessage was null. This is a strange occurance...");
-					if (messageQueue.get(0) == null) {
-						printLine("somehow, messageQueue(0) is NULL, even though messageQueue.isEmpty() is false?");
+				synchronized(messageQueue) {
+					if (messageQueue.get(0) != null && messageQueue.get(0).originalMessage != null) {
+						printLine("getNextMessage(millisToWait) was NOT null.");
+						returnString = messageQueue.get(0).originalMessage;
+						messageQueue.remove(0);
 					} else {
-						printLine("message at index 0 : " + messageQueue.get(0).toString());
+						printLine("getNextMessage was either null, or originalMessage was null. This is a strange occurance...");
+						if (messageQueue.get(0) == null) {
+							printLine("somehow, messageQueue(0) is NULL, even though messageQueue.isEmpty() is false?");
+						} else {
+							printLine("message at index 0 : " + messageQueue.get(0).toString());
+						}
 					}
 				}
 				
@@ -735,29 +761,31 @@ public class RTILib {
 			}
 			printLine("queue before checking message: size = " + messageQueue.size() + " ... " + debugLine);
 			
-			for (int i = 0; i < messageQueue.size(); i++) {
-				try {
-					//if (messageQueue.get(i) != null) {
-					//	if (messageQueue.get(i).name != null ) {
-							if (messageQueue.get(i).name.compareTo(messageName)==0) {
-								if (messageQueue.get(i) != null && messageQueue.get(i).originalMessage != null) {
-									printLine("getNextMessage was NOT null.");
-									returnString = messageQueue.get(i).originalMessage;
-									messageQueue.remove(i);
-									break;
-								} else {
-									printLine("getNextMessage was either null, or originalMessage was null. This is a strange occurance...");
-									if (messageQueue.get(i) == null) {
-										printLine("somehow, messageQueue(i) is NULL, even though messageQueue.isEmpty() is false? i = " + i + ", length = " + messageQueue.size());
+			synchronized(messageQueue) {
+				for (int i = 0; i < messageQueue.size(); i++) {
+					try {
+						//if (messageQueue.get(i) != null) {
+						//	if (messageQueue.get(i).name != null ) {
+								if (messageQueue.get(i).name.compareTo(messageName)==0) {
+									if (messageQueue.get(i) != null && messageQueue.get(i).originalMessage != null) {
+										printLine("getNextMessage was NOT null.");
+										returnString = messageQueue.get(i).originalMessage;
+										messageQueue.remove(i);
+										break;
 									} else {
-										printLine("message at index i (" + i + ") : " + messageQueue.get(i).toString());
+										printLine("getNextMessage was either null, or originalMessage was null. This is a strange occurance...");
+										if (messageQueue.get(i) == null) {
+											printLine("somehow, messageQueue(i) is NULL, even though messageQueue.isEmpty() is false? i = " + i + ", length = " + messageQueue.size());
+										} else {
+											printLine("message at index i (" + i + ") : " + messageQueue.get(i).toString());
+										}
 									}
 								}
-							}
-					//	}
-					//}
-				} catch (Exception e) {
-					printLine("some strange issue occurred when trying to getNextMessage (name == null, message == null, etc.) at list index " + i + " out of " +messageQueue.size() + "... return nothing and continue without breaking sim.");
+						//	}
+						//}
+					} catch (Exception e) {
+						printLine("some strange issue occurred when trying to getNextMessage (name == null, message == null, etc.) at list index " + i + " out of " +messageQueue.size() + "... return nothing and continue without breaking sim.");
+					}
 				}
 			}
 			
@@ -773,7 +801,7 @@ public class RTILib {
 			System.out.println("WARNING: did you know there might be a disconnect with the RTI? " + debugErr);
 		}
 		
-		String debugLine = "";
+		/*String debugLine = "";
 		//for debugging, print out queue before and after 
 		for (int i = 0; i < messageQueue.size(); i++) {
 			try {
@@ -782,27 +810,29 @@ public class RTILib {
 				debugLine += "(exception when trying to access)" + "\t";
 			}
 		}
-		printLine("queue before checking message: size = " + messageQueue.size() + " ... " + debugLine);
+		printLine("queue before checking message: size = " + messageQueue.size() + " ... " + debugLine);*/
 		for (int j = 0; j < millisToWait; j+=10) {
 			if (messageQueue.isEmpty() == false) {
-				for (int i = 0; i < messageQueue.size(); i++) {
-					try {
-						if (messageQueue.get(i).name.compareTo(messageName)==0) {
-							if (messageQueue.get(i) != null && messageQueue.get(i).originalMessage != null) {
-								returnString = messageQueue.get(i).originalMessage;
-								messageQueue.remove(i);
-								break;
-							} else {
-								printLine("getNextMessage was either null, or originalMessage was null. This is a strange occurance...");
-								if (messageQueue.get(i) == null) {
-									printLine("somehow, messageQueue(i) is NULL, even though messageQueue.isEmpty() is false? i = " + i);
+				synchronized(messageQueue) {
+					for (int i = 0; i < messageQueue.size(); i++) {
+						try {
+							if (messageQueue.get(i).name.compareTo(messageName)==0) {
+								if (messageQueue.get(i) != null && messageQueue.get(i).originalMessage != null) {
+									returnString = messageQueue.get(i).originalMessage;
+									messageQueue.remove(i);
+									break;
 								} else {
-									printLine("message at index i (" + i + ") : " + messageQueue.get(i).toString());
+									printLine("getNextMessage was either null, or originalMessage was null. This is a strange occurance...");
+									if (messageQueue.get(i) == null) {
+										printLine("somehow, messageQueue(i) is NULL, even though messageQueue.isEmpty() is false? i = " + i);
+									} else {
+										printLine("message at index i (" + i + ") : " + messageQueue.get(i).toString());
+									}
 								}
 							}
+						} catch (Exception e) {
+							printLine("some strange issue occurred when trying to getNextMessage (name == null, message == null, etc.) at list index " + i + " out of " +messageQueue.size() + "... return nothing and continue without breaking sim.");
 						}
-					} catch (Exception e) {
-						printLine("some strange issue occurred when trying to getNextMessage (name == null, message == null, etc.) at list index " + i + " out of " +messageQueue.size() + "... return nothing and continue without breaking sim.");
 					}
 				}
 			}
@@ -819,24 +849,27 @@ public class RTILib {
 		}*/
 		//printLine("queue after checking message: size = " + messageQueue.size() + " ... " + debugLine);
 		//printLine("confirm socket is still connected = " + readThread.rtiSocket.isConnected());
+		//printLine("TRYING TO GET NEXT MESSAGE - RETURN STRING IS : " + returnString);
 		return returnString;
 	}
 	
 	public String waitForNextMessage() {
 		String returnString = "";
 		printLine("will immediately return message if there is one in the message buffer, else will wait until the queue gets a value.");
-		while (messageQueue.isEmpty()) {
+		while (messageQueue.isEmpty() == true) {
 			
 		}
-		if (messageQueue.get(0) != null && messageQueue.get(0).originalMessage != null) {
-			returnString = messageQueue.get(0).originalMessage;
-			messageQueue.remove(0);
-		} else {
-			printLine("getNextMessage was either null, or originalMessage was null. This is a strange occurance...");
-			if (messageQueue.get(0) == null) {
-				printLine("somehow, messageQueue(0) is NULL, even though messageQueue.isEmpty() is false?");
+		synchronized(messageQueue) {
+			if (messageQueue.get(0) != null && messageQueue.get(0).originalMessage != null) {
+				returnString = messageQueue.get(0).originalMessage;
+				messageQueue.remove(0);
 			} else {
-				printLine("message at index 0 : " + messageQueue.get(0).toString());
+				printLine("getNextMessage was either null, or originalMessage was null. This is a strange occurance...");
+				if (messageQueue.get(0) == null) {
+					printLine("somehow, messageQueue(0) is NULL, even though messageQueue.isEmpty() is false?");
+				} else {
+					printLine("message at index 0 : " + messageQueue.get(0).toString());
+				}
 			}
 		}
 		
@@ -848,24 +881,26 @@ public class RTILib {
 		printLine("will immediately return message if there is specific message in the buffer, else will wait until the queue gets a value.");
 		while (returnString =="") {
 			if (messageQueue.isEmpty() == false) {
-				for (int i = 0; i < messageQueue.size(); i++) {
-					try {
-						if (messageQueue.get(i).name.compareTo(messageName)==0) {
-							if (messageQueue.get(i) != null && messageQueue.get(i).originalMessage != null) {
-								returnString = messageQueue.get(i).originalMessage;
-								messageQueue.remove(i);
-								break;
-							} else {
-								printLine("getNextMessage was either null, or originalMessage was null. This is a strange occurance...");
-								if (messageQueue.get(i) == null) {
-									printLine("somehow, messageQueue(i) is NULL, even though messageQueue.isEmpty() is false? i = " + i);
+				synchronized(messageQueue) {
+					for (int i = 0; i < messageQueue.size(); i++) {
+						try {
+							if (messageQueue.get(i).name.compareTo(messageName)==0) {
+								if (messageQueue.get(i) != null && messageQueue.get(i).originalMessage != null) {
+									returnString = messageQueue.get(i).originalMessage;
+									messageQueue.remove(i);
+									break;
 								} else {
-									printLine("message at index i (" + i + ") : " + messageQueue.get(i).toString());
+									printLine("getNextMessage was either null, or originalMessage was null. This is a strange occurance...");
+									if (messageQueue.get(i) == null) {
+										printLine("somehow, messageQueue(i) is NULL, even though messageQueue.isEmpty() is false? i = " + i);
+									} else {
+										printLine("message at index i (" + i + ") : " + messageQueue.get(i).toString());
+									}
 								}
 							}
+						} catch (Exception e) {
+							printLine("some strange issue occurred when trying to getNextMessage (name == null, message == null, etc.) at list index " + i + " out of " +messageQueue.size() + "... return nothing and continue without breaking sim.");
 						}
-					} catch (Exception e) {
-						printLine("some strange issue occurred when trying to getNextMessage (name == null, message == null, etc.) at list index " + i + " out of " +messageQueue.size() + "... return nothing and continue without breaking sim.");
 					}
 				}
 			}
@@ -886,7 +921,7 @@ public class RTILib {
 		printLine("asked to read jsonValue from content (" + content + ")");
 		
 		if (content.compareTo("")==0 || content == null) {
-			returnString = null;
+			returnString = "";
 			return returnString;
 		}
 		
@@ -904,14 +939,14 @@ public class RTILib {
 				}
 			}
 			else {
-				returnString = null;
+				returnString = "";
 			}
 			
 			printLine("asked to read jsonValue for " + name + " " + returnString);
 		}
 		catch (Exception e) {
-			printLine("something went wrong when trying to get Json object. Returning null.");
-			returnString = null;
+			printLine("<<Something went wrong when trying to get Json object. Returning empty string. Original message was = " + content + " >>");
+			returnString = "";
 			return returnString;
 		}
 		return returnString;
@@ -927,14 +962,14 @@ public class RTILib {
 		printLine("asked to read jsonValue from content (" + content + ")");
 		
 		if (content.compareTo("")==0 || content == null) {
-			returnString = null;
+			returnString = "";
 			return returnString;
 		}
 		
 		try {
 			int positionName = content.indexOf(name);
 			if (positionName == -1) {
-				returnString = null;
+				returnString = "";
 			} else {
 				int positionObject = positionName + 2;	// ":
 				String subString = content.substring(positionObject, content.length());
@@ -951,7 +986,7 @@ public class RTILib {
 					}
 				}
 				if (endIndex == -1) {
-					returnString = null;
+					returnString = "";
 				} else {
 					returnString = subString.substring(0,endIndex+1);
 					returnString = getStringNoQuotes(returnString);
@@ -961,7 +996,7 @@ public class RTILib {
 		}
 		catch (Exception e) {
 			printLine("something went wrong when trying to get Json object. Returning null.");
-			returnString = null;
+			returnString = "";
 			return returnString;
 		}
 		return returnString;
@@ -971,7 +1006,7 @@ public class RTILib {
 		String returnString = "";
 		
 		if (content == "" || content == null) {
-			returnString = null;
+			returnString = "";
 			return returnString;
 		}
 		
@@ -983,7 +1018,7 @@ public class RTILib {
 			returnString = json.getString(name, "").toString();
 		}
 		else {
-			returnString = null;
+			returnString = "";
 		}
 		return returnString;
 	}
@@ -992,13 +1027,13 @@ public class RTILib {
 		String returnString = "";
 		
 		if (content == "" || content == null) {
-			returnString = null;
+			returnString = "";
 			return returnString;
 		}
 		
 		int positionName = content.indexOf(name);
 		if (positionName == -1) {
-			returnString = null;
+			returnString = "";
 		} else {
 			int positionObject = positionName + 2;	// ":
 			String subString = content.substring(positionObject, content.length());
@@ -1015,7 +1050,7 @@ public class RTILib {
 				}
 			}
 			if (endIndex == -1) {
-				returnString = null;
+				returnString = "";
 			} else {
 				returnString = subString.substring(0,endIndex+1);
 				returnString = getStringNoQuotes(returnString);
@@ -1072,7 +1107,7 @@ public class RTILib {
 			returnString = json.get("name").toString();
 		}
 		else {
-			returnString = null;
+			returnString = "";
 		}
 		return returnString;
 	}
@@ -1087,7 +1122,7 @@ public class RTILib {
 			returnString = json.get("timestamp").toString();
 		}
 		else {
-			returnString = null;
+			returnString = "";
 		}
 		return returnString;
 	}
@@ -1102,7 +1137,7 @@ public class RTILib {
 			returnString = json.get("source").toString();
 		}
 		else {
-			returnString = null;
+			returnString = "";
 		}
 		return returnString;
 	}
@@ -1117,7 +1152,7 @@ public class RTILib {
 			returnString = json.getString("content", "").toString();
 		}
 		else {
-			returnString = null;
+			returnString = "";
 		}
 		return returnString;
 	}

@@ -61,11 +61,22 @@ public class RTISimConnectThread extends Thread{
 		try {
 			printLine("Connected to dedicated socket! Now running thread to receive new messages!");
 			String userInput = in.readLine();
+			String userInputOut = userInput;
+			if (userInput.length() > 1000) {
+				userInputOut = userInput.substring(0,500) 
+						+ " ... " + userInput.substring(userInput.length() - 500,userInput.length());
+			}
+			printLine("had read first line, received input = " + userInputOut);
 			while (isConnected == true && userInput.length() > 0) {
 				rtiLib.receivedMessage(userInput);
 				printLine("ready to read...");
 				userInput = in.readLine();
-				printLine("had read, received input = " + userInput);
+				userInputOut = userInput;
+				if (userInput.length() > 1000) {
+					userInputOut = userInput.substring(0,500) 
+							+ " ... " + userInput.substring(userInput.length() - 500,userInput.length());
+				}
+				printLine("had read, received input = " + userInputOut);
 			}
 		} catch (Exception e) {
 			disconnectedErr = System.currentTimeMillis() + " Exception (connection closed) >> " + e.toString();

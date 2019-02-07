@@ -12,7 +12,11 @@ import java.util.List;
 import javax.swing.SwingUtilities;
 
 public class Version {
-	public static String version = "v0.71";
+	/* Version = <1.00 = standard version, still prone to bugs
+	 * 			= 1.00.00 = standard base version. 1.01.00 means bug update, should be applied to other versions too.
+	 * 			= 2.00.00 = extended version with advanced "RTI Wrapper", not compatible with 1.00.00. 2.00.01 means feature update.
+	 * */
+	public static String version = "v1.00.01";
 	
 	public static String textFileName = null;
 	public static boolean debugConsole = false;

@@ -123,17 +123,20 @@ public class RTIConnectThread extends Thread {
 	// prepare and send message using dedicated socket
 	int send(String name, String content, String timestamp, String source) {
 		try {
-			JsonObject json =  Json.createObjectBuilder()
-					.add("name", name)
-					.add("content", content)
-					.add("timestamp", timestamp)
-					.add("source", source)
-					.add("tcp", "" + tcpOn)
-					.build();
-			PrintWriter out;
-			out = new PrintWriter(thisSimSocket.getOutputStream(), true);
-			out.println(json);
-			out.flush();
+			JsonObject json = null;
+			synchronized(thisSimSocket){
+				json =  Json.createObjectBuilder()
+						.add("name", name)
+						.add("content", content)
+						.add("timestamp", timestamp)
+						.add("source", source)
+						.add("tcp", "" + tcpOn)
+						.build();
+				PrintWriter out;
+				out = new PrintWriter(thisSimSocket.getOutputStream(), true);
+				out.println(json);
+				out.flush();
+			}
 			printLine("Sent message " + name + " to " + simName);// + " with content " + content);
 			
 			if (name.compareTo("RTI_ReceivedMessage") != 0) {
