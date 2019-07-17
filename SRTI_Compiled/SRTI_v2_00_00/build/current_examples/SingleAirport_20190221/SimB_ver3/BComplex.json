@@ -1,0 +1,71 @@
+{
+    "hostName": "localhost",
+    "portNumber": "42010",
+    "simulatorName": "B_Sim",
+    "simulatorRef": "airport_20190104.B",
+	"debugConsole":true,
+	"debugFile":true,
+	"dataOutFile":true,
+	"initializeChannels":[
+		{
+			"functionName": "Initialize",
+			"stage": 0
+		}
+	],
+	"stageChannels":[
+		{
+			"stage": 0,
+			"order": 0,
+			"timestepDelta": 1,
+			"timestepMul": 1
+		}
+	],
+	"simulateChannels":[
+		{
+			"functionName": "Simulate",
+			"timestepDelta": 1,
+			"stage": 0
+		}
+	],
+    "subscribedChannels": [
+        {
+			"messageName": "D",
+            "oneTime": false,
+            "varChannel": [
+            	{
+            		"valueName": "D_numberOfPeople",
+					"varName": "changeInPeople"
+            	}
+            ],
+			"mandatory": true,
+			"relativeOrder": 0,
+			"maxTimestep": 0,
+			"timestepDelta": 1,
+			"stage": 0
+        }
+    ],
+    "publishedChannels": [
+    ],
+	"endConditions": [
+	],
+	"stageConditions": [
+		[
+		{
+			"oldStage": 0,
+			"varName": "passengers",
+			"condition": ">=",
+			"value": 100,
+			"newStage": 1
+		}
+		],
+		[
+		{
+			"oldStage": 0,
+			"varName": "timeToFly",
+			"condition": "<=",
+			"value": 0,
+			"newStage": 1
+		}
+		]
+	]
+}

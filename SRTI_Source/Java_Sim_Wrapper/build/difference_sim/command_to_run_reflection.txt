@@ -1,2 +1,0 @@
-C:\Users\hlynk\Desktop\UMich\ICoR\Reading-Materials\201807\SRTI_Wrapper_Java\difference_sim>
-java -cp "sum_sim_20180806.jar;SRTI_wrapper_20180906.jar" main.Wrapper

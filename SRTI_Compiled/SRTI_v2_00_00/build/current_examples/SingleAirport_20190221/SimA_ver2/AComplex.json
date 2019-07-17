@@ -1,0 +1,53 @@
+{
+    "hostName": "localhost",
+    "portNumber": "42010",
+    "simulatorName": "A_Sim",
+    "simulatorRef": "airport_20190104.A",
+	"initializeChannels":[
+	],
+	"stageChannels":[
+		{
+			"stage": 0,
+			"order": 0,
+			"timestepDelta": 1,
+			"timestepMul": 1
+		}
+	],
+	"simulateChannels":[
+		{
+			"functionName": "Simulate",
+			"timestepDelta": 1,
+			"stage": 0
+		}
+	],
+    "subscribedChannels": [
+        {
+			"messageName": "D",
+            "oneTime": false,
+            "varChannel": [
+            	{
+            		"valueName": "D_numberOfPeople",
+					"varName": "changeInPeople"
+            	}
+            ],
+			"mandatory": true,
+			"relativeOrder": 0,
+			"maxTimestep": 0,
+			"timestepDelta": 1,
+			"stage": 0
+        }
+    ],
+    "publishedChannels": [
+    ],
+	"endConditions": [
+		[
+		{
+			"varName": "people",
+			"condition": "<=",
+			"value": 0
+		}
+		]
+	],
+	"stageConditions": [
+	]
+}

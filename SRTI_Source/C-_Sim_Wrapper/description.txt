@@ -1,9 +1,0 @@
-This is the location of the source code for the SRTI Wrapper
-(C++ version)
-
-The wrapper is meant to act as a method to connect to an open RTI Server without the simulation doing so manually
-(the SRTI Wrapper would handle API calls to RTILib instead of the simulation).
-One instance of the wrapper would exist for each simulation.
-
-Folder created 2018-06-14.
-

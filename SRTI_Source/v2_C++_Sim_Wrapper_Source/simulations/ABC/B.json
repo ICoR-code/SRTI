@@ -1,0 +1,17 @@
+{
+    "hostName": "localhost",
+    "portNumber": "4200",
+    "simulatorName": "BSim",
+    "subscribedChannels": {
+        "TimeStamp": {
+            "oneTime": false,
+            "stepRelation": 0
+        }
+    },
+    "publishedChannels": {
+        "B": {
+            "initial": false,
+            "historyDependent": 0
+        }
+    }
+}

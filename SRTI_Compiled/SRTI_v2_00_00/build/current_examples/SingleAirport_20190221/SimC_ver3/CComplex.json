@@ -1,0 +1,68 @@
+{
+    "hostName": "localhost",
+    "portNumber": "42010",
+    "simulatorName": "C_Sim",
+    "simulatorRef": "airport_20190104.C",
+	"debugConsole":true,
+	"debugFile":true,
+	"dataOutFile":true,
+	"initializeChannels":[
+		{
+			"functionName": "Initialize",
+			"stage": 1
+		}
+	],
+	"stageChannels":[
+		{
+			"stage": 1,
+			"order": 0,
+			"timestepDelta": 30,
+			"timestepMul": 1
+		},
+		{
+			"stage": 0,
+			"order": 0,
+			"timestepDelta": 1,
+			"timestepMul": 1
+		}
+	],
+	"simulateChannels":[
+		{
+			"functionName": "Simulate",
+			"timestepDelta": 30,
+			"stage": 1
+		}
+	],
+    "subscribedChannels": [
+        {
+			"messageName": "D",
+            "oneTime": false,
+            "varChannel": [
+            	{
+            		"valueName": "RTI_vTimestamp",
+					"varName": "timestamp"
+            	}
+            ],
+			"mandatory": true,
+			"relativeOrder": 0,
+			"maxTimestep": 0,
+			"timestepDelta": 1,
+			"stage": 0
+        }
+    ],
+    "publishedChannels": [
+    ],
+	"endConditions": [
+	],
+	"stageConditions": [
+		[
+		{
+			"oldStage": 1,
+			"varName": "milesToTravel",
+			"condition": "<=",
+			"value": 0,
+			"newStage": 0
+		}
+		]
+	]
+}

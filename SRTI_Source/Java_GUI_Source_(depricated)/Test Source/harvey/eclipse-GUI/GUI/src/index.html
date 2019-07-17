@@ -1,0 +1,71 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://unpkg.com/konva@2.4.2/konva.min.js"></script>
+    <meta charset="utf-8">
+    <title>Konva  Drag and Drop Demo</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #F0F0F0;
+        }
+    </style>
+</head>
+<body>
+<div id="container"></div>
+<script>
+    var width = window.innerWidth;
+    var height = window.innerHeight;
+
+    var stage = new Konva.Stage({
+        container: 'container',
+        width: width,
+        height: height
+    });
+
+    var layer = new Konva.Layer();
+    var rectX = stage.getWidth() / 2 - 50;
+    var rectY = stage.getHeight() / 2 - 25;
+
+    var simpleLabel = new Konva.Label({
+	    x: 180,
+	    y: 150,
+	    opacity: 0.75,
+	    draggable: true
+	});
+	
+	simpleLabel.add(new Konva.Tag({
+	    fill: 'yellow'
+	}));
+	
+	var text = new Konva.Text({
+	    text: 'Simple label',
+	    fontFamily: 'Calibri',
+	    fontSize: 18,
+	    padding: 5,
+	    fill: 'black'
+	})
+	simpleLabel.add(text);
+
+    // add cursor styling
+    simpleLabel.on('mouseover', function() {
+        document.body.style.cursor = 'pointer';
+    });
+    simpleLabel.on('mouseout', function() {
+        document.body.style.cursor = 'default';
+    });
+    
+    simpleLabel.on('click', function() {
+    	text.setText(window.backend.getTime());
+    });
+    
+
+    layer.add(simpleLabel);
+    stage.add(layer);
+</script>
+
+</body>
+</html>

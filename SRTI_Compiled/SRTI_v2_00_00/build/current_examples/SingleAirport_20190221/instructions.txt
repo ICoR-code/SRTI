@@ -1,0 +1,28 @@
+
+SRTI v2.00.00 Examples (Java):
+------------------------------
+
+1) First, run this in a command prompt:
+
+	java -jar SRTI_v2_03_01.jar
+
+2) Next, open separate command prompts (4 additional) to folders A,B,C,D and run the following command:
+
+	java -cp "wrapper_example_20190215_1.jar;SRTI_Wrapper_v2_03_01.jar" main.Wrapper
+
+3) On the GUI the appears for the RTI Server, click the button to "Send Start Request To All." 
+	This will tell the Wrapper for each simulator to begin.
+	The built-in Manager in RTI Server (SRTI v2.00.00 and above) will manage time synchronization based on variables in each Wrapper.
+	Each simulator and their Wrapper are typically indpendent of each other: 
+		the Manager is not designed to consider multiple simulators for things like "stage transitions" or "ending transitions."
+
+
+
+
+SRTI v2.00.00 Examples (Matlab):
+-------------------------------
+
+Identical to Java versions.
+Copy "configuration files" as needed.
+Matlab script is not pre-compiled: must have a Matlab license to run.
+Can run all 4 simulators in Matlab, all 4 in Java, or mix-and-match between languages.

@@ -1,0 +1,20 @@
+ver 1:
+	- 4 simulators
+	- run at same time (order = 0) at each step
+	- 2 "stages"
+
+ver 2:
+	- 4 simulators
+	- run at different orders (1 or 2) at each step
+	- 2 "stages"
+
+ver 3:
+	- 4 simulators 
+	- run at different orders (1 or 2) at each step
+	- 2 "stages"
+	- add variables to "output debug file," "output debug to console," "output data file" for any given stage
+
+ver Matlab
+	- Identical to "Java" version: just copy into different directories per simulator,
+		copy configuration files from Java versions,
+		and run the 4 simulators (all Matlab, all Java, or hybrid).

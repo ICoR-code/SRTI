@@ -1,0 +1,14 @@
+{
+    "hostName": "localhost",
+    "portNumber": "4200",
+    "simulatorName": "FibonacciSim",
+    "subscribedChannels": {
+
+    },
+    "publishedChannels": {
+        "Fibonacci": {
+            "initial": true,
+            "historyDependent": 2
+        }
+    }
+}

@@ -1,0 +1,28 @@
+1550084600419 	3.65	MB RAM	            [ExampleServer] --- Finished reading settings file.
+1550084600432 	3.65	MB RAM	            [ExampleServer] --- Found this many files starting with 'messagehistorylist_***.txt' : 0
+1550084600466 	3.65	MB RAM	            [ExampleServer] --- Try to create socket on this port: 42012
+1550084600479 	3.65	MB RAM	            [ExampleServer] --- This is an example GUI to show a RTI ('Really Thankful Interface'), which is similar to an RTI ('Real Time Interface') as described in an HLA system.
+1550084600487 	3.65	MB RAM	            [ExampleServer] --- To connect a simulation to this RTI, please use the following credentials:
+	 hostname = 35.3.114.203
+		 (or you can use 'localhost' if running simulation on same computer as RTI)
+	 portnumber = 42012
+1550084600496 	3.65	MB RAM	            [ExampleServer] --- Opening socket connection.
+1550084600512 	4.15	MB RAM	            [ExampleServer] --- Open for business! Waiting for simulations to connect to me...
+1550084601244 	9.40	MB RAM	         [ExampleServerGUI] --- Starting GUI (not loaded yet)...
+1550084601670 	14.14	MB RAM	         [ExampleServerGUI] --- Loaded GUI panel, should be visible now.
+1550084601698 	15.23	MB RAM	            [ExampleServer] --- 	 Connected!
+1550084601716 	17.83	MB RAM	            [ExampleServer] --- 	 Added thread to the list! Now sim size is: 1
+1550084601730 	18.33	MB RAM	         [RTIConnectThread] --- 	 Not done connecting yet! Waiting for app to connect to dedicated port = 35.3.114.203 53024
+1550084601744 	18.33	MB RAM	            [ExampleServer] --- Open for business! Waiting for simulations to connect to me...
+1550084601773 	18.83	MB RAM	         [RTIConnectThread] --- 	 Really connected! Let's get to work!
+1550084601788 	18.83	MB RAM	         [RTIConnectThread] --- 1: waiting for input... 
+1550084601806 	18.83	MB RAM	         [RTIConnectThread] --- I RECEIVED INPUT! It was : {"name":"RTI_InitializeSim","content":"{\"simName\":\"ExampleServerGUI\"}","timestamp":"1550084601742","source":"ExampleServerGUI","tcp":"false"}
+1550084601820 	18.83	MB RAM	            [ExampleServer] --- received message from index 1
+1550084601844 	18.83	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_UpdateSim to ExampleServerGUI
+1550084601855 	18.83	MB RAM	         [ExampleServerGUI] --- 	 updating number of connected apps = 1
+1550084601865 	18.83	MB RAM	            [ExampleServer] --- There should be 0 subscribed to message RTI_InitializeSim
+1550084601874 	18.83	MB RAM	[RTIConnectThread_ExampleServerGUI] --- I RECEIVED INPUT! It was : {"name":"RTI_SubscribeToAllPlusHistory","content":"","timestamp":"1550084601748","source":"ExampleServerGUI","tcp":"true"}
+1550084601886 	18.87	MB RAM	            [ExampleServer] --- received message from index 1
+1550084601898 	19.38	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_ReceivedMessage to ExampleServerGUI
+1550084601912 	19.89	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_UpdateSim to ExampleServerGUI
+1550084601927 	19.89	MB RAM	         [ExampleServerGUI] --- Now currently this many connected apps: 1

@@ -1,0 +1,8 @@
+WARNING:
+- To recompile Java code for SRTI v2 (NetLogo) Wrapper,
+	you must install NetLogo locally on your machine,
+	and include it in the build path.
+- Compiled .jar for NetLogo Wrapper includes a full copy of
+	NetLogo 6.1,
+	as allowed to redistribute and/or modify under the GNU General Public License.
+	See https://ccl.northwestern.edu/netlogo/docs/copyright.html for details.

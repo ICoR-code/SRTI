@@ -1,0 +1,71 @@
+{
+    "hostName": "localhost",
+    "portNumber": "42012",
+    "simulatorName": "netlogo_sim_01",
+    "simulatorRef": "netlogo_sim_01",
+	"debugFile": true,
+	"initializeChannels":[
+		{
+			"functionName": "initialize",
+			"stage": 0
+		}
+	],
+	"stageChannels":[
+		{
+			"stage": 0,
+			"order": 0,
+			"timestepDelta": 1,
+			"timestepMul": 1
+		}
+	],
+	"simulateChannels":[
+		{
+			"functionName": "simulateStep",
+			"timestepDelta": 1,
+			"stage": 0
+		}
+	],
+    "subscribedChannels": [
+		{
+			"messageName": "Message2",
+			"oneTime": false,
+			"varChannel": [
+				{
+					"valueName": "var1",
+					"varName": "listOfVar"
+				},
+				{
+					"valueName": "var2",
+					"varName": "singleVar"
+				}
+			],
+			"mandatory": true,
+			"relativeOrder": 0,
+			"maxTimestep": 0,
+			"timestepDelta": 1,
+			"stage": 0
+		}
+    ],
+    "publishedChannels": [
+		{
+			"messageName": "Message1",
+			"initial": false,
+			"varChannel": [
+				{
+					"valueName": "var1",
+					"varName": "listOfVar"
+				},
+				{
+					"valueName": "var2",
+					"varName": "singleVar"
+				}
+			],
+			"timestepDelta": 1,
+			"stage": 0
+		}
+    ],
+	"endConditions": [
+	],
+	"stageConditions": [
+	]
+}

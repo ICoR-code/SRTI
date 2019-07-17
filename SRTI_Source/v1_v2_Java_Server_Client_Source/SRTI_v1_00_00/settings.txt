@@ -1,0 +1,14 @@
+{
+"portNumber":42010,
+"guiOn":true,
+"debugGuiOn":false,
+"tcpOn":false,
+"compressOn":false,
+"retryConnection":false,
+"oldMessageLimit":10000,
+"oldMessageArchive":false,
+"debugConsole":true,
+"debugFile":true,
+"concurrentProcessing":false,
+"oldMessageGUILimit":10
+}

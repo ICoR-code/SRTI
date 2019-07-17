@@ -1,0 +1,17 @@
+{
+    "hostName": "localhost",
+    "portNumber": "4200",
+    "simulatorName": "ASim",
+    "subscribedChannels": {
+        "C": {
+            "oneTime": false,
+            "stepRelation": 0
+        }
+    },
+    "publishedChannels": {
+        "TimeStamp": {
+            "initial": true,
+            "historyDependent": 1
+        }
+    }
+}

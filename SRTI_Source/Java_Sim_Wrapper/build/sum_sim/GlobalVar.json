@@ -1,9 +1,0 @@
-{
-    "Sum": {
-        "value": "int",
-		"values": "[int]"
-    },
-    "Difference": {
-        "value": "int"
-    }
-}

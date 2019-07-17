@@ -1,6 +1,6 @@
 # SRTI
 
-## "Simple Real Time Interface," temporary name inspired by other data-transfer systems.
+## "Simple Real Time Interface," name inspired by similar data-transfer systems.
 
 #### What is it?
 
@@ -10,13 +10,13 @@ Unlike similar solutions, is not built for efficiency at the expense of usabilit
 
 #### How does it work?
 
-###### RTI
+###### RTI Server 
 
 First, must run "RTI" as the central server that simulations must connect to. This can be run on any machine. The original Java implementation does not need to be rewritten for applications in other languages.
 
 This can be started by running the included pre-compiled .jar file.
 
-###### RTILib
+###### RTI Lib API
 
 Second, must use "RTILib" library in your application to connect to the RTI. RTILib will utilize socket connections to connect to the RTI, the user must specifiy the "hostname" and "portnumber" (output when running the RTI), otherwise the details of the connection are not required to be understood by the user.
 
@@ -32,3 +32,32 @@ An example GUI interface, treated as a application that uses "RTILib" to connect
 
 Currently, the included compiled .jar file will automatically start "ExampleServerGUI" as well as the RTI upon startup.
 
+
+
+#### v1.00.00 VS v2.00.00
+
+The above information refers to SRTI v1.00.00. It's best suited for programmers that need a flexible and simple solution to pass data between different programs.
+
+SRTI v2.00.00 is a separate version that builds off of v1.00.00's foundation. It's meant to be able to support language-specific simulators without modifying their underlying source-code, and handles additional simulation-system-management at the Server-level.
+
+In addition to the above elements, v2.00.00 includes the following required components:
+
+###### RTI Wrapper
+
+A Wrapper-component that includes and uses the RTI Lib API to connect to the RTI Server, and can access public functions and variables inside a pre-compiled simulator.
+
+To be able to access a simulator, the simulator must follow minor design guidelines to be accessible.
+The Wrapper must be written in the same language as the simulator, and must be able to access a version of the RTI Lib API.
+Since both the Wrapper and simulator are pre-compiled, the user doesn't need to compile anything, but must write a configuration file that describes to the Wrapper the use of the simulator to the rest of the project.
+A custom-ad-hoc version of a Wrapper can be written to allow other simulators to be supported, in the same way v1.00.00 allows.
+
+###### RTI Server Manager
+
+Automatically included in the RTI Server, this Manager listens for specific messages automatically sent from the Wrapper from each simulator.
+
+This primarily consists of time synchronization at each timestep.
+
+###### RTI v2.00.00 GUI
+
+A new GUI to help design a project, with output consisting of configuration files for each Wrapper to use when running.
+Currently in development.
