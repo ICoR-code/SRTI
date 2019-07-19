@@ -994,7 +994,13 @@ public class Wrapper {
 							try {
 								double compareValue = 0;
 								if (endConditions.get(i).get(k).varName2 != "") {
-									compareValue = simVars[j].getDouble(simulation);
+									for (int m = 0; m < simVars.length; m++) {
+										if (simVars[m].getName().compareTo(stageConditions.get(i).get(k).varName2) == 0) {
+											compareValue = simVars[m].getDouble(simulation);
+										} else {
+											continue;
+										}
+									}
 								} else {
 									compareValue = endConditions.get(i).get(k).valueNum;
 								}
@@ -1047,7 +1053,13 @@ public class Wrapper {
 							try {
 								boolean compareValue = false;
 								if (endConditions.get(i).get(k).varName2 != "") {
-									compareValue = simVars[j].getBoolean(simulation);
+									for (int m = 0; m < simVars.length; m++) {
+										if (simVars[m].getName().compareTo(stageConditions.get(i).get(k).varName2) == 0) {
+											compareValue = simVars[m].getBoolean(simulation);
+										} else {
+											continue;
+										}
+									}
 								} else {
 									compareValue = endConditions.get(i).get(k).valueBool;
 								}
@@ -1071,7 +1083,13 @@ public class Wrapper {
 							try {
 								String compareValue = "";
 								if (endConditions.get(i).get(k).varName2 != "") {
-									compareValue = "" + simVars[j].get(simulation);
+									for (int m = 0; m < simVars.length; m++) {
+										if (simVars[m].getName().compareTo(stageConditions.get(i).get(k).varName2) == 0) {
+											compareValue = (String)simVars[m].get(simulation);
+										} else {
+											continue;
+										}
+									}
 								} else {
 									compareValue = endConditions.get(i).get(k).valueString;
 								}
@@ -1353,7 +1371,13 @@ public class Wrapper {
 											+ simVars[j].getDouble(simulation));
 									double compareValue = 0;
 									if (stageConditions.get(i).get(k).varName2 != "") {
-										compareValue = simVars[j].getDouble(simulation);
+										for (int m = 0; m < simVars.length; m++) {
+											if (simVars[m].getName().compareTo(stageConditions.get(i).get(k).varName2) == 0) {
+												compareValue = simVars[m].getDouble(simulation);
+											} else {
+												continue;
+											}
+										}
 									} else {
 										compareValue = stageConditions.get(i).get(k).valueNum;
 									}
@@ -1406,7 +1430,13 @@ public class Wrapper {
 											+ simVars[j].getBoolean(simulation));
 									boolean compareValue = false;
 									if (stageConditions.get(i).get(k).varName2 != "") {
-										compareValue = simVars[j].getBoolean(simulation);
+										for (int m = 0; m < simVars.length; m++) {
+											if (simVars[m].getName().compareTo(stageConditions.get(i).get(k).varName2) == 0) {
+												compareValue = simVars[m].getBoolean(simulation);
+											} else {
+												continue;
+											}
+										}
 									} else {
 										compareValue = stageConditions.get(i).get(k).valueBool;
 									}
@@ -1432,7 +1462,13 @@ public class Wrapper {
 											+ simVars[j].get(simulation));
 									String compareValue = "";
 									if (stageConditions.get(i).get(k).varName2 != "") {
-										compareValue = "" + simVars[j].get(simulation);
+										for (int m = 0; m < simVars.length; m++) {
+											if (simVars[m].getName().compareTo(stageConditions.get(i).get(k).varName2) == 0) {
+												compareValue = (String) simVars[m].get(simulation);
+											} else {
+												continue;
+											}
+										}
 									} else {
 										compareValue = stageConditions.get(i).get(k).valueString;
 									}
