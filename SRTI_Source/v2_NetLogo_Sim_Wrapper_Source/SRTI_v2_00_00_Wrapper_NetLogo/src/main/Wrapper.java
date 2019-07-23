@@ -1610,7 +1610,7 @@ public class Wrapper {
 				//	returnObject += "" + Boolean.parseBoolean(jA.getString(i)) + " ";
 					//Array.set(returnObject, i, Boolean.parseBoolean(jA.getString(i)));
 				//} else if (classType.contains("String") || classType.contains("java.lang.String")) {
-					returnObject += "" + GetStringNoQuotes("" + jA.getString(i)) + " ";
+					returnObject += "" + GetStringNoQuotes("" + jA.get(i)) + " ";
 					//Array.set(returnObject, i, GetStringNoQuotes("" + jA.getString(i)));
 				//} else {
 				//	returnObject += "" + jA.getString(i) + " ";
@@ -1628,7 +1628,7 @@ public class Wrapper {
 	public JsonArray MakeJsonArray(Object o) {
 		JsonArray ja;
 		
-		// should first check "o.getClass.isArray()" before calling "makeJsonArray(o)
+		// should first check "o.getClass.isArray()" before calling "makeJsonArray(o)"
 		
 		JsonArrayBuilder jb = Json.createArrayBuilder();
 		for (int i = 0; i < Array.getLength(o); i++) {
@@ -1647,6 +1647,7 @@ public class Wrapper {
 			}
 			
 			if (isArray == true) {
+				lib.printLine("While making array, it was found that " + Array.get(o,i) + " IS an array.");
 				LogoList tempList = (LogoList) Array.get(o, i);
 				ArrayList tempArrayList = new ArrayList();
 				for (int z = 0; z < tempList.size(); z++) {
@@ -1656,6 +1657,7 @@ public class Wrapper {
 			
 				jb.add((JsonValue) MakeJsonArray(tempArray));
 			} else {
+				lib.printLine("While making array, it was found that " + Array.get(o,i) + " IS NOT an array.");
 				/* Why do I convert this value to a string?
 				 *   "JsonArrayBuilder.add(ob)" requires that ob is a primitive type, or a JsonValue.
 				 *   By default, Java seems to save Object as the java version.
@@ -1667,7 +1669,21 @@ public class Wrapper {
 				 *   and directly add this variable to JavaArrayBuilder.
 				 * 
 				 * */
-				jb.add("" + Array.get(o, i));
+				if (Array.get(o,i).getClass() == Integer.class) {
+					jb.add((int)Array.get(o, i));
+				} else if (Array.get(o,i).getClass() == Long.class) {
+					jb.add((long)Array.get(o, i));
+				} else if (Array.get(o,i).getClass() == Float.class) {
+					jb.add((double)Array.get(o, i));
+				} else if (Array.get(o,i).getClass() == Double.class) {
+					jb.add((double)Array.get(o, i));
+				} else if (Array.get(o,i).getClass() == Boolean.class) {
+					jb.add((boolean)Array.get(o, i));
+				} else if (Array.get(o,i).getClass() == String.class) {
+					jb.add((String)Array.get(o, i));
+				} else {
+					jb.add((JsonValue)Array.get(o, i));
+				}
 			}
 		}
 		ja = jb.build();

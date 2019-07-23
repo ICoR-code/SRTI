@@ -19,7 +19,7 @@ timestep_var_delta = "";
 
 %% read input configuration files
 
-fprintf('Starting SRTI Wrapper (v2_12_02) for Matlab. Reading settings files... \n');
+fprintf('Starting SRTI Wrapper (v2_16_02) for Matlab. Reading settings files... \n');
 
 settingsName = 'Settings.json';
 settingsVal = jsondecode(fileread(settingsName));
@@ -98,7 +98,11 @@ for i = 1:length(subChannels)
                            elseif (strcmp(subChannelObValue, "stageVTimestep") == 1)
                                setValue = int32(localTimestep / timestep_mul);
                            end
-                           eval("obj." + subChannelObVar + " = " + "setValue" + ";");
+                           if (isempty(str2num(setValue)))
+                               eval("obj." + subChannelObVar + " = " + "setValue" + ";");
+                           else
+                               eval("obj." + subChannelObVar + " = " + "str2num(setValue)" + ";");
+                           end
                        end
                        break;
                    else
@@ -117,7 +121,11 @@ for i = 1:length(subChannels)
                                  setValueJson = jsondecode(char(message));
                                  setValueContentJson = jsondecode(setValueJson.content);
                                  eval ("setValue = " + "setValueContentJson." + subChannelObValue + ";");
-                                 eval("obj." + subChannelObVar + " = " + "setValue" + ";");
+                                 if (isempty(str2num(setValue)))
+                                     eval("obj." + subChannelObVar + " = " + "setValue" + ";");
+                                 else
+                                     eval("obj." + subChannelObVar + " = " + "str2num(setValue)" + ";");
+                                 end
                             end
                            break;
                        end
@@ -155,7 +163,12 @@ for i = 1:length(pubChannels)
            %% if j ~= length(pubChannels(i).varChannel)
            %%    setValueTotalString = setValueTotalString + ", "; 
            %%end
-           eval("setValueTotal." + pubChannelObValue + " = obj."+ pubChannelObVar +";");
+           eval("setValue = obj." + pubChannelObVar + ";");
+           if (numel(setValue) > 1)
+               eval("setValueTotal." + pubChannelObValue + " = jsonencode(setValue);");
+           else
+               eval("setValueTotal." + pubChannelObValue + " = mat2str(setValue);");
+           end
        end
        %% eval ("setValueTotal = struct(" + char(setValueTotalString) + ");");
        setValueJson = jsonencode(setValueTotal);
@@ -265,7 +278,11 @@ while true
                            elseif (strcmp(subChannelObValue, "stageVTimestep") == 1)
                                setValue = int32(localTimestep / timestep_mul);
                            end
-                           eval("obj." + subChannelObVar + " = " + "setValue" + ";");
+                           if (isempty(str2num(setValue)))
+                               eval("obj." + subChannelObVar + " = " + "setValue" + ";");
+                           else
+                               eval("obj." + subChannelObVar + " = " + "str2num(setValue)" + ";");
+                           end
                        end
                        break;
                    else
@@ -284,7 +301,11 @@ while true
                                  setValueJson = jsondecode(char(message));
                                  setValueContentJson = jsondecode(setValueJson.content);
                                  eval ("setValue = " + "setValueContentJson." + subChannelObValue + ";");
-                                 eval("obj." + subChannelObVar + " = " + "setValue" + ";");
+                                 if (isempty(str2num(setValue)))
+                                     eval("obj." + subChannelObVar + " = " + "setValue" + ";");
+                                 else
+                                     eval("obj." + subChannelObVar + " = " + "str2num(setValue)" + ";");
+                                 end
                             end
                            break;
                        end
@@ -318,7 +339,12 @@ while true
                    %% if j ~= length(pubChannels(i).varChannel)
                    %%    setValueTotalString = setValueTotalString + ", "; 
                    %%end
-                   eval("setValueTotal." + pubChannelObValue + " = obj."+ pubChannelObVar +";");
+                   eval("setValue = obj." + pubChannelObVar + ";");
+                   if (numel(setValue) > 1)
+                        eval("setValueTotal." + pubChannelObValue + " = jsonencode(setValue);");
+                   else
+                        eval("setValueTotal." + pubChannelObValue + " = mat2str(setValue);");
+                   end
                end
                %% eval ("setValueTotal = struct(" + char(setValueTotalString) + ");");
                setValueJson = jsonencode(setValueTotal);
@@ -403,7 +429,11 @@ while true
                            elseif (strcmp(subChannelObValue, "stageVTimestep") == 1)
                                setValue = int32(localTimestep / timestep_mul);
                            end
-                           eval("obj." + subChannelObVar + " = " + "setValue" + ";");
+                           if (isempty(str2num(setValue)))
+                               eval("obj." + subChannelObVar + " = " + "setValue" + ";");
+                           else
+                               eval("obj." + subChannelObVar + " = " + "str2num(setValue)" + ";");
+                           end
                        end
                        break;
                    else
@@ -422,7 +452,11 @@ while true
                                  setValueJson = jsondecode(char(message));
                                  setValueContentJson = jsondecode(setValueJson.content);
                                  eval ("setValue = " + "setValueContentJson." + subChannelObValue + ";");
-                                 eval("obj." + subChannelObVar + " = " + "setValue" + ";");
+                                 if (isempty(str2num(setValue)))
+                                     eval("obj." + subChannelObVar + " = " + "setValue" + ";");
+                                 else
+                                     eval("obj." + subChannelObVar + " = " + "str2num(setValue)" + ";");
+                                 end
                             end
                            break;
                        end
@@ -463,7 +497,12 @@ while true
                %% if j ~= length(pubChannels(i).varChannel)
                %%    setValueTotalString = setValueTotalString + ", "; 
                %%end
-               eval("setValueTotal." + pubChannelObValue + " = obj."+ pubChannelObVar +";");
+               eval("setValue = obj." + pubChannelObVar + ";");
+               if (numel(setValue) > 1)
+                    eval("setValueTotal." + pubChannelObValue + " = jsonencode(setValue);");
+               else
+                    eval("setValueTotal." + pubChannelObValue + " = mat2str(setValue);");
+               end
            end
            %% eval ("setValueTotal = struct(" + char(setValueTotalString) + ");");
            setValueJson = jsonencode(setValueTotal);

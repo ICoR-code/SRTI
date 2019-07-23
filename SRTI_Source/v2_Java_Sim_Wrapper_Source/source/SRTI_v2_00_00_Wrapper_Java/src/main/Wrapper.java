@@ -1610,19 +1610,26 @@ public class Wrapper {
 			} else {
 				String classType = cType.getName();
 				if (classType.contains("int")|| classType.contains("java.lang.Integer")) {
-					Array.set(returnObject, i, Integer.parseInt(jA.getString(i)));
+					//Array.set(returnObject, i, Integer.parseInt(jA.getString(i)));
+					Array.set(returnObject, i, jA.getJsonNumber(i).intValue());
 				} else if (classType.contains("long") || classType.contains("java.lang.Long")) {
-					Array.set(returnObject, i,  Long.parseLong(jA.getString(i)));
+					//Array.set(returnObject, i,  Long.parseLong(jA.getString(i)));
+					Array.set(returnObject, i, jA.getJsonNumber(i).longValue());
 				} else if (classType.contains("float") || classType.contains("java.lang.Float")) {
-					Array.set(returnObject, i, Float.parseFloat(jA.getString(i)));
+					//Array.set(returnObject, i, Float.parseFloat(jA.getString(i)));
+					Array.set(returnObject, i, jA.getJsonNumber(i).doubleValue());
 				} else if (classType.contains("double") || classType.contains("java.lang.Double")) {
-					Array.set(returnObject, i, Double.parseDouble(jA.getString(i)));
+					//Array.set(returnObject, i, Double.parseDouble(jA.getString(i)));
+					Array.set(returnObject, i, jA.getJsonNumber(i).doubleValue());
 				} else if (classType.contains("boolean") || classType.contains("java.lang.Boolean")) {
-					Array.set(returnObject, i, Boolean.parseBoolean(jA.getString(i)));
+					//Array.set(returnObject, i, Boolean.parseBoolean(jA.getString(i)));
+					Array.set(returnObject, i, jA.getBoolean(i));
 				} else if (classType.contains("String") || classType.contains("java.lang.String")) {
-					Array.set(returnObject, i, GetStringNoQuotes("" + jA.getString(i)));
-				} else {
+					//Array.set(returnObject, i, GetStringNoQuotes("" + jA.getString(i)));
 					Array.set(returnObject, i, jA.getString(i));
+				} else {
+					//Array.set(returnObject, i, jA.getString(i));
+					Array.set(returnObject, i, jA.get(i));
 				}
 			}
 		}
@@ -1654,7 +1661,23 @@ public class Wrapper {
 				 *   and directly add this variable to JavaArrayBuilder.
 				 * 
 				 * */
-				jb.add("" + Array.get(o, i));
+				//jb.add("" + Array.get(o, i));
+				if (Array.get(o,i).getClass() == Integer.class) {
+					jb.add((int)Array.get(o, i));
+				} else if (Array.get(o,i).getClass() == Long.class) {
+					jb.add((long)Array.get(o, i));
+				} else if (Array.get(o,i).getClass() == Float.class) {
+					jb.add((double)Array.get(o, i));
+				} else if (Array.get(o,i).getClass() == Double.class) {
+					jb.add((double)Array.get(o, i));
+				} else if (Array.get(o,i).getClass() == Boolean.class) {
+					jb.add((boolean)Array.get(o, i));
+				} else if (Array.get(o,i).getClass() == String.class) {
+					jb.add((String)Array.get(o, i));
+				} else {
+					jb.add((JsonValue)Array.get(o, i));
+				}
+				//jb.add((double)Array.get(o, i));
 			}
 		}
 		ja = jb.build();
