@@ -1,0 +1,7 @@
+directories:
+  output: dist
+  buildResources: build
+win:
+  target: portable
+  icon: srti_modules/srti_logo/srti_logo_dark_512_icon.ico
+electronVersion: 5.0.4

@@ -1,0 +1,25 @@
+{
+  "name": "SRTI-v2-00-00-Manager-GUI",
+  "version": "0.0.1",
+  "description": "A GUI application to help run a local SRTI simulator system.",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-packager . --out=dist/win --platform=win32 --arch=x64 --icon=srti_modules/srti_logo/srti_logo_dark_512_icon.ico --asar=true --overwrite"
+  },
+  "repository": "https://github.com/electron/electron-quick-start",
+  "keywords": [
+    "Electron",
+    "quick",
+    "start",
+    "tutorial",
+    "demo"
+  ],
+  "author": "GitHub",
+  "license": "CC0-1.0",
+  "devDependencies": {
+    "electron": "^4.1.3",
+    "electron-builder": "^20.43.0",
+    "electron-packager": "^13.1.1"
+  }
+}
