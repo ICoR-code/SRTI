@@ -105,6 +105,7 @@ public class ExampleServer {
 	// variable to sync global stage across sim system
 	private int globalStage = 0;
 	private int nextGlobalStage = 0;
+	private boolean systemIsPaused = false;
 	
 	// Load "settings.txt" to set certain options
 	private int loadSettingsFile() {
@@ -553,11 +554,105 @@ public class ExampleServer {
 						// there still exists a sim that we're waiting to finish, we must have received -1 as the min.
 					}*/
 					
+					if (systemIsPaused == false) {
+						synchronized(threadList) {
+							boolean finished = true;
+							for (int i = 0; i < threadList.size(); i++) {
+								if (threadList.get(i).getExpectingFinish() == true 
+										&& threadList.get(i).getSimName().contains("ExampleServerGUI") == false
+										&& threadList.get(i).getSimName().contains("RTI-v2-GUI") == false
+										&& threadList.get(i).getShouldHaveFinished() == false) {
+									//... then we have a running thread that isn't finished yet, better wait.
+									printLine("We're still waiting for this thread to confirm it's finished this step: " 
+											+ threadList.get(i).getIndex() + " " + threadList.get(i).getSimName());
+									finished = false;
+									break;
+								} 
+							}
+							
+							if (finished == true) {
+								// All threads have getExpectingFinish() == false. find minimum nextTimestep / nextOrder, and run those.
+								printLine("All threads have finished current step/order. Now preparing to send RTI_StartStep.");
+								int minNextStep = -2;
+								int minNextOrder = -1;
+								boolean allShouldHaveFinished = true;
+								for (int i = 0; i < threadList.size(); i++) {
+									if (threadList.get(i).getShouldHaveFinished() == false) {
+										allShouldHaveFinished = false;
+									}
+									if (minNextStep == -2 && threadList.get(i).getNextTimestep() != -1) {
+										minNextStep = threadList.get(i).getNextTimestep();
+										minNextOrder = threadList.get(i).getNextOrder();
+									} else if (threadList.get(i).getNextTimestep() != -1) {
+										if (threadList.get(i).getNextTimestep() < minNextStep) {
+											minNextStep = threadList.get(i).getNextTimestep();
+											minNextOrder = threadList.get(i).getNextOrder();
+										} else if (threadList.get(i).getNextTimestep() == minNextStep) {
+											if (threadList.get(i).getNextOrder() < minNextOrder) {
+												minNextOrder = threadList.get(i).getNextOrder();
+											}
+										}
+									}
+								}
+								if (allShouldHaveFinished == true) {
+									printLine("The RTI Server recognizes that all simulators should have received the order to stop, and therefore, no further responses should be received.");
+									break;
+								}
+								
+								if (globalTimestep != minNextStep) {
+									globalStage = nextGlobalStage;
+								}
+								globalTimestep = minNextStep;
+								rtiStartStepString = buildRTIStartStep();
+								for (int i = 0; i < threadList.size(); i++) {
+									if (threadList.get(i).getNextTimestep() == minNextStep && threadList.get(i).getNextOrder() == minNextOrder) {
+										threadList.get(i).setNextTimestep(-1);
+										threadList.get(i).setNextOrder(0);
+										threadList.get(i).setExpectingFinish(true);
+										threadList.get(i).update(rtiStartStepString);
+										if (globalStage == -1) {
+											threadList.get(i).setShouldHaveFinished(true);
+										}
+									} else if (threadList.get(i).getNextTimestep() == -1) {
+										threadList.get(i).setNextTimestep(-1);
+										threadList.get(i).setNextOrder(-1);
+										threadList.get(i).setExpectingFinish(true);
+										threadList.get(i).update(rtiStartStepString);
+										if (globalStage == -1) {
+											threadList.get(i).setShouldHaveFinished(true);
+										}
+									}
+								}
+								messageHistoryList.add(rtiStartStepString);
+								messageHistoryListSize += rtiStartStepString.length();
+							}
+						}
+					}
+					break;
+					
+				case "RTI_EndSystem":
+					nextGlobalStage = -1;
+					// assume the thread that sent this message will immediately end, therefore, should not be checking for it to send "RTI_FinishStep"
+					for (int i = 0; i < threadList.size(); i++) {
+						if (threadList.get(i).getIndex() == threadIndex) {
+							threadList.get(i).setShouldHaveFinished(true);
+						}
+					}
+					break;
+				case "RTI_PauseSystem":
+					systemIsPaused = true;
+					printLine("RTI_PauseSystem message was received. Will not ask sims to proceed to next step, but won't close them either.");
+					break;
+				case "RTI_ResumeSystem":
+					systemIsPaused = false;
+					printLine("RTI_ResumeSystem message was received. Check to resume sims again...");
+					
 					synchronized(threadList) {
 						boolean finished = true;
 						for (int i = 0; i < threadList.size(); i++) {
 							if (threadList.get(i).getExpectingFinish() == true 
 									&& threadList.get(i).getSimName().contains("ExampleServerGUI") == false
+									&& threadList.get(i).getSimName().contains("RTI-v2-GUI") == false
 									&& threadList.get(i).getShouldHaveFinished() == false) {
 								//... then we have a running thread that isn't finished yet, better wait.
 								printLine("We're still waiting for this thread to confirm it's finished this step: " 
@@ -622,16 +717,6 @@ public class ExampleServer {
 							}
 							messageHistoryList.add(rtiStartStepString);
 							messageHistoryListSize += rtiStartStepString.length();
-						}
-					}
-					break;
-					
-				case "RTI_EndSystem":
-					nextGlobalStage = -1;
-					// assume the thread that sent this message will immediately end, therefore, should not be checking for it to send "RTI_FinishStep"
-					for (int i = 0; i < threadList.size(); i++) {
-						if (threadList.get(i).getIndex() == threadIndex) {
-							threadList.get(i).setShouldHaveFinished(true);
 						}
 					}
 					break;

@@ -301,7 +301,7 @@ public class Wrapper {
 			}
 			next_timestep = timestep;
 			localTimestep = timestep;
-			if (timestep_var_delta != "") {
+			if (timestep_var_delta != "" && timestep_var_delta.length() > 0) {
 				// get value from sim
 				for (int i = 0; i < simVars.length; i++) {
 					if (simVars[i].getName().compareTo(timestep_var_delta) == 0) {
@@ -310,10 +310,12 @@ public class Wrapper {
 						break;
 					}
 				}
+				lib.printLine("(when calculating next timestep, using timestepDeltaVar, with variable = " + timestep_var_delta + " of name length " + timestep_var_delta.length());
 			} else {
 				next_timestep = timestep + (int)(timestep_delta * timestep_mul);
 				localTimestep = localTimestep + (int)(timestep_delta * timestep_mul); 
 			}
+			lib.printLine("Updating next timestep to be: "+ next_timestep + ", based on the arguement " + timestep + " + (" + timestep_delta + " * " + timestep_mul + ")");
 			finishContent = lib.setJsonObject("", "nextStep", next_timestep);
 			finishContent = lib.setJsonObject(finishContent, "nextOrder", next_order);
 			lib.publish("RTI_FinishStep", finishContent);
@@ -349,7 +351,7 @@ public class Wrapper {
 					
 					// if other sims are 'waiting' for previous ordered sims to finish, should send "RTI_FinishStep", even if ending immediately after.
 					next_timestep = timestep;
-					if (timestep_var_delta != "") {
+					if (timestep_var_delta != "" && timestep_var_delta.length() > 0) {
 						for (int i = 0; i < simVars.length; i++) {
 							if (simVars[i].getName().compareTo(timestep_var_delta) == 0) {
 								next_timestep = timestep + (int)(simVars[i].getInt(simulation) * timestep_mul);
@@ -357,6 +359,7 @@ public class Wrapper {
 								break;
 							}
 						}
+						lib.printLine("(when calculating next timestep, using timestepDeltaVar, with variable = " + timestep_var_delta+ " of name length " + timestep_var_delta.length());
 					} else {
 						next_timestep = timestep + (int)(timestep_delta * timestep_mul);
 						localTimestep = localTimestep + (int)(timestep_delta * timestep_mul);
@@ -364,7 +367,7 @@ public class Wrapper {
 					if (timestep_delta == -1 && timestep_var_delta == "") {
 						next_timestep = -1;
 					}
-					
+					lib.printLine("Updating next timestep to be: "+ next_timestep + ", based on the arguement " + timestep + " + (" + timestep_delta + " * " + timestep_mul + ")");
 					finishContent = lib.setJsonObject("", "nextStep", next_timestep);
 					finishContent = lib.setJsonObject(finishContent, "nextOrder", next_order);
 					lib.publish("RTI_FinishStep", finishContent);
@@ -451,7 +454,7 @@ public class Wrapper {
 					}
 					
 					next_timestep = timestep;
-					if (timestep_var_delta != "") {
+					if (timestep_var_delta != "" && timestep_var_delta.length() > 0) {
 						// get value from sim
 						for (int i = 0; i < simVars.length; i++) {
 							if (simVars[i].getName().compareTo(timestep_var_delta) == 0) {
@@ -460,6 +463,7 @@ public class Wrapper {
 								break;
 							}
 						}
+						lib.printLine("(when calculating next timestep, using timestepDeltaVar, with variable = " + timestep_var_delta+ " of name length " + timestep_var_delta.length());
 					} else {
 						next_timestep = timestep + (int)(timestep_delta * timestep_mul);
 						localTimestep = localTimestep + (int)(timestep_delta * timestep_mul);
@@ -467,7 +471,7 @@ public class Wrapper {
 					if (timestep_delta == -1 && timestep_var_delta == "") {
 						next_timestep = -1;
 					}
-					
+					lib.printLine("Updating next timestep to be: "+ next_timestep + ", based on the arguement " + timestep + " + (" + timestep_delta + " * " + timestep_mul + ")");
 					finishContent = lib.setJsonObject("", "nextStep", next_timestep);
 					finishContent = lib.setJsonObject(finishContent, "nextOrder", next_order);
 					lib.publish("RTI_FinishStep", finishContent);
@@ -585,7 +589,7 @@ public class Wrapper {
 				// Somehow, we should try to allow for more "variable" timesteps here, rather than just ( + 1). 
 				// This doesn't necessarily handle different events depending on the timestep (publishing different messages, running different simulate functions, etc.) 
 				next_timestep = timestep;
-				if (timestep_var_delta != "") {
+				if (timestep_var_delta != "" && timestep_var_delta.length() > 0) {
 					// get value from sim
 					for (int i = 0; i < simVars.length; i++) {
 						if (simVars[i].getName().compareTo(timestep_var_delta) == 0) {
@@ -594,6 +598,7 @@ public class Wrapper {
 							break;
 						}
 					}
+					lib.printLine("(when calculating next timestep, using timestepDeltaVar, with variable = " + timestep_var_delta+ " of name length " + timestep_var_delta.length());
 				} else {
 					next_timestep = timestep + (int)(timestep_delta * timestep_mul);
 					localTimestep = localTimestep + (int)(timestep_delta * timestep_mul);
@@ -602,6 +607,7 @@ public class Wrapper {
 					next_timestep = -1;
 				}
 				
+				lib.printLine("Updating next timestep to be: "+ next_timestep + ", based on the arguement " + timestep + " + (" + timestep_delta + " * " + timestep_mul + ")");
 				finishContent = lib.setJsonObject("", "nextStep", next_timestep);
 				finishContent = lib.setJsonObject(finishContent, "nextOrder", next_order);
 				lib.publish("RTI_FinishStep", finishContent);
@@ -778,7 +784,7 @@ public class Wrapper {
 					if (endConditions.get(i).get(k).varName.compareTo("RTI_vTimestamp") == 0) {
 						try {
 							double compareValue = 0;
-							if (endConditions.get(i).get(k).varName2 != "") {
+							if (endConditions.get(i).get(k).varName2 != "" && endConditions.get(i).get(k).varName2.length() > 0) {
 								if (simVars[j].getName().compareTo(endConditions.get(i).get(k).varName2) == 0) {
 									compareValue = simVars[j].getDouble(simulation);
 								} else {
@@ -831,7 +837,7 @@ public class Wrapper {
 					} else if (endConditions.get(i).get(k).varName.compareTo("RTI_stage") == 0) {
 						try {
 							double compareValue = 0;
-							if (endConditions.get(i).get(k).varName2 != "") {
+							if (endConditions.get(i).get(k).varName2 != "" && endConditions.get(i).get(k).varName2.length() > 0) {
 								if (simVars[j].getName().compareTo(endConditions.get(i).get(k).varName2) == 0) {
 									compareValue = simVars[j].getDouble(simulation);
 								} else {
@@ -884,7 +890,7 @@ public class Wrapper {
 					} else if (endConditions.get(i).get(k).varName.compareTo("RTI_stageVTimestepMul") == 0) {
 						try {
 							double compareValue = 0;
-							if (endConditions.get(i).get(k).varName2 != "") {
+							if (endConditions.get(i).get(k).varName2 != "" && endConditions.get(i).get(k).varName2.length() > 0) {
 								if (simVars[j].getName().compareTo(endConditions.get(i).get(k).varName2) == 0) {
 									compareValue = simVars[j].getDouble(simulation);
 								} else {
@@ -938,7 +944,7 @@ public class Wrapper {
 						try {
 							double stageVTimestep = (int)(localTimestep / timestep_mul);
 							double compareValue = 0;
-							if (endConditions.get(i).get(k).varName2 != "") {
+							if (endConditions.get(i).get(k).varName2 != "" && endConditions.get(i).get(k).varName2.length() > 0) {
 								if (simVars[j].getName().compareTo(endConditions.get(i).get(k).varName2) == 0) {
 									compareValue = simVars[j].getDouble(simulation);
 								} else {
@@ -993,9 +999,11 @@ public class Wrapper {
 						if (endConditions.get(i).get(k).valueType == DataType.NUMBER) {
 							try {
 								double compareValue = 0;
-								if (endConditions.get(i).get(k).varName2 != "") {
+								if (endConditions.get(i).get(k).varName2 != "" && endConditions.get(i).get(k).varName2.length() > 0) {
+									String tempVarName2 = endConditions.get(i).get(k).varName2;
+									lib.printLine("When testing endConditions, name of varName2 is : " + tempVarName2);
 									for (int m = 0; m < simVars.length; m++) {
-										if (simVars[m].getName().compareTo(stageConditions.get(i).get(k).varName2) == 0) {
+										if (simVars[m].getName().compareTo(endConditions.get(i).get(k).varName2) == 0) {
 											compareValue = simVars[m].getDouble(simulation);
 										} else {
 											continue;
@@ -1052,9 +1060,9 @@ public class Wrapper {
 						} else if (endConditions.get(i).get(k).valueType == DataType.BOOL) {
 							try {
 								boolean compareValue = false;
-								if (endConditions.get(i).get(k).varName2 != "") {
+								if (endConditions.get(i).get(k).varName2 != "" && endConditions.get(i).get(k).varName2.length() > 0) {
 									for (int m = 0; m < simVars.length; m++) {
-										if (simVars[m].getName().compareTo(stageConditions.get(i).get(k).varName2) == 0) {
+										if (simVars[m].getName().compareTo(endConditions.get(i).get(k).varName2) == 0) {
 											compareValue = simVars[m].getBoolean(simulation);
 										} else {
 											continue;
@@ -1082,9 +1090,9 @@ public class Wrapper {
 						} else if (endConditions.get(i).get(k).valueType == DataType.STRING) {
 							try {
 								String compareValue = "";
-								if (endConditions.get(i).get(k).varName2 != "") {
+								if (endConditions.get(i).get(k).varName2 != "" && endConditions.get(i).get(k).varName2.length() > 0) {
 									for (int m = 0; m < simVars.length; m++) {
-										if (simVars[m].getName().compareTo(stageConditions.get(i).get(k).varName2) == 0) {
+										if (simVars[m].getName().compareTo(endConditions.get(i).get(k).varName2) == 0) {
 											compareValue = (String)simVars[m].get(simulation);
 										} else {
 											continue;
@@ -1141,7 +1149,7 @@ public class Wrapper {
 						if (stageConditions.get(i).get(k).varName.compareTo("RTI_vTimestamp") == 0) {
 							try {
 								double compareValue = 0;
-								if (stageConditions.get(i).get(k).varName2 != "") {
+								if (stageConditions.get(i).get(k).varName2 != "" && stageConditions.get(i).get(k).varName2.length() > 0) {
 									if (simVars[j].getName().compareTo(stageConditions.get(i).get(k).varName2) == 0) {
 										compareValue = simVars[j].getDouble(simulation);
 									} else {
@@ -1197,7 +1205,7 @@ public class Wrapper {
 						} else if (stageConditions.get(i).get(k).varName.compareTo("RTI_stage") == 0) {
 							try {
 								double compareValue = 0;
-								if (stageConditions.get(i).get(k).varName2 != "") {
+								if (stageConditions.get(i).get(k).varName2 != "" && stageConditions.get(i).get(k).varName2.length() > 0) {
 									if (simVars[j].getName().compareTo(stageConditions.get(i).get(k).varName2) == 0) {
 										compareValue = simVars[j].getDouble(simulation);
 									} else {
@@ -1253,7 +1261,7 @@ public class Wrapper {
 						} else if (stageConditions.get(i).get(k).varName.compareTo("RTI_stageVTimestepMul") == 0) {
 							try {
 								double compareValue = 0;
-								if (stageConditions.get(i).get(k).varName2 != "") {
+								if (stageConditions.get(i).get(k).varName2 != "" && stageConditions.get(i).get(k).varName2.length() > 0) {
 									if (simVars[j].getName().compareTo(stageConditions.get(i).get(k).varName2) == 0) {
 										compareValue = simVars[j].getDouble(simulation);
 									} else {
@@ -1310,7 +1318,7 @@ public class Wrapper {
 							try {
 								double stageVTimestep = (int)(localTimestep / timestep_mul);
 								double compareValue = 0;
-								if (stageConditions.get(i).get(k).varName2 != "") {
+								if (stageConditions.get(i).get(k).varName2 != "" && stageConditions.get(i).get(k).varName2.length() > 0) {
 									if (simVars[j].getName().compareTo(stageConditions.get(i).get(k).varName2) == 0) {
 										compareValue = simVars[j].getDouble(simulation);
 									} else {
@@ -1370,7 +1378,7 @@ public class Wrapper {
 									lib.printLine("[WRAPPER] CHECKING STAGE CONDITIONS... current value = " 
 											+ simVars[j].getDouble(simulation));
 									double compareValue = 0;
-									if (stageConditions.get(i).get(k).varName2 != "") {
+									if (stageConditions.get(i).get(k).varName2 != "" && stageConditions.get(i).get(k).varName2.length() > 0) {
 										for (int m = 0; m < simVars.length; m++) {
 											if (simVars[m].getName().compareTo(stageConditions.get(i).get(k).varName2) == 0) {
 												compareValue = simVars[m].getDouble(simulation);
@@ -1429,7 +1437,7 @@ public class Wrapper {
 									lib.printLine("[WRAPPER] CHECKING STAGE CONDITIONS... current value = " 
 											+ simVars[j].getBoolean(simulation));
 									boolean compareValue = false;
-									if (stageConditions.get(i).get(k).varName2 != "") {
+									if (stageConditions.get(i).get(k).varName2 != "" && stageConditions.get(i).get(k).varName2.length() > 0) {
 										for (int m = 0; m < simVars.length; m++) {
 											if (simVars[m].getName().compareTo(stageConditions.get(i).get(k).varName2) == 0) {
 												compareValue = simVars[m].getBoolean(simulation);
@@ -1461,7 +1469,7 @@ public class Wrapper {
 									lib.printLine("[WRAPPER] CHECKING STAGE CONDITIONS... current value = " 
 											+ simVars[j].get(simulation));
 									String compareValue = "";
-									if (stageConditions.get(i).get(k).varName2 != "") {
+									if (stageConditions.get(i).get(k).varName2 != "" && stageConditions.get(i).get(k).varName2.length() > 0) {
 										for (int m = 0; m < simVars.length; m++) {
 											if (simVars[m].getName().compareTo(stageConditions.get(i).get(k).varName2) == 0) {
 												compareValue = (String) simVars[m].get(simulation);

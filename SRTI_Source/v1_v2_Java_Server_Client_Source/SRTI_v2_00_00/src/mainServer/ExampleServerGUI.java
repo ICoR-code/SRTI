@@ -40,6 +40,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.SwingConstants;
+import javax.swing.JEditorPane;
 
 public class ExampleServerGUI extends JFrame implements RTISim{
 	
@@ -431,7 +432,7 @@ public class ExampleServerGUI extends JFrame implements RTISim{
 			}
 			
 		});
-		                                          //"Export Message History"
+		//"Export Message History"
 		JButton sendStartRequest_button = new JButton("Send Start Request To All");
 		sendStartRequest_button.addActionListener(new ActionListener() {
 			
@@ -441,8 +442,25 @@ public class ExampleServerGUI extends JFrame implements RTISim{
 				rtiLib.publish("RTI_StartSim", "");
 			}
 		});
+		final JButton sendPauseRequest_button = new JButton("Send Pause Request To Server");
+		sendPauseRequest_button.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (sendPauseRequest_button.getText().compareTo("Send Pause Request To Server") == 0) {
+					printLine("<<YOU CLICKED BUTTON to send pause request>>");
+					sendPauseRequest_button.setText("Send Resume Request To Server");
+					rtiLib.publish("RTI_PauseSystem", "");
+				} else {
+					printLine("<<YOU CLICK BUTTON to send resume request>>");
+					sendPauseRequest_button.setText("Send Pause Request To Server");
+					rtiLib.publish("RTI_ResumeSystem", "");
+				}
+				
+			}
+		});
 		buttonPanel.add(exportMessageHistory_button);
 		buttonPanel.add(sendStartRequest_button);
+		buttonPanel.add(sendPauseRequest_button);
 		
 		String numApps_string = "Number of applications connected: " + numOfApps;
 		numApps_area = new JTextArea(2, 50);

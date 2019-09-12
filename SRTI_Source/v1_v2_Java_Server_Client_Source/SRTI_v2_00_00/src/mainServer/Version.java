@@ -16,7 +16,7 @@ public class Version {
 	 * 			= 1.00.00 = standard base version. 1.00.01 means bug update, should be applied to other versions too.
 	 * 			= 2.00.00 = extended version with advanced "RTI Wrapper", not compatible with 1.00.00. 2.01.00 means feature update.
 	 * */
-	public static String version = "v2.12.02";
+	public static String version = "v2.20.02";
 	
 	public static String textFileName = null;
 	public static boolean debugConsole = false;
