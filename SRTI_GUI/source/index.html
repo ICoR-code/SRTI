@@ -233,6 +233,19 @@
 			margin: 8px 0% 8px 0%;
 			border: 1px solid black;
 		}
+		#btn-start:enabled{
+			width:40px;
+			height:40px;
+			background: url(./srti_modules/images/icon_turnon.png) center center no-repeat #eee;
+			background-size: 75% 75%;
+			cursor: pointer;
+		}
+		#btn-start:disabled{
+			width:40px;
+			height:40px;
+			background: url(./srti_modules/images/icon_turnon.png) center center no-repeat #666;
+			background-size: 75% 75%;
+		}
 		#btn-play:enabled {
 			width:40px;
 			height:40px;
@@ -243,7 +256,7 @@
 		#btn-play:disabled {
 			width:40px;
 			height:40px;
-			background: url(./srti_modules/images/icon_play.png) center center no-repeat #666;
+			background: url(./srti_modules/images/icon_play_og.png) center center no-repeat #666;
 			background-size: 75% 75%;
 		}
 		
@@ -425,9 +438,10 @@
 				<!-- <button id="btn-delete" onclick="Undo()"></button> -->
 			</div>
 			<div class="splitter" style="float:left;width:25%;">
-				<button id="btn-play" onclick="" ></button>
-				<button id="btn-pause" onclick="" ></button>
-				<button id="btn-stop" onclick="" ></button>
+				<button id="btn-start" onclick="StartSimulationSystem()" ></button>
+				<button id="btn-play" onclick="PlaySimulationSystem()" ></button>
+				<button id="btn-pause" onclick="PauseSimulationSystem()" ></button>
+				<button id="btn-stop" onclick="StopSimulationSystem()" ></button>
 			</div>
 		</div>
 	</div>

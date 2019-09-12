@@ -48,7 +48,7 @@
 		var savename = "";
 		// variables to launch RTI Server, and to connect sims to the Server.
 		var hostName = "localhost";
-		var portNumber = "4200";
+		var portNumber = "42012";
 		// Total number of stages (different states in simulation system) in this project.
 		var numOfStages = 1;
 		// Current stage in canvas view (1st is at index 0).
@@ -126,6 +126,8 @@
 
 
 		// Initialize certain buttons and objects.
+		document.getElementById("btn-start").disabled = false;
+		document.getElementById("btn-play").disabled = true;
 		document.getElementById("btn-stop").disabled = true;
 		document.getElementById("btn-pause").disabled = true;
 		canvascontainer.addEventListener("mousedown", dragStart, false);
@@ -1149,6 +1151,7 @@
 			DisplayOrClosePrompt("modalPublishDetails","block");
 			
 			// assumed this function is only called when editing existing 
+			var originalMessageId = simulatorObjects[editExistingObject].publishedMessages[editExistingObject2];
 			var messageName = messageObjects[simulatorObjects[editExistingObject].publishedMessages[editExistingObject2]].name;
 			var simulatorName = simulatorObjects[editExistingObject].name;
 			var publishedDetail = simulatorObjects[editExistingObject].publishedDetails[editExistingObject2];
@@ -1197,13 +1200,14 @@
 			while (messageVariableDiv.firstChild){
 				messageVariableDiv.removeChild(messageVariableDiv.firstChild);
 			}
-			for (i = 0; i < messageObjects[editExistingObject2].original.variables.length; i++){
+			for (i = 0; i < messageObjects[originalMessageId].original.variables.length; i++){
 				console.log("add variable to list here... " + i);
 				addContentType = document.createElement("button");
 				addContentType.id = i;
 				addContentType.style = "width:50%;height:42px;position:relative;verticalAlign:top;";
 				addContentType.disabled = false;
-				addContentType.originalObjectId = editExistingObject2;
+				//addContentType.originalObjectId = editExistingObject2;
+				addContentType.originalObjectId = originalMessageId;
 				addContentType.messageObjectId = i;
 				addContentType.variableObjectId = -1;
 				addContentType.onclick = function(){
@@ -1211,8 +1215,8 @@
 					var getSelectMessageId = this.originalObjectId; 
 					PublishConnectionPromptSelectMessageVar(getSelectMessageId, getSelectMessageVarId);
 				};
-				addContent = document.createTextNode(messageObjects[editExistingObject2].original.variables[i].name + " (" 
-					+ messageObjects[editExistingObject2].original.variables[i].valueType + ")");
+				addContent = document.createTextNode(messageObjects[originalMessageId].original.variables[i].name + " (" 
+					+ messageObjects[originalMessageId].original.variables[i].valueType + ")");
 				addContentType.appendChild(addContent);
 				var addContentType2 = document.createElement("button");
 				addContentType2.id = i;
@@ -1340,12 +1344,12 @@
 			if (editExistingObject == -1){
 				dragItem.publishedDetails.push(newDetails);
 				dragItem.publishedInitial.push(initial);
-				dragItem.publishedTimeDelta.push(timeDelta);
+				dragItem.publishedTimeDelta.push(parseInt(timeDelta));
 				// by happy accident, "publishedDetails" will contain an entry in the same order as "publishedMessages".
 			} else {
 				simulatorObjects[editExistingObject].publishedDetails[editExistingObject2] = newDetails;
 				simulatorObjects[editExistingObject].publishedInitial[editExistingObject2] = initial;
-				simulatorObjects[editExistingObject].publishedTimeDelta[editExistingObject2] = timeDelta;
+				simulatorObjects[editExistingObject].publishedTimeDelta[editExistingObject2] = parseInt(timeDelta);
 			}
 			ClosePublishConnectionPrompt();
 		}
@@ -1461,8 +1465,10 @@
 			DisplayOrClosePrompt("modalSubscribeDetails","block");
 			
 			console.log("edit subscribe connection prompt ... editExistingObject = " 
-				+ editExistingObject + ", editExistingObject2 = " + editExistingObject2);
-			var messageName = messageObjects[simulatorObjects[editExistingObject].subscribedMessages[editExistingObject2]].name;
+				+ editExistingObject + ", editExistingObject2 = " + editExistingObject2 + " id of Message = " 
+				+ simulatorObjects[editExistingObject].subscribedMessages[editExistingObject2]);
+			var originalMessageId = simulatorObjects[editExistingObject].subscribedMessages[editExistingObject2];
+			var messageName = messageObjects[originalMessageId].name;
 			var simulatorName = simulatorObjects[editExistingObject].name;
 			var subscribedDetail = simulatorObjects[editExistingObject].subscribedDetails[editExistingObject2];
 			var div01 = document.getElementById("modalSubscribeDetailsTitle01");
@@ -1479,7 +1485,8 @@
 			addContentType.style = "width: 100%; height:42px;";
 			addContentType.id = i;
 			addContentType.disabled = true;
-			addContentType.originalObjectId = editExistingObject2;
+			//addContentType.originalObjectId = editExistingObject2;
+			addContentType.originalObjectId = originalMessageId;
 			addContentType.variableObjectId = -1;
 			addContentType.onclick = function(){
 				var getSelectSimId = this.variableObjectId;
@@ -1488,20 +1495,21 @@
 			var addContent = document.createTextNode("(DEFAULT)");
 			addContentType.appendChild(addContent);
 			messageVariableDiv.appendChild(addContentType);
-			for (i = 0; i < messageObjects[editExistingObject2].original.variables.length; i++){
+			for (i = 0; i < messageObjects[originalMessageId].original.variables.length; i++){
 				console.log("add variable to list here... " + i);
 				addContentType = document.createElement("button");
 				addContentType.style = "width:100%; height:42px;";
 				addContentType.id = i;
 				addContentType.disabled = true;
-				addContentType.originalObjectId = editExistingObject2;
+				//addContentType.originalObjectId = editExistingObject2;
+				addContentType.originalObjectId = originalMessageId;
 				addContentType.variableObjectId = i;
 				addContentType.onclick = function(){
 					var getSelectSimId = this.variableObjectId;
 					SubscribeConnectionPromptSelectMessageVar(getSelectSimId);
 				};
-				addContent = document.createTextNode(messageObjects[editExistingObject2].original.variables[i].name + " (" 
-					+ messageObjects[editExistingObject2].original.variables[i].valueType + ")");
+				addContent = document.createTextNode(messageObjects[originalMessageId].original.variables[i].name + " (" 
+					+ messageObjects[originalMessageId].original.variables[i].valueType + ")");
 				addContentType.appendChild(addContent);
 				messageVariableDiv.appendChild(addContentType);
 			}
@@ -1540,8 +1548,8 @@
 				for (j = 0; j < subscribedDetail.length; j++){
 					if (subscribedDetail[j][0] == i && subscribedDetail[j][1] != -1){
 						// then "publishedDetail[j][1]" is the index of the simulator's variable that corresponds to it
-						addContentText = messageObjects[editExistingObject2].original.variables[subscribedDetail[j][1]].name + " (" 
-								+ messageObjects[editExistingObject2].original.variables[subscribedDetail[j][1]].valueType + ")";
+						addContentText = messageObjects[originalMessageId].original.variables[subscribedDetail[j][1]].name + " (" 
+								+ messageObjects[originalMessageId].original.variables[subscribedDetail[j][1]].valueType + ")";
 						addContentType2.varId = subscribedDetail[j][1];
 					}
 				}
@@ -1667,15 +1675,15 @@
 			if (editExistingObject == -1){
 				dragItem.subscribedDetails.push(newDetails);
 				dragItem.subscribedInitial.push(initial);
-				dragItem.subscribedTimeDelta.push(timeDelta);
-				dragItem.subscribedRelative.push(relative);
-				dragItem.subscribedTimestep.push(timestep);
+				dragItem.subscribedTimeDelta.push(parseInt(timeDelta));
+				dragItem.subscribedRelative.push(parseInt(relative));
+				dragItem.subscribedTimestep.push(parseInt(timestep));
 			} else {
 				simulatorObjects[editExistingObject].subscribedDetails[editExistingObject2] = newDetails;
 				simulatorObjects[editExistingObject].subscribedInitial[editExistingObject2] = initial;
-				simulatorObjects[editExistingObject].subscribedTimeDelta[editExistingObject2] = timeDelta;
-				simulatorObjects[editExistingObject].subscribedRelative[editExistingObject2] = relative;
-				simulatorObjects[editExistingObject].subscribedTimestep[editExistingObject2] = timestep;
+				simulatorObjects[editExistingObject].subscribedTimeDelta[editExistingObject2] = parseInt(timeDelta);
+				simulatorObjects[editExistingObject].subscribedRelative[editExistingObject2] = parseInt(relative);
+				simulatorObjects[editExistingObject].subscribedTimestep[editExistingObject2] = parseInt(timestep);
 			}
 			CloseSubscribeConnectionPrompt();
 		}
@@ -2238,11 +2246,11 @@
 			// add offset... for some reason, default would add object below original position of existing objects.
 			var newOffsetY = (listOfCurrentItems.length - 1) * 100;
 			simulatorObjects.push({name:listOfSimulators[btn_id].name, original:listOfSimulators[btn_id], 
-				stage:stage, objectRef:addContentType, order:0,
+				stage:parseInt(stage), objectRef:addContentType, order:0,
 				offsetX:0, offsetY:-newOffsetY, leftPos:0, topPos:0,
 				subscribedMessages:[], publishedMessages:[],
 				subscribedDetails:[], publishedDetails:[],
-				timeDelta:1,timeScale:1,
+				timeDelta:1,timeVarDelta:"",timeScale:1,
 				subscribedInitial:[], publishedInitial:[],
 				subscribedTimeDelta:[], publishedTimeDelta:[],
 				subscribedRelative:[], subscribedTimestep:[],
@@ -2406,18 +2414,39 @@
 			divNumber.innerHTML = "Current Time Delta: " + simulatorObjects[editExistingObject].timeDelta;
 			divNumber = document.getElementsByName("divTimeScale")[0];
 			divNumber.innerHTML = "Current Time Multiplier: " + simulatorObjects[editExistingObject].timeScale;
+			divNumber = document.getElementsByName("divTimeVarScale")[0];
+			divNumber.innerHTML = "Current Time Variable Multiplier: " + simulatorObjects[editExistingObject].timeVarDelta;
+			
 			var dropdown = document.getElementById("dropdownVar");
 			while(dropdown.firstChild){
 				dropdown.removeChild(dropdown.firstChild);
 			}
+			var addContentType = document.createElement("a");
+			addContentType.href = "#";
+			addContentType.innerHTML = "''";
+			addContentType.onclick = function(){
+				console.log("Clicked that: " + this.innerHTML);
+				//stageConditionV1 = this.name;
+				document.getElementsByName("divTimeVarScale")[0].innerHTML 
+						= "Current Time Variable Multiplier: ''";
+				simulatorObjects[editExistingObject].timeVarDelta = "";
+			};
+			dropdown.appendChild(addContentType);
 			let i = 0;
 			for (i = 0; i < simulatorObjects[editExistingObject].original.variables.length; i++){
-				var addContentType = document.createElement("a");
+				addContentType = document.createElement("a");
+				addContentType.name = i;
 				addContentType.href = "#";
 				addContentType.innerHTML = simulatorObjects[editExistingObject].original.variables[i].name 
 					+ " (" + simulatorObjects[editExistingObject].original.variables[i].valueType + ")";
+				addContentType.onclick = function(){
+					console.log("Clicked that: " + this.innerHTML);
+					UpdateTimeVarDelta(this.name);
+				};
 				dropdown.appendChild(addContentType);
 			}
+		
+			
 		}
 		
 		/*	CloseEditSimLocalTime()
@@ -2452,21 +2481,47 @@
 			while(dropdown.firstChild){
 				dropdown.removeChild(dropdown.firstChild);
 			}
+			var addContentType = document.createElement("a");
+			addContentType.href = "#";
+			addContentType.innerHTML = "''";
+			addContentType.onclick = function(){
+				document.getElementsByName("divInitializeFunction")[0].innerHTML 
+					= "Initialize Function: " + "";
+				simulatorObjects[editExistingObject].initialize = "";
+			};
+			dropdown.appendChild(addContentType);
 			let i = 0;
 			for (i = 0; i < simulatorObjects[editExistingObject].original.functions.length; i++){
-				var addContentType = document.createElement("a");
+				addContentType = document.createElement("a");
 				addContentType.href = "#";
+				addContentType.name = i;
 				addContentType.innerHTML = simulatorObjects[editExistingObject].original.functions[i].name;
+				addContentType.onclick = function(){
+					UpdateInitializeFunction(this.name);
+				};
 				dropdown.appendChild(addContentType);
 			}
 			dropdown = document.getElementById("dropdownSimulateFunction");
 			while(dropdown.firstChild){
 				dropdown.removeChild(dropdown.firstChild);
 			}
+			addContentType = document.createElement("a");
+			addContentType.href = "#";
+			addContentType.innerHTML = "''";
+			addContentType.onclick = function(){
+				document.getElementsByName("divSimulateFunction")[0].innerHTML 
+					= "Simulate Function: " + "";
+				simulatorObjects[editExistingObject].simulate = "";
+			};
+			dropdown.appendChild(addContentType);
 			for (i = 0; i < simulatorObjects[editExistingObject].original.functions.length; i++){
-				var addContentType = document.createElement("a");
+				addContentType = document.createElement("a");
 				addContentType.href = "#";
+				addContentType.name = i;
 				addContentType.innerHTML = simulatorObjects[editExistingObject].original.functions[i].name;
+				addContentType.onclick = function(){
+					UpdateSimulateFunction(this.name);
+				};
 				dropdown.appendChild(addContentType);
 			}
 			
@@ -2494,7 +2549,7 @@
 		*/
 		function SaveSimulateFunctionTimeDelta(){
 			var newTimeDelta = document.getElementsByName("SimulateFunctionTimestepDelta")[0].value;
-			simulatorObjects[editExistingObject].simulateTimeDelta = newTimeDelta;
+			simulatorObjects[editExistingObject].simulateTimeDelta = parseInt(newTimeDelta);
 			var div = document.getElementsByName("divSimulateFunctionTimestepDelta")[0];
 			div.innerHTML = "Simulate Function timestep delta: " + newTimeDelta;
 		}
@@ -2582,9 +2637,21 @@
 				}
 				addContentType.name = addContentType.innerHTML;
 				addContentType.onclick = function(){
-					console.log("Clicked that: " + this.innerHTML);
+					console.log("Clicked that: " + unescape(this.innerHTML));
 					
-					stageConditionV2 = this.name;
+					if (this.name == "&gt;"){
+						stageConditionV2 = ">";
+					} else if (this.name == "&lt;"){
+						stageConditionV2 = "<";
+					} else if (this.name == "&gt;="){
+						stageConditionV2 = ">=";
+					} else if (this.name == "&lt;="){
+						stageConditionV2 = "<=";
+					} else {
+						stageConditionV2 = unescape(this.name);
+					}
+					console.log("(stageCondition is = )" + stageConditionV2);
+					//stageConditionV2 = this.innerHTML;
 					document.getElementById("divStageConditionStatement").innerHTML 
 						= "If [" + stageConditionV1 + "] [" + stageConditionV2 + "] [" + stageConditionV3 + "] AND ...";
 				};
@@ -2677,7 +2744,8 @@
 				var addContent2 = document.createElement("button");
 				addContent2.name = i;
 				addContent2.onclick = function(){
-					RemoveStageConditionFromSubList(this.name);
+					//RemoveStageConditionFromSubList(this.name);
+					RemoveStageConditionFromList(this.name);
 				};
 				addContent2.style = "float:right;";
 				var addContent3 = document.createTextNode("X");
@@ -2811,8 +2879,19 @@
 				}
 				addContentType.name = addContentType.innerHTML;
 				addContentType.onclick = function(){
-					console.log("Clicked that: " + this.innerHTML);
-					stageConditionV2 = this.name;
+					console.log("Clicked that: " + unescape(this.innerHTML));
+					if (this.name == "&gt;"){
+						stageConditionV2 = ">";
+					} else if (this.name == "&lt;"){
+						stageConditionV2 = "<";
+					} else if (this.name == "&gt;="){
+						stageConditionV2 = ">=";
+					} else if (this.name == "&lt;="){
+						stageConditionV2 = "<=";
+					} else {
+						stageConditionV2 = unescape(this.name);
+					}
+					//stageConditionV2 = this.innerHTML;
 					document.getElementById("divEndConditionStatement").innerHTML 
 						= "If [" + stageConditionV1 + "] [" + stageConditionV2 + "] [" + stageConditionV3 + "] AND ...";
 				};
@@ -2900,7 +2979,8 @@
 				var addContent2 = document.createElement("button");
 				addContent2.name = i;
 				addContent2.onclick = function(){
-					RemoveEndConditionFromSubList(this.name);
+					//RemoveEndConditionFromSubList(this.name);
+					RemoveEndConditionFromList(this.name);
 				};
 				addContent2.style = "float:right;";
 				var addContent3 = document.createTextNode("X");
@@ -3037,7 +3117,7 @@
 			var newNumber = document.getElementsByName("NewTimeDelta")[0].value;
 			var divNumber = document.getElementsByName("divTimeDelta")[0];
 			divNumber.innerHTML = "Current Time Delta: " + newNumber;
-			simulatorObjects[editExistingObject].timeDelta = newNumber;
+			simulatorObjects[editExistingObject].timeDelta = parseInt(newNumber);
 		}
 		
 		/*	UpdateTimeScale()
@@ -3047,8 +3127,42 @@
 			var newNumber = document.getElementsByName("NewTimeScale")[0].value;
 			var divNumber = document.getElementsByName("divTimeScale")[0];
 			divNumber.innerHTML = "Current Time Multiplier: " + newNumber;
-			simulatorObjects[editExistingObject].timeScale = newNumber;
+			simulatorObjects[editExistingObject].timeScale = parseInt(newNumber);
 		}
+		
+		/*	UpdateTimeVarDelta()
+			- Change time delta variable reference from simulator (from prompt).
+		*/
+		function UpdateTimeVarDelta(index){
+			document.getElementsByName("divTimeVarScale")[0].innerHTML 
+				= "Current Time Variable Multiplier: " 
+				+ simulatorObjects[editExistingObject].original.variables[index].name 
+				+ " (" + simulatorObjects[editExistingObject].original.variables[index].valueType + ")";
+			simulatorObjects[editExistingObject].timeVarDelta 
+				= simulatorObjects[editExistingObject].original.variables[index].name; 
+		}
+		
+		/*	UpdateInitializeFunction()
+			- Change 'initialize' function to call for sim in specific stage (from prompt).
+		*/
+		function UpdateInitializeFunction(index){
+			document.getElementsByName("divInitializeFunction")[0].innerHTML 
+				= "Initialize Function: " + simulatorObjects[editExistingObject].original.functions[index].name;
+			simulatorObjects[editExistingObject].initialize 
+				= simulatorObjects[editExistingObject].original.functions[index].name;
+		}
+		
+		/*	UpdateSimulateFunction()
+			- Change 'simulate' function to call for sim in specific stage (from prompt).
+		*/
+		function UpdateSimulateFunction(index){
+			document.getElementsByName("divSimulateFunction")[0].innerHTML 
+				= "Simulate Function: " + simulatorObjects[editExistingObject].original.functions[index].name;
+			simulatorObjects[editExistingObject].simulate 
+				= simulatorObjects[editExistingObject].original.functions[index].name;
+		}
+		
+
 		
 		/*	DropdownFunction()
 			- For dropdown menu in certain prompt windows.
@@ -4140,7 +4254,10 @@
 		function WriteWrapperConfigFiles(){
 			// for each simulator, create SimName_Config.json, and a JSON object that makes up the content of that file.
 			let i = 0;
+			var errorLocation = 0;
+			try{
 			for (i = 0; i < listOfSimulators.length; i++){
+				//errorLocation = 0;
 				var savePathLocal = listOfSimulators[i].filePath + "\\";
 				var saveNameLocal = listOfSimulators[i].name + "_config";
 				var content = "";
@@ -4152,94 +4269,121 @@
 				var endConditions = [];
 				var stageConditions = [];
 				
+				//errorLocation = 1;
+				
 				let j = 0;
 				for (j = 0; j < simulatorObjects.length; j++){
+					errorLocation = 0;
 					if (simulatorObjects[j].name == listOfSimulators[i].name){
+						errorLocation = 1;
 						stageChannels.push(
 						{
-							stage: simulatorObjects[j].stage,
-							order: simulatorObjects[j].order,
-							timestepDelta: simulatorObjects[j].timeDelta,
-							timestepMul: simulatorObjects[j].timeScale,
-							timestepVarDelta: ""
+							stage: parseInt(simulatorObjects[j].stage),
+							order: parseInt(simulatorObjects[j].order),
+							timestepDelta: parseInt(simulatorObjects[j].timeDelta),
+							timestepMul: parseInt(simulatorObjects[j].timeScale),
+							timestepVarDelta: simulatorObjects[j].timeVarDelta
 						});
 						initializeChannels.push(
 						{
 							functionName: simulatorObjects[j].initialize,
-							stage: simulatorObjects[j].stage
+							stage: parseInt(simulatorObjects[j].stage)
 						});
 						simulateChannels.push(
 						{
 							functionName: simulatorObjects[j].simulate,
-							timestepDelta: simulatorObjects[j].simulateTimeDelta,
-							stage: simulatorObjects[j].stage
+							timestepDelta: parseInt(simulatorObjects[j].simulateTimeDelta),
+							stage: parseInt(simulatorObjects[j].stage)
 						});
+						errorLocation = 2;
 						console.log("preparing for sim " + j + ", has name " + simulatorObjects[j].name);
 						let k = 0;
 						for (k = 0; k < simulatorObjects[j].subscribedMessages.length; k++){
 							var varChannel = [];
 							let m = 0;
 							for (m = 0; m < simulatorObjects[j].subscribedDetails[k].length; m++){
-								varChannel.push(
-								{	valueName: listOfMessages[simulatorObjects[j].subscribedMessages[k]].variables[simulatorObjects[j].subscribedDetails[k][m][0]].name,
-									varName: listOfSimulators[i].variables[simulatorObjects[j].subscribedDetails[k][m][1]].name
-								});
+								errorLocation = "s " + simulatorObjects[j].subscribedMessages[k] + " " + simulatorObjects[j].subscribedDetails[k][m][0] + " " + simulatorObjects[j].subscribedDetails[k][m][1];
+								var varNameIndex = simulatorObjects[j].subscribedDetails[k][m][0];
+								var varNameIndex2 =  simulatorObjects[j].subscribedDetails[k][m][1];
+								if (varNameIndex != -1 && varNameIndex2 != -1){
+									varChannel.push(
+									{	valueName: listOfMessages[simulatorObjects[j].subscribedMessages[k]].variables[simulatorObjects[j].subscribedDetails[k][m][1]].name,
+										varName: listOfSimulators[i].variables[simulatorObjects[j].subscribedDetails[k][m][0]].name
+									});
+								}
 							}
-							subscribedChannels.push(
+						    subscribedChannels.push(
 							{
 								messageName: listOfMessages[simulatorObjects[j].subscribedMessages[k]].name,
-								onetime: simulatorObjects[j].subscribedInitial[k],
+								onetime: (simulatorObjects[j].subscribedInitial[k] == "true"),
 								mandatory: true,
-								relativeOrder: simulatorObjects[j].subscribedRelative[k],
-								maxTimestep: simulatorObjects[j].subscribedTimestep[k],
-								timestepDelta: simulatorObjects[j].subscribedTimeDelta[k],
-								stage: simulatorObjects[j].stage,
+								relativeOrder: parseInt(simulatorObjects[j].subscribedRelative[k]),
+								maxTimestep: parseInt(simulatorObjects[j].subscribedTimestep[k]),
+								timestepDelta: parseInt(simulatorObjects[j].subscribedTimeDelta[k]),
+								stage: parseInt(simulatorObjects[j].stage),
 								varChannel: varChannel
 							});
 						}
+						errorLocation = 3;
 						for (k = 0; k < simulatorObjects[j].publishedMessages.length; k++){
 							var varChannel = [];
 							let m = 0;
 							for (m = 0; m < simulatorObjects[j].publishedDetails[k].length; m++){
-								varChannel.push(
-								{	valueName: listOfMessages[simulatorObjects[j].publishedMessages[k]].variables[simulatorObjects[j].publishedDetails[k][m][0]].name,
-									varName: listOfSimulators[i].variables[simulatorObjects[j].publishedDetails[k][m][1]].name
-								});
+								errorLocation = "p " + simulatorObjects[j].publishedMessages[k] + " " + simulatorObjects[j].publishedDetails[k][m][0] + " " + simulatorObjects[j].publishedDetails[k][m][1];
+								var varNameIndex = simulatorObjects[j].subscribedDetails[k][m][0];
+								var varNameIndex2 =  simulatorObjects[j].subscribedDetails[k][m][1];
+								if (varNameIndex != -1 && varNameIndex2 != -1){
+									varChannel.push(
+									{	valueName: listOfMessages[simulatorObjects[j].publishedMessages[k]].variables[simulatorObjects[j].publishedDetails[k][m][0]].name,
+										varName: listOfSimulators[i].variables[simulatorObjects[j].publishedDetails[k][m][1]].name
+									});
+								}
 							}
 							publishedChannels.push(
 							{
 								messageName: listOfMessages[simulatorObjects[j].publishedMessages[k]].name,
-								initial: simulatorObjects[j].publishedInitial[k],
-								timestepDelta: simulatorObjects[j].publishedTimeDelta[k],
-								stage: simulatorObjects[j].stage,
+								initial: (simulatorObjects[j].publishedInitial[k] == "true"),
+								timestepDelta: parseInt(simulatorObjects[j].publishedTimeDelta[k]),
+								stage: parseInt(simulatorObjects[j].stage),
 								varChannel: varChannel
 							});
 						}
+						errorLocation = 4;
 						for (k = 0; k < simulatorObjects[j].endConditions.length; k++){
 							var newCondition = [];
 							let m = 0;
 							for (m = 0; m < simulatorObjects[j].endConditions[k].conditions.length; m++){
+								// (extra parse to a number instead of a string necessary for Wrapper to properly check if condition is met)
+								var tempValue = simulatorObjects[j].endConditions[k].conditions[m].value;
+								if (isNaN(tempValue) == false){
+									tempValue = parseFloat(tempValue);
+								}
 								newCondition.push(
 								{
 									varName: simulatorObjects[j].endConditions[k].conditions[m].varName,
 									condition: simulatorObjects[j].endConditions[k].conditions[m].condition,
-									value: simulatorObjects[j].endConditions[k].conditions[m].value,
+									value: tempValue,
 									varName2: simulatorObjects[j].endConditions[k].conditions[m].varName2
 								});
 							}
 							endConditions.push( newCondition );
 						}
+						errorLocation = 5;
 						for (k = 0; k < simulatorObjects[j].stageConditions.length; k++){
 							var newCondition = [];
 							let m = 0;
 							for (m = 0; m < simulatorObjects[j].stageConditions[k].conditions.length; m++){
+								var tempValue = simulatorObjects[j].stageConditions[k].conditions[m].value;
+								if (isNaN(tempValue) == false){
+									tempValue = parseFloat(tempValue);
+								}
 								newCondition.push(
 								{
-									oldStage: simulatorObjects[j].stageConditions[k].oldStage,
-									newStage: simulatorObjects[j].stageConditions[k].newStage,
+									oldStage: parseInt(simulatorObjects[j].stageConditions[k].oldStage),
+									newStage: parseInt(simulatorObjects[j].stageConditions[k].newStage),
 									varName: simulatorObjects[j].stageConditions[k].conditions[m].varName,
 									condition: simulatorObjects[j].stageConditions[k].conditions[m].condition,
-									value: simulatorObjects[j].stageConditions[k].conditions[m].value,
+									value: tempValue,
 									varName2: simulatorObjects[j].stageConditions[k].conditions[m].varName2
 								});
 							}
@@ -4247,9 +4391,10 @@
 						}
 					}
 				}
-							
+				
+				//errorLocation = 2;
 				var obj = {
-					hostname: hostName,
+					hostName: hostName,
 					portNumber: portNumber,
 					simulatorName: listOfSimulators[i].name,
 					simulatorRef: listOfSimulators[i].refName,
@@ -4264,7 +4409,8 @@
 					endConditions: endConditions,
 					stageConditions: stageConditions
 				};
-								
+							
+				//errorLocation = 3;
 				content = JSON.stringify(obj);
 				try {
 					var fs = require('fs');
@@ -4276,6 +4422,10 @@
 					alert('failed to save export file for ' + listOfSimulators[i].name + ' ... error = ' + e);
 				}
 			}
+			} catch (e) {
+				alert('failed to export config files... i = ' + i 
+					+ ' errorLocation = ' + errorLocation + ' error = ' + e);
+			}
 		}
 		
 		function WriteCommandsToFile(){
@@ -4285,7 +4435,7 @@
 				fsContent += "\\\\ lines that start with \\\\ will not run.\n";
 				fsContent += "\\\\ This is the Windows version of the commands that need to execute to run this project. \n";
 				fsContent += "cd (RTIServerLocation)\n";
-				fsContent += "java -jar SRTI_v2_12_02.jar\n";
+				fsContent += "java -jar SRTI_v2_16_02.jar\n";
 				let i = 0;
 				for (i = 0; i < listOfSimulators.length; i++){
 					fsContent += "cd " + listOfSimulators[i].filePath + "\n";
@@ -4420,4 +4570,243 @@
 			listOfMessages.push(obj.mesdef);
 			ResetObjectSubPanel2();
 		}
+		
+		var child_process;
+		var execServer;
+		//var execServer2;
+		var serverActive = false;
+		function StartSimulationSystem(){
+			console.log("Can we open RTI Server?");
+			if (serverActive == false){
+				hasStartedRunningSystem = false;
+				serverActive = true;
+				document.getElementById("btn-start").disabled = true;
+				document.getElementById("btn-stop").disabled = false;
+				document.getElementById("btn-pause").disabled = true;
+				try {
+					child_process = require('child_process');
+					// if running command directly (without opening separate cmd), then we can close it successfully using standard process.
+					// otherwise, we need to figure out new way to close it.
+					//execServer = child_process.exec('cd /d D:\\Work\\Acer\\DSK\\UMich\\ICoR\\Reading-Materials\\201908\\srti_gui_test\\server && java -jar SRTI_v2_12_02.jar\',
+					// ... conclusion: no easy way to do this. Strongly recommend users prepare simulators with basic GUI.
+					//execServer = child_process.exec('start cmd /k \"cd /d D:\\Work\\Acer\\DSK\\UMich\\ICoR\\Reading-Materials\\201908\\srti_gui_test\\server && java -jar SRTI_v2_12_02.jar\"',
+					//execServer = child_process.exec('cd /d D:\\Work\\Acer\\DSK\\UMich\\ICoR\\Reading-Materials\\201908\\srti_gui_test\\server && java -jar SRTI_v2_16_02.jar',
+					
+					// 'var tempPath' is correct for compiled versions of the app, but not for 'npm start .' for debugging purposes...
+					var tempPath = __dirname + '\\..\\extraResources\\srti_server\\';
+					//tempPath = __dirname + "\\extraResources\\srti_server\\";
+					//alert(tempPath.substring(tempPath.length-64,tempPath.length-1));
+					execServer = child_process.exec('cd /d ' + tempPath + ' && java -jar SRTI_v2_20_02.jar',
+						(error, stdout, stderror) => {
+							if (error){
+								alert("error when running command: " + error);
+							} else {
+								alert("command worked!");
+							}
+					});
+
+					// start all other simulators (all that exist anywhere on the canvas).
+				} catch (e) {
+					alert('Error when trying to open RTI Server. ' + e);
+					return;
+				}
+				var textConsoleLastAction = document.getElementById("TextConsoleLastAction");
+				textConsoleLastAction.innerHTML = "Try to open Server: " + execServer.pid + " and enable 'play' button in 10 seconds.";
+				
+				
+				// try to create a socket to connect to RTI Server.
+				setTimeout(function(){
+					var textConsoleLastAction = document.getElementById("TextConsoleLastAction");
+					textConsoleLastAction.innerHTML = "Trying to connect this GUI to the RTI Server...";
+					ConnectToRTIServer();
+					LaunchSimulators();
+				}, 5000);
+
+				// if socket successfully connects, enable 'Play' button
+				setTimeout(function(){
+					if (serverActive == true){
+						document.getElementById("btn-play").disabled = false;
+						var textConsoleLastAction = document.getElementById("TextConsoleLastAction");
+						textConsoleLastAction.innerHTML = "Ready to begin sim system!";
+					}
+				}, 10000);
+			} 
+		}
+		
+		var hasStartedRunningSystem = false;
+		function PlaySimulationSystem() {
+			// send message to "Start" system to Server.
+			
+			if (hasStartedRunningSystem == false){
+				hasStartedRunningSystem = true;
+				var outputString = "{\"name\":\"RTI_StartSim\",\"content\":\"{}\",\"timestamp\":\"1234567890123\",\"vTimestamp\":0,\"source\":\"RTI-v2-GUI\",\"tcp\":\"false\"}\n";
+				document.getElementById("btn-play").disabled = true;
+				document.getElementById("btn-pause").disabled = false;
+				guiDedicatedClient.write(outputString);
+			} else {
+				var outputString = "{\"name\":\"RTI_ResumeSystem\",\"content\":\"{}\",\"timestamp\":\"1234567890123\",\"vTimestamp\":0,\"source\":\"RTI-v2-GUI\",\"tcp\":\"false\"}\n";
+				document.getElementById("btn-play").disabled = true;
+				document.getElementById("btn-pause").disabled = false;
+				guiDedicatedClient.write(outputString);
+				
+			}
+		}
+		
+		function PauseSimulationSystem() {
+			console.log("Can we send message to RTI Server to pause system?");
+			// send message to "Pause" system to Server.
+			
+			var outputString = "{\"name\":\"RTI_PauseSystem\",\"content\":\"{}\",\"timestamp\":\"1234567890123\",\"vTimestamp\":0,\"source\":\"RTI-v2-GUI\",\"tcp\":\"false\"}\n";
+			document.getElementById("btn-play").disabled = false;
+			document.getElementById("btn-pause").disabled = true;
+			
+			guiDedicatedClient.write(outputString);
+		}
+		
+		function StopSimulationSystem() {
+			console.log("Can we close RTI Server?");
+			if (serverActive == true){
+				var textConsoleLastAction = document.getElementById("TextConsoleLastAction");
+				textConsoleLastAction.innerHTML = "Try to close Server. " + execServer.pid;
+				serverActive = false;
+				try {
+					var kill = require('tree-kill');
+					kill(execServer.pid);
+				} catch (e) {
+					alert('Error when trying to end RTI Server. ' + e);
+				}
+				// need to try to close other simulators too.
+				
+			}
+			
+			let i = 0;
+			for (i = 0; i < execSims.length; i++){
+				try{
+					var kill = require('tree-kill');
+					kill(execSims[i].pid);
+				} catch (e){
+					alert('Error when trying to end sim. ' + e);
+				}
+			}
+			
+			document.getElementById("btn-start").disabled = false;
+			document.getElementById("btn-stop").disabled = true;
+			document.getElementById("btn-pause").disabled = true;
+			document.getElementById("btn-play").disabled = true;
+			
+			//guiClient.close();
+			//guiServer.close();
+			guiFirstClient.destroy();
+			guiDedicatedClient.destroy();
+		}
+		
+		var guiFirstClient;
+		//var guiServer;
+		var guiDedicatedClient;
+		function ConnectToRTIServer(){
+			
+			var dedicatedServerPort = 4200;
+			
+			var net = require('net');
+			guiFirstClient = new net.Socket();
+			try{
+				guiFirstClient.connect(portNumber, hostName, function(){
+					console.log("Successfully connected GUI to RTI Server!");
+					var textConsoleLastAction = document.getElementById("TextConsoleLastAction");
+					textConsoleLastAction.innerHTML = "First step complete to connect GUI to RTI Server...";
+					
+					/*var rl = require('readline');
+					var readInterface = rl.createInterface(
+					
+					guiServer = net.createServer(function(socket){
+						dedicatedServerPort = socket;
+					});
+					guiServer.listen(0, 'localhost');*/
+					
+				});
+				guiFirstClient.on('data', function(data){
+					var textConsoleLastAction = document.getElementById("TextConsoleLastAction");
+					textConsoleLastAction.innerHTML = "Data received by RTI Server: " + data.toString();
+					
+					var dataReceived = data.toString().split("\n");
+					textConsoleLastAction.innerHTML = "Separated data received by RTI Server: (" + dataReceived[1] + ")";
+					var dedicatedClientPort = parseInt(dataReceived[1]);
+					var dedicatedServerPort = 0;
+					
+					guiDedicatedClient = new net.Socket();
+					guiDedicatedClient.connect(dedicatedClientPort, function(){
+						var textConsoleLastAction = document.getElementById("TextConsoleLastAction");
+						textConsoleLastAction.innerHTML = "Finished successfully connecting to RTI Server!";
+						
+						var outputString = "{\"name\":\"RTI_InitializeSim\",\"content\":\"{\\\"simName\\\":\\\"RTI-v2-GUI\\\"}\",\"timestamp\":\"1234567890123\",\"vTimestamp\":0,\"source\":\"RTI-v2-GUI\",\"tcp\":\"false\"}\n";
+						guiDedicatedClient.write(outputString);
+						
+						outputString = "{\"name\":\"RTI_SubscribeToAllPlusHistory\",\"content\":\"\",\"timestamp\":\"1234567890123\",\"vTimestamp\":0,\"source\":\"RTI-v2-GUI\",\"tcp\":\"false\"}\n";
+						guiDedicatedClient.write(outputString);
+					});
+					
+					guiDedicatedClient.on('data', function(data){
+						HandleRTIInputData(data);
+					});
+					
+				});
+			} catch (e) {
+				var textConsoleLastAction = document.getElementById("TextConsoleLastAction");
+				textConsoleLastAction.innerHTML = "Error occurred when trying to connect GUI to RTI Server! :(";
+			}
+			
+			// issue: I have to effectively recreate a major part of "RTILib" in JavaScript to properly subscribe/publish messages.
+		}
+		
+		function HandleRTIInputData(data){
+			// How should we display system-wide messages to the user?
+		}
+		
+		var execSims;
+		function LaunchSimulators(){
+				try {
+					execSims = [];
+					child_process = require('child_process');
+					/*execServer = child_process.exec('cd /d D:\\Work\\Acer\\DSK\\UMich\\ICoR\\Reading-Materials\\201908\\srti_gui_test\\server && java -jar SRTI_v2_12_02.jar',
+						(error, stdout, stderror) => {
+							if (error){
+								alert("error when running command: " + error);
+							} else {
+								alert("command worked!");
+							}
+					});*/
+					
+					// FIRST, must export Wrapper config files (automatically save when running, or else prompt user before running)
+					
+					// start all other simulators (all that exist anywhere on the canvas).
+					let i = 0;
+					for (i = 0; i < listOfSimulators.length; i++){
+						var execCommand = "cd /d " + listOfSimulators[i].filePath 
+							+ " && " + listOfSimulators[i].executeCommand;
+						var execSim = child_process.exec(execCommand,
+							(error, stdout, stderror) => {
+								if (error){
+									alert("error when running command to open sim: " + error);
+								} else {
+									alert("executing sim was successful!");
+								}
+							});
+						execSims.push(execSim);
+					}
+					
+				} catch (e) {
+					alert('Error when trying to open RTI Server. ' + e);
+					return;
+				}
+				var textConsoleLastAction = document.getElementById("TextConsoleLastAction");
+				textConsoleLastAction.innerHTML = "Try to open sims: " + execSims.pid + "...";
+			
+		}
+		
+		
+		
+		
+		
+		
+		
 		

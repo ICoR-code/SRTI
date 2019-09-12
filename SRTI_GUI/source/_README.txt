@@ -20,6 +20,7 @@ Using "electron-builder" (see package.json)
 	- compile both portable stand-alone and directory .exe files for Windows
 	- slow to compile, slow to unpackage when running .exe 
 		( > 15 seconds to launch portable .exe, < 2 seconds to launch unpacked .exe)
+	- (doesn't always work? try running "> electron-builder" as alternative command)
 
 > npm start .
 	- same command as "electron-packager" above
