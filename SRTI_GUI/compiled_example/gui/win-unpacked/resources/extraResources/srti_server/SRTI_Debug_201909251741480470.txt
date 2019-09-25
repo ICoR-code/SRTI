@@ -1,0 +1,264 @@
+1569447708471 	3.65	MB RAM	            [ExampleServer] --- Finished reading settings file.
+1569447708480 	3.65	MB RAM	            [ExampleServer] --- SRTI Version : v2.20.02
+1569447708483 	3.65	MB RAM	            [ExampleServer] --- Found this many files starting with 'messagehistorylist_***.txt' : 0
+1569447708500 	3.65	MB RAM	            [ExampleServer] --- Try to create socket on this port: 42012
+1569447708505 	3.65	MB RAM	            [ExampleServer] --- This is an example GUI to show a RTI ('Really Thankful Interface'), which is similar to an RTI ('Real Time Interface') as described in an HLA system.
+1569447708508 	3.65	MB RAM	            [ExampleServer] --- To connect a simulation to this RTI, please use the following credentials:
+	 hostname = 35.3.34.114
+		 (or you can use 'localhost' if running simulation on same computer as RTI)
+	 portnumber = 42012
+1569447708511 	3.65	MB RAM	            [ExampleServer] --- Opening socket connection.
+1569447708516 	4.19	MB RAM	            [ExampleServer] --- Open for business! Waiting for simulations to connect to me...
+1569447709072 	9.40	MB RAM	         [ExampleServerGUI] --- Starting GUI (not loaded yet)...
+1569447709283 	14.64	MB RAM	         [ExampleServerGUI] --- Loaded GUI panel, should be visible now.
+1569447709299 	16.78	MB RAM	            [ExampleServer] --- 	 Connected!
+1569447709306 	17.80	MB RAM	            [ExampleServer] --- 	 Added thread to the list! Now sim size is: 1
+1569447709311 	17.83	MB RAM	         [RTIConnectThread] --- 	 Not done connecting yet! Waiting for app to connect to dedicated port = 35.3.34.114 51581
+1569447709316 	18.33	MB RAM	            [ExampleServer] --- Open for business! Waiting for simulations to connect to me...
+1569447709320 	18.83	MB RAM	         [RTIConnectThread] --- 	 Really connected! Let's get to work!
+1569447709324 	18.83	MB RAM	         [RTIConnectThread] --- 1: waiting for input... 
+1569447709328 	18.83	MB RAM	         [RTIConnectThread] --- I RECEIVED INPUT! It was : {"name":"RTI_InitializeSim","content":"{\"simName\":\"ExampleServerGUI\"}","timestamp":"1569447709314","vTimestamp":0,"source":"ExampleServerGUI","tcp":"false"}
+1569447709333 	18.83	MB RAM	            [ExampleServer] --- received message from index 1
+1569447709340 	18.87	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_UpdateSim to ExampleServerGUI
+1569447709340 	19.39	MB RAM	         [ExampleServerGUI] --- 	 updating number of connected apps = 1
+1569447709340 	19.39	MB RAM	            [ExampleServer] --- There should be 0 subscribed to message RTI_InitializeSim
+1569447709340 	19.39	MB RAM	[RTIConnectThread_ExampleServerGUI] --- I RECEIVED INPUT! It was : {"name":"RTI_SubscribeToAllPlusHistory","content":"","timestamp":"1569447709316","vTimestamp":0,"source":"ExampleServerGUI","tcp":"true"}
+1569447709355 	19.39	MB RAM	            [ExampleServer] --- received message from index 1
+1569447709355 	19.89	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_ReceivedMessage to ExampleServerGUI
+1569447709355 	20.43	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_UpdateSim to ExampleServerGUI
+1569447709371 	20.43	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_InitializeSim to ExampleServerGUI
+1569447709371 	20.43	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_UpdateSim to ExampleServerGUI
+1569447709371 	20.94	MB RAM	         [ExampleServerGUI] --- Now currently this many connected apps: 1
+1569447709386 	20.94	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_SubscribeToAllPlusHistory to ExampleServerGUI
+1569447709386 	20.94	MB RAM	            [ExampleServer] --- There should be 1 subscribed to message RTI_SubscribeToAllPlusHistory
+1569447709386 	20.94	MB RAM	         [ExampleServerGUI] --- 	 updating number of connected apps = 1
+1569447709402 	21.48	MB RAM	         [ExampleServerGUI] --- Now currently this many connected apps: 1
+1569447709402 	21.48	MB RAM	         [ExampleServerGUI] --- 	 updating number of connected apps = 1
+1569447709418 	21.48	MB RAM	         [ExampleServerGUI] --- Now currently this many connected apps: 1
+1569447713011 	21.48	MB RAM	            [ExampleServer] --- 	 Connected!
+1569447713017 	21.99	MB RAM	            [ExampleServer] --- 	 Added thread to the list! Now sim size is: 2
+1569447713024 	21.99	MB RAM	         [RTIConnectThread] --- 	 Not done connecting yet! Waiting for app to connect to dedicated port = 35.3.34.114 51584
+1569447713030 	21.99	MB RAM	            [ExampleServer] --- Open for business! Waiting for simulations to connect to me...
+1569447713035 	21.99	MB RAM	         [RTIConnectThread] --- 	 Really connected! Let's get to work!
+1569447713040 	21.99	MB RAM	         [RTIConnectThread] --- 2: waiting for input... 
+1569447713044 	21.99	MB RAM	         [RTIConnectThread] --- I RECEIVED INPUT! It was : {"name":"RTI_InitializeSim","content":"{\"simName\":\"RTI-v2-GUI\"}","timestamp":"1234567890123","vTimestamp":0,"source":"RTI-v2-GUI","tcp":"false"}
+1569447713049 	21.99	MB RAM	            [ExampleServer] --- received message from index 2
+1569447713055 	21.99	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_UpdateSim to ExampleServerGUI
+1569447713062 	22.02	MB RAM	         [ExampleServerGUI] --- 	 updating number of connected apps = 2
+1569447713067 	22.02	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_UpdateSim to RTI-v2-GUI
+1569447713073 	22.53	MB RAM	         [ExampleServerGUI] --- Now currently this many connected apps: 2
+1569447713079 	23.04	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_InitializeSim to ExampleServerGUI
+1569447713085 	23.04	MB RAM	            [ExampleServer] --- There should be 1 subscribed to message RTI_InitializeSim
+1569447713087 	23.07	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- I RECEIVED INPUT! It was : {"name":"RTI_SubscribeToAllPlusHistory","content":"","timestamp":"1234567890123","vTimestamp":0,"source":"RTI-v2-GUI","tcp":"false"}
+1569447713087 	23.57	MB RAM	            [ExampleServer] --- received message from index 2
+1569447713102 	23.57	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_UpdateSim to RTI-v2-GUI
+1569447713102 	23.57	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_InitializeSim to RTI-v2-GUI
+1569447713102 	24.09	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_UpdateSim to RTI-v2-GUI
+1569447713118 	24.09	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_SubscribeToAllPlusHistory to RTI-v2-GUI
+1569447713118 	24.09	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_UpdateSim to RTI-v2-GUI
+1569447713118 	24.09	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_InitializeSim to RTI-v2-GUI
+1569447713134 	25.13	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_UpdateSim to ExampleServerGUI
+1569447713134 	25.13	MB RAM	         [ExampleServerGUI] --- 	 updating number of connected apps = 2
+1569447713134 	25.13	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_UpdateSim to RTI-v2-GUI
+1569447713149 	25.17	MB RAM	         [ExampleServerGUI] --- Now currently this many connected apps: 2
+1569447713149 	25.68	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_SubscribeToAllPlusHistory to ExampleServerGUI
+1569447713149 	25.68	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_SubscribeToAllPlusHistory to RTI-v2-GUI
+1569447713149 	25.68	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_SubscribeToAllPlusHistory
+1569447713726 	26.18	MB RAM	            [ExampleServer] --- 	 Connected!
+1569447713726 	26.18	MB RAM	            [ExampleServer] --- 	 Added thread to the list! Now sim size is: 3
+1569447713726 	26.73	MB RAM	         [RTIConnectThread] --- 	 Not done connecting yet! Waiting for app to connect to dedicated port = 35.3.34.114 51588
+1569447713726 	26.73	MB RAM	            [ExampleServer] --- Open for business! Waiting for simulations to connect to me...
+1569447713741 	26.73	MB RAM	         [RTIConnectThread] --- 	 Really connected! Let's get to work!
+1569447713741 	26.73	MB RAM	            [ExampleServer] --- 	 Connected!
+1569447713741 	26.73	MB RAM	         [RTIConnectThread] --- 3: waiting for input... 
+1569447713741 	27.23	MB RAM	         [RTIConnectThread] --- 	 Not done connecting yet! Waiting for app to connect to dedicated port = 35.3.34.114 51590
+1569447713757 	27.23	MB RAM	            [ExampleServer] --- 	 Added thread to the list! Now sim size is: 4
+1569447713757 	27.23	MB RAM	         [RTIConnectThread] --- 	 Really connected! Let's get to work!
+1569447713757 	27.23	MB RAM	         [RTIConnectThread] --- I RECEIVED INPUT! It was : {"name":"RTI_InitializeSim","content":"{\"simName\":\"C\"}","timestamp":"1569447713726","vTimestamp":0,"source":"C","tcp":"false"}
+1569447713757 	27.23	MB RAM	         [RTIConnectThread] --- 4: waiting for input... 
+1569447713757 	27.23	MB RAM	            [ExampleServer] --- Open for business! Waiting for simulations to connect to me...
+1569447713772 	27.23	MB RAM	         [RTIConnectThread] --- I RECEIVED INPUT! It was : {"name":"RTI_InitializeSim","content":"{\"simName\":\"B\"}","timestamp":"1569447713757","vTimestamp":0,"source":"B","tcp":"false"}
+1569447713772 	27.23	MB RAM	            [ExampleServer] --- received message from index 3
+1569447713772 	27.23	MB RAM	            [ExampleServer] --- received message from index 4
+1569447713772 	27.23	MB RAM	         [ExampleServerGUI] --- 	 updating number of connected apps = 4
+1569447713788 	27.23	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_UpdateSim to ExampleServerGUI
+1569447713788 	8.14	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_UpdateSim to ExampleServerGUI
+1569447713788 	8.14	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_UpdateSim to RTI-v2-GUI
+1569447713804 	8.14	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_UpdateSim to RTI-v2-GUI
+1569447713804 	8.14	MB RAM	         [ExampleServerGUI] --- Now currently this many connected apps: 4
+1569447713804 	8.67	MB RAM	       [RTIConnectThread_C] --- Sent message RTI_UpdateSim to C
+1569447713804 	9.19	MB RAM	       [RTIConnectThread_C] --- Sent message RTI_UpdateSim to C
+1569447713819 	9.19	MB RAM	       [RTIConnectThread_B] --- Sent message RTI_UpdateSim to B
+1569447713819 	9.19	MB RAM	         [ExampleServerGUI] --- 	 updating number of connected apps = 4
+1569447713819 	9.73	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_InitializeSim to ExampleServerGUI
+1569447713819 	10.24	MB RAM	         [ExampleServerGUI] --- Now currently this many connected apps: 4
+1569447713835 	10.24	MB RAM	       [RTIConnectThread_B] --- Sent message RTI_UpdateSim to B
+1569447713835 	10.76	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_InitializeSim to RTI-v2-GUI
+1569447713835 	11.29	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_InitializeSim to ExampleServerGUI
+1569447713835 	11.29	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_InitializeSim
+1569447713851 	11.29	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_InitializeSim to RTI-v2-GUI
+1569447713851 	11.29	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_InitializeSim
+1569447713851 	11.29	MB RAM	       [RTIConnectThread_C] --- I RECEIVED INPUT! It was : {"name":"RTI_SubscribeToMessagePlusHistory","content":"{\"subscribeTo\":\"Message_G\"}","timestamp":"1569447713726","vTimestamp":0,"source":"C","tcp":"false"}
+1569447713851 	11.29	MB RAM	            [ExampleServer] --- received message from index 3
+1569447713866 	11.82	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_UpdateSim to ExampleServerGUI
+1569447713866 	11.82	MB RAM	         [ExampleServerGUI] --- 	 updating number of connected apps = 4
+1569447713866 	11.82	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_UpdateSim to RTI-v2-GUI
+1569447713882 	12.87	MB RAM	         [ExampleServerGUI] --- Now currently this many connected apps: 4
+1569447713882 	12.87	MB RAM	       [RTIConnectThread_C] --- Sent message RTI_UpdateSim to C
+1569447713882 	12.87	MB RAM	       [RTIConnectThread_B] --- Sent message RTI_UpdateSim to B
+1569447713897 	13.38	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_SubscribeToMessagePlusHistory to ExampleServerGUI
+1569447713897 	13.38	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_SubscribeToMessagePlusHistory to RTI-v2-GUI
+1569447713897 	13.38	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_SubscribeToMessagePlusHistory
+1569447713913 	13.91	MB RAM	            [ExampleServer] --- 	 Connected!
+1569447713913 	13.91	MB RAM	            [ExampleServer] --- 	 Added thread to the list! Now sim size is: 5
+1569447713913 	14.13	MB RAM	         [RTIConnectThread] --- 	 Not done connecting yet! Waiting for app to connect to dedicated port = 35.3.34.114 51593
+1569447713913 	14.13	MB RAM	            [ExampleServer] --- Open for business! Waiting for simulations to connect to me...
+1569447713930 	14.13	MB RAM	         [RTIConnectThread] --- 	 Really connected! Let's get to work!
+1569447713941 	14.13	MB RAM	         [RTIConnectThread] --- 5: waiting for input... 
+1569447713945 	14.13	MB RAM	         [RTIConnectThread] --- I RECEIVED INPUT! It was : {"name":"RTI_InitializeSim","content":"{\"simName\":\"G\"}","timestamp":"1569447713913","vTimestamp":0,"source":"G","tcp":"false"}
+1569447713948 	14.13	MB RAM	            [ExampleServer] --- received message from index 5
+1569447713953 	14.34	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_UpdateSim to ExampleServerGUI
+1569447713957 	14.34	MB RAM	         [ExampleServerGUI] --- 	 updating number of connected apps = 5
+1569447713960 	14.43	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_UpdateSim to RTI-v2-GUI
+1569447713965 	15.48	MB RAM	       [RTIConnectThread_C] --- Sent message RTI_UpdateSim to C
+1569447713969 	15.48	MB RAM	         [ExampleServerGUI] --- Now currently this many connected apps: 5
+1569447713969 	15.73	MB RAM	       [RTIConnectThread_B] --- Sent message RTI_UpdateSim to B
+1569447713969 	16.25	MB RAM	       [RTIConnectThread_G] --- Sent message RTI_UpdateSim to G
+1569447713969 	16.47	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_InitializeSim to ExampleServerGUI
+1569447713985 	16.53	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_InitializeSim to RTI-v2-GUI
+1569447713985 	16.53	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_InitializeSim
+1569447713985 	16.75	MB RAM	       [RTIConnectThread_G] --- I RECEIVED INPUT! It was : {"name":"RTI_SubscribeToMessagePlusHistory","content":"{\"subscribeTo\":\"Message_A\"}","timestamp":"1569447713913","vTimestamp":0,"source":"G","tcp":"false"}
+1569447713985 	16.75	MB RAM	            [ExampleServer] --- received message from index 5
+1569447714001 	17.18	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_UpdateSim to ExampleServerGUI
+1569447714001 	17.18	MB RAM	         [ExampleServerGUI] --- 	 updating number of connected apps = 5
+1569447714001 	17.58	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_UpdateSim to RTI-v2-GUI
+1569447714001 	18.84	MB RAM	         [ExampleServerGUI] --- Now currently this many connected apps: 5
+1569447714016 	18.84	MB RAM	       [RTIConnectThread_C] --- Sent message RTI_UpdateSim to C
+1569447714016 	19.09	MB RAM	       [RTIConnectThread_B] --- Sent message RTI_UpdateSim to B
+1569447714016 	19.09	MB RAM	       [RTIConnectThread_G] --- Sent message RTI_UpdateSim to G
+1569447714016 	19.31	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_SubscribeToMessagePlusHistory to ExampleServerGUI
+1569447714032 	19.31	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_SubscribeToMessagePlusHistory to RTI-v2-GUI
+1569447714032 	19.31	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_SubscribeToMessagePlusHistory
+1569447714032 	19.52	MB RAM	       [RTIConnectThread_G] --- I RECEIVED INPUT! It was : {"name":"RTI_SubscribeToMessagePlusHistory","content":"{\"subscribeTo\":\"Message_B\"}","timestamp":"1569447713913","vTimestamp":0,"source":"G","tcp":"false"}
+1569447714032 	19.52	MB RAM	            [ExampleServer] --- received message from index 5
+1569447714047 	19.89	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_UpdateSim to ExampleServerGUI
+1569447714047 	20.11	MB RAM	         [ExampleServerGUI] --- 	 updating number of connected apps = 5
+1569447714047 	20.11	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_UpdateSim to RTI-v2-GUI
+1569447714064 	21.77	MB RAM	         [ExampleServerGUI] --- Now currently this many connected apps: 5
+1569447714068 	21.99	MB RAM	       [RTIConnectThread_C] --- Sent message RTI_UpdateSim to C
+1569447714072 	21.99	MB RAM	       [RTIConnectThread_B] --- Sent message RTI_UpdateSim to B
+1569447714077 	22.21	MB RAM	       [RTIConnectThread_G] --- Sent message RTI_UpdateSim to G
+1569447714081 	22.21	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_SubscribeToMessagePlusHistory to ExampleServerGUI
+1569447714085 	23.05	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_SubscribeToMessagePlusHistory to RTI-v2-GUI
+1569447714089 	23.05	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_SubscribeToMessagePlusHistory
+1569447714093 	23.05	MB RAM	       [RTIConnectThread_G] --- I RECEIVED INPUT! It was : {"name":"RTI_SubscribeToMessagePlusHistory","content":"{\"subscribeTo\":\"Message_C\"}","timestamp":"1569447713913","vTimestamp":0,"source":"G","tcp":"false"}
+1569447714097 	23.05	MB RAM	            [ExampleServer] --- received message from index 5
+1569447714118 	23.49	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_UpdateSim to ExampleServerGUI
+1569447714118 	23.70	MB RAM	         [ExampleServerGUI] --- 	 updating number of connected apps = 5
+1569447714118 	23.70	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_UpdateSim to RTI-v2-GUI
+1569447714118 	24.92	MB RAM	         [ExampleServerGUI] --- Now currently this many connected apps: 5
+1569447714134 	24.92	MB RAM	       [RTIConnectThread_C] --- Sent message RTI_UpdateSim to C
+1569447714134 	25.14	MB RAM	       [RTIConnectThread_B] --- Sent message RTI_UpdateSim to B
+1569447714134 	25.38	MB RAM	       [RTIConnectThread_G] --- Sent message RTI_UpdateSim to G
+1569447714134 	25.38	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_SubscribeToMessagePlusHistory to ExampleServerGUI
+1569447714150 	25.60	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_SubscribeToMessagePlusHistory to RTI-v2-GUI
+1569447714150 	25.60	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_SubscribeToMessagePlusHistory
+1569447740633 	25.60	MB RAM	       [RTIConnectThread_B] --- I RECEIVED INPUT! It was : {"name":"RTI_SubscribeToMessagePlusHistory","content":"{\"subscribeTo\":\"Message_G\"}","timestamp":"1569447740633","vTimestamp":0,"source":"B","tcp":"false"}
+1569447740649 	25.60	MB RAM	            [ExampleServer] --- received message from index 4
+1569447740649 	25.97	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_UpdateSim to ExampleServerGUI
+1569447740664 	25.97	MB RAM	         [ExampleServerGUI] --- 	 updating number of connected apps = 5
+1569447740664 	25.97	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_UpdateSim to RTI-v2-GUI
+1569447740664 	28.06	MB RAM	         [ExampleServerGUI] --- Now currently this many connected apps: 5
+1569447740664 	28.06	MB RAM	       [RTIConnectThread_C] --- Sent message RTI_UpdateSim to C
+1569447740680 	28.06	MB RAM	       [RTIConnectThread_B] --- Sent message RTI_UpdateSim to B
+1569447740680 	28.06	MB RAM	       [RTIConnectThread_G] --- Sent message RTI_UpdateSim to G
+1569447740680 	28.59	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_SubscribeToMessagePlusHistory to ExampleServerGUI
+1569447740696 	28.59	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_SubscribeToMessagePlusHistory to RTI-v2-GUI
+1569447740696 	28.59	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_SubscribeToMessagePlusHistory
+1569447745497 	28.59	MB RAM	       [RTIConnectThread_B] --- Exception during thread run >> java.net.SocketException: Connection reset
+1569447745497 	28.59	MB RAM	       [RTIConnectThread_B] --- done running thread.
+1569447745513 	28.59	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_UpdateSim to ExampleServerGUI
+1569447745513 	28.59	MB RAM	         [ExampleServerGUI] --- 	 updating number of connected apps = 4
+1569447745513 	29.11	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_UpdateSim to RTI-v2-GUI
+1569447745513 	30.16	MB RAM	         [ExampleServerGUI] --- Now currently this many connected apps: 4
+1569447745533 	30.16	MB RAM	       [RTIConnectThread_C] --- Sent message RTI_UpdateSim to C
+1569447745538 	30.16	MB RAM	       [RTIConnectThread_G] --- Sent message RTI_UpdateSim to G
+1569447768622 	30.16	MB RAM	            [ExampleServer] --- 	 Connected!
+1569447768622 	30.16	MB RAM	            [ExampleServer] --- 	 Added thread to the list! Now sim size is: 5
+1569447768632 	30.39	MB RAM	         [RTIConnectThread] --- 	 Not done connecting yet! Waiting for app to connect to dedicated port = 35.3.34.114 51598
+1569447768632 	30.39	MB RAM	            [ExampleServer] --- Open for business! Waiting for simulations to connect to me...
+1569447768632 	30.39	MB RAM	         [RTIConnectThread] --- 	 Really connected! Let's get to work!
+1569447768632 	30.39	MB RAM	         [RTIConnectThread] --- 6: waiting for input... 
+1569447768647 	30.39	MB RAM	         [RTIConnectThread] --- I RECEIVED INPUT! It was : {"name":"RTI_InitializeSim","content":"{\"simName\":\"B\"}","timestamp":"1569447768632","vTimestamp":0,"source":"B","tcp":"false"}
+1569447768647 	30.39	MB RAM	            [ExampleServer] --- received message from index 6
+1569447768663 	30.60	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_UpdateSim to ExampleServerGUI
+1569447768663 	30.60	MB RAM	         [ExampleServerGUI] --- 	 updating number of connected apps = 5
+1569447768663 	30.82	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_UpdateSim to RTI-v2-GUI
+1569447768678 	32.26	MB RAM	         [ExampleServerGUI] --- Now currently this many connected apps: 5
+1569447768678 	32.26	MB RAM	       [RTIConnectThread_C] --- Sent message RTI_UpdateSim to C
+1569447768678 	33.00	MB RAM	       [RTIConnectThread_G] --- Sent message RTI_UpdateSim to G
+1569447768694 	33.25	MB RAM	       [RTIConnectThread_B] --- Sent message RTI_UpdateSim to B
+1569447768694 	33.25	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_InitializeSim to ExampleServerGUI
+1569447768710 	33.31	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_InitializeSim to RTI-v2-GUI
+1569447768710 	33.53	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_InitializeSim
+1569447771085 	33.53	MB RAM	            [ExampleServer] --- 	 Connected!
+1569447771101 	33.75	MB RAM	            [ExampleServer] --- 	 Added thread to the list! Now sim size is: 6
+1569447771101 	33.75	MB RAM	         [RTIConnectThread] --- 	 Not done connecting yet! Waiting for app to connect to dedicated port = 35.3.34.114 51603
+1569447771101 	33.75	MB RAM	            [ExampleServer] --- Open for business! Waiting for simulations to connect to me...
+1569447771116 	33.75	MB RAM	         [RTIConnectThread] --- 	 Really connected! Let's get to work!
+1569447771147 	33.75	MB RAM	         [RTIConnectThread] --- 7: waiting for input... 
+1569447771170 	33.75	MB RAM	         [RTIConnectThread] --- I RECEIVED INPUT! It was : {"name":"RTI_InitializeSim","content":"{\"simName\":\"A\"}","timestamp":"1569447771170","vTimestamp":0,"source":"A","tcp":"false"}
+1569447771170 	33.75	MB RAM	            [ExampleServer] --- received message from index 7
+1569447771185 	33.96	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_UpdateSim to ExampleServerGUI
+1569447771185 	33.97	MB RAM	         [ExampleServerGUI] --- 	 updating number of connected apps = 6
+1569447771185 	34.19	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_UpdateSim to RTI-v2-GUI
+1569447771201 	35.63	MB RAM	       [RTIConnectThread_C] --- Sent message RTI_UpdateSim to C
+1569447771201 	36.15	MB RAM	         [ExampleServerGUI] --- Now currently this many connected apps: 6
+1569447771201 	36.15	MB RAM	       [RTIConnectThread_G] --- Sent message RTI_UpdateSim to G
+1569447771217 	36.38	MB RAM	       [RTIConnectThread_B] --- Sent message RTI_UpdateSim to B
+1569447771217 	36.38	MB RAM	       [RTIConnectThread_A] --- Sent message RTI_UpdateSim to A
+1569447771217 	36.68	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_InitializeSim to ExampleServerGUI
+1569447771232 	36.68	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_InitializeSim to RTI-v2-GUI
+1569447771232 	36.68	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_InitializeSim
+1569447771232 	36.68	MB RAM	       [RTIConnectThread_A] --- I RECEIVED INPUT! It was : {"name":"RTI_SubscribeToMessagePlusHistory","content":"{\"subscribeTo\":\"Message_G\"}","timestamp":"1569447771185","vTimestamp":0,"source":"A","tcp":"false"}
+1569447771248 	36.68	MB RAM	            [ExampleServer] --- received message from index 7
+1569447771248 	37.36	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_UpdateSim to ExampleServerGUI
+1569447771248 	37.50	MB RAM	         [ExampleServerGUI] --- 	 updating number of connected apps = 6
+1569447771263 	37.50	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_UpdateSim to RTI-v2-GUI
+1569447771270 	39.29	MB RAM	         [ExampleServerGUI] --- Now currently this many connected apps: 6
+1569447771270 	39.29	MB RAM	       [RTIConnectThread_C] --- Sent message RTI_UpdateSim to C
+1569447771270 	39.52	MB RAM	       [RTIConnectThread_G] --- Sent message RTI_UpdateSim to G
+1569447771286 	39.52	MB RAM	       [RTIConnectThread_B] --- Sent message RTI_UpdateSim to B
+1569447771286 	39.60	MB RAM	       [RTIConnectThread_A] --- Sent message RTI_UpdateSim to A
+1569447771286 	39.83	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_SubscribeToMessagePlusHistory to ExampleServerGUI
+1569447771301 	40.06	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_SubscribeToMessagePlusHistory to RTI-v2-GUI
+1569447771301 	40.06	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_SubscribeToMessagePlusHistory
+1569447783136 	40.06	MB RAM	       [RTIConnectThread_B] --- I RECEIVED INPUT! It was : {"name":"RTI_SubscribeToMessagePlusHistory","content":"{\"subscribeTo\":\"Message_G\"}","timestamp":"1569447783136","vTimestamp":0,"source":"B","tcp":"false"}
+1569447783136 	40.06	MB RAM	            [ExampleServer] --- received message from index 6
+1569447783145 	40.65	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_UpdateSim to ExampleServerGUI
+1569447783156 	40.87	MB RAM	         [ExampleServerGUI] --- 	 updating number of connected apps = 6
+1569447783156 	40.87	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_UpdateSim to RTI-v2-GUI
+1569447783156 	42.96	MB RAM	         [ExampleServerGUI] --- Now currently this many connected apps: 6
+1569447783166 	42.96	MB RAM	       [RTIConnectThread_C] --- Sent message RTI_UpdateSim to C
+1569447783176 	43.49	MB RAM	       [RTIConnectThread_G] --- Sent message RTI_UpdateSim to G
+1569447783176 	43.71	MB RAM	       [RTIConnectThread_B] --- Sent message RTI_UpdateSim to B
+1569447783176 	43.71	MB RAM	       [RTIConnectThread_A] --- Sent message RTI_UpdateSim to A
+1569447783191 	44.02	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_SubscribeToMessagePlusHistory to ExampleServerGUI
+1569447783196 	44.02	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_SubscribeToMessagePlusHistory to RTI-v2-GUI
+1569447783200 	44.02	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_SubscribeToMessagePlusHistory
+1569447784781 	44.02	MB RAM	       [RTIConnectThread_B] --- Exception during thread run >> java.net.SocketException: Connection reset
+1569447784781 	44.02	MB RAM	       [RTIConnectThread_B] --- done running thread.
+1569447784781 	44.24	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_UpdateSim to ExampleServerGUI
+1569447784797 	44.46	MB RAM	         [ExampleServerGUI] --- 	 updating number of connected apps = 5
+1569447784797 	44.46	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_UpdateSim to RTI-v2-GUI
+1569447784797 	45.89	MB RAM	         [ExampleServerGUI] --- Now currently this many connected apps: 5
+1569447784797 	46.11	MB RAM	       [RTIConnectThread_C] --- Sent message RTI_UpdateSim to C
+1569447784812 	46.11	MB RAM	       [RTIConnectThread_G] --- Sent message RTI_UpdateSim to G
+1569447784812 	46.34	MB RAM	       [RTIConnectThread_A] --- Sent message RTI_UpdateSim to A
+1569447880218 	47.46	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- done running thread.
+1569447880227 	47.46	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_UpdateSim to ExampleServerGUI
+1569447880232 	47.46	MB RAM	         [ExampleServerGUI] --- 	 updating number of connected apps = 4
+1569447880238 	47.46	MB RAM	       [RTIConnectThread_C] --- Sent message RTI_UpdateSim to C
+1569447880244 	49.04	MB RAM	         [ExampleServerGUI] --- Now currently this many connected apps: 4
+1569447880253 	49.04	MB RAM	       [RTIConnectThread_G] --- Sent message RTI_UpdateSim to G
+1569447880258 	49.57	MB RAM	       [RTIConnectThread_A] --- Sent message RTI_UpdateSim to A

@@ -1,0 +1,1384 @@
+1569445242959 	3.65	MB RAM	            [ExampleServer] --- Finished reading settings file.
+1569445242964 	3.65	MB RAM	            [ExampleServer] --- SRTI Version : v2.20.02
+1569445242968 	3.65	MB RAM	            [ExampleServer] --- Found this many files starting with 'messagehistorylist_***.txt' : 0
+1569445242981 	3.65	MB RAM	            [ExampleServer] --- Try to create socket on this port: 42012
+1569445242986 	3.65	MB RAM	            [ExampleServer] --- This is an example GUI to show a RTI ('Really Thankful Interface'), which is similar to an RTI ('Real Time Interface') as described in an HLA system.
+1569445242989 	3.65	MB RAM	            [ExampleServer] --- To connect a simulation to this RTI, please use the following credentials:
+	 hostname = 35.3.34.114
+		 (or you can use 'localhost' if running simulation on same computer as RTI)
+	 portnumber = 42012
+1569445242992 	3.65	MB RAM	            [ExampleServer] --- Opening socket connection.
+1569445242997 	4.19	MB RAM	            [ExampleServer] --- Open for business! Waiting for simulations to connect to me...
+1569445243479 	9.40	MB RAM	         [ExampleServerGUI] --- Starting GUI (not loaded yet)...
+1569445243667 	14.64	MB RAM	         [ExampleServerGUI] --- Loaded GUI panel, should be visible now.
+1569445243677 	16.78	MB RAM	            [ExampleServer] --- 	 Connected!
+1569445243686 	17.80	MB RAM	            [ExampleServer] --- 	 Added thread to the list! Now sim size is: 1
+1569445243691 	17.83	MB RAM	         [RTIConnectThread] --- 	 Not done connecting yet! Waiting for app to connect to dedicated port = 35.3.34.114 51300
+1569445243696 	18.33	MB RAM	            [ExampleServer] --- Open for business! Waiting for simulations to connect to me...
+1569445243706 	18.84	MB RAM	         [RTIConnectThread] --- 	 Really connected! Let's get to work!
+1569445243711 	18.84	MB RAM	         [RTIConnectThread] --- 1: waiting for input... 
+1569445243715 	18.84	MB RAM	         [RTIConnectThread] --- I RECEIVED INPUT! It was : {"name":"RTI_InitializeSim","content":"{\"simName\":\"ExampleServerGUI\"}","timestamp":"1569445243694","vTimestamp":0,"source":"ExampleServerGUI","tcp":"false"}
+1569445243719 	18.84	MB RAM	            [ExampleServer] --- received message from index 1
+1569445243726 	18.87	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_UpdateSim to ExampleServerGUI
+1569445243730 	19.39	MB RAM	         [ExampleServerGUI] --- 	 updating number of connected apps = 1
+1569445243733 	19.39	MB RAM	            [ExampleServer] --- There should be 0 subscribed to message RTI_InitializeSim
+1569445243737 	19.39	MB RAM	[RTIConnectThread_ExampleServerGUI] --- I RECEIVED INPUT! It was : {"name":"RTI_SubscribeToAllPlusHistory","content":"","timestamp":"1569445243696","vTimestamp":0,"source":"ExampleServerGUI","tcp":"true"}
+1569445243740 	19.39	MB RAM	            [ExampleServer] --- received message from index 1
+1569445243745 	19.89	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_ReceivedMessage to ExampleServerGUI
+1569445243752 	20.43	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_UpdateSim to ExampleServerGUI
+1569445243757 	20.43	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_InitializeSim to ExampleServerGUI
+1569445243764 	20.43	MB RAM	         [ExampleServerGUI] --- Now currently this many connected apps: 1
+1569445243768 	20.43	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_UpdateSim to ExampleServerGUI
+1569445243775 	20.94	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_SubscribeToAllPlusHistory to ExampleServerGUI
+1569445243782 	20.94	MB RAM	         [ExampleServerGUI] --- 	 updating number of connected apps = 1
+1569445243783 	20.94	MB RAM	            [ExampleServer] --- There should be 1 subscribed to message RTI_SubscribeToAllPlusHistory
+1569445243783 	21.48	MB RAM	         [ExampleServerGUI] --- Now currently this many connected apps: 1
+1569445243799 	21.48	MB RAM	         [ExampleServerGUI] --- 	 updating number of connected apps = 1
+1569445243799 	21.48	MB RAM	         [ExampleServerGUI] --- Now currently this many connected apps: 1
+1569445247690 	21.48	MB RAM	            [ExampleServer] --- 	 Connected!
+1569445247696 	21.99	MB RAM	            [ExampleServer] --- 	 Added thread to the list! Now sim size is: 2
+1569445247702 	21.99	MB RAM	         [RTIConnectThread] --- 	 Not done connecting yet! Waiting for app to connect to dedicated port = 35.3.34.114 51303
+1569445247708 	21.99	MB RAM	            [ExampleServer] --- Open for business! Waiting for simulations to connect to me...
+1569445247719 	21.99	MB RAM	         [RTIConnectThread] --- 	 Really connected! Let's get to work!
+1569445247725 	21.99	MB RAM	         [RTIConnectThread] --- 2: waiting for input... 
+1569445247725 	21.99	MB RAM	         [RTIConnectThread] --- I RECEIVED INPUT! It was : {"name":"RTI_InitializeSim","content":"{\"simName\":\"RTI-v2-GUI\"}","timestamp":"1234567890123","vTimestamp":0,"source":"RTI-v2-GUI","tcp":"false"}
+1569445247725 	21.99	MB RAM	            [ExampleServer] --- received message from index 2
+1569445247741 	21.99	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_UpdateSim to ExampleServerGUI
+1569445247741 	22.02	MB RAM	         [ExampleServerGUI] --- 	 updating number of connected apps = 2
+1569445247741 	22.02	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_UpdateSim to RTI-v2-GUI
+1569445247756 	23.58	MB RAM	         [ExampleServerGUI] --- Now currently this many connected apps: 2
+1569445247756 	23.58	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_InitializeSim to ExampleServerGUI
+1569445247772 	24.09	MB RAM	            [ExampleServer] --- There should be 1 subscribed to message RTI_InitializeSim
+1569445247788 	24.09	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- I RECEIVED INPUT! It was : {"name":"RTI_SubscribeToAllPlusHistory","content":"","timestamp":"1234567890123","vTimestamp":0,"source":"RTI-v2-GUI","tcp":"false"}
+1569445247788 	24.09	MB RAM	            [ExampleServer] --- received message from index 2
+1569445247803 	24.09	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_UpdateSim to RTI-v2-GUI
+1569445247803 	24.09	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_InitializeSim to RTI-v2-GUI
+1569445247819 	24.12	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_UpdateSim to RTI-v2-GUI
+1569445247835 	24.62	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_SubscribeToAllPlusHistory to RTI-v2-GUI
+1569445247835 	24.62	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_UpdateSim to RTI-v2-GUI
+1569445247835 	24.62	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_InitializeSim to RTI-v2-GUI
+1569445247850 	25.68	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_UpdateSim to ExampleServerGUI
+1569445247850 	25.68	MB RAM	         [ExampleServerGUI] --- 	 updating number of connected apps = 2
+1569445247850 	25.68	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_UpdateSim to RTI-v2-GUI
+1569445247866 	26.19	MB RAM	         [ExampleServerGUI] --- Now currently this many connected apps: 2
+1569445247866 	26.19	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_SubscribeToAllPlusHistory to ExampleServerGUI
+1569445247881 	26.19	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_SubscribeToAllPlusHistory to RTI-v2-GUI
+1569445247881 	26.19	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_SubscribeToAllPlusHistory
+1569445247913 	26.19	MB RAM	            [ExampleServer] --- 	 Connected!
+1569445247913 	26.21	MB RAM	            [ExampleServer] --- 	 Added thread to the list! Now sim size is: 3
+1569445247913 	26.23	MB RAM	         [RTIConnectThread] --- 	 Not done connecting yet! Waiting for app to connect to dedicated port = 35.3.34.114 51306
+1569445247928 	26.73	MB RAM	            [ExampleServer] --- Open for business! Waiting for simulations to connect to me...
+1569445247928 	26.73	MB RAM	         [RTIConnectThread] --- 	 Really connected! Let's get to work!
+1569445247928 	26.73	MB RAM	            [ExampleServer] --- 	 Connected!
+1569445247928 	26.73	MB RAM	         [RTIConnectThread] --- 3: waiting for input... 
+1569445247944 	27.24	MB RAM	         [RTIConnectThread] --- 	 Not done connecting yet! Waiting for app to connect to dedicated port = 35.3.34.114 51309
+1569445247944 	27.24	MB RAM	            [ExampleServer] --- 	 Added thread to the list! Now sim size is: 4
+1569445247944 	27.24	MB RAM	         [RTIConnectThread] --- 	 Really connected! Let's get to work!
+1569445247944 	27.24	MB RAM	         [RTIConnectThread] --- I RECEIVED INPUT! It was : {"name":"RTI_InitializeSim","content":"{\"simName\":\"B\"}","timestamp":"1569445247913","vTimestamp":0,"source":"B","tcp":"false"}
+1569445247960 	27.24	MB RAM	         [RTIConnectThread] --- 4: waiting for input... 
+1569445247960 	27.24	MB RAM	            [ExampleServer] --- Open for business! Waiting for simulations to connect to me...
+1569445247960 	27.24	MB RAM	         [RTIConnectThread] --- I RECEIVED INPUT! It was : {"name":"RTI_InitializeSim","content":"{\"simName\":\"C\"}","timestamp":"1569445247944","vTimestamp":0,"source":"C","tcp":"false"}
+1569445247960 	27.24	MB RAM	            [ExampleServer] --- received message from index 3
+1569445247960 	27.24	MB RAM	            [ExampleServer] --- received message from index 4
+1569445247975 	27.24	MB RAM	            [ExampleServer] --- 	 Connected!
+1569445247975 	27.24	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_UpdateSim to ExampleServerGUI
+1569445247975 	7.63	MB RAM	         [ExampleServerGUI] --- 	 updating number of connected apps = 4
+1569445247991 	8.15	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_UpdateSim to ExampleServerGUI
+1569445247991 	9.20	MB RAM	         [RTIConnectThread] --- 	 Not done connecting yet! Waiting for app to connect to dedicated port = 35.3.34.114 51312
+1569445247991 	9.73	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_UpdateSim to RTI-v2-GUI
+1569445247991 	10.25	MB RAM	            [ExampleServer] --- 	 Added thread to the list! Now sim size is: 5
+1569445248006 	10.25	MB RAM	       [RTIConnectThread_B] --- Sent message RTI_UpdateSim to B
+1569445248006 	10.25	MB RAM	         [RTIConnectThread] --- 	 Really connected! Let's get to work!
+1569445248006 	10.25	MB RAM	         [ExampleServerGUI] --- Now currently this many connected apps: 4
+1569445248006 	10.25	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_UpdateSim to RTI-v2-GUI
+1569445248022 	10.25	MB RAM	         [ExampleServerGUI] --- 	 updating number of connected apps = 4
+1569445248022 	10.25	MB RAM	         [RTIConnectThread] --- 5: waiting for input... 
+1569445248022 	11.30	MB RAM	       [RTIConnectThread_C] --- Sent message RTI_UpdateSim to C
+1569445248022 	11.30	MB RAM	            [ExampleServer] --- Open for business! Waiting for simulations to connect to me...
+1569445248038 	11.83	MB RAM	         [RTIConnectThread] --- Sent message RTI_UpdateSim to 
+1569445248038 	11.83	MB RAM	         [ExampleServerGUI] --- Now currently this many connected apps: 4
+1569445248038 	11.83	MB RAM	         [RTIConnectThread] --- I RECEIVED INPUT! It was : {"name":"RTI_InitializeSim","content":"{\"simName\":\"G\"}","timestamp":"1569445247991","vTimestamp":0,"source":"G","tcp":"false"}
+1569445248038 	11.83	MB RAM	       [RTIConnectThread_B] --- Sent message RTI_UpdateSim to B
+1569445248053 	11.83	MB RAM	            [ExampleServer] --- received message from index 5
+1569445248053 	11.83	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_InitializeSim to ExampleServerGUI
+1569445248053 	11.83	MB RAM	         [ExampleServerGUI] --- 	 updating number of connected apps = 5
+1569445248053 	11.83	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_UpdateSim to ExampleServerGUI
+1569445248112 	13.40	MB RAM	       [RTIConnectThread_C] --- Sent message RTI_UpdateSim to C
+1569445248116 	13.40	MB RAM	         [ExampleServerGUI] --- Now currently this many connected apps: 5
+1569445248120 	13.93	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_UpdateSim to RTI-v2-GUI
+1569445248124 	13.93	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_InitializeSim to RTI-v2-GUI
+1569445248128 	14.44	MB RAM	       [RTIConnectThread_B] --- Sent message RTI_UpdateSim to B
+1569445248129 	14.44	MB RAM	       [RTIConnectThread_G] --- Sent message RTI_UpdateSim to G
+1569445248129 	14.44	MB RAM	       [RTIConnectThread_C] --- Sent message RTI_UpdateSim to C
+1569445248129 	14.44	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_InitializeSim
+1569445248129 	14.44	MB RAM	       [RTIConnectThread_G] --- Sent message RTI_UpdateSim to G
+1569445248145 	14.44	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_InitializeSim to ExampleServerGUI
+1569445248145 	14.44	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_InitializeSim to ExampleServerGUI
+1569445248145 	14.97	MB RAM	       [RTIConnectThread_C] --- I RECEIVED INPUT! It was : {"name":"RTI_SubscribeToMessagePlusHistory","content":"{\"subscribeTo\":\"Message_G\"}","timestamp":"1569445247944","vTimestamp":0,"source":"C","tcp":"false"}
+1569445248145 	14.97	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_InitializeSim to RTI-v2-GUI
+1569445248160 	14.97	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_InitializeSim to RTI-v2-GUI
+1569445248160 	14.97	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_InitializeSim
+1569445248160 	14.97	MB RAM	            [ExampleServer] --- received message from index 4
+1569445248160 	14.97	MB RAM	       [RTIConnectThread_G] --- I RECEIVED INPUT! It was : {"name":"RTI_SubscribeToMessagePlusHistory","content":"{\"subscribeTo\":\"Message_A\"}","timestamp":"1569445247991","vTimestamp":0,"source":"G","tcp":"false"}
+1569445248176 	15.49	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_InitializeSim
+1569445248176 	15.49	MB RAM	            [ExampleServer] --- received message from index 5
+1569445248176 	15.49	MB RAM	         [ExampleServerGUI] --- 	 updating number of connected apps = 5
+1569445248176 	16.03	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_UpdateSim to ExampleServerGUI
+1569445248191 	17.07	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_UpdateSim to ExampleServerGUI
+1569445248191 	17.07	MB RAM	       [RTIConnectThread_B] --- I RECEIVED INPUT! It was : {"name":"RTI_SubscribeToMessagePlusHistory","content":"{\"subscribeTo\":\"Message_G\"}","timestamp":"1569445247928","vTimestamp":0,"source":"B","tcp":"false"}
+1569445248191 	17.07	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_UpdateSim to RTI-v2-GUI
+1569445248191 	17.07	MB RAM	         [ExampleServerGUI] --- Now currently this many connected apps: 5
+1569445248207 	17.07	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_UpdateSim to RTI-v2-GUI
+1569445248207 	17.07	MB RAM	         [ExampleServerGUI] --- 	 updating number of connected apps = 5
+1569445248207 	17.59	MB RAM	       [RTIConnectThread_B] --- Sent message RTI_UpdateSim to B
+1569445248207 	19.16	MB RAM	            [ExampleServer] --- received message from index 3
+1569445248223 	19.16	MB RAM	       [RTIConnectThread_C] --- Sent message RTI_UpdateSim to C
+1569445248223 	20.21	MB RAM	         [ExampleServerGUI] --- Now currently this many connected apps: 5
+1569445248223 	20.21	MB RAM	       [RTIConnectThread_B] --- Sent message RTI_UpdateSim to B
+1569445248223 	20.74	MB RAM	         [ExampleServerGUI] --- 	 updating number of connected apps = 5
+1569445248238 	20.74	MB RAM	       [RTIConnectThread_G] --- Sent message RTI_UpdateSim to G
+1569445248238 	21.78	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_UpdateSim to ExampleServerGUI
+1569445248238 	21.78	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_SubscribeToMessagePlusHistory to ExampleServerGUI
+1569445248238 	21.78	MB RAM	         [ExampleServerGUI] --- Now currently this many connected apps: 5
+1569445248254 	21.78	MB RAM	       [RTIConnectThread_C] --- Sent message RTI_UpdateSim to C
+1569445248254 	22.32	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_SubscribeToMessagePlusHistory to RTI-v2-GUI
+1569445248254 	22.32	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_UpdateSim to RTI-v2-GUI
+1569445248270 	22.32	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_SubscribeToMessagePlusHistory
+1569445248270 	22.32	MB RAM	       [RTIConnectThread_G] --- Sent message RTI_UpdateSim to G
+1569445248270 	22.32	MB RAM	       [RTIConnectThread_G] --- I RECEIVED INPUT! It was : {"name":"RTI_SubscribeToMessagePlusHistory","content":"{\"subscribeTo\":\"Message_B\"}","timestamp":"1569445247991","vTimestamp":0,"source":"G","tcp":"false"}
+1569445248283 	22.83	MB RAM	       [RTIConnectThread_B] --- Sent message RTI_UpdateSim to B
+1569445248294 	22.83	MB RAM	            [ExampleServer] --- received message from index 5
+1569445248298 	22.83	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_SubscribeToMessagePlusHistory to ExampleServerGUI
+1569445248301 	23.37	MB RAM	         [ExampleServerGUI] --- 	 updating number of connected apps = 5
+1569445248305 	23.88	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_UpdateSim to ExampleServerGUI
+1569445248310 	24.93	MB RAM	       [RTIConnectThread_C] --- Sent message RTI_UpdateSim to C
+1569445248314 	25.46	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_UpdateSim to RTI-v2-GUI
+1569445248335 	25.46	MB RAM	         [ExampleServerGUI] --- Now currently this many connected apps: 5
+1569445248335 	25.46	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_SubscribeToMessagePlusHistory to RTI-v2-GUI
+1569445248335 	25.46	MB RAM	       [RTIConnectThread_B] --- Sent message RTI_UpdateSim to B
+1569445248351 	25.46	MB RAM	       [RTIConnectThread_G] --- Sent message RTI_UpdateSim to G
+1569445248351 	25.46	MB RAM	       [RTIConnectThread_C] --- Sent message RTI_UpdateSim to C
+1569445248351 	25.46	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_SubscribeToMessagePlusHistory
+1569445248351 	25.46	MB RAM	       [RTIConnectThread_G] --- Sent message RTI_UpdateSim to G
+1569445248366 	25.46	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_SubscribeToMessagePlusHistory to ExampleServerGUI
+1569445248366 	25.98	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_SubscribeToMessagePlusHistory to ExampleServerGUI
+1569445248366 	27.03	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_SubscribeToMessagePlusHistory to RTI-v2-GUI
+1569445248366 	27.03	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_SubscribeToMessagePlusHistory to RTI-v2-GUI
+1569445248382 	27.03	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_SubscribeToMessagePlusHistory
+1569445248382 	27.03	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_SubscribeToMessagePlusHistory
+1569445248382 	27.03	MB RAM	       [RTIConnectThread_G] --- I RECEIVED INPUT! It was : {"name":"RTI_SubscribeToMessagePlusHistory","content":"{\"subscribeTo\":\"Message_C\"}","timestamp":"1569445247991","vTimestamp":0,"source":"G","tcp":"false"}
+1569445248397 	27.03	MB RAM	            [ExampleServer] --- received message from index 5
+1569445248397 	27.55	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_UpdateSim to ExampleServerGUI
+1569445248397 	27.55	MB RAM	         [ExampleServerGUI] --- 	 updating number of connected apps = 5
+1569445248413 	27.55	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_UpdateSim to RTI-v2-GUI
+1569445248413 	29.12	MB RAM	         [ExampleServerGUI] --- Now currently this many connected apps: 5
+1569445248413 	29.12	MB RAM	       [RTIConnectThread_B] --- Sent message RTI_UpdateSim to B
+1569445248429 	29.66	MB RAM	       [RTIConnectThread_C] --- Sent message RTI_UpdateSim to C
+1569445248429 	29.66	MB RAM	       [RTIConnectThread_G] --- Sent message RTI_UpdateSim to G
+1569445248429 	29.66	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_SubscribeToMessagePlusHistory to ExampleServerGUI
+1569445248444 	29.66	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_SubscribeToMessagePlusHistory to RTI-v2-GUI
+1569445248444 	30.17	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_SubscribeToMessagePlusHistory
+1569445268831 	31.22	MB RAM	            [ExampleServer] --- 	 Connected!
+1569445268834 	31.22	MB RAM	            [ExampleServer] --- 	 Added thread to the list! Now sim size is: 6
+1569445268838 	31.45	MB RAM	         [RTIConnectThread] --- 	 Not done connecting yet! Waiting for app to connect to dedicated port = 35.3.34.114 51410
+1569445268842 	31.45	MB RAM	            [ExampleServer] --- Open for business! Waiting for simulations to connect to me...
+1569445268845 	31.45	MB RAM	         [RTIConnectThread] --- 	 Really connected! Let's get to work!
+1569445268848 	31.45	MB RAM	         [RTIConnectThread] --- 6: waiting for input... 
+1569445268856 	31.45	MB RAM	         [RTIConnectThread] --- I RECEIVED INPUT! It was : {"name":"RTI_InitializeSim","content":"{\"simName\":\"A\"}","timestamp":"1569445268854","vTimestamp":0,"source":"A","tcp":"false"}
+1569445268860 	31.45	MB RAM	            [ExampleServer] --- received message from index 6
+1569445268865 	31.66	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_UpdateSim to ExampleServerGUI
+1569445268869 	31.88	MB RAM	         [ExampleServerGUI] --- 	 updating number of connected apps = 6
+1569445268873 	31.88	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_UpdateSim to RTI-v2-GUI
+1569445268878 	33.54	MB RAM	       [RTIConnectThread_B] --- Sent message RTI_UpdateSim to B
+1569445268882 	34.06	MB RAM	         [ExampleServerGUI] --- Now currently this many connected apps: 6
+1569445268886 	34.06	MB RAM	       [RTIConnectThread_C] --- Sent message RTI_UpdateSim to C
+1569445268892 	34.28	MB RAM	       [RTIConnectThread_G] --- Sent message RTI_UpdateSim to G
+1569445268899 	34.28	MB RAM	       [RTIConnectThread_A] --- Sent message RTI_UpdateSim to A
+1569445268905 	34.61	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_InitializeSim to ExampleServerGUI
+1569445268911 	34.61	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_InitializeSim to RTI-v2-GUI
+1569445268917 	34.61	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_InitializeSim
+1569445268923 	34.61	MB RAM	       [RTIConnectThread_A] --- I RECEIVED INPUT! It was : {"name":"RTI_SubscribeToMessagePlusHistory","content":"{\"subscribeTo\":\"Message_G\"}","timestamp":"1569445268865","vTimestamp":0,"source":"A","tcp":"false"}
+1569445268930 	34.61	MB RAM	            [ExampleServer] --- received message from index 6
+1569445268938 	35.28	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_UpdateSim to ExampleServerGUI
+1569445268942 	35.29	MB RAM	         [ExampleServerGUI] --- 	 updating number of connected apps = 6
+1569445268947 	35.42	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_UpdateSim to RTI-v2-GUI
+1569445268953 	37.21	MB RAM	         [ExampleServerGUI] --- Now currently this many connected apps: 6
+1569445268958 	37.21	MB RAM	       [RTIConnectThread_B] --- Sent message RTI_UpdateSim to B
+1569445268965 	37.21	MB RAM	       [RTIConnectThread_C] --- Sent message RTI_UpdateSim to C
+1569445268971 	37.44	MB RAM	       [RTIConnectThread_G] --- Sent message RTI_UpdateSim to G
+1569445268976 	37.51	MB RAM	       [RTIConnectThread_A] --- Sent message RTI_UpdateSim to A
+1569445268983 	37.74	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_SubscribeToMessagePlusHistory to ExampleServerGUI
+1569445268994 	38.27	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_SubscribeToMessagePlusHistory to RTI-v2-GUI
+1569445269000 	38.27	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_SubscribeToMessagePlusHistory
+1569445272624 	38.48	MB RAM	         [ExampleServerGUI] --- <<YOU CLICKED BUTTON to send start request>>
+1569445272624 	38.56	MB RAM	[RTIConnectThread_ExampleServerGUI] --- I RECEIVED INPUT! It was : {"name":"RTI_StartSim","content":"","timestamp":"1569445272624","vTimestamp":0,"source":"ExampleServerGUI","tcp":"true"}
+1569445272624 	38.56	MB RAM	            [ExampleServer] --- received message from index 1
+1569445272640 	39.10	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_ReceivedMessage to ExampleServerGUI
+1569445272640 	39.10	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_StartStep to ExampleServerGUI
+1569445272640 	39.10	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_StartStep to RTI-v2-GUI
+1569445272640 	39.10	MB RAM	       [RTIConnectThread_B] --- Sent message RTI_StartStep to B
+1569445272655 	39.61	MB RAM	       [RTIConnectThread_C] --- Sent message RTI_StartStep to C
+1569445272655 	39.61	MB RAM	       [RTIConnectThread_G] --- Sent message RTI_StartStep to G
+1569445272655 	39.61	MB RAM	       [RTIConnectThread_A] --- Sent message RTI_StartStep to A
+1569445272671 	39.61	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_StartSim to ExampleServerGUI
+1569445272671 	39.61	MB RAM	       [RTIConnectThread_B] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"1\",\"nextOrder\":\"1\"}","timestamp":"1569445272671","vTimestamp":0,"source":"B","tcp":"false"}
+1569445272671 	40.15	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_StartSim to RTI-v2-GUI
+1569445272671 	40.15	MB RAM	            [ExampleServer] --- received message from index 3
+1569445272686 	40.15	MB RAM	       [RTIConnectThread_G] --- I RECEIVED INPUT! It was : {"name":"Message_G","content":"{\"m_soldApples\":\"0\",\"m_soldBlueberries\":\"0\",\"m_soldCarrots\":\"0\"}","timestamp":"1569445272686","vTimestamp":0,"source":"G","tcp":"false"}
+1569445272686 	40.15	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_StartSim
+1569445272686 	40.15	MB RAM	            [ExampleServer] --- received message from index 5
+1569445272702 	40.15	MB RAM	            [ExampleServer] --- We're still waiting for this thread to confirm it's finished this step: 4 C
+1569445272702 	40.15	MB RAM	       [RTIConnectThread_C] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"1\",\"nextOrder\":\"1\"}","timestamp":"1569445272686","vTimestamp":0,"source":"C","tcp":"false"}
+1569445272702 	40.15	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445272718 	40.15	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_G to ExampleServerGUI
+1569445272718 	40.15	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445272718 	40.15	MB RAM	            [ExampleServer] --- received message from index 4
+1569445272718 	40.15	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445272733 	40.15	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_G to RTI-v2-GUI
+1569445272733 	40.15	MB RAM	            [ExampleServer] --- We're still waiting for this thread to confirm it's finished this step: 5 G
+1569445272733 	40.15	MB RAM	       [RTIConnectThread_B] --- Sent message Message_G to B
+1569445272733 	40.66	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445272749 	41.18	MB RAM	       [RTIConnectThread_C] --- Sent message Message_G to C
+1569445272749 	41.18	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445272749 	41.18	MB RAM	       [RTIConnectThread_A] --- Sent message Message_G to A
+1569445272749 	41.18	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445272749 	41.18	MB RAM	            [ExampleServer] --- There should be 5 subscribed to message Message_G
+1569445272766 	41.18	MB RAM	       [RTIConnectThread_G] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"1\",\"nextOrder\":\"1\"}","timestamp":"1569445272686","vTimestamp":0,"source":"G","tcp":"false"}
+1569445272770 	41.18	MB RAM	            [ExampleServer] --- received message from index 5
+1569445272771 	41.18	MB RAM	            [ExampleServer] --- We're still waiting for this thread to confirm it's finished this step: 6 A
+1569445272771 	41.18	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445272771 	41.71	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445272771 	41.71	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445274546 	41.71	MB RAM	       [RTIConnectThread_A] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"1\",\"nextOrder\":\"1\"}","timestamp":"1569445274545","vTimestamp":0,"source":"A","tcp":"false"}
+1569445274549 	41.71	MB RAM	            [ExampleServer] --- received message from index 6
+1569445274553 	41.71	MB RAM	            [ExampleServer] --- All threads have finished current step/order. Now preparing to send RTI_StartStep.
+1569445274557 	41.93	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_StartStep to ExampleServerGUI
+1569445274562 	41.93	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_StartStep to RTI-v2-GUI
+1569445274565 	42.15	MB RAM	       [RTIConnectThread_B] --- Sent message RTI_StartStep to B
+1569445274565 	42.15	MB RAM	       [RTIConnectThread_C] --- Sent message RTI_StartStep to C
+1569445274565 	42.37	MB RAM	       [RTIConnectThread_G] --- Sent message RTI_StartStep to G
+1569445274565 	42.37	MB RAM	       [RTIConnectThread_A] --- Sent message RTI_StartStep to A
+1569445274581 	42.59	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445274581 	42.76	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445274581 	42.76	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445274628 	42.76	MB RAM	       [RTIConnectThread_B] --- I RECEIVED INPUT! It was : {"name":"Message_B","content":"{\"m_wantBlueberries\":\"5\"}","timestamp":"1569445274628","vTimestamp":1,"source":"B","tcp":"false"}
+1569445274628 	42.76	MB RAM	       [RTIConnectThread_C] --- I RECEIVED INPUT! It was : {"name":"Message_C","content":"{\"m_wantCarrots\":\"5\"}","timestamp":"1569445274628","vTimestamp":1,"source":"C","tcp":"false"}
+1569445274643 	42.76	MB RAM	            [ExampleServer] --- received message from index 3
+1569445274643 	42.76	MB RAM	            [ExampleServer] --- received message from index 4
+1569445274643 	43.29	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_B to ExampleServerGUI
+1569445274643 	44.33	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_C to ExampleServerGUI
+1569445274659 	44.85	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_B to RTI-v2-GUI
+1569445274659 	44.85	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_C to RTI-v2-GUI
+1569445274659 	44.85	MB RAM	       [RTIConnectThread_G] --- Sent message Message_B to G
+1569445274659 	44.85	MB RAM	       [RTIConnectThread_G] --- Sent message Message_C to G
+1569445274674 	44.85	MB RAM	            [ExampleServer] --- There should be 3 subscribed to message Message_B
+1569445274674 	44.85	MB RAM	            [ExampleServer] --- There should be 3 subscribed to message Message_C
+1569445274674 	44.85	MB RAM	       [RTIConnectThread_B] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"2\",\"nextOrder\":\"1\"}","timestamp":"1569445274628","vTimestamp":1,"source":"B","tcp":"false"}
+1569445274674 	44.85	MB RAM	       [RTIConnectThread_C] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"2\",\"nextOrder\":\"1\"}","timestamp":"1569445274628","vTimestamp":1,"source":"C","tcp":"false"}
+1569445274690 	44.85	MB RAM	            [ExampleServer] --- received message from index 3
+1569445274690 	44.85	MB RAM	            [ExampleServer] --- received message from index 4
+1569445274690 	44.85	MB RAM	            [ExampleServer] --- We're still waiting for this thread to confirm it's finished this step: 4 C
+1569445274690 	44.85	MB RAM	            [ExampleServer] --- We're still waiting for this thread to confirm it's finished this step: 5 G
+1569445274706 	45.39	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445274706 	45.90	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445274706 	45.90	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445274706 	45.90	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445274721 	45.90	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445274721 	45.90	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445274809 	45.90	MB RAM	       [RTIConnectThread_A] --- I RECEIVED INPUT! It was : {"name":"Message_A","content":"{\"m_wantApples\":\"5\"}","timestamp":"1569445274809","vTimestamp":1,"source":"A","tcp":"false"}
+1569445274813 	45.90	MB RAM	            [ExampleServer] --- received message from index 6
+1569445274818 	46.13	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_A to ExampleServerGUI
+1569445274823 	46.13	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_A to RTI-v2-GUI
+1569445274829 	46.35	MB RAM	       [RTIConnectThread_G] --- Sent message Message_A to G
+1569445274832 	46.35	MB RAM	            [ExampleServer] --- There should be 3 subscribed to message Message_A
+1569445274836 	46.35	MB RAM	       [RTIConnectThread_A] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"2\",\"nextOrder\":\"1\"}","timestamp":"1569445274816","vTimestamp":1,"source":"A","tcp":"false"}
+1569445274840 	46.35	MB RAM	            [ExampleServer] --- received message from index 6
+1569445274844 	46.35	MB RAM	            [ExampleServer] --- We're still waiting for this thread to confirm it's finished this step: 5 G
+1569445274848 	46.58	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445274853 	46.80	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445274858 	46.80	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445274884 	46.80	MB RAM	       [RTIConnectThread_G] --- I RECEIVED INPUT! It was : {"name":"Message_G","content":"{\"m_soldApples\":\"5\",\"m_soldBlueberries\":\"5\",\"m_soldCarrots\":\"5\"}","timestamp":"1569445274883","vTimestamp":1,"source":"G","tcp":"false"}
+1569445274888 	46.80	MB RAM	            [ExampleServer] --- received message from index 5
+1569445274892 	46.80	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_G to ExampleServerGUI
+1569445274897 	46.80	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_G to RTI-v2-GUI
+1569445274901 	46.95	MB RAM	       [RTIConnectThread_B] --- Sent message Message_G to B
+1569445274905 	47.48	MB RAM	       [RTIConnectThread_C] --- Sent message Message_G to C
+1569445274910 	47.48	MB RAM	       [RTIConnectThread_A] --- Sent message Message_G to A
+1569445274914 	47.48	MB RAM	            [ExampleServer] --- There should be 5 subscribed to message Message_G
+1569445274918 	47.48	MB RAM	       [RTIConnectThread_G] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"2\",\"nextOrder\":\"1\"}","timestamp":"1569445274884","vTimestamp":1,"source":"G","tcp":"false"}
+1569445274921 	47.48	MB RAM	            [ExampleServer] --- received message from index 5
+1569445274925 	47.48	MB RAM	            [ExampleServer] --- All threads have finished current step/order. Now preparing to send RTI_StartStep.
+1569445274929 	47.48	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_StartStep to ExampleServerGUI
+1569445274933 	48.00	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_StartStep to RTI-v2-GUI
+1569445274938 	48.00	MB RAM	       [RTIConnectThread_B] --- Sent message RTI_StartStep to B
+1569445274942 	48.00	MB RAM	       [RTIConnectThread_C] --- Sent message RTI_StartStep to C
+1569445274946 	48.00	MB RAM	       [RTIConnectThread_G] --- Sent message RTI_StartStep to G
+1569445274950 	48.52	MB RAM	       [RTIConnectThread_A] --- Sent message RTI_StartStep to A
+1569445274954 	48.52	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445274959 	48.52	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445274963 	49.05	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445274967 	49.05	MB RAM	       [RTIConnectThread_B] --- I RECEIVED INPUT! It was : {"name":"Message_B","content":"{\"m_wantBlueberries\":\"0\"}","timestamp":"1569445274966","vTimestamp":2,"source":"B","tcp":"false"}
+1569445274972 	49.05	MB RAM	       [RTIConnectThread_C] --- I RECEIVED INPUT! It was : {"name":"Message_C","content":"{\"m_wantCarrots\":\"0\"}","timestamp":"1569445274967","vTimestamp":2,"source":"C","tcp":"false"}
+1569445274976 	49.05	MB RAM	            [ExampleServer] --- received message from index 3
+1569445274979 	49.05	MB RAM	            [ExampleServer] --- received message from index 4
+1569445274984 	49.05	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_B to ExampleServerGUI
+1569445274988 	49.05	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_C to ExampleServerGUI
+1569445274994 	49.05	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_B to RTI-v2-GUI
+1569445274998 	50.10	MB RAM	       [RTIConnectThread_A] --- I RECEIVED INPUT! It was : {"name":"Message_A","content":"{\"m_wantApples\":\"0\"}","timestamp":"1569445274987","vTimestamp":2,"source":"A","tcp":"false"}
+1569445275002 	50.10	MB RAM	       [RTIConnectThread_G] --- Sent message Message_B to G
+1569445275005 	50.10	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_C to RTI-v2-GUI
+1569445275008 	50.10	MB RAM	            [ExampleServer] --- There should be 3 subscribed to message Message_B
+1569445275012 	50.10	MB RAM	            [ExampleServer] --- received message from index 6
+1569445275016 	50.10	MB RAM	       [RTIConnectThread_B] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"3\",\"nextOrder\":\"1\"}","timestamp":"1569445274967","vTimestamp":2,"source":"B","tcp":"false"}
+1569445275020 	50.10	MB RAM	       [RTIConnectThread_G] --- Sent message Message_C to G
+1569445275024 	50.10	MB RAM	            [ExampleServer] --- received message from index 3
+1569445275028 	50.31	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_A to ExampleServerGUI
+1569445275032 	50.31	MB RAM	            [ExampleServer] --- We're still waiting for this thread to confirm it's finished this step: 4 C
+1569445275035 	50.31	MB RAM	            [ExampleServer] --- There should be 3 subscribed to message Message_C
+1569445275039 	50.31	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445275043 	50.31	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_A to RTI-v2-GUI
+1569445275047 	50.31	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445275051 	50.53	MB RAM	       [RTIConnectThread_C] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"3\",\"nextOrder\":\"1\"}","timestamp":"1569445274968","vTimestamp":2,"source":"C","tcp":"false"}
+1569445275055 	50.53	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445275058 	50.53	MB RAM	       [RTIConnectThread_G] --- Sent message Message_A to G
+1569445275062 	50.53	MB RAM	            [ExampleServer] --- received message from index 4
+1569445275065 	50.53	MB RAM	            [ExampleServer] --- There should be 3 subscribed to message Message_A
+1569445275069 	50.53	MB RAM	            [ExampleServer] --- We're still waiting for this thread to confirm it's finished this step: 5 G
+1569445275073 	50.53	MB RAM	       [RTIConnectThread_A] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"3\",\"nextOrder\":\"1\"}","timestamp":"1569445274992","vTimestamp":2,"source":"A","tcp":"false"}
+1569445275077 	50.53	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445275081 	50.53	MB RAM	            [ExampleServer] --- received message from index 6
+1569445275085 	50.53	MB RAM	       [RTIConnectThread_G] --- I RECEIVED INPUT! It was : {"name":"Message_G","content":"{\"m_soldApples\":\"0\",\"m_soldBlueberries\":\"0\",\"m_soldCarrots\":\"0\"}","timestamp":"1569445275084","vTimestamp":2,"source":"G","tcp":"false"}
+1569445275089 	50.53	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445275092 	50.53	MB RAM	            [ExampleServer] --- received message from index 5
+1569445275095 	50.53	MB RAM	            [ExampleServer] --- We're still waiting for this thread to confirm it's finished this step: 5 G
+1569445275100 	51.05	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_G to ExampleServerGUI
+1569445275103 	51.67	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445275107 	51.67	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_G to RTI-v2-GUI
+1569445275111 	51.67	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445275115 	51.89	MB RAM	       [RTIConnectThread_B] --- Sent message Message_G to B
+1569445275119 	51.89	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445275123 	51.89	MB RAM	       [RTIConnectThread_C] --- Sent message Message_G to C
+1569445275126 	51.89	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445275130 	52.19	MB RAM	       [RTIConnectThread_A] --- Sent message Message_G to A
+1569445275134 	52.19	MB RAM	            [ExampleServer] --- There should be 5 subscribed to message Message_G
+1569445275137 	52.19	MB RAM	       [RTIConnectThread_G] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"3\",\"nextOrder\":\"1\"}","timestamp":"1569445275085","vTimestamp":2,"source":"G","tcp":"false"}
+1569445275141 	52.19	MB RAM	            [ExampleServer] --- received message from index 5
+1569445275145 	52.19	MB RAM	            [ExampleServer] --- All threads have finished current step/order. Now preparing to send RTI_StartStep.
+1569445275149 	52.19	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_StartStep to ExampleServerGUI
+1569445275153 	52.73	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_StartStep to RTI-v2-GUI
+1569445275157 	52.73	MB RAM	       [RTIConnectThread_B] --- Sent message RTI_StartStep to B
+1569445275161 	52.73	MB RAM	       [RTIConnectThread_C] --- Sent message RTI_StartStep to C
+1569445275166 	52.73	MB RAM	       [RTIConnectThread_G] --- Sent message RTI_StartStep to G
+1569445275170 	53.24	MB RAM	       [RTIConnectThread_A] --- Sent message RTI_StartStep to A
+1569445275174 	53.24	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445275178 	53.24	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445275183 	53.24	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445275187 	53.77	MB RAM	       [RTIConnectThread_C] --- I RECEIVED INPUT! It was : {"name":"Message_C","content":"{\"m_wantCarrots\":\"5\"}","timestamp":"1569445275186","vTimestamp":3,"source":"C","tcp":"false"}
+1569445275192 	53.77	MB RAM	       [RTIConnectThread_B] --- I RECEIVED INPUT! It was : {"name":"Message_B","content":"{\"m_wantBlueberries\":\"5\"}","timestamp":"1569445275186","vTimestamp":3,"source":"B","tcp":"false"}
+1569445275195 	53.77	MB RAM	            [ExampleServer] --- received message from index 4
+1569445275199 	53.77	MB RAM	            [ExampleServer] --- received message from index 3
+1569445275203 	54.29	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_C to ExampleServerGUI
+1569445275208 	54.82	MB RAM	       [RTIConnectThread_A] --- I RECEIVED INPUT! It was : {"name":"Message_A","content":"{\"m_wantApples\":\"5\"}","timestamp":"1569445275205","vTimestamp":3,"source":"A","tcp":"false"}
+1569445275212 	54.82	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_B to ExampleServerGUI
+1569445275216 	54.82	MB RAM	            [ExampleServer] --- received message from index 6
+1569445275219 	54.82	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_C to RTI-v2-GUI
+1569445275224 	55.04	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_A to ExampleServerGUI
+1569445275230 	55.34	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_B to RTI-v2-GUI
+1569445275234 	55.34	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_A to RTI-v2-GUI
+1569445275238 	55.56	MB RAM	       [RTIConnectThread_G] --- Sent message Message_C to G
+1569445275242 	55.56	MB RAM	       [RTIConnectThread_G] --- Sent message Message_A to G
+1569445275245 	55.56	MB RAM	       [RTIConnectThread_G] --- Sent message Message_B to G
+1569445275249 	55.56	MB RAM	            [ExampleServer] --- There should be 3 subscribed to message Message_A
+1569445275252 	55.56	MB RAM	            [ExampleServer] --- There should be 3 subscribed to message Message_C
+1569445275256 	55.56	MB RAM	       [RTIConnectThread_A] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"4\",\"nextOrder\":\"1\"}","timestamp":"1569445275208","vTimestamp":3,"source":"A","tcp":"false"}
+1569445275259 	55.56	MB RAM	            [ExampleServer] --- There should be 3 subscribed to message Message_B
+1569445275262 	55.56	MB RAM	            [ExampleServer] --- received message from index 6
+1569445275265 	55.56	MB RAM	       [RTIConnectThread_C] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"4\",\"nextOrder\":\"1\"}","timestamp":"1569445275187","vTimestamp":3,"source":"C","tcp":"false"}
+1569445275269 	55.56	MB RAM	            [ExampleServer] --- We're still waiting for this thread to confirm it's finished this step: 3 B
+1569445275272 	55.79	MB RAM	       [RTIConnectThread_B] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"4\",\"nextOrder\":\"1\"}","timestamp":"1569445275187","vTimestamp":3,"source":"B","tcp":"false"}
+1569445275276 	55.79	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445275280 	55.79	MB RAM	            [ExampleServer] --- received message from index 4
+1569445275283 	56.01	MB RAM	       [RTIConnectThread_G] --- I RECEIVED INPUT! It was : {"name":"Message_G","content":"{\"m_soldApples\":\"5\",\"m_soldBlueberries\":\"5\",\"m_soldCarrots\":\"5\"}","timestamp":"1569445275281","vTimestamp":3,"source":"G","tcp":"false"}
+1569445275287 	56.01	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445275290 	56.01	MB RAM	            [ExampleServer] --- received message from index 3
+1569445275294 	56.01	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445275297 	56.01	MB RAM	            [ExampleServer] --- received message from index 5
+1569445275300 	56.39	MB RAM	            [ExampleServer] --- We're still waiting for this thread to confirm it's finished this step: 3 B
+1569445275304 	56.91	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_G to ExampleServerGUI
+1569445275307 	56.91	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445275311 	56.91	MB RAM	            [ExampleServer] --- We're still waiting for this thread to confirm it's finished this step: 5 G
+1569445275315 	57.44	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445275318 	57.44	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_G to RTI-v2-GUI
+1569445275322 	57.96	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445275325 	57.96	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445275329 	57.96	MB RAM	       [RTIConnectThread_B] --- Sent message Message_G to B
+1569445275333 	57.96	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445275336 	57.96	MB RAM	       [RTIConnectThread_C] --- Sent message Message_G to C
+1569445275340 	57.96	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445275343 	58.48	MB RAM	       [RTIConnectThread_A] --- Sent message Message_G to A
+1569445275346 	58.48	MB RAM	            [ExampleServer] --- There should be 5 subscribed to message Message_G
+1569445275350 	58.48	MB RAM	       [RTIConnectThread_G] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"4\",\"nextOrder\":\"1\"}","timestamp":"1569445275282","vTimestamp":3,"source":"G","tcp":"false"}
+1569445275353 	58.48	MB RAM	            [ExampleServer] --- received message from index 5
+1569445275356 	58.48	MB RAM	            [ExampleServer] --- All threads have finished current step/order. Now preparing to send RTI_StartStep.
+1569445275360 	58.48	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_StartStep to ExampleServerGUI
+1569445275364 	58.48	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_StartStep to RTI-v2-GUI
+1569445275368 	58.48	MB RAM	       [RTIConnectThread_B] --- Sent message RTI_StartStep to B
+1569445275372 	59.02	MB RAM	       [RTIConnectThread_C] --- Sent message RTI_StartStep to C
+1569445275376 	59.02	MB RAM	       [RTIConnectThread_G] --- Sent message RTI_StartStep to G
+1569445275380 	59.02	MB RAM	       [RTIConnectThread_A] --- Sent message RTI_StartStep to A
+1569445275384 	59.02	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445275388 	59.53	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445275392 	59.53	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445275396 	59.53	MB RAM	       [RTIConnectThread_B] --- I RECEIVED INPUT! It was : {"name":"Message_B","content":"{\"m_wantBlueberries\":\"0\"}","timestamp":"1569445275393","vTimestamp":4,"source":"B","tcp":"false"}
+1569445275400 	59.53	MB RAM	            [ExampleServer] --- received message from index 3
+1569445275404 	59.53	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_B to ExampleServerGUI
+1569445275408 	59.53	MB RAM	       [RTIConnectThread_C] --- I RECEIVED INPUT! It was : {"name":"Message_C","content":"{\"m_wantCarrots\":\"0\"}","timestamp":"1569445275404","vTimestamp":4,"source":"C","tcp":"false"}
+1569445275412 	60.07	MB RAM	       [RTIConnectThread_A] --- I RECEIVED INPUT! It was : {"name":"Message_A","content":"{\"m_wantApples\":\"0\"}","timestamp":"1569445275408","vTimestamp":4,"source":"A","tcp":"false"}
+1569445275416 	60.07	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_B to RTI-v2-GUI
+1569445275419 	60.07	MB RAM	            [ExampleServer] --- received message from index 6
+1569445275423 	60.07	MB RAM	            [ExampleServer] --- received message from index 4
+1569445275427 	60.28	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_A to ExampleServerGUI
+1569445275431 	60.58	MB RAM	       [RTIConnectThread_G] --- Sent message Message_B to G
+1569445275435 	60.58	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_A to RTI-v2-GUI
+1569445275438 	60.58	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_C to ExampleServerGUI
+1569445275442 	60.80	MB RAM	       [RTIConnectThread_G] --- Sent message Message_A to G
+1569445275445 	60.80	MB RAM	            [ExampleServer] --- There should be 3 subscribed to message Message_B
+1569445275448 	60.80	MB RAM	            [ExampleServer] --- There should be 3 subscribed to message Message_A
+1569445275452 	60.80	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_C to RTI-v2-GUI
+1569445275455 	60.80	MB RAM	       [RTIConnectThread_A] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"5\",\"nextOrder\":\"1\"}","timestamp":"1569445275411","vTimestamp":4,"source":"A","tcp":"false"}
+1569445275459 	61.32	MB RAM	       [RTIConnectThread_B] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"5\",\"nextOrder\":\"1\"}","timestamp":"1569445275394","vTimestamp":4,"source":"B","tcp":"false"}
+1569445275462 	61.32	MB RAM	            [ExampleServer] --- received message from index 6
+1569445275465 	61.32	MB RAM	       [RTIConnectThread_G] --- Sent message Message_C to G
+1569445275469 	61.32	MB RAM	            [ExampleServer] --- We're still waiting for this thread to confirm it's finished this step: 3 B
+1569445275473 	61.32	MB RAM	            [ExampleServer] --- received message from index 3
+1569445275476 	61.54	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445275480 	61.54	MB RAM	            [ExampleServer] --- There should be 3 subscribed to message Message_C
+1569445275484 	61.54	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445275487 	61.54	MB RAM	       [RTIConnectThread_G] --- I RECEIVED INPUT! It was : {"name":"Message_G","content":"{\"m_soldApples\":\"0\",\"m_soldBlueberries\":\"0\",\"m_soldCarrots\":\"0\"}","timestamp":"1569445275477","vTimestamp":4,"source":"G","tcp":"false"}
+1569445275490 	61.54	MB RAM	            [ExampleServer] --- We're still waiting for this thread to confirm it's finished this step: 4 C
+1569445275495 	61.54	MB RAM	            [ExampleServer] --- received message from index 5
+1569445275499 	61.54	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445275503 	61.63	MB RAM	       [RTIConnectThread_C] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"5\",\"nextOrder\":\"1\"}","timestamp":"1569445275404","vTimestamp":4,"source":"C","tcp":"false"}
+1569445275506 	61.63	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_G to ExampleServerGUI
+1569445275510 	61.63	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445275513 	61.63	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_G to RTI-v2-GUI
+1569445275517 	62.16	MB RAM	            [ExampleServer] --- received message from index 4
+1569445275520 	62.68	MB RAM	       [RTIConnectThread_B] --- Sent message Message_G to B
+1569445275523 	62.68	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445275526 	62.68	MB RAM	       [RTIConnectThread_C] --- Sent message Message_G to C
+1569445275529 	62.68	MB RAM	            [ExampleServer] --- We're still waiting for this thread to confirm it's finished this step: 5 G
+1569445275535 	62.68	MB RAM	       [RTIConnectThread_A] --- Sent message Message_G to A
+1569445275539 	63.20	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445275539 	63.20	MB RAM	            [ExampleServer] --- There should be 5 subscribed to message Message_G
+1569445275539 	63.20	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445275539 	63.20	MB RAM	       [RTIConnectThread_G] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"5\",\"nextOrder\":\"1\"}","timestamp":"1569445275478","vTimestamp":4,"source":"G","tcp":"false"}
+1569445275555 	7.55	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445275555 	7.55	MB RAM	            [ExampleServer] --- received message from index 5
+1569445275555 	7.55	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445275555 	7.55	MB RAM	            [ExampleServer] --- All threads have finished current step/order. Now preparing to send RTI_StartStep.
+1569445275571 	7.58	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_StartStep to ExampleServerGUI
+1569445275574 	8.63	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_StartStep to RTI-v2-GUI
+1569445275578 	8.63	MB RAM	       [RTIConnectThread_B] --- Sent message RTI_StartStep to B
+1569445275582 	9.15	MB RAM	       [RTIConnectThread_C] --- Sent message RTI_StartStep to C
+1569445275586 	9.15	MB RAM	       [RTIConnectThread_G] --- Sent message RTI_StartStep to G
+1569445275590 	9.15	MB RAM	       [RTIConnectThread_A] --- Sent message RTI_StartStep to A
+1569445275594 	9.15	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445275598 	9.68	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445275602 	9.68	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445275606 	10.18	MB RAM	       [RTIConnectThread_B] --- I RECEIVED INPUT! It was : {"name":"Message_B","content":"{\"m_wantBlueberries\":\"5\"}","timestamp":"1569445275603","vTimestamp":5,"source":"B","tcp":"false"}
+1569445275609 	10.18	MB RAM	            [ExampleServer] --- received message from index 3
+1569445275609 	10.18	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_B to ExampleServerGUI
+1569445275609 	10.18	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_B to RTI-v2-GUI
+1569445275609 	10.18	MB RAM	       [RTIConnectThread_G] --- Sent message Message_B to G
+1569445275625 	10.18	MB RAM	            [ExampleServer] --- There should be 3 subscribed to message Message_B
+1569445275625 	10.18	MB RAM	       [RTIConnectThread_C] --- I RECEIVED INPUT! It was : {"name":"Message_C","content":"{\"m_wantCarrots\":\"5\"}","timestamp":"1569445275625","vTimestamp":5,"source":"C","tcp":"false"}
+1569445275625 	10.18	MB RAM	       [RTIConnectThread_B] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"6\",\"nextOrder\":\"1\"}","timestamp":"1569445275603","vTimestamp":5,"source":"B","tcp":"false"}
+1569445275625 	10.18	MB RAM	            [ExampleServer] --- received message from index 4
+1569445275625 	10.18	MB RAM	            [ExampleServer] --- received message from index 3
+1569445275641 	10.69	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_C to ExampleServerGUI
+1569445275641 	10.69	MB RAM	            [ExampleServer] --- We're still waiting for this thread to confirm it's finished this step: 4 C
+1569445275641 	10.69	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_C to RTI-v2-GUI
+1569445275641 	10.69	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445275656 	10.69	MB RAM	       [RTIConnectThread_G] --- Sent message Message_C to G
+1569445275656 	10.69	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445275656 	10.69	MB RAM	            [ExampleServer] --- There should be 3 subscribed to message Message_C
+1569445275656 	10.72	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445275672 	10.72	MB RAM	       [RTIConnectThread_C] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"6\",\"nextOrder\":\"1\"}","timestamp":"1569445275625","vTimestamp":5,"source":"C","tcp":"false"}
+1569445275672 	10.72	MB RAM	            [ExampleServer] --- received message from index 4
+1569445275672 	11.23	MB RAM	            [ExampleServer] --- We're still waiting for this thread to confirm it's finished this step: 5 G
+1569445275672 	11.23	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445275687 	11.23	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445275687 	11.23	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445275734 	11.42	MB RAM	       [RTIConnectThread_A] --- I RECEIVED INPUT! It was : {"name":"Message_A","content":"{\"m_wantApples\":\"5\"}","timestamp":"1569445275719","vTimestamp":5,"source":"A","tcp":"false"}
+1569445275734 	11.42	MB RAM	            [ExampleServer] --- received message from index 6
+1569445275734 	11.43	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_A to ExampleServerGUI
+1569445275734 	12.48	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_A to RTI-v2-GUI
+1569445275750 	12.68	MB RAM	       [RTIConnectThread_G] --- Sent message Message_A to G
+1569445275750 	12.68	MB RAM	            [ExampleServer] --- There should be 3 subscribed to message Message_A
+1569445275766 	12.68	MB RAM	       [RTIConnectThread_A] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"6\",\"nextOrder\":\"1\"}","timestamp":"1569445275734","vTimestamp":5,"source":"A","tcp":"false"}
+1569445275766 	12.68	MB RAM	            [ExampleServer] --- received message from index 6
+1569445275766 	12.68	MB RAM	            [ExampleServer] --- We're still waiting for this thread to confirm it's finished this step: 5 G
+1569445275766 	12.82	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445275766 	13.02	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445275781 	13.02	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445275813 	13.02	MB RAM	       [RTIConnectThread_G] --- I RECEIVED INPUT! It was : {"name":"Message_G","content":"{\"m_soldApples\":\"5\",\"m_soldBlueberries\":\"5\",\"m_soldCarrots\":\"5\"}","timestamp":"1569445275813","vTimestamp":5,"source":"G","tcp":"false"}
+1569445275813 	13.02	MB RAM	            [ExampleServer] --- received message from index 5
+1569445275813 	13.02	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_G to ExampleServerGUI
+1569445275813 	13.02	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_G to RTI-v2-GUI
+1569445275828 	13.54	MB RAM	       [RTIConnectThread_B] --- Sent message Message_G to B
+1569445275828 	13.54	MB RAM	       [RTIConnectThread_C] --- Sent message Message_G to C
+1569445275828 	13.54	MB RAM	       [RTIConnectThread_A] --- Sent message Message_G to A
+1569445275828 	13.54	MB RAM	            [ExampleServer] --- There should be 5 subscribed to message Message_G
+1569445275844 	13.54	MB RAM	       [RTIConnectThread_G] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"6\",\"nextOrder\":\"1\"}","timestamp":"1569445275813","vTimestamp":5,"source":"G","tcp":"false"}
+1569445275844 	13.54	MB RAM	            [ExampleServer] --- received message from index 5
+1569445275844 	13.54	MB RAM	            [ExampleServer] --- All threads have finished current step/order. Now preparing to send RTI_StartStep.
+1569445275844 	13.54	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_StartStep to ExampleServerGUI
+1569445275844 	13.87	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_StartStep to RTI-v2-GUI
+1569445275859 	13.87	MB RAM	       [RTIConnectThread_B] --- Sent message RTI_StartStep to B
+1569445275859 	14.40	MB RAM	       [RTIConnectThread_C] --- Sent message RTI_StartStep to C
+1569445275859 	14.40	MB RAM	       [RTIConnectThread_G] --- Sent message RTI_StartStep to G
+1569445275859 	14.40	MB RAM	       [RTIConnectThread_A] --- Sent message RTI_StartStep to A
+1569445275875 	14.40	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445275875 	14.92	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445275875 	14.92	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445275906 	14.92	MB RAM	       [RTIConnectThread_C] --- I RECEIVED INPUT! It was : {"name":"Message_C","content":"{\"m_wantCarrots\":\"0\"}","timestamp":"1569445275906","vTimestamp":6,"source":"C","tcp":"false"}
+1569445275906 	14.92	MB RAM	       [RTIConnectThread_A] --- I RECEIVED INPUT! It was : {"name":"Message_A","content":"{\"m_wantApples\":\"0\"}","timestamp":"1569445275906","vTimestamp":6,"source":"A","tcp":"false"}
+1569445275906 	14.92	MB RAM	       [RTIConnectThread_B] --- I RECEIVED INPUT! It was : {"name":"Message_B","content":"{\"m_wantBlueberries\":\"0\"}","timestamp":"1569445275906","vTimestamp":6,"source":"B","tcp":"false"}
+1569445275906 	14.92	MB RAM	            [ExampleServer] --- received message from index 6
+1569445275922 	14.92	MB RAM	            [ExampleServer] --- received message from index 4
+1569445275922 	15.11	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_A to ExampleServerGUI
+1569445275922 	15.11	MB RAM	            [ExampleServer] --- received message from index 3
+1569445275922 	15.31	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_A to RTI-v2-GUI
+1569445275937 	15.97	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_C to ExampleServerGUI
+1569445275937 	15.97	MB RAM	       [RTIConnectThread_G] --- Sent message Message_A to G
+1569445275937 	15.98	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_B to ExampleServerGUI
+1569445275937 	16.49	MB RAM	            [ExampleServer] --- There should be 3 subscribed to message Message_A
+1569445275953 	16.99	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_C to RTI-v2-GUI
+1569445275956 	16.99	MB RAM	       [RTIConnectThread_A] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"7\",\"nextOrder\":\"1\"}","timestamp":"1569445275906","vTimestamp":6,"source":"A","tcp":"false"}
+1569445275959 	17.02	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_B to RTI-v2-GUI
+1569445275962 	17.02	MB RAM	            [ExampleServer] --- received message from index 6
+1569445275966 	17.21	MB RAM	       [RTIConnectThread_G] --- Sent message Message_C to G
+1569445275970 	17.21	MB RAM	            [ExampleServer] --- We're still waiting for this thread to confirm it's finished this step: 3 B
+1569445275973 	17.21	MB RAM	       [RTIConnectThread_G] --- Sent message Message_B to G
+1569445275976 	17.66	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445275976 	17.85	MB RAM	            [ExampleServer] --- There should be 3 subscribed to message Message_C
+1569445275976 	17.85	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445275976 	17.85	MB RAM	            [ExampleServer] --- There should be 3 subscribed to message Message_B
+1569445275992 	17.85	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445275992 	17.85	MB RAM	       [RTIConnectThread_C] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"7\",\"nextOrder\":\"1\"}","timestamp":"1569445275906","vTimestamp":6,"source":"C","tcp":"false"}
+1569445275992 	17.85	MB RAM	       [RTIConnectThread_G] --- I RECEIVED INPUT! It was : {"name":"Message_G","content":"{\"m_soldApples\":\"0\",\"m_soldBlueberries\":\"0\",\"m_soldCarrots\":\"0\"}","timestamp":"1569445275992","vTimestamp":6,"source":"G","tcp":"false"}
+1569445275992 	17.85	MB RAM	       [RTIConnectThread_B] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"7\",\"nextOrder\":\"1\"}","timestamp":"1569445275906","vTimestamp":6,"source":"B","tcp":"false"}
+1569445275992 	17.85	MB RAM	            [ExampleServer] --- received message from index 5
+1569445276008 	17.85	MB RAM	            [ExampleServer] --- received message from index 4
+1569445276008 	17.85	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_G to ExampleServerGUI
+1569445276008 	17.85	MB RAM	            [ExampleServer] --- received message from index 3
+1569445276008 	17.85	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_G to RTI-v2-GUI
+1569445276023 	17.85	MB RAM	            [ExampleServer] --- We're still waiting for this thread to confirm it's finished this step: 3 B
+1569445276023 	17.85	MB RAM	       [RTIConnectThread_B] --- Sent message Message_G to B
+1569445276023 	18.06	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445276023 	18.06	MB RAM	            [ExampleServer] --- We're still waiting for this thread to confirm it's finished this step: 5 G
+1569445276039 	18.06	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445276039 	18.06	MB RAM	       [RTIConnectThread_C] --- Sent message Message_G to C
+1569445276039 	18.07	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445276039 	19.10	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445276039 	19.10	MB RAM	       [RTIConnectThread_A] --- Sent message Message_G to A
+1569445276054 	19.62	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445276054 	19.62	MB RAM	            [ExampleServer] --- There should be 5 subscribed to message Message_G
+1569445276054 	19.62	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445276054 	19.62	MB RAM	       [RTIConnectThread_G] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"7\",\"nextOrder\":\"1\"}","timestamp":"1569445275992","vTimestamp":6,"source":"G","tcp":"false"}
+1569445276070 	19.62	MB RAM	            [ExampleServer] --- received message from index 5
+1569445276070 	19.62	MB RAM	            [ExampleServer] --- All threads have finished current step/order. Now preparing to send RTI_StartStep.
+1569445276070 	19.62	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_StartStep to ExampleServerGUI
+1569445276070 	19.62	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_StartStep to RTI-v2-GUI
+1569445276070 	19.62	MB RAM	       [RTIConnectThread_B] --- Sent message RTI_StartStep to B
+1569445276086 	20.15	MB RAM	       [RTIConnectThread_C] --- Sent message RTI_StartStep to C
+1569445276086 	20.15	MB RAM	       [RTIConnectThread_G] --- Sent message RTI_StartStep to G
+1569445276086 	20.15	MB RAM	       [RTIConnectThread_A] --- Sent message RTI_StartStep to A
+1569445276086 	20.15	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445276101 	21.21	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445276101 	21.21	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445276117 	21.21	MB RAM	       [RTIConnectThread_B] --- I RECEIVED INPUT! It was : {"name":"Message_B","content":"{\"m_wantBlueberries\":\"5\"}","timestamp":"1569445276117","vTimestamp":7,"source":"B","tcp":"false"}
+1569445276117 	21.21	MB RAM	            [ExampleServer] --- received message from index 3
+1569445276117 	21.74	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_B to ExampleServerGUI
+1569445276117 	21.74	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_B to RTI-v2-GUI
+1569445276133 	22.26	MB RAM	       [RTIConnectThread_G] --- Sent message Message_B to G
+1569445276133 	22.26	MB RAM	       [RTIConnectThread_A] --- I RECEIVED INPUT! It was : {"name":"Message_A","content":"{\"m_wantApples\":\"5\"}","timestamp":"1569445276133","vTimestamp":7,"source":"A","tcp":"false"}
+1569445276133 	22.26	MB RAM	       [RTIConnectThread_C] --- I RECEIVED INPUT! It was : {"name":"Message_C","content":"{\"m_wantCarrots\":\"5\"}","timestamp":"1569445276133","vTimestamp":7,"source":"C","tcp":"false"}
+1569445276133 	22.26	MB RAM	            [ExampleServer] --- received message from index 4
+1569445276133 	22.26	MB RAM	            [ExampleServer] --- received message from index 6
+1569445276148 	22.45	MB RAM	            [ExampleServer] --- There should be 3 subscribed to message Message_B
+1569445276148 	22.45	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_A to ExampleServerGUI
+1569445276148 	22.45	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_C to ExampleServerGUI
+1569445276148 	22.65	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_A to RTI-v2-GUI
+1569445276164 	22.65	MB RAM	       [RTIConnectThread_B] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"8\",\"nextOrder\":\"1\"}","timestamp":"1569445276117","vTimestamp":7,"source":"B","tcp":"false"}
+1569445276164 	22.65	MB RAM	       [RTIConnectThread_G] --- Sent message Message_A to G
+1569445276164 	22.83	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_C to RTI-v2-GUI
+1569445276164 	22.83	MB RAM	            [ExampleServer] --- There should be 3 subscribed to message Message_A
+1569445276164 	22.83	MB RAM	            [ExampleServer] --- received message from index 3
+1569445276179 	22.83	MB RAM	       [RTIConnectThread_A] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"8\",\"nextOrder\":\"1\"}","timestamp":"1569445276133","vTimestamp":7,"source":"A","tcp":"false"}
+1569445276179 	22.83	MB RAM	       [RTIConnectThread_G] --- Sent message Message_C to G
+1569445276179 	22.83	MB RAM	            [ExampleServer] --- received message from index 6
+1569445276179 	22.83	MB RAM	            [ExampleServer] --- We're still waiting for this thread to confirm it's finished this step: 4 C
+1569445276179 	22.83	MB RAM	            [ExampleServer] --- There should be 3 subscribed to message Message_C
+1569445276197 	22.83	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445276201 	22.83	MB RAM	            [ExampleServer] --- We're still waiting for this thread to confirm it's finished this step: 4 C
+1569445276204 	22.83	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445276208 	23.02	MB RAM	       [RTIConnectThread_C] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"8\",\"nextOrder\":\"1\"}","timestamp":"1569445276133","vTimestamp":7,"source":"C","tcp":"false"}
+1569445276212 	23.02	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445276215 	23.02	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445276219 	23.02	MB RAM	       [RTIConnectThread_G] --- I RECEIVED INPUT! It was : {"name":"Message_G","content":"{\"m_soldApples\":\"5\",\"m_soldBlueberries\":\"5\",\"m_soldCarrots\":\"5\"}","timestamp":"1569445276218","vTimestamp":7,"source":"G","tcp":"false"}
+1569445276223 	23.02	MB RAM	            [ExampleServer] --- received message from index 4
+1569445276226 	23.31	MB RAM	            [ExampleServer] --- received message from index 5
+1569445276226 	23.31	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445276226 	23.31	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_G to ExampleServerGUI
+1569445276226 	23.31	MB RAM	            [ExampleServer] --- We're still waiting for this thread to confirm it's finished this step: 5 G
+1569445276226 	23.31	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_G to RTI-v2-GUI
+1569445276242 	23.31	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445276242 	24.36	MB RAM	       [RTIConnectThread_B] --- Sent message Message_G to B
+1569445276242 	24.36	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445276242 	24.36	MB RAM	       [RTIConnectThread_C] --- Sent message Message_G to C
+1569445276258 	24.88	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445276258 	24.88	MB RAM	       [RTIConnectThread_A] --- Sent message Message_G to A
+1569445276273 	24.88	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445276273 	24.88	MB RAM	            [ExampleServer] --- There should be 5 subscribed to message Message_G
+1569445276273 	24.88	MB RAM	       [RTIConnectThread_G] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"8\",\"nextOrder\":\"1\"}","timestamp":"1569445276218","vTimestamp":7,"source":"G","tcp":"false"}
+1569445276273 	24.88	MB RAM	            [ExampleServer] --- received message from index 5
+1569445276273 	24.88	MB RAM	            [ExampleServer] --- All threads have finished current step/order. Now preparing to send RTI_StartStep.
+1569445276289 	25.40	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_StartStep to ExampleServerGUI
+1569445276289 	25.40	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_StartStep to RTI-v2-GUI
+1569445276289 	25.40	MB RAM	       [RTIConnectThread_B] --- Sent message RTI_StartStep to B
+1569445276289 	25.40	MB RAM	       [RTIConnectThread_C] --- Sent message RTI_StartStep to C
+1569445276304 	25.93	MB RAM	       [RTIConnectThread_G] --- Sent message RTI_StartStep to G
+1569445276304 	25.93	MB RAM	       [RTIConnectThread_A] --- Sent message RTI_StartStep to A
+1569445276304 	25.93	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445276304 	25.93	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445276320 	25.93	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445276336 	25.93	MB RAM	       [RTIConnectThread_B] --- I RECEIVED INPUT! It was : {"name":"Message_B","content":"{\"m_wantBlueberries\":\"0\"}","timestamp":"1569445276336","vTimestamp":8,"source":"B","tcp":"false"}
+1569445276336 	25.93	MB RAM	       [RTIConnectThread_C] --- I RECEIVED INPUT! It was : {"name":"Message_C","content":"{\"m_wantCarrots\":\"0\"}","timestamp":"1569445276336","vTimestamp":8,"source":"C","tcp":"false"}
+1569445276336 	25.93	MB RAM	            [ExampleServer] --- received message from index 3
+1569445276336 	25.93	MB RAM	            [ExampleServer] --- received message from index 4
+1569445276351 	26.44	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_B to ExampleServerGUI
+1569445276351 	26.46	MB RAM	       [RTIConnectThread_A] --- I RECEIVED INPUT! It was : {"name":"Message_A","content":"{\"m_wantApples\":\"0\"}","timestamp":"1569445276351","vTimestamp":8,"source":"A","tcp":"false"}
+1569445276351 	26.46	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_C to ExampleServerGUI
+1569445276351 	26.65	MB RAM	            [ExampleServer] --- received message from index 6
+1569445276367 	26.65	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_B to RTI-v2-GUI
+1569445276367 	26.65	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_A to ExampleServerGUI
+1569445276367 	26.83	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_C to RTI-v2-GUI
+1569445276367 	26.83	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_A to RTI-v2-GUI
+1569445276383 	26.83	MB RAM	       [RTIConnectThread_G] --- Sent message Message_B to G
+1569445276383 	27.03	MB RAM	       [RTIConnectThread_G] --- Sent message Message_A to G
+1569445276383 	27.03	MB RAM	       [RTIConnectThread_G] --- Sent message Message_C to G
+1569445276383 	27.03	MB RAM	            [ExampleServer] --- There should be 3 subscribed to message Message_A
+1569445276383 	27.03	MB RAM	            [ExampleServer] --- There should be 3 subscribed to message Message_B
+1569445276398 	27.03	MB RAM	       [RTIConnectThread_A] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"9\",\"nextOrder\":\"1\"}","timestamp":"1569445276351","vTimestamp":8,"source":"A","tcp":"false"}
+1569445276398 	27.03	MB RAM	            [ExampleServer] --- received message from index 6
+1569445276398 	27.03	MB RAM	            [ExampleServer] --- There should be 3 subscribed to message Message_C
+1569445276398 	27.03	MB RAM	            [ExampleServer] --- We're still waiting for this thread to confirm it's finished this step: 3 B
+1569445276398 	27.03	MB RAM	       [RTIConnectThread_B] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"9\",\"nextOrder\":\"1\"}","timestamp":"1569445276336","vTimestamp":8,"source":"B","tcp":"false"}
+1569445276414 	27.22	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445276414 	27.22	MB RAM	       [RTIConnectThread_C] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"9\",\"nextOrder\":\"1\"}","timestamp":"1569445276336","vTimestamp":8,"source":"C","tcp":"false"}
+1569445276414 	27.42	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445276414 	27.42	MB RAM	            [ExampleServer] --- received message from index 3
+1569445276414 	27.42	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445276429 	27.50	MB RAM	            [ExampleServer] --- received message from index 4
+1569445276429 	27.50	MB RAM	            [ExampleServer] --- We're still waiting for this thread to confirm it's finished this step: 4 C
+1569445276429 	27.50	MB RAM	            [ExampleServer] --- We're still waiting for this thread to confirm it's finished this step: 5 G
+1569445276429 	28.51	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445276445 	28.55	MB RAM	       [RTIConnectThread_G] --- I RECEIVED INPUT! It was : {"name":"Message_G","content":"{\"m_soldApples\":\"0\",\"m_soldBlueberries\":\"0\",\"m_soldCarrots\":\"0\"}","timestamp":"1569445276445","vTimestamp":8,"source":"G","tcp":"false"}
+1569445276445 	29.08	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445276445 	29.08	MB RAM	            [ExampleServer] --- received message from index 5
+1569445276445 	29.08	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445276461 	29.60	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_G to ExampleServerGUI
+1569445276461 	29.60	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445276461 	29.60	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_G to RTI-v2-GUI
+1569445276461 	29.60	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445276461 	29.60	MB RAM	       [RTIConnectThread_B] --- Sent message Message_G to B
+1569445276476 	29.60	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445276476 	29.60	MB RAM	       [RTIConnectThread_C] --- Sent message Message_G to C
+1569445276476 	30.13	MB RAM	       [RTIConnectThread_A] --- Sent message Message_G to A
+1569445276476 	30.13	MB RAM	            [ExampleServer] --- There should be 5 subscribed to message Message_G
+1569445276476 	30.13	MB RAM	       [RTIConnectThread_G] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"9\",\"nextOrder\":\"1\"}","timestamp":"1569445276445","vTimestamp":8,"source":"G","tcp":"false"}
+1569445276492 	30.13	MB RAM	            [ExampleServer] --- received message from index 5
+1569445276492 	30.13	MB RAM	            [ExampleServer] --- All threads have finished current step/order. Now preparing to send RTI_StartStep.
+1569445276492 	30.13	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_StartStep to ExampleServerGUI
+1569445276492 	30.13	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_StartStep to RTI-v2-GUI
+1569445276508 	30.65	MB RAM	       [RTIConnectThread_B] --- Sent message RTI_StartStep to B
+1569445276508 	30.65	MB RAM	       [RTIConnectThread_C] --- Sent message RTI_StartStep to C
+1569445276508 	30.65	MB RAM	       [RTIConnectThread_G] --- Sent message RTI_StartStep to G
+1569445276508 	30.65	MB RAM	       [RTIConnectThread_A] --- Sent message RTI_StartStep to A
+1569445276508 	31.17	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445276523 	31.17	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445276523 	31.17	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445276555 	31.17	MB RAM	       [RTIConnectThread_C] --- I RECEIVED INPUT! It was : {"name":"Message_C","content":"{\"m_wantCarrots\":\"5\"}","timestamp":"1569445276555","vTimestamp":9,"source":"C","tcp":"false"}
+1569445276555 	31.17	MB RAM	       [RTIConnectThread_A] --- I RECEIVED INPUT! It was : {"name":"Message_A","content":"{\"m_wantApples\":\"5\"}","timestamp":"1569445276555","vTimestamp":9,"source":"A","tcp":"false"}
+1569445276555 	31.17	MB RAM	       [RTIConnectThread_B] --- I RECEIVED INPUT! It was : {"name":"Message_B","content":"{\"m_wantBlueberries\":\"5\"}","timestamp":"1569445276555","vTimestamp":9,"source":"B","tcp":"false"}
+1569445276555 	31.17	MB RAM	            [ExampleServer] --- received message from index 6
+1569445276570 	31.17	MB RAM	            [ExampleServer] --- received message from index 4
+1569445276570 	31.38	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_A to ExampleServerGUI
+1569445276570 	31.70	MB RAM	            [ExampleServer] --- received message from index 3
+1569445276570 	31.70	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_A to RTI-v2-GUI
+1569445276586 	31.70	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_C to ExampleServerGUI
+1569445276586 	31.88	MB RAM	       [RTIConnectThread_G] --- Sent message Message_A to G
+1569445276586 	32.39	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_B to ExampleServerGUI
+1569445276586 	32.39	MB RAM	            [ExampleServer] --- There should be 3 subscribed to message Message_A
+1569445276586 	32.74	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_C to RTI-v2-GUI
+1569445276601 	32.74	MB RAM	       [RTIConnectThread_A] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"10\",\"nextOrder\":\"1\"}","timestamp":"1569445276555","vTimestamp":9,"source":"A","tcp":"false"}
+1569445276601 	32.74	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_B to RTI-v2-GUI
+1569445276601 	32.74	MB RAM	            [ExampleServer] --- received message from index 6
+1569445276601 	32.74	MB RAM	       [RTIConnectThread_G] --- Sent message Message_C to G
+1569445276617 	32.74	MB RAM	            [ExampleServer] --- We're still waiting for this thread to confirm it's finished this step: 3 B
+1569445276617 	32.75	MB RAM	       [RTIConnectThread_G] --- Sent message Message_B to G
+1569445276617 	32.95	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445276617 	32.95	MB RAM	            [ExampleServer] --- There should be 3 subscribed to message Message_C
+1569445276633 	33.13	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445276633 	33.13	MB RAM	            [ExampleServer] --- There should be 3 subscribed to message Message_B
+1569445276633 	33.13	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445276633 	33.13	MB RAM	       [RTIConnectThread_C] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"10\",\"nextOrder\":\"1\"}","timestamp":"1569445276555","vTimestamp":9,"source":"C","tcp":"false"}
+1569445276648 	33.13	MB RAM	       [RTIConnectThread_B] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"10\",\"nextOrder\":\"1\"}","timestamp":"1569445276555","vTimestamp":9,"source":"B","tcp":"false"}
+1569445276648 	33.13	MB RAM	       [RTIConnectThread_G] --- I RECEIVED INPUT! It was : {"name":"Message_G","content":"{\"m_soldApples\":\"5\",\"m_soldBlueberries\":\"5\",\"m_soldCarrots\":\"5\"}","timestamp":"1569445276648","vTimestamp":9,"source":"G","tcp":"false"}
+1569445276648 	33.13	MB RAM	            [ExampleServer] --- received message from index 4
+1569445276648 	33.13	MB RAM	            [ExampleServer] --- received message from index 5
+1569445276648 	33.13	MB RAM	            [ExampleServer] --- received message from index 3
+1569445276664 	33.66	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_G to ExampleServerGUI
+1569445276664 	33.66	MB RAM	            [ExampleServer] --- We're still waiting for this thread to confirm it's finished this step: 3 B
+1569445276664 	33.66	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_G to RTI-v2-GUI
+1569445276664 	33.79	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445276679 	33.79	MB RAM	            [ExampleServer] --- We're still waiting for this thread to confirm it's finished this step: 5 G
+1569445276679 	34.30	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445276679 	34.82	MB RAM	       [RTIConnectThread_B] --- Sent message Message_G to B
+1569445276679 	34.84	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445276695 	35.37	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445276695 	35.37	MB RAM	       [RTIConnectThread_C] --- Sent message Message_G to C
+1569445276695 	35.37	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445276695 	35.37	MB RAM	       [RTIConnectThread_A] --- Sent message Message_G to A
+1569445276711 	35.37	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445276711 	35.37	MB RAM	            [ExampleServer] --- There should be 5 subscribed to message Message_G
+1569445276711 	35.37	MB RAM	       [RTIConnectThread_G] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"10\",\"nextOrder\":\"1\"}","timestamp":"1569445276648","vTimestamp":9,"source":"G","tcp":"false"}
+1569445276711 	35.37	MB RAM	            [ExampleServer] --- received message from index 5
+1569445276711 	35.37	MB RAM	            [ExampleServer] --- All threads have finished current step/order. Now preparing to send RTI_StartStep.
+1569445276726 	35.37	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_StartStep to ExampleServerGUI
+1569445276726 	35.89	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_StartStep to RTI-v2-GUI
+1569445276726 	35.89	MB RAM	       [RTIConnectThread_B] --- Sent message RTI_StartStep to B
+1569445276726 	35.89	MB RAM	       [RTIConnectThread_C] --- Sent message RTI_StartStep to C
+1569445276742 	35.89	MB RAM	       [RTIConnectThread_G] --- Sent message RTI_StartStep to G
+1569445276742 	36.42	MB RAM	       [RTIConnectThread_A] --- Sent message RTI_StartStep to A
+1569445276742 	36.42	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445276742 	36.42	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445276758 	36.42	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445276773 	36.42	MB RAM	       [RTIConnectThread_C] --- I RECEIVED INPUT! It was : {"name":"Message_C","content":"{\"m_wantCarrots\":\"0\"}","timestamp":"1569445276773","vTimestamp":10,"source":"C","tcp":"false"}
+1569445276773 	36.42	MB RAM	       [RTIConnectThread_B] --- I RECEIVED INPUT! It was : {"name":"Message_B","content":"{\"m_wantBlueberries\":\"0\"}","timestamp":"1569445276773","vTimestamp":10,"source":"B","tcp":"false"}
+1569445276773 	36.42	MB RAM	            [ExampleServer] --- received message from index 4
+1569445276773 	36.42	MB RAM	            [ExampleServer] --- received message from index 3
+1569445276790 	36.42	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_C to ExampleServerGUI
+1569445276794 	36.42	MB RAM	       [RTIConnectThread_A] --- I RECEIVED INPUT! It was : {"name":"Message_A","content":"{\"m_wantApples\":\"0\"}","timestamp":"1569445276790","vTimestamp":10,"source":"A","tcp":"false"}
+1569445276798 	36.42	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_B to ExampleServerGUI
+1569445276801 	36.42	MB RAM	            [ExampleServer] --- received message from index 6
+1569445276805 	36.42	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_C to RTI-v2-GUI
+1569445276808 	36.62	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_A to ExampleServerGUI
+1569445276812 	36.94	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_B to RTI-v2-GUI
+1569445276815 	36.95	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_A to RTI-v2-GUI
+1569445276819 	37.63	MB RAM	       [RTIConnectThread_G] --- Sent message Message_C to G
+1569445276822 	37.63	MB RAM	       [RTIConnectThread_G] --- Sent message Message_A to G
+1569445276826 	37.63	MB RAM	       [RTIConnectThread_G] --- Sent message Message_B to G
+1569445276829 	37.63	MB RAM	            [ExampleServer] --- There should be 3 subscribed to message Message_A
+1569445276832 	37.63	MB RAM	            [ExampleServer] --- There should be 3 subscribed to message Message_C
+1569445276836 	37.63	MB RAM	       [RTIConnectThread_A] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"11\",\"nextOrder\":\"1\"}","timestamp":"1569445276792","vTimestamp":10,"source":"A","tcp":"false"}
+1569445276840 	37.63	MB RAM	            [ExampleServer] --- There should be 3 subscribed to message Message_B
+1569445276843 	37.63	MB RAM	            [ExampleServer] --- received message from index 6
+1569445276846 	37.83	MB RAM	       [RTIConnectThread_C] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"11\",\"nextOrder\":\"1\"}","timestamp":"1569445276773","vTimestamp":10,"source":"C","tcp":"false"}
+1569445276850 	37.83	MB RAM	            [ExampleServer] --- We're still waiting for this thread to confirm it's finished this step: 3 B
+1569445276853 	37.83	MB RAM	       [RTIConnectThread_B] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"11\",\"nextOrder\":\"1\"}","timestamp":"1569445276773","vTimestamp":10,"source":"B","tcp":"false"}
+1569445276858 	38.51	MB RAM	       [RTIConnectThread_G] --- I RECEIVED INPUT! It was : {"name":"Message_G","content":"{\"m_soldApples\":\"0\",\"m_soldBlueberries\":\"0\",\"m_soldCarrots\":\"0\"}","timestamp":"1569445276854","vTimestamp":10,"source":"G","tcp":"false"}
+1569445276861 	38.51	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445276865 	38.72	MB RAM	            [ExampleServer] --- received message from index 4
+1569445276869 	38.72	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445276872 	38.72	MB RAM	            [ExampleServer] --- received message from index 5
+1569445276876 	38.72	MB RAM	            [ExampleServer] --- received message from index 3
+1569445276879 	38.72	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_G to ExampleServerGUI
+1569445276883 	39.04	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445276887 	39.04	MB RAM	            [ExampleServer] --- We're still waiting for this thread to confirm it's finished this step: 3 B
+1569445276890 	39.04	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_G to RTI-v2-GUI
+1569445276894 	39.56	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445276898 	39.56	MB RAM	            [ExampleServer] --- We're still waiting for this thread to confirm it's finished this step: 5 G
+1569445276902 	40.06	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445276906 	40.06	MB RAM	       [RTIConnectThread_B] --- Sent message Message_G to B
+1569445276909 	40.06	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445276913 	40.63	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445276917 	40.63	MB RAM	       [RTIConnectThread_C] --- Sent message Message_G to C
+1569445276920 	40.63	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445276924 	40.63	MB RAM	       [RTIConnectThread_A] --- Sent message Message_G to A
+1569445276928 	40.63	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445276931 	40.63	MB RAM	            [ExampleServer] --- There should be 5 subscribed to message Message_G
+1569445276935 	40.63	MB RAM	       [RTIConnectThread_G] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"11\",\"nextOrder\":\"1\"}","timestamp":"1569445276854","vTimestamp":10,"source":"G","tcp":"false"}
+1569445276938 	40.63	MB RAM	            [ExampleServer] --- received message from index 5
+1569445276942 	40.63	MB RAM	            [ExampleServer] --- All threads have finished current step/order. Now preparing to send RTI_StartStep.
+1569445276946 	40.63	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_StartStep to ExampleServerGUI
+1569445276950 	40.63	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_StartStep to RTI-v2-GUI
+1569445276951 	41.13	MB RAM	       [RTIConnectThread_B] --- Sent message RTI_StartStep to B
+1569445276951 	41.13	MB RAM	       [RTIConnectThread_C] --- Sent message RTI_StartStep to C
+1569445276951 	41.13	MB RAM	       [RTIConnectThread_G] --- Sent message RTI_StartStep to G
+1569445276951 	41.13	MB RAM	       [RTIConnectThread_A] --- Sent message RTI_StartStep to A
+1569445276967 	41.67	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445276967 	41.67	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445276967 	41.67	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445276998 	41.67	MB RAM	       [RTIConnectThread_B] --- I RECEIVED INPUT! It was : {"name":"Message_B","content":"{\"m_wantBlueberries\":\"5\"}","timestamp":"1569445276998","vTimestamp":11,"source":"B","tcp":"false"}
+1569445276998 	41.67	MB RAM	       [RTIConnectThread_C] --- I RECEIVED INPUT! It was : {"name":"Message_C","content":"{\"m_wantCarrots\":\"5\"}","timestamp":"1569445276998","vTimestamp":11,"source":"C","tcp":"false"}
+1569445276998 	42.18	MB RAM	            [ExampleServer] --- received message from index 3
+1569445276998 	42.18	MB RAM	            [ExampleServer] --- received message from index 4
+1569445277014 	42.18	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_B to ExampleServerGUI
+1569445277014 	42.18	MB RAM	       [RTIConnectThread_A] --- I RECEIVED INPUT! It was : {"name":"Message_A","content":"{\"m_wantApples\":\"5\"}","timestamp":"1569445277014","vTimestamp":11,"source":"A","tcp":"false"}
+1569445277014 	42.18	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_C to ExampleServerGUI
+1569445277014 	42.18	MB RAM	            [ExampleServer] --- received message from index 6
+1569445277029 	42.18	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_B to RTI-v2-GUI
+1569445277029 	42.38	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_A to ExampleServerGUI
+1569445277029 	42.38	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_C to RTI-v2-GUI
+1569445277029 	42.59	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_A to RTI-v2-GUI
+1569445277029 	42.59	MB RAM	       [RTIConnectThread_G] --- Sent message Message_B to G
+1569445277045 	42.59	MB RAM	       [RTIConnectThread_G] --- Sent message Message_A to G
+1569445277045 	43.09	MB RAM	       [RTIConnectThread_G] --- Sent message Message_C to G
+1569445277045 	43.09	MB RAM	            [ExampleServer] --- There should be 3 subscribed to message Message_A
+1569445277045 	43.09	MB RAM	            [ExampleServer] --- There should be 3 subscribed to message Message_B
+1569445277060 	43.09	MB RAM	       [RTIConnectThread_A] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"12\",\"nextOrder\":\"1\"}","timestamp":"1569445277014","vTimestamp":11,"source":"A","tcp":"false"}
+1569445277060 	43.10	MB RAM	            [ExampleServer] --- received message from index 6
+1569445277060 	43.23	MB RAM	            [ExampleServer] --- There should be 3 subscribed to message Message_C
+1569445277060 	43.23	MB RAM	            [ExampleServer] --- We're still waiting for this thread to confirm it's finished this step: 3 B
+1569445277060 	43.23	MB RAM	       [RTIConnectThread_B] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"12\",\"nextOrder\":\"1\"}","timestamp":"1569445276998","vTimestamp":11,"source":"B","tcp":"false"}
+1569445277076 	43.44	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445277076 	43.96	MB RAM	       [RTIConnectThread_C] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"12\",\"nextOrder\":\"1\"}","timestamp":"1569445276998","vTimestamp":11,"source":"C","tcp":"false"}
+1569445277076 	43.96	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445277076 	43.96	MB RAM	            [ExampleServer] --- received message from index 3
+1569445277092 	43.96	MB RAM	       [RTIConnectThread_G] --- I RECEIVED INPUT! It was : {"name":"Message_G","content":"{\"m_soldApples\":\"5\",\"m_soldBlueberries\":\"5\",\"m_soldCarrots\":\"5\"}","timestamp":"1569445277092","vTimestamp":11,"source":"G","tcp":"false"}
+1569445277092 	43.96	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445277092 	43.96	MB RAM	            [ExampleServer] --- received message from index 4
+1569445277092 	43.96	MB RAM	            [ExampleServer] --- received message from index 5
+1569445277107 	43.96	MB RAM	            [ExampleServer] --- We're still waiting for this thread to confirm it's finished this step: 4 C
+1569445277107 	44.28	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_G to ExampleServerGUI
+1569445277107 	44.28	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445277107 	44.81	MB RAM	            [ExampleServer] --- We're still waiting for this thread to confirm it's finished this step: 5 G
+1569445277123 	44.81	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445277123 	44.81	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_G to RTI-v2-GUI
+1569445277123 	44.81	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445277123 	44.81	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445277123 	44.81	MB RAM	       [RTIConnectThread_B] --- Sent message Message_G to B
+1569445277138 	44.81	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445277138 	44.81	MB RAM	       [RTIConnectThread_C] --- Sent message Message_G to C
+1569445277138 	44.81	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445277138 	44.81	MB RAM	       [RTIConnectThread_A] --- Sent message Message_G to A
+1569445277154 	44.81	MB RAM	            [ExampleServer] --- There should be 5 subscribed to message Message_G
+1569445277154 	44.81	MB RAM	       [RTIConnectThread_G] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"12\",\"nextOrder\":\"1\"}","timestamp":"1569445277092","vTimestamp":11,"source":"G","tcp":"false"}
+1569445277154 	44.81	MB RAM	            [ExampleServer] --- received message from index 5
+1569445277154 	45.33	MB RAM	            [ExampleServer] --- All threads have finished current step/order. Now preparing to send RTI_StartStep.
+1569445277170 	45.33	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_StartStep to ExampleServerGUI
+1569445277170 	45.33	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_StartStep to RTI-v2-GUI
+1569445277170 	45.33	MB RAM	       [RTIConnectThread_B] --- Sent message RTI_StartStep to B
+1569445277185 	45.87	MB RAM	       [RTIConnectThread_C] --- Sent message RTI_StartStep to C
+1569445277185 	45.87	MB RAM	       [RTIConnectThread_G] --- Sent message RTI_StartStep to G
+1569445277185 	45.87	MB RAM	       [RTIConnectThread_A] --- Sent message RTI_StartStep to A
+1569445277185 	45.87	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445277201 	46.38	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445277201 	46.38	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445277217 	46.38	MB RAM	       [RTIConnectThread_B] --- I RECEIVED INPUT! It was : {"name":"Message_B","content":"{\"m_wantBlueberries\":\"0\"}","timestamp":"1569445277217","vTimestamp":12,"source":"B","tcp":"false"}
+1569445277217 	46.38	MB RAM	            [ExampleServer] --- received message from index 3
+1569445277217 	46.89	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_B to ExampleServerGUI
+1569445277217 	46.89	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_B to RTI-v2-GUI
+1569445277232 	46.89	MB RAM	       [RTIConnectThread_C] --- I RECEIVED INPUT! It was : {"name":"Message_C","content":"{\"m_wantCarrots\":\"0\"}","timestamp":"1569445277232","vTimestamp":12,"source":"C","tcp":"false"}
+1569445277232 	46.89	MB RAM	       [RTIConnectThread_A] --- I RECEIVED INPUT! It was : {"name":"Message_A","content":"{\"m_wantApples\":\"0\"}","timestamp":"1569445277232","vTimestamp":12,"source":"A","tcp":"false"}
+1569445277232 	47.07	MB RAM	       [RTIConnectThread_G] --- Sent message Message_B to G
+1569445277232 	47.07	MB RAM	            [ExampleServer] --- received message from index 6
+1569445277248 	47.07	MB RAM	            [ExampleServer] --- received message from index 4
+1569445277248 	47.07	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_A to ExampleServerGUI
+1569445277248 	47.61	MB RAM	            [ExampleServer] --- There should be 3 subscribed to message Message_B
+1569445277248 	48.14	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_A to RTI-v2-GUI
+1569445277248 	48.14	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_C to ExampleServerGUI
+1569445277263 	48.32	MB RAM	       [RTIConnectThread_G] --- Sent message Message_A to G
+1569445277263 	48.32	MB RAM	       [RTIConnectThread_B] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"13\",\"nextOrder\":\"1\"}","timestamp":"1569445277217","vTimestamp":12,"source":"B","tcp":"false"}
+1569445277263 	48.32	MB RAM	            [ExampleServer] --- received message from index 3
+1569445277263 	48.32	MB RAM	            [ExampleServer] --- There should be 3 subscribed to message Message_A
+1569445277263 	48.32	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_C to RTI-v2-GUI
+1569445277279 	48.32	MB RAM	       [RTIConnectThread_A] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"13\",\"nextOrder\":\"1\"}","timestamp":"1569445277232","vTimestamp":12,"source":"A","tcp":"false"}
+1569445277279 	48.32	MB RAM	            [ExampleServer] --- We're still waiting for this thread to confirm it's finished this step: 4 C
+1569445277279 	48.47	MB RAM	            [ExampleServer] --- received message from index 6
+1569445277279 	48.47	MB RAM	       [RTIConnectThread_G] --- Sent message Message_C to G
+1569445277295 	48.47	MB RAM	            [ExampleServer] --- We're still waiting for this thread to confirm it's finished this step: 4 C
+1569445277295 	48.67	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445277295 	49.52	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445277295 	49.52	MB RAM	            [ExampleServer] --- There should be 3 subscribed to message Message_C
+1569445277295 	49.73	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445277310 	49.73	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445277310 	49.73	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445277310 	49.73	MB RAM	       [RTIConnectThread_G] --- I RECEIVED INPUT! It was : {"name":"Message_G","content":"{\"m_soldApples\":\"0\",\"m_soldBlueberries\":\"0\",\"m_soldCarrots\":\"0\"}","timestamp":"1569445277310","vTimestamp":12,"source":"G","tcp":"false"}
+1569445277310 	50.23	MB RAM	       [RTIConnectThread_C] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"13\",\"nextOrder\":\"1\"}","timestamp":"1569445277232","vTimestamp":12,"source":"C","tcp":"false"}
+1569445277310 	50.23	MB RAM	            [ExampleServer] --- received message from index 4
+1569445277326 	50.23	MB RAM	            [ExampleServer] --- received message from index 5
+1569445277326 	50.23	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445277326 	50.23	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_G to ExampleServerGUI
+1569445277326 	50.23	MB RAM	            [ExampleServer] --- We're still waiting for this thread to confirm it's finished this step: 5 G
+1569445277342 	50.23	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_G to RTI-v2-GUI
+1569445277342 	50.23	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445277342 	50.23	MB RAM	       [RTIConnectThread_B] --- Sent message Message_G to B
+1569445277342 	50.57	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445277357 	50.57	MB RAM	       [RTIConnectThread_C] --- Sent message Message_G to C
+1569445277357 	50.57	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445277357 	50.57	MB RAM	       [RTIConnectThread_A] --- Sent message Message_G to A
+1569445277357 	50.57	MB RAM	            [ExampleServer] --- There should be 5 subscribed to message Message_G
+1569445277357 	50.57	MB RAM	       [RTIConnectThread_G] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"13\",\"nextOrder\":\"1\"}","timestamp":"1569445277310","vTimestamp":12,"source":"G","tcp":"false"}
+1569445277373 	50.57	MB RAM	            [ExampleServer] --- received message from index 5
+1569445277373 	50.57	MB RAM	            [ExampleServer] --- All threads have finished current step/order. Now preparing to send RTI_StartStep.
+1569445277373 	51.10	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_StartStep to ExampleServerGUI
+1569445277373 	51.10	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_StartStep to RTI-v2-GUI
+1569445277388 	51.10	MB RAM	       [RTIConnectThread_B] --- Sent message RTI_StartStep to B
+1569445277388 	51.10	MB RAM	       [RTIConnectThread_C] --- Sent message RTI_StartStep to C
+1569445277388 	51.62	MB RAM	       [RTIConnectThread_G] --- Sent message RTI_StartStep to G
+1569445277388 	51.62	MB RAM	       [RTIConnectThread_A] --- Sent message RTI_StartStep to A
+1569445277388 	51.62	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445277407 	51.62	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445277410 	51.62	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445277426 	51.62	MB RAM	       [RTIConnectThread_B] --- I RECEIVED INPUT! It was : {"name":"Message_B","content":"{\"m_wantBlueberries\":\"5\"}","timestamp":"1569445277425","vTimestamp":13,"source":"B","tcp":"false"}
+1569445277426 	51.62	MB RAM	       [RTIConnectThread_C] --- I RECEIVED INPUT! It was : {"name":"Message_C","content":"{\"m_wantCarrots\":\"5\"}","timestamp":"1569445277425","vTimestamp":13,"source":"C","tcp":"false"}
+1569445277426 	51.62	MB RAM	            [ExampleServer] --- received message from index 4
+1569445277426 	51.62	MB RAM	       [RTIConnectThread_A] --- I RECEIVED INPUT! It was : {"name":"Message_A","content":"{\"m_wantApples\":\"5\"}","timestamp":"1569445277426","vTimestamp":13,"source":"A","tcp":"false"}
+1569445277442 	52.14	MB RAM	            [ExampleServer] --- received message from index 3
+1569445277442 	52.14	MB RAM	            [ExampleServer] --- received message from index 6
+1569445277442 	52.67	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_C to ExampleServerGUI
+1569445277442 	52.87	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_A to ExampleServerGUI
+1569445277442 	52.87	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_B to ExampleServerGUI
+1569445277457 	53.37	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_A to RTI-v2-GUI
+1569445277457 	53.56	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_C to RTI-v2-GUI
+1569445277457 	53.56	MB RAM	       [RTIConnectThread_G] --- Sent message Message_A to G
+1569445277457 	53.56	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_B to RTI-v2-GUI
+1569445277473 	53.56	MB RAM	            [ExampleServer] --- There should be 3 subscribed to message Message_A
+1569445277473 	53.56	MB RAM	       [RTIConnectThread_G] --- Sent message Message_C to G
+1569445277473 	53.56	MB RAM	       [RTIConnectThread_A] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"14\",\"nextOrder\":\"1\"}","timestamp":"1569445277426","vTimestamp":13,"source":"A","tcp":"false"}
+1569445277473 	53.56	MB RAM	       [RTIConnectThread_G] --- Sent message Message_B to G
+1569445277473 	53.56	MB RAM	            [ExampleServer] --- received message from index 6
+1569445277488 	53.56	MB RAM	            [ExampleServer] --- There should be 3 subscribed to message Message_C
+1569445277488 	53.56	MB RAM	            [ExampleServer] --- We're still waiting for this thread to confirm it's finished this step: 3 B
+1569445277488 	53.72	MB RAM	            [ExampleServer] --- There should be 3 subscribed to message Message_B
+1569445277488 	53.72	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445277504 	53.90	MB RAM	       [RTIConnectThread_C] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"14\",\"nextOrder\":\"1\"}","timestamp":"1569445277426","vTimestamp":13,"source":"C","tcp":"false"}
+1569445277504 	53.90	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445277504 	53.90	MB RAM	       [RTIConnectThread_B] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"14\",\"nextOrder\":\"1\"}","timestamp":"1569445277426","vTimestamp":13,"source":"B","tcp":"false"}
+1569445277504 	53.90	MB RAM	            [ExampleServer] --- received message from index 3
+1569445277504 	53.90	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445277520 	53.90	MB RAM	            [ExampleServer] --- received message from index 4
+1569445277520 	54.43	MB RAM	       [RTIConnectThread_G] --- I RECEIVED INPUT! It was : {"name":"Message_G","content":"{\"m_soldApples\":\"5\",\"m_soldBlueberries\":\"5\",\"m_soldCarrots\":\"5\"}","timestamp":"1569445277520","vTimestamp":13,"source":"G","tcp":"false"}
+1569445277520 	54.43	MB RAM	            [ExampleServer] --- received message from index 5
+1569445277520 	54.43	MB RAM	            [ExampleServer] --- We're still waiting for this thread to confirm it's finished this step: 4 C
+1569445277520 	54.43	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_G to ExampleServerGUI
+1569445277535 	54.43	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445277535 	54.77	MB RAM	            [ExampleServer] --- We're still waiting for this thread to confirm it's finished this step: 5 G
+1569445277535 	54.77	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445277535 	54.77	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_G to RTI-v2-GUI
+1569445277551 	54.77	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445277551 	55.26	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445277551 	55.26	MB RAM	       [RTIConnectThread_B] --- Sent message Message_G to B
+1569445277551 	55.26	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445277551 	55.79	MB RAM	       [RTIConnectThread_C] --- Sent message Message_G to C
+1569445277567 	55.79	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445277567 	55.79	MB RAM	       [RTIConnectThread_A] --- Sent message Message_G to A
+1569445277567 	55.79	MB RAM	            [ExampleServer] --- There should be 5 subscribed to message Message_G
+1569445277567 	55.79	MB RAM	       [RTIConnectThread_G] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"14\",\"nextOrder\":\"1\"}","timestamp":"1569445277520","vTimestamp":13,"source":"G","tcp":"false"}
+1569445277567 	55.79	MB RAM	            [ExampleServer] --- received message from index 5
+1569445277582 	55.79	MB RAM	            [ExampleServer] --- All threads have finished current step/order. Now preparing to send RTI_StartStep.
+1569445277582 	55.79	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_StartStep to ExampleServerGUI
+1569445277582 	55.81	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_StartStep to RTI-v2-GUI
+1569445277582 	56.34	MB RAM	       [RTIConnectThread_B] --- Sent message RTI_StartStep to B
+1569445277598 	56.34	MB RAM	       [RTIConnectThread_C] --- Sent message RTI_StartStep to C
+1569445277598 	56.34	MB RAM	       [RTIConnectThread_G] --- Sent message RTI_StartStep to G
+1569445277598 	56.34	MB RAM	       [RTIConnectThread_A] --- Sent message RTI_StartStep to A
+1569445277598 	56.86	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445277613 	56.86	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445277613 	56.86	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445277629 	56.86	MB RAM	       [RTIConnectThread_B] --- I RECEIVED INPUT! It was : {"name":"Message_B","content":"{\"m_wantBlueberries\":\"0\"}","timestamp":"1569445277629","vTimestamp":14,"source":"B","tcp":"false"}
+1569445277629 	56.86	MB RAM	            [ExampleServer] --- received message from index 3
+1569445277629 	56.86	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_B to ExampleServerGUI
+1569445277629 	57.90	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_B to RTI-v2-GUI
+1569445277645 	57.90	MB RAM	       [RTIConnectThread_C] --- I RECEIVED INPUT! It was : {"name":"Message_C","content":"{\"m_wantCarrots\":\"0\"}","timestamp":"1569445277645","vTimestamp":14,"source":"C","tcp":"false"}
+1569445277645 	57.90	MB RAM	       [RTIConnectThread_A] --- I RECEIVED INPUT! It was : {"name":"Message_A","content":"{\"m_wantApples\":\"0\"}","timestamp":"1569445277645","vTimestamp":14,"source":"A","tcp":"false"}
+1569445277645 	57.90	MB RAM	            [ExampleServer] --- received message from index 6
+1569445277645 	57.90	MB RAM	       [RTIConnectThread_G] --- Sent message Message_B to G
+1569445277660 	58.10	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_A to ExampleServerGUI
+1569445277660 	58.10	MB RAM	            [ExampleServer] --- received message from index 4
+1569445277660 	58.31	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_A to RTI-v2-GUI
+1569445277660 	58.31	MB RAM	            [ExampleServer] --- There should be 3 subscribed to message Message_B
+1569445277660 	58.31	MB RAM	       [RTIConnectThread_G] --- Sent message Message_A to G
+1569445277676 	58.31	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_C to ExampleServerGUI
+1569445277676 	58.31	MB RAM	            [ExampleServer] --- There should be 3 subscribed to message Message_A
+1569445277676 	58.31	MB RAM	       [RTIConnectThread_B] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"15\",\"nextOrder\":\"1\"}","timestamp":"1569445277629","vTimestamp":14,"source":"B","tcp":"false"}
+1569445277676 	58.31	MB RAM	       [RTIConnectThread_A] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"15\",\"nextOrder\":\"1\"}","timestamp":"1569445277645","vTimestamp":14,"source":"A","tcp":"false"}
+1569445277676 	58.32	MB RAM	            [ExampleServer] --- received message from index 6
+1569445277691 	58.52	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_C to RTI-v2-GUI
+1569445277691 	58.96	MB RAM	            [ExampleServer] --- We're still waiting for this thread to confirm it's finished this step: 3 B
+1569445277691 	58.96	MB RAM	            [ExampleServer] --- received message from index 3
+1569445277691 	58.96	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445277707 	59.16	MB RAM	       [RTIConnectThread_G] --- Sent message Message_C to G
+1569445277707 	59.16	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445277707 	59.16	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445277707 	59.16	MB RAM	            [ExampleServer] --- We're still waiting for this thread to confirm it's finished this step: 4 C
+1569445277707 	59.16	MB RAM	            [ExampleServer] --- There should be 3 subscribed to message Message_C
+1569445277723 	59.16	MB RAM	       [RTIConnectThread_G] --- I RECEIVED INPUT! It was : {"name":"Message_G","content":"{\"m_soldApples\":\"0\",\"m_soldBlueberries\":\"0\",\"m_soldCarrots\":\"0\"}","timestamp":"1569445277723","vTimestamp":14,"source":"G","tcp":"false"}
+1569445277723 	59.16	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445277723 	59.16	MB RAM	            [ExampleServer] --- received message from index 5
+1569445277723 	59.68	MB RAM	       [RTIConnectThread_C] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"15\",\"nextOrder\":\"1\"}","timestamp":"1569445277645","vTimestamp":14,"source":"C","tcp":"false"}
+1569445277723 	60.01	MB RAM	            [ExampleServer] --- received message from index 4
+1569445277738 	60.01	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_G to ExampleServerGUI
+1569445277738 	60.01	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445277738 	60.54	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445277738 	60.54	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_G to RTI-v2-GUI
+1569445277754 	60.54	MB RAM	            [ExampleServer] --- We're still waiting for this thread to confirm it's finished this step: 5 G
+1569445277754 	60.54	MB RAM	       [RTIConnectThread_B] --- Sent message Message_G to B
+1569445277754 	60.54	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445277754 	60.54	MB RAM	       [RTIConnectThread_C] --- Sent message Message_G to C
+1569445277754 	61.04	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445277770 	61.04	MB RAM	       [RTIConnectThread_A] --- Sent message Message_G to A
+1569445277770 	61.04	MB RAM	            [ExampleServer] --- There should be 5 subscribed to message Message_G
+1569445277770 	61.04	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445277770 	61.04	MB RAM	       [RTIConnectThread_G] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"15\",\"nextOrder\":\"1\"}","timestamp":"1569445277723","vTimestamp":14,"source":"G","tcp":"false"}
+1569445277770 	61.04	MB RAM	            [ExampleServer] --- received message from index 5
+1569445277785 	61.06	MB RAM	            [ExampleServer] --- All threads have finished current step/order. Now preparing to send RTI_StartStep.
+1569445277785 	61.59	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_StartStep to ExampleServerGUI
+1569445277785 	61.59	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_StartStep to RTI-v2-GUI
+1569445277785 	61.59	MB RAM	       [RTIConnectThread_B] --- Sent message RTI_StartStep to B
+1569445277801 	61.59	MB RAM	       [RTIConnectThread_C] --- Sent message RTI_StartStep to C
+1569445277801 	62.11	MB RAM	       [RTIConnectThread_G] --- Sent message RTI_StartStep to G
+1569445277801 	62.11	MB RAM	       [RTIConnectThread_A] --- Sent message RTI_StartStep to A
+1569445277801 	62.11	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445277801 	62.63	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445277816 	63.15	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445277832 	63.15	MB RAM	       [RTIConnectThread_B] --- I RECEIVED INPUT! It was : {"name":"Message_B","content":"{\"m_wantBlueberries\":\"5\"}","timestamp":"1569445277832","vTimestamp":15,"source":"B","tcp":"false"}
+1569445277832 	63.15	MB RAM	            [ExampleServer] --- received message from index 3
+1569445277832 	63.15	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_B to ExampleServerGUI
+1569445277832 	63.15	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_B to RTI-v2-GUI
+1569445277848 	63.68	MB RAM	       [RTIConnectThread_G] --- Sent message Message_B to G
+1569445277848 	63.68	MB RAM	       [RTIConnectThread_A] --- I RECEIVED INPUT! It was : {"name":"Message_A","content":"{\"m_wantApples\":\"5\"}","timestamp":"1569445277848","vTimestamp":15,"source":"A","tcp":"false"}
+1569445277848 	63.68	MB RAM	            [ExampleServer] --- received message from index 6
+1569445277848 	63.68	MB RAM	       [RTIConnectThread_C] --- I RECEIVED INPUT! It was : {"name":"Message_C","content":"{\"m_wantCarrots\":\"5\"}","timestamp":"1569445277848","vTimestamp":15,"source":"C","tcp":"false"}
+1569445277848 	63.87	MB RAM	            [ExampleServer] --- received message from index 4
+1569445277863 	63.87	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_A to ExampleServerGUI
+1569445277863 	63.87	MB RAM	            [ExampleServer] --- There should be 3 subscribed to message Message_B
+1569445277863 	64.06	MB RAM	       [RTIConnectThread_B] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"16\",\"nextOrder\":\"1\"}","timestamp":"1569445277832","vTimestamp":15,"source":"B","tcp":"false"}
+1569445277863 	64.06	MB RAM	            [ExampleServer] --- received message from index 3
+1569445277879 	64.06	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_A to RTI-v2-GUI
+1569445277879 	64.06	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_C to ExampleServerGUI
+1569445277879 	64.06	MB RAM	       [RTIConnectThread_G] --- Sent message Message_A to G
+1569445277879 	64.20	MB RAM	            [ExampleServer] --- There should be 3 subscribed to message Message_A
+1569445277879 	64.20	MB RAM	            [ExampleServer] --- We're still waiting for this thread to confirm it's finished this step: 4 C
+1569445277895 	64.20	MB RAM	       [RTIConnectThread_A] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"16\",\"nextOrder\":\"1\"}","timestamp":"1569445277848","vTimestamp":15,"source":"A","tcp":"false"}
+1569445277895 	64.20	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_C to RTI-v2-GUI
+1569445277895 	64.20	MB RAM	            [ExampleServer] --- received message from index 6
+1569445277895 	64.20	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445277895 	64.20	MB RAM	            [ExampleServer] --- We're still waiting for this thread to confirm it's finished this step: 4 C
+1569445277910 	64.20	MB RAM	       [RTIConnectThread_G] --- Sent message Message_C to G
+1569445277910 	64.39	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445277910 	64.39	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445277910 	64.58	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445277910 	64.58	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445277926 	64.58	MB RAM	            [ExampleServer] --- There should be 3 subscribed to message Message_C
+1569445277926 	64.58	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445277926 	65.09	MB RAM	       [RTIConnectThread_C] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"16\",\"nextOrder\":\"1\"}","timestamp":"1569445277848","vTimestamp":15,"source":"C","tcp":"false"}
+1569445277926 	65.09	MB RAM	            [ExampleServer] --- received message from index 4
+1569445277941 	65.09	MB RAM	       [RTIConnectThread_G] --- I RECEIVED INPUT! It was : {"name":"Message_G","content":"{\"m_soldApples\":\"5\",\"m_soldBlueberries\":\"5\",\"m_soldCarrots\":\"5\"}","timestamp":"1569445277941","vTimestamp":15,"source":"G","tcp":"false"}
+1569445277941 	65.09	MB RAM	            [ExampleServer] --- received message from index 5
+1569445277941 	65.09	MB RAM	            [ExampleServer] --- We're still waiting for this thread to confirm it's finished this step: 5 G
+1569445277941 	65.09	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_G to ExampleServerGUI
+1569445277941 	65.09	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445277957 	65.09	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_G to RTI-v2-GUI
+1569445277957 	65.09	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445277957 	65.09	MB RAM	       [RTIConnectThread_B] --- Sent message Message_G to B
+1569445277957 	65.09	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445277973 	65.25	MB RAM	       [RTIConnectThread_C] --- Sent message Message_G to C
+1569445277973 	65.79	MB RAM	       [RTIConnectThread_A] --- Sent message Message_G to A
+1569445277973 	65.79	MB RAM	            [ExampleServer] --- There should be 5 subscribed to message Message_G
+1569445277973 	65.79	MB RAM	       [RTIConnectThread_G] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"16\",\"nextOrder\":\"1\"}","timestamp":"1569445277941","vTimestamp":15,"source":"G","tcp":"false"}
+1569445277973 	65.79	MB RAM	            [ExampleServer] --- received message from index 5
+1569445277988 	65.79	MB RAM	            [ExampleServer] --- All threads have finished current step/order. Now preparing to send RTI_StartStep.
+1569445277988 	65.79	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_StartStep to ExampleServerGUI
+1569445277988 	65.79	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_StartStep to RTI-v2-GUI
+1569445277988 	66.30	MB RAM	       [RTIConnectThread_B] --- Sent message RTI_StartStep to B
+1569445278004 	66.83	MB RAM	       [RTIConnectThread_C] --- Sent message RTI_StartStep to C
+1569445278007 	66.83	MB RAM	       [RTIConnectThread_G] --- Sent message RTI_StartStep to G
+1569445278011 	66.83	MB RAM	       [RTIConnectThread_A] --- Sent message RTI_StartStep to A
+1569445278015 	67.35	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445278020 	67.87	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445278023 	67.87	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445278026 	67.87	MB RAM	       [RTIConnectThread_B] --- I RECEIVED INPUT! It was : {"name":"Message_B","content":"{\"m_wantBlueberries\":\"0\"}","timestamp":"1569445278026","vTimestamp":16,"source":"B","tcp":"false"}
+1569445278026 	67.87	MB RAM	            [ExampleServer] --- received message from index 3
+1569445278026 	68.38	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_B to ExampleServerGUI
+1569445278026 	68.38	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_B to RTI-v2-GUI
+1569445278042 	68.38	MB RAM	       [RTIConnectThread_G] --- Sent message Message_B to G
+1569445278042 	68.38	MB RAM	       [RTIConnectThread_A] --- I RECEIVED INPUT! It was : {"name":"Message_A","content":"{\"m_wantApples\":\"0\"}","timestamp":"1569445278042","vTimestamp":16,"source":"A","tcp":"false"}
+1569445278042 	68.38	MB RAM	       [RTIConnectThread_C] --- I RECEIVED INPUT! It was : {"name":"Message_C","content":"{\"m_wantCarrots\":\"0\"}","timestamp":"1569445278042","vTimestamp":16,"source":"C","tcp":"false"}
+1569445278042 	68.38	MB RAM	            [ExampleServer] --- received message from index 4
+1569445278042 	68.38	MB RAM	            [ExampleServer] --- received message from index 6
+1569445278060 	68.90	MB RAM	            [ExampleServer] --- There should be 3 subscribed to message Message_B
+1569445278064 	69.11	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_A to ExampleServerGUI
+1569445278064 	69.11	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_C to ExampleServerGUI
+1569445278064 	69.11	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_A to RTI-v2-GUI
+1569445278064 	69.30	MB RAM	       [RTIConnectThread_B] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"17\",\"nextOrder\":\"1\"}","timestamp":"1569445278026","vTimestamp":16,"source":"B","tcp":"false"}
+1569445278064 	69.30	MB RAM	       [RTIConnectThread_G] --- Sent message Message_A to G
+1569445278080 	69.30	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_C to RTI-v2-GUI
+1569445278080 	69.30	MB RAM	            [ExampleServer] --- There should be 3 subscribed to message Message_A
+1569445278080 	69.30	MB RAM	            [ExampleServer] --- received message from index 3
+1569445278080 	69.30	MB RAM	       [RTIConnectThread_A] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"17\",\"nextOrder\":\"1\"}","timestamp":"1569445278042","vTimestamp":16,"source":"A","tcp":"false"}
+1569445278080 	69.30	MB RAM	       [RTIConnectThread_G] --- Sent message Message_C to G
+1569445278096 	69.30	MB RAM	            [ExampleServer] --- received message from index 6
+1569445278096 	69.30	MB RAM	            [ExampleServer] --- We're still waiting for this thread to confirm it's finished this step: 4 C
+1569445278096 	69.30	MB RAM	            [ExampleServer] --- There should be 3 subscribed to message Message_C
+1569445278096 	69.45	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445278111 	69.45	MB RAM	            [ExampleServer] --- We're still waiting for this thread to confirm it's finished this step: 4 C
+1569445278111 	70.16	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445278111 	70.16	MB RAM	       [RTIConnectThread_C] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"17\",\"nextOrder\":\"1\"}","timestamp":"1569445278042","vTimestamp":16,"source":"C","tcp":"false"}
+1569445278111 	70.16	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445278111 	70.16	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445278127 	70.16	MB RAM	       [RTIConnectThread_G] --- I RECEIVED INPUT! It was : {"name":"Message_G","content":"{\"m_soldApples\":\"0\",\"m_soldBlueberries\":\"0\",\"m_soldCarrots\":\"0\"}","timestamp":"1569445278127","vTimestamp":16,"source":"G","tcp":"false"}
+1569445278127 	70.35	MB RAM	            [ExampleServer] --- received message from index 4
+1569445278127 	70.35	MB RAM	            [ExampleServer] --- received message from index 5
+1569445278127 	70.35	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445278142 	70.35	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_G to ExampleServerGUI
+1569445278142 	70.35	MB RAM	            [ExampleServer] --- We're still waiting for this thread to confirm it's finished this step: 5 G
+1569445278142 	70.35	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_G to RTI-v2-GUI
+1569445278142 	70.49	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445278158 	71.03	MB RAM	       [RTIConnectThread_B] --- Sent message Message_G to B
+1569445278158 	71.53	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445278158 	71.53	MB RAM	       [RTIConnectThread_C] --- Sent message Message_G to C
+1569445278158 	71.53	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445278158 	71.53	MB RAM	       [RTIConnectThread_A] --- Sent message Message_G to A
+1569445278174 	71.53	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445278174 	71.53	MB RAM	            [ExampleServer] --- There should be 5 subscribed to message Message_G
+1569445278174 	71.53	MB RAM	       [RTIConnectThread_G] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"17\",\"nextOrder\":\"1\"}","timestamp":"1569445278127","vTimestamp":16,"source":"G","tcp":"false"}
+1569445278174 	71.53	MB RAM	            [ExampleServer] --- received message from index 5
+1569445278189 	71.53	MB RAM	            [ExampleServer] --- All threads have finished current step/order. Now preparing to send RTI_StartStep.
+1569445278189 	7.39	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_StartStep to ExampleServerGUI
+1569445278189 	7.45	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_StartStep to RTI-v2-GUI
+1569445278189 	7.45	MB RAM	       [RTIConnectThread_B] --- Sent message RTI_StartStep to B
+1569445278205 	7.45	MB RAM	       [RTIConnectThread_C] --- Sent message RTI_StartStep to C
+1569445278205 	7.46	MB RAM	       [RTIConnectThread_G] --- Sent message RTI_StartStep to G
+1569445278205 	7.99	MB RAM	       [RTIConnectThread_A] --- Sent message RTI_StartStep to A
+1569445278205 	7.99	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445278221 	8.43	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445278221 	8.43	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445278236 	8.50	MB RAM	       [RTIConnectThread_B] --- I RECEIVED INPUT! It was : {"name":"Message_B","content":"{\"m_wantBlueberries\":\"5\"}","timestamp":"1569445278236","vTimestamp":17,"source":"B","tcp":"false"}
+1569445278236 	8.50	MB RAM	            [ExampleServer] --- received message from index 3
+1569445278236 	8.95	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_B to ExampleServerGUI
+1569445278236 	8.95	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_B to RTI-v2-GUI
+1569445278252 	9.38	MB RAM	       [RTIConnectThread_C] --- I RECEIVED INPUT! It was : {"name":"Message_C","content":"{\"m_wantCarrots\":\"5\"}","timestamp":"1569445278252","vTimestamp":17,"source":"C","tcp":"false"}
+1569445278252 	9.55	MB RAM	       [RTIConnectThread_A] --- I RECEIVED INPUT! It was : {"name":"Message_A","content":"{\"m_wantApples\":\"5\"}","timestamp":"1569445278252","vTimestamp":17,"source":"A","tcp":"false"}
+1569445278252 	9.55	MB RAM	            [ExampleServer] --- received message from index 6
+1569445278252 	9.55	MB RAM	       [RTIConnectThread_G] --- Sent message Message_B to G
+1569445278267 	9.76	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_A to ExampleServerGUI
+1569445278267 	9.76	MB RAM	            [ExampleServer] --- received message from index 4
+1569445278267 	9.76	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_A to RTI-v2-GUI
+1569445278267 	9.76	MB RAM	            [ExampleServer] --- There should be 3 subscribed to message Message_B
+1569445278267 	9.99	MB RAM	       [RTIConnectThread_G] --- Sent message Message_A to G
+1569445278283 	9.99	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_C to ExampleServerGUI
+1569445278283 	9.99	MB RAM	            [ExampleServer] --- There should be 3 subscribed to message Message_A
+1569445278283 	9.99	MB RAM	       [RTIConnectThread_B] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"18\",\"nextOrder\":\"1\"}","timestamp":"1569445278236","vTimestamp":17,"source":"B","tcp":"false"}
+1569445278283 	9.99	MB RAM	            [ExampleServer] --- received message from index 3
+1569445278283 	10.42	MB RAM	       [RTIConnectThread_A] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"18\",\"nextOrder\":\"1\"}","timestamp":"1569445278252","vTimestamp":17,"source":"A","tcp":"false"}
+1569445278299 	10.42	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_C to RTI-v2-GUI
+1569445278299 	10.42	MB RAM	            [ExampleServer] --- received message from index 6
+1569445278299 	10.42	MB RAM	            [ExampleServer] --- We're still waiting for this thread to confirm it's finished this step: 4 C
+1569445278299 	10.60	MB RAM	       [RTIConnectThread_G] --- Sent message Message_C to G
+1569445278299 	10.60	MB RAM	            [ExampleServer] --- There should be 3 subscribed to message Message_C
+1569445278314 	10.60	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445278314 	10.60	MB RAM	            [ExampleServer] --- We're still waiting for this thread to confirm it's finished this step: 4 C
+1569445278314 	10.60	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445278314 	10.81	MB RAM	       [RTIConnectThread_C] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"18\",\"nextOrder\":\"1\"}","timestamp":"1569445278252","vTimestamp":17,"source":"C","tcp":"false"}
+1569445278330 	10.81	MB RAM	            [ExampleServer] --- received message from index 4
+1569445278330 	10.81	MB RAM	       [RTIConnectThread_G] --- I RECEIVED INPUT! It was : {"name":"Message_G","content":"{\"m_soldApples\":\"5\",\"m_soldBlueberries\":\"5\",\"m_soldCarrots\":\"5\"}","timestamp":"1569445278330","vTimestamp":17,"source":"G","tcp":"false"}
+1569445278330 	10.81	MB RAM	            [ExampleServer] --- received message from index 5
+1569445278330 	10.81	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445278330 	11.34	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445278346 	11.65	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_G to ExampleServerGUI
+1569445278346 	11.65	MB RAM	            [ExampleServer] --- We're still waiting for this thread to confirm it's finished this step: 5 G
+1569445278346 	11.65	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_G to RTI-v2-GUI
+1569445278346 	12.09	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445278361 	12.09	MB RAM	       [RTIConnectThread_B] --- Sent message Message_G to B
+1569445278361 	12.09	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445278361 	12.09	MB RAM	       [RTIConnectThread_C] --- Sent message Message_G to C
+1569445278361 	12.09	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445278361 	12.61	MB RAM	       [RTIConnectThread_A] --- Sent message Message_G to A
+1569445278377 	12.61	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445278377 	12.61	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445278377 	12.61	MB RAM	            [ExampleServer] --- There should be 5 subscribed to message Message_G
+1569445278377 	12.61	MB RAM	       [RTIConnectThread_G] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"18\",\"nextOrder\":\"1\"}","timestamp":"1569445278330","vTimestamp":17,"source":"G","tcp":"false"}
+1569445278377 	12.61	MB RAM	            [ExampleServer] --- received message from index 5
+1569445278392 	12.61	MB RAM	            [ExampleServer] --- All threads have finished current step/order. Now preparing to send RTI_StartStep.
+1569445278392 	12.61	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_StartStep to ExampleServerGUI
+1569445278392 	12.61	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_StartStep to RTI-v2-GUI
+1569445278392 	12.70	MB RAM	       [RTIConnectThread_B] --- Sent message RTI_StartStep to B
+1569445278408 	13.22	MB RAM	       [RTIConnectThread_C] --- Sent message RTI_StartStep to C
+1569445278408 	13.22	MB RAM	       [RTIConnectThread_G] --- Sent message RTI_StartStep to G
+1569445278408 	13.22	MB RAM	       [RTIConnectThread_A] --- Sent message RTI_StartStep to A
+1569445278408 	13.22	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445278424 	13.75	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445278424 	13.75	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445278439 	13.75	MB RAM	       [RTIConnectThread_B] --- I RECEIVED INPUT! It was : {"name":"Message_B","content":"{\"m_wantBlueberries\":\"0\"}","timestamp":"1569445278439","vTimestamp":18,"source":"B","tcp":"false"}
+1569445278439 	13.75	MB RAM	            [ExampleServer] --- received message from index 3
+1569445278439 	14.19	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_B to ExampleServerGUI
+1569445278439 	14.19	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_B to RTI-v2-GUI
+1569445278455 	14.19	MB RAM	       [RTIConnectThread_C] --- I RECEIVED INPUT! It was : {"name":"Message_C","content":"{\"m_wantCarrots\":\"0\"}","timestamp":"1569445278455","vTimestamp":18,"source":"C","tcp":"false"}
+1569445278455 	14.40	MB RAM	       [RTIConnectThread_A] --- I RECEIVED INPUT! It was : {"name":"Message_A","content":"{\"m_wantApples\":\"0\"}","timestamp":"1569445278455","vTimestamp":18,"source":"A","tcp":"false"}
+1569445278455 	14.40	MB RAM	       [RTIConnectThread_G] --- Sent message Message_B to G
+1569445278455 	14.40	MB RAM	            [ExampleServer] --- received message from index 6
+1569445278455 	14.40	MB RAM	            [ExampleServer] --- received message from index 4
+1569445278470 	14.40	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_A to ExampleServerGUI
+1569445278470 	15.01	MB RAM	            [ExampleServer] --- There should be 3 subscribed to message Message_B
+1569445278470 	15.01	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_A to RTI-v2-GUI
+1569445278470 	15.01	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_C to ExampleServerGUI
+1569445278486 	15.65	MB RAM	       [RTIConnectThread_G] --- Sent message Message_A to G
+1569445278486 	15.65	MB RAM	            [ExampleServer] --- There should be 3 subscribed to message Message_A
+1569445278486 	15.65	MB RAM	       [RTIConnectThread_B] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"19\",\"nextOrder\":\"1\"}","timestamp":"1569445278439","vTimestamp":18,"source":"B","tcp":"false"}
+1569445278486 	15.65	MB RAM	            [ExampleServer] --- received message from index 3
+1569445278486 	15.65	MB RAM	       [RTIConnectThread_A] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"19\",\"nextOrder\":\"1\"}","timestamp":"1569445278455","vTimestamp":18,"source":"A","tcp":"false"}
+1569445278502 	15.65	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_C to RTI-v2-GUI
+1569445278502 	15.65	MB RAM	            [ExampleServer] --- received message from index 6
+1569445278502 	15.65	MB RAM	            [ExampleServer] --- We're still waiting for this thread to confirm it's finished this step: 4 C
+1569445278502 	15.84	MB RAM	       [RTIConnectThread_G] --- Sent message Message_C to G
+1569445278518 	15.84	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445278521 	15.84	MB RAM	            [ExampleServer] --- We're still waiting for this thread to confirm it's finished this step: 4 C
+1569445278525 	16.29	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445278527 	16.51	MB RAM	            [ExampleServer] --- There should be 3 subscribed to message Message_C
+1569445278527 	16.51	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445278527 	16.51	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445278527 	16.51	MB RAM	       [RTIConnectThread_C] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"19\",\"nextOrder\":\"1\"}","timestamp":"1569445278455","vTimestamp":18,"source":"C","tcp":"false"}
+1569445278542 	16.51	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445278542 	16.51	MB RAM	       [RTIConnectThread_G] --- I RECEIVED INPUT! It was : {"name":"Message_G","content":"{\"m_soldApples\":\"0\",\"m_soldBlueberries\":\"0\",\"m_soldCarrots\":\"0\"}","timestamp":"1569445278542","vTimestamp":18,"source":"G","tcp":"false"}
+1569445278542 	16.51	MB RAM	            [ExampleServer] --- received message from index 4
+1569445278542 	16.51	MB RAM	            [ExampleServer] --- received message from index 5
+1569445278542 	16.51	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445278558 	16.89	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_G to ExampleServerGUI
+1569445278558 	16.89	MB RAM	            [ExampleServer] --- We're still waiting for this thread to confirm it's finished this step: 5 G
+1569445278558 	16.89	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_G to RTI-v2-GUI
+1569445278558 	17.32	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445278573 	17.85	MB RAM	       [RTIConnectThread_B] --- Sent message Message_G to B
+1569445278573 	17.85	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445278573 	17.85	MB RAM	       [RTIConnectThread_C] --- Sent message Message_G to C
+1569445278573 	17.85	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445278589 	17.85	MB RAM	       [RTIConnectThread_A] --- Sent message Message_G to A
+1569445278589 	17.85	MB RAM	            [ExampleServer] --- There should be 5 subscribed to message Message_G
+1569445278589 	17.85	MB RAM	       [RTIConnectThread_G] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"19\",\"nextOrder\":\"1\"}","timestamp":"1569445278542","vTimestamp":18,"source":"G","tcp":"false"}
+1569445278589 	17.85	MB RAM	            [ExampleServer] --- received message from index 5
+1569445278589 	17.85	MB RAM	            [ExampleServer] --- All threads have finished current step/order. Now preparing to send RTI_StartStep.
+1569445278605 	17.85	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_StartStep to ExampleServerGUI
+1569445278605 	18.92	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_StartStep to RTI-v2-GUI
+1569445278605 	18.92	MB RAM	       [RTIConnectThread_B] --- Sent message RTI_StartStep to B
+1569445278605 	18.92	MB RAM	       [RTIConnectThread_C] --- Sent message RTI_StartStep to C
+1569445278621 	18.92	MB RAM	       [RTIConnectThread_G] --- Sent message RTI_StartStep to G
+1569445278625 	18.92	MB RAM	       [RTIConnectThread_A] --- Sent message RTI_StartStep to A
+1569445278629 	19.51	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445278633 	19.51	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445278637 	19.51	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445278643 	19.51	MB RAM	       [RTIConnectThread_C] --- I RECEIVED INPUT! It was : {"name":"Message_C","content":"{\"m_wantCarrots\":\"5\"}","timestamp":"1569445278642","vTimestamp":19,"source":"C","tcp":"false"}
+1569445278647 	19.51	MB RAM	       [RTIConnectThread_B] --- I RECEIVED INPUT! It was : {"name":"Message_B","content":"{\"m_wantBlueberries\":\"5\"}","timestamp":"1569445278643","vTimestamp":19,"source":"B","tcp":"false"}
+1569445278665 	19.51	MB RAM	       [RTIConnectThread_A] --- I RECEIVED INPUT! It was : {"name":"Message_A","content":"{\"m_wantApples\":\"5\"}","timestamp":"1569445278655","vTimestamp":19,"source":"A","tcp":"false"}
+1569445278669 	19.51	MB RAM	            [ExampleServer] --- received message from index 4
+1569445278672 	19.51	MB RAM	            [ExampleServer] --- received message from index 6
+1569445278672 	19.73	MB RAM	            [ExampleServer] --- received message from index 3
+1569445278672 	19.73	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_A to ExampleServerGUI
+1569445278672 	19.73	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_C to ExampleServerGUI
+1569445278687 	19.95	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_A to RTI-v2-GUI
+1569445278687 	20.04	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_B to ExampleServerGUI
+1569445278687 	20.04	MB RAM	       [RTIConnectThread_G] --- Sent message Message_A to G
+1569445278687 	20.04	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_C to RTI-v2-GUI
+1569445278703 	20.04	MB RAM	            [ExampleServer] --- There should be 3 subscribed to message Message_A
+1569445278703 	20.47	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_B to RTI-v2-GUI
+1569445278703 	20.47	MB RAM	       [RTIConnectThread_A] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"20\",\"nextOrder\":\"1\"}","timestamp":"1569445278657","vTimestamp":19,"source":"A","tcp":"false"}
+1569445278703 	21.09	MB RAM	       [RTIConnectThread_G] --- Sent message Message_C to G
+1569445278703 	21.09	MB RAM	            [ExampleServer] --- received message from index 6
+1569445278718 	21.09	MB RAM	       [RTIConnectThread_G] --- Sent message Message_B to G
+1569445278718 	21.09	MB RAM	            [ExampleServer] --- We're still waiting for this thread to confirm it's finished this step: 3 B
+1569445278718 	21.09	MB RAM	            [ExampleServer] --- There should be 3 subscribed to message Message_C
+1569445278718 	21.09	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445278734 	21.30	MB RAM	            [ExampleServer] --- There should be 3 subscribed to message Message_B
+1569445278734 	21.30	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445278734 	21.30	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445278734 	21.30	MB RAM	       [RTIConnectThread_C] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"20\",\"nextOrder\":\"1\"}","timestamp":"1569445278643","vTimestamp":19,"source":"C","tcp":"false"}
+1569445278734 	21.30	MB RAM	            [ExampleServer] --- received message from index 4
+1569445278750 	21.30	MB RAM	       [RTIConnectThread_B] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"20\",\"nextOrder\":\"1\"}","timestamp":"1569445278643","vTimestamp":19,"source":"B","tcp":"false"}
+1569445278750 	21.30	MB RAM	       [RTIConnectThread_G] --- I RECEIVED INPUT! It was : {"name":"Message_G","content":"{\"m_soldApples\":\"5\",\"m_soldBlueberries\":\"5\",\"m_soldCarrots\":\"5\"}","timestamp":"1569445278750","vTimestamp":19,"source":"G","tcp":"false"}
+1569445278750 	21.30	MB RAM	            [ExampleServer] --- received message from index 5
+1569445278750 	21.30	MB RAM	            [ExampleServer] --- We're still waiting for this thread to confirm it's finished this step: 3 B
+1569445278750 	21.75	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message Message_G to ExampleServerGUI
+1569445278765 	21.75	MB RAM	            [ExampleServer] --- received message from index 3
+1569445278765 	21.75	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message Message_G to RTI-v2-GUI
+1569445278765 	22.13	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445278765 	22.13	MB RAM	       [RTIConnectThread_B] --- Sent message Message_G to B
+1569445278781 	22.13	MB RAM	            [ExampleServer] --- We're still waiting for this thread to confirm it's finished this step: 5 G
+1569445278781 	22.13	MB RAM	       [RTIConnectThread_C] --- Sent message Message_G to C
+1569445278781 	22.14	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445278781 	22.57	MB RAM	       [RTIConnectThread_A] --- Sent message Message_G to A
+1569445278797 	22.57	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445278801 	23.18	MB RAM	            [ExampleServer] --- There should be 5 subscribed to message Message_G
+1569445278805 	23.18	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445278808 	23.18	MB RAM	       [RTIConnectThread_G] --- I RECEIVED INPUT! It was : {"name":"RTI_EndSystem","content":"","timestamp":"1569445278750","vTimestamp":19,"source":"G","tcp":"false"}
+1569445278812 	23.18	MB RAM	            [ExampleServer] --- received message from index 5
+1569445278816 	23.18	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445278821 	23.18	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_EndSystem to ExampleServerGUI
+1569445278824 	23.19	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445278828 	24.16	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_EndSystem to RTI-v2-GUI
+1569445278832 	24.16	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_EndSystem
+1569445278836 	24.16	MB RAM	       [RTIConnectThread_G] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"20\",\"nextOrder\":\"1\"}","timestamp":"1569445278750","vTimestamp":19,"source":"G","tcp":"false"}
+1569445278839 	24.16	MB RAM	            [ExampleServer] --- received message from index 5
+1569445278842 	24.16	MB RAM	            [ExampleServer] --- All threads have finished current step/order. Now preparing to send RTI_StartStep.
+1569445278846 	24.16	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_StartStep to ExampleServerGUI
+1569445278851 	24.16	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_StartStep to RTI-v2-GUI
+1569445278855 	24.23	MB RAM	       [RTIConnectThread_B] --- Sent message RTI_StartStep to B
+1569445278859 	24.76	MB RAM	       [RTIConnectThread_C] --- Sent message RTI_StartStep to C
+1569445278863 	24.76	MB RAM	       [RTIConnectThread_G] --- Sent message RTI_StartStep to G
+1569445278867 	24.76	MB RAM	       [RTIConnectThread_A] --- Sent message RTI_StartStep to A
+1569445278871 	24.76	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445278876 	25.28	MB RAM	       [RTIConnectThread_B] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"21\",\"nextOrder\":\"1\"}","timestamp":"1569445278872","vTimestamp":19,"source":"B","tcp":"false"}
+1569445278879 	25.72	MB RAM	       [RTIConnectThread_C] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"21\",\"nextOrder\":\"1\"}","timestamp":"1569445278871","vTimestamp":19,"source":"C","tcp":"false"}
+1569445278884 	25.72	MB RAM	            [ExampleServer] --- received message from index 3
+1569445278889 	25.72	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445278894 	25.72	MB RAM	            [ExampleServer] --- All threads have finished current step/order. Now preparing to send RTI_StartStep.
+1569445278898 	25.72	MB RAM	       [RTIConnectThread_A] --- I RECEIVED INPUT! It was : {"name":"RTI_FinishStep","content":"{\"nextStep\":\"21\",\"nextOrder\":\"1\"}","timestamp":"1569445278886","vTimestamp":19,"source":"A","tcp":"false"}
+1569445278905 	25.72	MB RAM	            [ExampleServer] --- received message from index 4
+1569445278909 	25.72	MB RAM	            [ExampleServer] --- received message from index 6
+1569445278914 	25.72	MB RAM	            [ExampleServer] --- The RTI Server recognizes that all simulators should have received the order to stop, and therefore, no further responses should be received.
+1569445278918 	25.72	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445278922 	26.18	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445278925 	26.18	MB RAM	            [ExampleServer] --- All threads have finished current step/order. Now preparing to send RTI_StartStep.
+1569445278929 	26.18	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445278934 	26.18	MB RAM	       [RTIConnectThread_G] --- Exception during thread run >> java.net.SocketException: Software caused connection abort: recv failed
+1569445278938 	26.18	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445278941 	26.33	MB RAM	            [ExampleServer] --- The RTI Server recognizes that all simulators should have received the order to stop, and therefore, no further responses should be received.
+1569445278945 	26.33	MB RAM	       [RTIConnectThread_B] --- done running thread.
+1569445278949 	26.33	MB RAM	       [RTIConnectThread_G] --- done running thread.
+1569445278953 	26.76	MB RAM	         [ExampleServerGUI] --- 	 updating number of connected apps = 5
+1569445278957 	26.76	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_UpdateSim to ExampleServerGUI
+1569445278961 	27.85	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445278965 	28.06	MB RAM	            [ExampleServer] --- All threads have finished current step/order. Now preparing to send RTI_StartStep.
+1569445278969 	28.06	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445278972 	28.06	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_UpdateSim to RTI-v2-GUI
+1569445278976 	28.06	MB RAM	         [ExampleServerGUI] --- Now currently this many connected apps: 5
+1569445278980 	28.43	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_UpdateSim to ExampleServerGUI
+1569445278985 	28.43	MB RAM	         [ExampleServerGUI] --- 	 updating number of connected apps = 4
+1569445278990 	28.43	MB RAM	       [RTIConnectThread_C] --- Sent message RTI_UpdateSim to C
+1569445278995 	29.47	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445278999 	29.47	MB RAM	            [ExampleServer] --- The RTI Server recognizes that all simulators should have received the order to stop, and therefore, no further responses should be received.
+1569445279003 	29.47	MB RAM	       [RTIConnectThread_A] --- Exception during thread run >> java.net.SocketException: Software caused connection abort: recv failed
+1569445279007 	29.47	MB RAM	       [RTIConnectThread_A] --- Sent message RTI_UpdateSim to A
+1569445279011 	29.47	MB RAM	         [ExampleServerGUI] --- Now currently this many connected apps: 4
+1569445279015 	29.47	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_UpdateSim to RTI-v2-GUI
+1569445279021 	30.00	MB RAM	       [RTIConnectThread_A] --- done running thread.
+1569445279026 	30.00	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_FinishStep to ExampleServerGUI
+1569445279030 	30.52	MB RAM	         [ExampleServerGUI] --- 	 updating number of connected apps = 3
+1569445279035 	30.52	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_UpdateSim to ExampleServerGUI
+1569445279041 	31.19	MB RAM	       [RTIConnectThread_C] --- Sent message RTI_UpdateSim to C
+1569445279046 	31.19	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_UpdateSim to RTI-v2-GUI
+1569445279051 	31.19	MB RAM	         [ExampleServerGUI] --- Now currently this many connected apps: 3
+1569445279066 	31.19	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_FinishStep to RTI-v2-GUI
+1569445279073 	31.19	MB RAM	       [RTIConnectThread_C] --- Sent message RTI_UpdateSim to C
+1569445279080 	31.57	MB RAM	            [ExampleServer] --- There should be 2 subscribed to message RTI_FinishStep
+1569445279086 	31.57	MB RAM	       [RTIConnectThread_C] --- Exception during thread run >> java.net.SocketException: Software caused connection abort: recv failed
+1569445279091 	31.57	MB RAM	       [RTIConnectThread_C] --- done running thread.
+1569445279097 	32.46	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_UpdateSim to ExampleServerGUI
+1569445279106 	32.46	MB RAM	         [ExampleServerGUI] --- 	 updating number of connected apps = 2
+1569445279111 	32.46	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- Sent message RTI_UpdateSim to RTI-v2-GUI
+1569445279117 	32.62	MB RAM	         [ExampleServerGUI] --- Now currently this many connected apps: 2
+1569445401539 	33.15	MB RAM	[RTIConnectThread_RTI-v2-GUI] --- done running thread.
+1569445401544 	33.15	MB RAM	[RTIConnectThread_ExampleServerGUI] --- Sent message RTI_UpdateSim to ExampleServerGUI
+1569445401548 	33.15	MB RAM	         [ExampleServerGUI] --- 	 updating number of connected apps = 1
+1569445401553 	33.60	MB RAM	         [ExampleServerGUI] --- Now currently this many connected apps: 1

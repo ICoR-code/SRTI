@@ -19,7 +19,7 @@ timestep_var_delta = "";
 
 %% read input configuration files
 
-fprintf('Starting SRTI Wrapper (v2_16_02) for Matlab. Reading settings files... \n');
+fprintf('Starting SRTI Wrapper (v2_20_02) for Matlab. Reading settings files... \n');
 
 settingsName = 'Settings.json';
 settingsVal = jsondecode(fileread(settingsName));
@@ -41,7 +41,7 @@ fprintf('Successfully read input settings files. \n');
 
 fprintf('Starting RTILib, connecting to server. \n');
 
-javaaddpath SRTI_v2_12_02.jar;
+javaaddpath SRTI_v2_20_02.jar;
 import mainServer.*;
 rtiLib = RTILib();
 rtiLib.setDebugOutput(configVal.debugConsole);

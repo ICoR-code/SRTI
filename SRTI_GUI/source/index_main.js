@@ -4307,15 +4307,15 @@
 								var varNameIndex2 =  simulatorObjects[j].subscribedDetails[k][m][1];
 								if (varNameIndex != -1 && varNameIndex2 != -1){
 									varChannel.push(
-									{	valueName: listOfMessages[simulatorObjects[j].subscribedMessages[k]].variables[simulatorObjects[j].subscribedDetails[k][m][1]].name,
+									{	valueName: messageObjects[simulatorObjects[j].subscribedMessages[k]].original.variables[simulatorObjects[j].subscribedDetails[k][m][1]].name,//listOfMessages[simulatorObjects[j].subscribedMessages[k]].variables[simulatorObjects[j].subscribedDetails[k][m][1]].name,
 										varName: listOfSimulators[i].variables[simulatorObjects[j].subscribedDetails[k][m][0]].name
 									});
 								}
 							}
 						    subscribedChannels.push(
 							{
-								messageName: listOfMessages[simulatorObjects[j].subscribedMessages[k]].name,
-								onetime: (simulatorObjects[j].subscribedInitial[k] == "true"),
+								messageName: messageObjects[simulatorObjects[j].subscribedMessages[k]].original.name,//listOfMessages[simulatorObjects[j].subscribedMessages[k]].name,
+								oneTime: (simulatorObjects[j].subscribedInitial[k] == "true"),
 								mandatory: true,
 								relativeOrder: parseInt(simulatorObjects[j].subscribedRelative[k]),
 								maxTimestep: parseInt(simulatorObjects[j].subscribedTimestep[k]),
@@ -4330,18 +4330,18 @@
 							let m = 0;
 							for (m = 0; m < simulatorObjects[j].publishedDetails[k].length; m++){
 								errorLocation = "p " + simulatorObjects[j].publishedMessages[k] + " " + simulatorObjects[j].publishedDetails[k][m][0] + " " + simulatorObjects[j].publishedDetails[k][m][1];
-								var varNameIndex = simulatorObjects[j].subscribedDetails[k][m][0];
-								var varNameIndex2 =  simulatorObjects[j].subscribedDetails[k][m][1];
+								var varNameIndex = simulatorObjects[j].publishedDetails[k][m][0];
+								var varNameIndex2 =  simulatorObjects[j].publishedDetails[k][m][1];
 								if (varNameIndex != -1 && varNameIndex2 != -1){
 									varChannel.push(
-									{	valueName: listOfMessages[simulatorObjects[j].publishedMessages[k]].variables[simulatorObjects[j].publishedDetails[k][m][0]].name,
+									{	valueName: messageObjects[simulatorObjects[j].publishedMessages[k]].original.variables[simulatorObjects[j].publishedDetails[k][m][0]].name,//listOfMessages[simulatorObjects[j].publishedMessages[k]].variables[simulatorObjects[j].publishedDetails[k][m][0]].name,
 										varName: listOfSimulators[i].variables[simulatorObjects[j].publishedDetails[k][m][1]].name
 									});
 								}
 							}
 							publishedChannels.push(
 							{
-								messageName: listOfMessages[simulatorObjects[j].publishedMessages[k]].name,
+								messageName: messageObjects[simulatorObjects[j].publishedMessages[k]].original.name,//listOfMessages[simulatorObjects[j].publishedMessages[k]].name,
 								initial: (simulatorObjects[j].publishedInitial[k] == "true"),
 								timestepDelta: parseInt(simulatorObjects[j].publishedTimeDelta[k]),
 								stage: parseInt(simulatorObjects[j].stage),
