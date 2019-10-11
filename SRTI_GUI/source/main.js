@@ -1,7 +1,9 @@
 // Modules to control application life and create native browser window
 const electron = require('electron');
-const {app, BrowserWindow, Menu} = electron;
+const { app, BrowserWindow, Menu } = electron;
 const path = require('path');
+
+const debug = /--debug/.test(process.argv[2])
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -13,39 +15,44 @@ const menutemplate = [
 	{
 		label: 'File',
 		submenu: [
-			{ label: 'New', role: 'new', 
-				click: function(){
-						/* To call external functions, in files loaded in index.html, this works!:
-						
-						mainWindow.webContents.executeJavaScript("alert('hello there!');");
-						mainWindow.webContents.executeJavaScript("UpdateSelectedStateButtons(2)");
-						*/
-					mainWindow.webContents.executeJavaScript("NewProject()");	
-				}
-			},	
-			{ label: 'Open', role: 'open',
-				click: function(){
-					mainWindow.webContents.executeJavaScript("OpenOpenProject()");	
+			{
+				label: 'New', role: 'new',
+				click: function () {
+					/* To call external functions, in files loaded in index.html, this works!:
+					
+					mainWindow.webContents.executeJavaScript("alert('hello there!');");
+					mainWindow.webContents.executeJavaScript("UpdateSelectedStateButtons(2)");
+					*/
+					mainWindow.webContents.executeJavaScript("NewProject()");
 				}
 			},
-			{ label: 'Save', role: 'save',
-				click: function(){
-					mainWindow.webContents.executeJavaScript("SaveProject()");	
+			{
+				label: 'Open', role: 'open',
+				click: function () {
+					mainWindow.webContents.executeJavaScript("OpenOpenProject()");
 				}
 			},
-			{ label: 'Save As', role: 'saveas',
-				click: function(){
-					mainWindow.webContents.executeJavaScript("OpenSaveAsProject()");	
+			{
+				label: 'Save', role: 'save',
+				click: function () {
+					mainWindow.webContents.executeJavaScript("SaveProject()");
+				}
+			},
+			{
+				label: 'Save As', role: 'saveas',
+				click: function () {
+					mainWindow.webContents.executeJavaScript("OpenSaveAsProject()");
 				}
 			},
 			{
 				label: 'Export Execute Files', role: 'exportexecute',
-				click: function(){
+				click: function () {
 					mainWindow.webContents.executeJavaScript("ExportExecuteFiles()");
 				}
 			},
-			{ label: 'Close', role: 'close', 
-				click: function(){
+			{
+				label: 'Close', role: 'close',
+				click: function () {
 					app.quit();
 				}
 			}
@@ -55,13 +62,15 @@ const menutemplate = [
 		label: 'Edit',
 		submenu: [
 			/*{ label: '(to add later)', role: '(to add later)'}*/
-			{ label: 'Undo', role: 'undo', id: 'undo', enabled: true,
-				click: function(){
+			{
+				label: 'Undo', role: 'undo', id: 'undo', enabled: true,
+				click: function () {
 					mainWindow.webContents.executeJavaScript("Undo()");
 				}
 			},
-			{ label: 'Redo', role: 'redo', id: 'redo', enabled: true,
-				click: function(){
+			{
+				label: 'Redo', role: 'redo', id: 'redo', enabled: true,
+				click: function () {
 					mainWindow.webContents.executeJavaScript("Redo()");
 				}
 			}
@@ -70,11 +79,11 @@ const menutemplate = [
 	{
 		label: 'View',
 		submenu: [
-			{ label: '(to add later)', role: '(to add later)'}
+			{ label: '(to add later)', role: '(to add later)' }
 			/*{ label: 'Zoom In', role: 'zoom in' },
 			{ label: 'Zoom Out', role: 'zoom out' }*/
 		]
-	}, 
+	},
 	{
 		label: 'Help',
 		submenu: [
@@ -140,120 +149,123 @@ Menu.setApplicationMenu(menu)
 }*/
 
 
-function createWindow () {
-  // Create the browser window.
-  mainWindow = new BrowserWindow({
-    width: 1200,
-    height: 700,
-    webPreferences: {
-      nodeIntegration: true
-    },
-	minWidth: 500,
-	minHeight: 600
-  })
+function createWindow() {
+	// Create the browser window.
+	mainWindow = new BrowserWindow({
+		width: 1200,
+		height: 700,
+		webPreferences: {
+			nodeIntegration: true
+		},
+		minWidth: 500,
+		minHeight: 600
+	})
 
-  // and load the index.html of the app.
-  mainWindow.loadFile('index.html');
- 
-  
-  /*mainWindow.webContents.on('did-finish-load', function(){
-	mainWindow.webContents.executeJavaScript("alert('hello there!');");
-	mainWindow.webContents.executeJavaScript("UpdateSelectedStateButtons(2)");
-  });*/
-  
-  /*var mainJS;
-  mainJS.loadURL(path.join(__dirname, 'index_main.js'));
-  
-  
-  mainJS.webContents.send('call-foo', 'asadsa');//UpdateSelectedStateButtons(2);*/
-  
-  
-  //UpdateSelectedStateButtons
-  
-  //UpdateSelectedStateButtons(2)
-  //UpdateSelectedStateButtons(2);
-  
-  // Open the DevTools.
-  // mainWindow.webContents.openDevTools()
+	// and load the index.html of the app.
+	mainWindow.loadFile('index.html');
 
-  // Emitted when the window is closed.
-  mainWindow.on('closed', function () {
-    // Dereference the window object, usually you would store windows
-    // in an array if your app supports multi windows, this is the time
-    // when you should delete the corresponding element.
-    mainWindow = null
-  })
-  
- 
+
+	/*mainWindow.webContents.on('did-finish-load', function(){
+	  mainWindow.webContents.executeJavaScript("alert('hello there!');");
+	  mainWindow.webContents.executeJavaScript("UpdateSelectedStateButtons(2)");
+	});*/
+
+	/*var mainJS;
+	mainJS.loadURL(path.join(__dirname, 'index_main.js'));
+    
+    
+	mainJS.webContents.send('call-foo', 'asadsa');//UpdateSelectedStateButtons(2);*/
+
+
+	//UpdateSelectedStateButtons
+
+	//UpdateSelectedStateButtons(2)
+	//UpdateSelectedStateButtons(2);
+
+	// Open the DevTools.
+	// mainWindow.webContents.openDevTools()
+
+	if (debug) {
+		mainWindow.webContents.openDevTools()
+		mainWindow.maximize()
+		require('devtron').install()
+	}
+
+	// Emitted when the window is closed.
+	mainWindow.on('closed', function () {
+		// Dereference the window object, usually you would store windows
+		// in an array if your app supports multi windows, this is the time
+		// when you should delete the corresponding element.
+		mainWindow = null
+	})
+
+
 }
 
-function onload(){
-	
-	 resizePanel( document.getElementById("seperator"), "H" );
-	 //splashWindow.destroy();
+function onload() {
+
+	resizePanel(document.getElementById("seperator"), "H");
+	//splashWindow.destroy();
 }
 
-function resizePanel( element, direction, handler )
+function resizePanel(element, direction, handler) {
+	console.log("resizePanel called");
+	// Two variables for tracking positions of the cursor
+	const drag = { x: 0, y: 0 };
+	const delta = { x: 0, y: 0 };
+	/* if present, the handler is where you move the DIV from
+	   otherwise, move the DIV from anywhere inside the DIV */
+	handler ? (handler.onmousedown = dragMouseDown) : (element.onmousedown = dragMouseDown);
+
+	// function that will be called whenever the down event of the mouse is raised
+	function dragMouseDown(e) {
+		drag.x = e.clientX;
+		drag.y = e.clientY;
+		document.onmousemove = onMouseMove;
+		document.onmouseup = () => { document.onmousemove = document.onmouseup = null; }
+	}
+
+	// function that will be called whenever the up event of the mouse is raised
+	function onMouseMove(e) {
+		const currentX = e.clientX;
+		const currentY = e.clientY;
+
+		delta.x = currentX - drag.x;
+		delta.y = currentY - drag.y;
+
+		const offsetLeft = element.offsetLeft;
+		const offsetTop = element.offsetTop;
+
+
+		const first = document.getElementById("objectpanel");
+		const second = document.getElementById("canvaspanel");
+		let firstWidth = first.offsetWidth;
+		let secondWidth = second.offsetWidth;
+		if (direction === "H") // Horizontal
 		{
-		  console.log("resizePanel called");
-		  // Two variables for tracking positions of the cursor
-		  const drag = { x : 0, y : 0 };
-		  const delta = { x : 0, y : 0 };
-		  /* if present, the handler is where you move the DIV from
-			 otherwise, move the DIV from anywhere inside the DIV */
-		  handler ? ( handler.onmousedown = dragMouseDown ): ( element.onmousedown = dragMouseDown );
-
-		  // function that will be called whenever the down event of the mouse is raised
-		  function dragMouseDown( e )
-		  {
-			drag.x = e.clientX;
-			drag.y = e.clientY;
-			document.onmousemove = onMouseMove;
-			document.onmouseup = () => { document.onmousemove = document.onmouseup = null; }
-		  }
-
-		  // function that will be called whenever the up event of the mouse is raised
-		  function onMouseMove( e )
-		  {
-			const currentX = e.clientX;
-			const currentY = e.clientY;
-
-			delta.x = currentX - drag.x;
-			delta.y = currentY - drag.y;
-
-			const offsetLeft = element.offsetLeft;
-			const offsetTop = element.offsetTop;
-
-			
-			const first = document.getElementById("objectpanel");
-			const second = document.getElementById("canvaspanel");
-			let firstWidth = first.offsetWidth;
-			let secondWidth = second.offsetWidth;
-			if (direction === "H" ) // Horizontal
-			{
-				element.style.left = offsetLeft + delta.x + "px";
-				firstWidth += delta.x;
-				secondWidth -= delta.x;
-			}
-			drag.x = currentX;
-			drag.y = currentY;
-			first.style.width = firstWidth + "px";
-			second.style.width = secondWidth + "px";
-		  }
-		  
-		  console.log("resizePanel ended");
+			element.style.left = offsetLeft + delta.x + "px";
+			firstWidth += delta.x;
+			secondWidth -= delta.x;
 		}
+		drag.x = currentX;
+		drag.y = currentY;
+		first.style.width = firstWidth + "px";
+		second.style.width = secondWidth + "px";
+	}
 
-function drag_start(event){
-	
+	console.log("resizePanel ended");
 }
 
-function drag_over(event){
-	
+function drag_start(event) {
+
 }
 
-function drop(event){
-	
+function drag_over(event) {
+
+}
+
+function drop(event) {
+
 }
 
 // function is used for dragging and moving
@@ -268,15 +280,15 @@ app.on('ready', createWindow)
 
 // Quit when all windows are closed.
 app.on('window-all-closed', function () {
-  // On macOS it is common for applications and their menu bar
-  // to stay active until the user quits explicitly with Cmd + Q
-  if (process.platform !== 'darwin') app.quit()
+	// On macOS it is common for applications and their menu bar
+	// to stay active until the user quits explicitly with Cmd + Q
+	if (process.platform !== 'darwin') app.quit()
 })
 
 app.on('activate', function () {
-  // On macOS it's common to re-create a window in the app when the
-  // dock icon is clicked and there are no other windows open.
-  if (mainWindow === null) createWindow()
+	// On macOS it's common to re-create a window in the app when the
+	// dock icon is clicked and there are no other windows open.
+	if (mainWindow === null) createWindow()
 })
 
 app.on('onload', onload)

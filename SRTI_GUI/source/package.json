@@ -7,6 +7,7 @@
   "scripts": {
     "postinstall": "install-app-deps",
     "start": "electron .",
+    "dev": "electron . --debug",
     "pack": "build --dir",
     "dist": "build"
   },
@@ -14,13 +15,17 @@
     "win": {
       "target": "portable",
       "icon": "srti_modules/srti_logo/srti_logo_dark_512_icon.ico",
-	  "extraResources": ["./extraResources/**"]
+      "extraResources": [
+        "./extraResources/**"
+      ]
     }
   },
   "dependencies": {
+    "semantic-ui": "^2.4.2",
     "tree-kill": "^1.2.1"
   },
   "devDependencies": {
+    "devtron": "^1.4.0",
     "electron": "latest",
     "electron-builder": "^21.2.0"
   }
