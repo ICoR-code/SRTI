@@ -8,10 +8,10 @@ html {
 }
 
 @font-face {
-  font-family: 'Source Code Pro';
-  font-style: normal;
-  font-weight: 400;
-  src: local('Source Code Pro'), local('SourceCodePro'), url(fonts/SourceCodePro-Regular.ttf) format('truetype');
+    font-family: 'Source Code Pro';
+    font-style: normal;
+    font-weight: 400;
+    src: local('Source Code Pro'), local('SourceCodePro'), url(fonts/SourceCodePro-Regular.ttf) format('truetype');
 }
 
 #containermenu {
@@ -44,7 +44,7 @@ html {
     touch-action: none;
 }
 
-.item {
+.div-canvas-sim {
     width: 80px;
     height: 80px;
     background-color: rgb(255, 167, 147);
@@ -55,12 +55,12 @@ html {
     word-wrap: break-all;
 }
 
-.item:hover {
+.div-canvas-sim:hover {
     cursor: pointer;
     background-color: rgb(245, 230, 99);
 }
 
-.item-server {
+.div-canvas-server {
     width: calc(80px - 16px);
     height: 160px;
     background-color: rgb(62, 118, 209);
@@ -73,16 +73,16 @@ html {
     padding: 8px 8px 0px 8px;
 }
 
-.item-server:active {
+.div-canvas-server:active {
     background-color: rgba(168, 218, 220, 1.00);
 }
 
-.item-server:hover {
+.div-canvas-server:hover {
     cursor: pointer;
     background-color: rgb(37, 75, 137);
 }
 
-.item-message {
+.div-canvas-message {
     width: calc(4000px);
     height: 20px;
     padding: 0px 0px 0px 8px;
@@ -94,33 +94,33 @@ html {
     word-wrap: break-all;
 }
 
-.item-message:active {
+.div-canvas-message:active {
     background-color: rgba(168, 218, 220, 1.00);
 }
 
-.item-message:hover {
+.div-canvas-message:hover {
     cursor: pointer;
     background-color: rgb(245, 230, 99);
 }
 
-.item-pub {
+.div-canvas-pub {
     width: 48px;
     height: 10px;
     background-color: rgb(200, 200, 153);
 }
 
-.item-pub:hover {
+.div-canvas-pub:hover {
     cursor: pointer;
     background-color: rgb(245, 230, 99);
 }
 
-.item-sub {
+.div-canvas-sub {
     width: 48px;
     height: 10px;
     background-color: rgb(200, 200, 153);
 }
 
-.item-sub:hover {
+.div-canvas-sub:hover {
     cursor: pointer;
     background-color: rgb(245, 230, 99);
 }
@@ -137,17 +137,6 @@ html {
     height: calc(var(--containerheight));
     min-width: 10px;
 }
-
-/* #separator2 {
-    cursor: col-resize;
-    background: url(../srti_modules/images/icon_resizegrip.png) center center no-repeat #535353;
-    width: 10px;
-    height: calc(var(--containerheight));
-    min-width: 10px;
-} */
-
-
-
 
 #panelcontainer {
     width: 100%;
@@ -188,7 +177,7 @@ html {
     cursor: pointer;
 }
 
-.listitem {
+.btn-list-item {
     width: 100%;
     height: 16%;
     padding: 6px;
@@ -197,13 +186,13 @@ html {
     overflow: hidden;
 }
 
-.listitemdiv {
-    /* width: calc(100% - 2px - 2% - 4%); */
-    /* height: 36px; */
-    /* padding: 4% 2% 0% 4%; */
-    /* background: center center no-repeat #eee; */
+.div-list-item {
+    width: calc(100% - 2px - 2% - 4%);
+    height: 36px;
+    padding: 4% 2% 0% 4%;
+    background: center center no-repeat #eee;
     overflow: hidden;
-    /* border: 1px solid black; */
+    border: 1px solid black;
 }
 
 #canvaspanel {
@@ -211,7 +200,6 @@ html {
     width: 60%;
     height: calc(var(--containerheight) - 2px);
     min-width: 200px;
-    margin: 0;
     /* border: 1px solid black; */
 }
 
@@ -273,7 +261,6 @@ html {
     cursor: pointer;
 }
 
-
 #greyoverlay {
     position: fixed;
     top: 0;
@@ -291,8 +278,8 @@ html {
     left: 50vw;
     transform: translate(-50%, -50%);
     /* height: 300px;
-    width: 400px; */
-    /* padding: 8px 8px 8px 8px; */
+    width: 400px;
+    padding: 8px 8px 8px 8px; */
     background-color: white;
     display: none;
 }
@@ -309,23 +296,6 @@ html {
     margin: 0;
 }
 
-/* #btn-modalconfirm {
-    position: fixed;
-    height: 40px;
-    width: 80px;
-    bottom: 8px;
-    right: calc(80px + 16px);
-
-}
-
-#btn-modalcancel {
-    position: fixed;
-    height: 40px;
-    width: 80px;
-    bottom: 8px;
-    right: 8px;
-} */
-
 .dropbtn {
     background-color: #3498DB;
     color: white;
@@ -334,8 +304,7 @@ html {
     cursor: pointer;
 }
 
-.dropbtn:hover,
-.dropbtn:focus {
+.dropbtn:hover, .dropbtn:focus {
     background-color: #2980B9;
 }
 
@@ -369,38 +338,37 @@ html {
     display: block;
 }
 
-
 /* Code */
 
 code, kbd {
-  font-family: 'Source Code Pro', monospace;
-  border-radius: 4px;
-  padding: 1px 4px;
-  white-space: nowrap;
-  color: hsl(0,0%,36%);
-  background-color: hsla(0,0%,60%,.15);
+    font-family: 'Source Code Pro', monospace;
+    border-radius: 4px;
+    padding: 1px 4px;
+    white-space: nowrap;
+    color: hsl(0, 0%, 36%);
+    background-color: hsla(0, 0%, 60%, .15);
 }
 
 pre, kbd {
-  font-size: 13px;
-  overflow: auto;
-  padding: 1em;
-  margin: 0;
-  border-radius: 4px;
-  border: 1px solid;
-  border-color: var(--color-border);
-  background-color: white;
+    font-size: 13px;
+    overflow: auto;
+    padding: 1em;
+    margin: 0;
+    border-radius: 4px;
+    border: 1px solid;
+    border-color: var(--color-border);
+    background-color: white;
 }
 
 pre code {
-  white-space: pre;
+    white-space: pre;
 }
 
-pre > .hljs {
-  color: var(--color-subtle);
-  background-color: white;
+pre>.hljs {
+    color: var(--color-subtle);
+    background-color: white;
 }
 
 kbd {
-  padding: 0.5em;
+    padding: 0.5em;
 }
