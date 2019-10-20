@@ -123,6 +123,9 @@ importObjectFolder.onchange = function () {
 	}
 }
 
+// counting simulators and objects
+var nSimulators = 0
+var nMessages = 0
 
 
 // Initialize certain buttons and objects.
@@ -1026,8 +1029,8 @@ function CloseNewSimulatorObjectPrompt2() {
 
 	listOfMessageObjects = [];
 	listOfMessageFunctions = [];
-	UpdateObjectToSimulatorDef();
-	UpdateFunctionToSimulatorDef();
+	$('#modalNewSimulatorPanel1').empty()
+	$('#modalNewSimulatorPanel2').empty()
 	editExistingObject = -1;
 }
 
@@ -1062,83 +1065,146 @@ function CloseNewMessageObjectPrompt() {
 function NewPublishConnectionPrompt(message_id, simulator_id) {
 	DisplayOrClosePrompt("modalPublishDetails", "block");
 
-	var messageName = messageObjects[message_id].name;
-	var simulatorName = simulatorObjects[simulator_id].name;
-	var div01 = document.getElementById("modalPublishDetailsTitle01");
-	var div02 = document.getElementById("modalPublishDetailsTitle02");
-	div01.innerHTML = "Message Name: " + messageName + " <br>Message Variables:";
-	div02.innerHTML = "Simulator Name: " + simulatorName + " <br>Simulator Variables:";
+	let messageName = messageObjects[message_id].name;
+	let simulatorName = simulatorObjects[simulator_id].name;
 
-	var simulatorVariableDiv = document.getElementById("modalPublishDetailsSimList");
-	while (simulatorVariableDiv.firstChild) {
-		simulatorVariableDiv.removeChild(simulatorVariableDiv.firstChild);
-	}
-	let i = 0;
-	var addContentType = document.createElement("button");
-	addContentType.style = "width:100%;height:42px;";
-	addContentType.id = i;
-	addContentType.disabled = true;
-	addContentType.originalObjectId = simulator_id;
-	addContentType.variableObjectId = -1;
-	addContentType.onclick = function () {
-		var getSelectSimId = this.variableObjectId;
-		PublishConnectionPromptSelectSimVar(getSelectSimId);
-	};
-	var addContent = document.createTextNode("(DEFAULT)");
-	addContentType.appendChild(addContent);
-	simulatorVariableDiv.appendChild(addContentType);
-	for (i = 0; i < simulatorObjects[simulator_id].original.variables.length; i++) {
-		console.log("add variable to list here... " + i);
-		addContentType = document.createElement("button");
-		addContentType.style = "width:100%;height:42px;";
-		addContentType.id = i;
-		addContentType.disabled = true;
-		addContentType.originalObjectId = simulator_id;
-		addContentType.variableObjectId = i;
-		addContentType.onclick = function () {
-			var getSelectSimId = this.variableObjectId;
-			PublishConnectionPromptSelectSimVar(getSelectSimId);
-		};
-		addContent = document.createTextNode(simulatorObjects[simulator_id].original.variables[i].name + " ("
-			+ simulatorObjects[simulator_id].original.variables[i].valueType + ")");
-		addContentType.appendChild(addContent);
-		simulatorVariableDiv.appendChild(addContentType);
+	let segment = $('#modalPublishDetailsSegment')
+	segment.empty()
+
+	let message = $('<div>').addClass('nine wide middle aligned column').text('Message Name:')
+	message.append($('<label>').addClass('ui color-message label').text(messageName))
+
+	let simulator = $('<div>').addClass('six wide middle aligned column').text('Simulator Name:')
+	simulator.append($('<label>').addClass('ui color-simulator label').text(simulatorName))
+
+	segment.append(message)
+	segment.append(simulator)
+
+	let i, messageVar, label, simVar, dropdown, menu, j, item, newDropdown
+	dropdown = $('<div>', {
+		class: 'ui selection dropdown',
+		originalObjectId: message_id,
+		messageObjectId: -1,
+		variableObjectId: -1,
+	})
+
+	menu = $('<div>').addClass('menu')
+	item = $('<div>', {
+		class: 'item',
+		'data-value': -1,
+		text: "(DEFAULT)",
+		originalObjectId: simulator_id,
+	})
+
+	menu.append(item)
+
+
+	for (j = 0; j < simulatorObjects[simulator_id].original.variables.length; j++) {
+		item = $('<div>', {
+			class: 'item',
+			'data-value': j,
+			text: simulatorObjects[simulator_id].original.variables[j].name + " ("
+				+ simulatorObjects[simulator_id].original.variables[j].valueType + ")",
+			originalObjectId: simulator_id,
+		})
+
+		menu.append(item)
 	}
 
-	var messageVariableDiv = document.getElementById("modalPublishDetailsMessageList");
-	while (messageVariableDiv.firstChild) {
-		messageVariableDiv.removeChild(messageVariableDiv.firstChild);
-	}
+	dropdown.append($('<input>', { type: 'hidden' }))
+	dropdown.append($('<i>', { class: 'dropdown icon' }))
+	dropdown.append($('<div>', { class: 'default text', text: '(DEFAULT)' }))
+	dropdown.append(menu)
+
 	for (i = 0; i < messageObjects[message_id].original.variables.length; i++) {
 		console.log("add variable to list here... " + i);
-		addContentType = document.createElement("button");
-		addContentType.id = i;
-		addContentType.style = "width:50%;height:42px;position:relative;verticalAlign:top;";
-		addContentType.disabled = false;
-		addContentType.originalObjectId = message_id;
-		addContentType.messageObjectId = i;
-		addContentType.variableObjectId = -1;
-		addContentType.onclick = function () {
-			var getSelectMessageVarId = this.messageObjectId;
-			var getSelectMessageId = this.originalObjectId;
-			PublishConnectionPromptSelectMessageVar(getSelectMessageId, getSelectMessageVarId);
-		};
-		addContent = document.createTextNode(messageObjects[message_id].original.variables[i].name + " ("
-			+ messageObjects[message_id].original.variables[i].valueType + ")");
-		addContentType.appendChild(addContent);
-		var addContentType2 = document.createElement("button");
-		addContentType2.id = i;
-		addContentType2.varId = -1;
-		addContentType2.style = "width:50%;height:42px;position:relative;verticalAlign:top;";
-		addContentType2.disabled = true;
-		addContentType2.onclick = function () {
-		};
-		var addContent = document.createTextNode("(DEFAULT)");
-		addContentType2.appendChild(addContent);
-		addContentType.varRef = addContentType2;
-		messageVariableDiv.appendChild(addContentType);
-		messageVariableDiv.appendChild(addContentType2);
+		messageVar = $('<div>').addClass('nine wide middle aligned continued column')
+		label = $('<label>').text(messageObjects[message_id].original.variables[i].name + " ("
+			+ messageObjects[message_id].original.variables[i].valueType + ")")
+
+		messageVar.append(label)
+
+		simVar = $('<div>').addClass('six wide middle aligned continued column')
+
+		newDropdown = dropdown.clone().attr('messageObjectId', i)
+
+		simVar.append(newDropdown)
+
+		segment.append(messageVar)
+		segment.append(simVar)
+
+		newDropdown.dropdown()
 	}
+
+	$('input[name="radioPublishInitial"][value="false"]').parent().checkbox('check')
+	$('input[name="textPublishDelta"]').val("1")
+
+	// let i = 0;
+	// var addContentType = document.createElement("button");
+	// addContentType.style = "width:100%;height:42px;";
+	// addContentType.id = i;
+	// addContentType.disabled = true;
+	// addContentType.originalObjectId = simulator_id;
+	// addContentType.variableObjectId = -1;
+	// addContentType.onclick = function () {
+	// 	var getSelectSimId = this.variableObjectId;
+	// 	PublishConnectionPromptSelectSimVar(getSelectSimId);
+	// };
+	// var addContent = document.createTextNode("(DEFAULT)");
+	// addContentType.appendChild(addContent);
+	// simulatorVariableDiv.appendChild(addContentType);
+	// for (i = 0; i < simulatorObjects[simulator_id].original.variables.length; i++) {
+	// 	console.log("add variable to list here... " + i);
+	// 	addContentType = document.createElement("button");
+	// 	addContentType.style = "width:100%;height:42px;";
+	// 	addContentType.id = i;
+	// 	addContentType.disabled = true;
+	// 	addContentType.originalObjectId = simulator_id;
+	// 	addContentType.variableObjectId = i;
+	// 	addContentType.onclick = function () {
+	// 		var getSelectSimId = this.variableObjectId;
+	// 		PublishConnectionPromptSelectSimVar(getSelectSimId);
+	// 	};
+	// 	addContent = document.createTextNode(simulatorObjects[simulator_id].original.variables[i].name + " ("
+	// 		+ simulatorObjects[simulator_id].original.variables[i].valueType + ")");
+	// 	addContentType.appendChild(addContent);
+	// 	simulatorVariableDiv.appendChild(addContentType);
+	// }
+
+	// var messageVariableDiv = document.getElementById("modalPublishDetailsMessageList");
+	// while (messageVariableDiv.firstChild) {
+	// 	messageVariableDiv.removeChild(messageVariableDiv.firstChild);
+	// }
+	// for (i = 0; i < messageObjects[message_id].original.variables.length; i++) {
+	// 	console.log("add variable to list here... " + i);
+	// 	addContentType = document.createElement("button");
+	// 	addContentType.id = i;
+	// 	addContentType.style = "width:50%;height:42px;position:relative;verticalAlign:top;";
+	// 	addContentType.disabled = false;
+	// 	addContentType.originalObjectId = message_id;
+	// 	addContentType.messageObjectId = i;
+	// 	addContentType.variableObjectId = -1;
+	// 	addContentType.onclick = function () {
+	// 		var getSelectMessageVarId = this.messageObjectId;
+	// 		var getSelectMessageId = this.originalObjectId;
+	// 		PublishConnectionPromptSelectMessageVar(getSelectMessageId, getSelectMessageVarId);
+	// 	};
+	// 	addContent = document.createTextNode(messageObjects[message_id].original.variables[i].name + " ("
+	// 		+ messageObjects[message_id].original.variables[i].valueType + ")");
+	// 	addContentType.appendChild(addContent);
+	// 	var addContentType2 = document.createElement("button");
+	// 	addContentType2.id = i;
+	// 	addContentType2.varId = -1;
+	// 	addContentType2.style = "width:50%;height:42px;position:relative;verticalAlign:top;";
+	// 	addContentType2.disabled = true;
+	// 	addContentType2.onclick = function () {
+	// 	};
+	// 	var addContent = document.createTextNode("(DEFAULT)");
+	// 	addContentType2.appendChild(addContent);
+	// 	addContentType.varRef = addContentType2;
+	// 	messageVariableDiv.appendChild(addContentType);
+	// 	messageVariableDiv.appendChild(addContentType2);
+	// }
 }
 
 /*	EditPublishConnectionPrompt()
@@ -1147,111 +1213,205 @@ function NewPublishConnectionPrompt(message_id, simulator_id) {
 function EditPublishConnectionPrompt() {
 	DisplayOrClosePrompt("modalPublishDetails", "block");
 
-	// assumed this function is only called when editing existing 
-	var originalMessageId = simulatorObjects[editExistingObject].publishedMessages[editExistingObject2];
-	var messageName = messageObjects[simulatorObjects[editExistingObject].publishedMessages[editExistingObject2]].name;
-	var simulatorName = simulatorObjects[editExistingObject].name;
-	var publishedDetail = simulatorObjects[editExistingObject].publishedDetails[editExistingObject2];
-	var div01 = document.getElementById("modalPublishDetailsTitle01");
-	var div02 = document.getElementById("modalPublishDetailsTitle02");
-	div01.innerHTML = "Message Name: " + messageName + " <br>Message Variables:";
-	div02.innerHTML = "Simulator Name: " + simulatorName + " <br>Simulator Variables:";
-	var simulatorVariableDiv = document.getElementById("modalPublishDetailsSimList");
-	while (simulatorVariableDiv.firstChild) {
-		simulatorVariableDiv.removeChild(simulatorVariableDiv.firstChild);
+	let originalMessageId = simulatorObjects[editExistingObject].publishedMessages[editExistingObject2];
+	let messageName = messageObjects[simulatorObjects[editExistingObject].publishedMessages[editExistingObject2]].name;
+	let simulatorName = simulatorObjects[editExistingObject].name;
+	let publishedDetail = simulatorObjects[editExistingObject].publishedDetails[editExistingObject2];
+
+	let segment = $('#modalPublishDetailsSegment')
+	segment.empty()
+
+	let message = $('<div>').addClass('nine wide middle aligned column').text('Message Name:')
+	message.append($('<label>').addClass('ui color-message label').text(messageName))
+
+	let simulator = $('<div>').addClass('six wide middle aligned column').text('Simulator Name:')
+	simulator.append($('<label>').addClass('ui color-simulator label').text(simulatorName))
+
+	segment.append(message)
+	segment.append(simulator)
+
+	let i, messageVar, label, simVar, dropdown, menu, j, item, newDropdown, dropdowns = []
+	dropdown = $('<div>', {
+		class: 'ui selection dropdown',
+		originalObjectId: originalMessageId,
+		messageObjectId: -1,
+		variableObjectId: -1,
+	})
+
+	menu = $('<div>').addClass('menu')
+	item = $('<div>', {
+		class: 'item',
+		'data-value': -1,
+		text: "(DEFAULT)",
+		originalObjectId: editExistingObject,
+	})
+
+	menu.append(item)
+
+
+	for (j = 0; j < simulatorObjects[editExistingObject].original.variables.length; j++) {
+		item = $('<div>', {
+			class: 'item',
+			'data-value': j,
+			text: simulatorObjects[editExistingObject].original.variables[j].name + " ("
+				+ simulatorObjects[editExistingObject].original.variables[j].valueType + ")",
+			originalObjectId: editExistingObject,
+		})
+
+		menu.append(item)
 	}
 
-	let i = 0;
-	var addContentType = document.createElement("button");
-	addContentType.style = "width:100%;height:42px;";
-	addContentType.id = i;
-	addContentType.disabled = true;
-	addContentType.originalObjectId = editExistingObject;
-	addContentType.variableObjectId = -1;
-	addContentType.onclick = function () {
-		var getSelectSimId = this.variableObjectId;
-		PublishConnectionPromptSelectSimVar(getSelectSimId);
-	};
-	var addContent = document.createTextNode("(DEFAULT)");
-	addContentType.appendChild(addContent);
-	simulatorVariableDiv.appendChild(addContentType);
-	for (i = 0; i < simulatorObjects[editExistingObject].original.variables.length; i++) {
-		console.log("add variable to list here... " + i);
-		addContentType = document.createElement("button");
-		addContentType.style = "width:100%; height:42px;";
-		addContentType.id = i;
-		addContentType.disabled = true;
-		addContentType.originalObjectId = editExistingObject;
-		addContentType.variableObjectId = i;
-		addContentType.onclick = function () {
-			var getSelectSimId = this.variableObjectId;
-			PublishConnectionPromptSelectSimVar(getSelectSimId);
-		};
-		addContent = document.createTextNode(simulatorObjects[editExistingObject].original.variables[i].name + " ("
-			+ simulatorObjects[editExistingObject].original.variables[i].valueType + ")");
-		addContentType.appendChild(addContent);
-		simulatorVariableDiv.appendChild(addContentType);
-	}
+	dropdown.append($('<input>', { type: 'hidden' }))
+	dropdown.append($('<i>', { class: 'dropdown icon' }))
+	dropdown.append($('<div>', { class: 'default text', text: '(DEFAULT)' }))
+	dropdown.append(menu)
 
-	var messageVariableDiv = document.getElementById("modalPublishDetailsMessageList");
-	while (messageVariableDiv.firstChild) {
-		messageVariableDiv.removeChild(messageVariableDiv.firstChild);
-	}
 	for (i = 0; i < messageObjects[originalMessageId].original.variables.length; i++) {
 		console.log("add variable to list here... " + i);
-		addContentType = document.createElement("button");
-		addContentType.id = i;
-		addContentType.style = "width:50%;height:42px;position:relative;verticalAlign:top;";
-		addContentType.disabled = false;
-		//addContentType.originalObjectId = editExistingObject2;
-		addContentType.originalObjectId = originalMessageId;
-		addContentType.messageObjectId = i;
-		addContentType.variableObjectId = -1;
-		addContentType.onclick = function () {
-			var getSelectMessageVarId = this.messageObjectId;
-			var getSelectMessageId = this.originalObjectId;
-			PublishConnectionPromptSelectMessageVar(getSelectMessageId, getSelectMessageVarId);
-		};
-		addContent = document.createTextNode(messageObjects[originalMessageId].original.variables[i].name + " ("
-			+ messageObjects[originalMessageId].original.variables[i].valueType + ")");
-		addContentType.appendChild(addContent);
-		var addContentType2 = document.createElement("button");
-		addContentType2.id = i;
-		addContentType2.varId = -1;
-		addContentType2.style = "width:50%; height:42px; position:relative; verticalAlign:top;";
-		addContentType2.disabled = true;
-		addContentType2.onclick = function () {
+		messageVar = $('<div>').addClass('nine wide middle aligned continued column')
+		label = $('<label>').text(messageObjects[originalMessageId].original.variables[i].name + " ("
+			+ messageObjects[originalMessageId].original.variables[i].valueType + ")")
 
-		};
-		var addContentText = "(DEFAULT)";
-		let j = 0;
-		for (j = 0; j < publishedDetail.length; j++) {
-			if (publishedDetail[j][0] == i && publishedDetail[j][1] != -1) {
-				// then "publishedDetail[j][1]" is the index of the simulator's variable that corresponds to it
-				addContentText = simulatorObjects[editExistingObject].original.variables[publishedDetail[j][1]].name + " ("
-					+ simulatorObjects[editExistingObject].original.variables[publishedDetail[j][1]].valueType + ")";
-				addContentType2.varId = publishedDetail[j][1];
-			}
-		}
-		var addContent = document.createTextNode(addContentText);
-		addContentType2.appendChild(addContent);
-		addContentType.varRef = addContentType2;
-		messageVariableDiv.appendChild(addContentType);
-		messageVariableDiv.appendChild(addContentType2);
+		messageVar.append(label)
+
+		simVar = $('<div>').addClass('six wide middle aligned continued column')
+
+		newDropdown = dropdown.clone().attr('messageObjectId', i)
+
+		simVar.append(newDropdown)
+
+		segment.append(messageVar)
+		segment.append(simVar)
+
+		newDropdown.dropdown()
+		dropdowns.push(newDropdown)
 	}
 
-	var initial = "false";
-	var timeDelta = 1;
-	initial = simulatorObjects[editExistingObject].publishedInitial[editExistingObject2];
-	timeDelta = simulatorObjects[editExistingObject].publishedTimeDelta[editExistingObject2];
-	var radioList = document.getElementsByName("radioPublishInitial");
-	for (i = 0; i < radioList.length; i++) {
-		if (radioList[i].value == initial) {
-			radioList[i].checked = true;
-			break;
+	for (i = 0; i < publishedDetail.length; i++) {
+		if (publishedDetail[i][1] >= -1) {
+			// then "publishedDetail[j][1]" is the index of the simulator's variable that corresponds to it
+			console.log(dropdowns[publishedDetail[i][0]])
+			$(dropdowns[publishedDetail[i][0]]).dropdown('set selected', String(publishedDetail[i][1]))
 		}
 	}
-	document.getElementsByName("textPublishDelta")[0].value = timeDelta;
+
+	$(`input[name="radioPublishInitial"][value="${simulatorObjects[editExistingObject].publishedInitial[editExistingObject2]}"]`).parent().checkbox('check')
+	$('input[name="textPublishDelta"]').val(simulatorObjects[editExistingObject].publishedTimeDelta[editExistingObject2])
+	// var initial = "false";
+	// var timeDelta = 1;
+	// initial = simulatorObjects[editExistingObject].publishedInitial[editExistingObject2];
+	// timeDelta = simulatorObjects[editExistingObject].publishedTimeDelta[editExistingObject2];
+	// var radioList = document.getElementsByName("radioPublishInitial");
+	// for (i = 0; i < radioList.length; i++) {
+	// 	if (radioList[i].value == initial) {
+	// 		radioList[i].checked = true;
+	// 		break;
+	// 	}
+	// }
+
+
+
+	// assumed this function is only called when editing existing 
+	// var div01 = document.getElementById("modalPublishDetailsTitle01");
+	// var div02 = document.getElementById("modalPublishDetailsTitle02");
+	// div01.innerHTML = "Message Name: " + messageName + " <br>Message Variables:";
+	// div02.innerHTML = "Simulator Name: " + simulatorName + " <br>Simulator Variables:";
+	// var simulatorVariableDiv = document.getElementById("modalPublishDetailsSimList");
+	// while (simulatorVariableDiv.firstChild) {
+	// 	simulatorVariableDiv.removeChild(simulatorVariableDiv.firstChild);
+	// }
+
+	// let i = 0;
+	// var addContentType = document.createElement("button");
+	// addContentType.style = "width:100%;height:42px;";
+	// addContentType.id = i;
+	// addContentType.disabled = true;
+	// addContentType.originalObjectId = editExistingObject;
+	// addContentType.variableObjectId = -1;
+	// addContentType.onclick = function () {
+	// 	var getSelectSimId = this.variableObjectId;
+	// 	PublishConnectionPromptSelectSimVar(getSelectSimId);
+	// };
+	// var addContent = document.createTextNode("(DEFAULT)");
+	// addContentType.appendChild(addContent);
+	// simulatorVariableDiv.appendChild(addContentType);
+	// for (i = 0; i < simulatorObjects[editExistingObject].original.variables.length; i++) {
+	// 	console.log("add variable to list here... " + i);
+	// 	addContentType = document.createElement("button");
+	// 	addContentType.style = "width:100%; height:42px;";
+	// 	addContentType.id = i;
+	// 	addContentType.disabled = true;
+	// 	addContentType.originalObjectId = editExistingObject;
+	// 	addContentType.variableObjectId = i;
+	// 	addContentType.onclick = function () {
+	// 		var getSelectSimId = this.variableObjectId;
+	// 		PublishConnectionPromptSelectSimVar(getSelectSimId);
+	// 	};
+	// 	addContent = document.createTextNode(simulatorObjects[editExistingObject].original.variables[i].name + " ("
+	// 		+ simulatorObjects[editExistingObject].original.variables[i].valueType + ")");
+	// 	addContentType.appendChild(addContent);
+	// 	simulatorVariableDiv.appendChild(addContentType);
+	// }
+
+	// var messageVariableDiv = document.getElementById("modalPublishDetailsMessageList");
+	// while (messageVariableDiv.firstChild) {
+	// 	messageVariableDiv.removeChild(messageVariableDiv.firstChild);
+	// }
+	// for (i = 0; i < messageObjects[originalMessageId].original.variables.length; i++) {
+	// 	console.log("add variable to list here... " + i);
+	// 	addContentType = document.createElement("button");
+	// 	addContentType.id = i;
+	// 	addContentType.style = "width:50%;height:42px;position:relative;verticalAlign:top;";
+	// 	addContentType.disabled = false;
+	// 	//addContentType.originalObjectId = editExistingObject2;
+	// 	addContentType.originalObjectId = originalMessageId;
+	// 	addContentType.messageObjectId = i;
+	// 	addContentType.variableObjectId = -1;
+	// 	addContentType.onclick = function () {
+	// 		var getSelectMessageVarId = this.messageObjectId;
+	// 		var getSelectMessageId = this.originalObjectId;
+	// 		PublishConnectionPromptSelectMessageVar(getSelectMessageId, getSelectMessageVarId);
+	// 	};
+	// 	addContent = document.createTextNode(messageObjects[originalMessageId].original.variables[i].name + " ("
+	// 		+ messageObjects[originalMessageId].original.variables[i].valueType + ")");
+	// 	addContentType.appendChild(addContent);
+	// 	var addContentType2 = document.createElement("button");
+	// 	addContentType2.id = i;
+	// 	addContentType2.varId = -1;
+	// 	addContentType2.style = "width:50%; height:42px; position:relative; verticalAlign:top;";
+	// 	addContentType2.disabled = true;
+	// 	addContentType2.onclick = function () {
+
+	// 	};
+	// 	var addContentText = "(DEFAULT)";
+	// 	let j = 0;
+	// 	for (j = 0; j < publishedDetail.length; j++) {
+	// 		if (publishedDetail[j][0] == i && publishedDetail[j][1] != -1) {
+	// 			// then "publishedDetail[j][1]" is the index of the simulator's variable that corresponds to it
+	// 			addContentText = simulatorObjects[editExistingObject].original.variables[publishedDetail[j][1]].name + " ("
+	// 				+ simulatorObjects[editExistingObject].original.variables[publishedDetail[j][1]].valueType + ")";
+	// 			addContentType2.varId = publishedDetail[j][1];
+	// 		}
+	// 	}
+	// 	var addContent = document.createTextNode(addContentText);
+	// 	addContentType2.appendChild(addContent);
+	// 	addContentType.varRef = addContentType2;
+	// 	messageVariableDiv.appendChild(addContentType);
+	// 	messageVariableDiv.appendChild(addContentType2);
+	// }
+
+	// var initial = "false";
+	// var timeDelta = 1;
+	// initial = simulatorObjects[editExistingObject].publishedInitial[editExistingObject2];
+	// timeDelta = simulatorObjects[editExistingObject].publishedTimeDelta[editExistingObject2];
+	// var radioList = document.getElementsByName("radioPublishInitial");
+	// for (i = 0; i < radioList.length; i++) {
+	// 	if (radioList[i].value == initial) {
+	// 		radioList[i].checked = true;
+	// 		break;
+	// 	}
+	// }
+	// document.getElementsByName("textPublishDelta")[0].value = timeDelta;
 }
 
 /*	PublishConnectionPromptSelectMessageVar()
@@ -1312,32 +1472,31 @@ function PublishConnectionPromptSelectSimVar(sim_id) {
 	- Save configuration details for publish connection (sim -> message)
 */
 function SavePublishConnectionPrompt() {
-	// dragItem is the reference to the Simulator
-	var newDetails = [];
-	// list of pairs: [index of message variable, index of simulator variable or -1 for default]
-	var messageList = document.getElementById("modalPublishDetailsMessageList").children;
-	let i = 0;
-	for (i = 0; i < messageList.length; i++) {
-		if (typeof (messageList[i].varRef) !== 'undefined') {
-			console.log("MessageList[i] = " + messageList[i].id);
-			console.log("VarRef = " + messageList[i].varRef);
-			newDetails.push([messageList[i].id, messageList[i].varRef.varId]);
-			console.log("I added the following details : " + messageList[i].id + " " + messageList[i].varRef.varId);
-		}
-	}
 
-	var initial = "false";
-	var timeDelta = 1;
-	var radioList = document.getElementsByName("radioPublishInitial");
-	for (i = 0; i < radioList.length; i++) {
-		if (radioList[i].checked) {
-			initial = radioList[i].value;
-			break;
+
+	// dragItem is the reference to the Simulator
+	let newDetails = [];
+	// list of pairs: [index of message variable, index of simulator variable or -1 for default]
+	$('#modalPublishDetailsSegment .dropdown').each(function () {
+		let j = parseInt($(this).dropdown('get value'))
+		if (j != -1) {
+			newDetails.push([parseInt($(this).attr('messageObjectId')), j]);
 		}
-	}
-	if (document.getElementsByName("textPublishDelta")[0].value != "") {
-		timeDelta = document.getElementsByName("textPublishDelta")[0].value;
-	}
+	})
+
+
+	// for (i = 0; i < messageList.length; i++) {
+	// 	if (typeof (messageList[i].varRef) !== 'undefined') {
+	// 		console.log("MessageList[i] = " + messageList[i].id);
+	// 		console.log("VarRef = " + messageList[i].varRef);
+	// 		newDetails.push([messageList[i].id, messageList[i].varRef.varId]);
+	// 		console.log("I added the following details : " + messageList[i].id + " " + messageList[i].varRef.varId);
+	// 	}
+	// }
+
+	let initial = $('input[name=radioPublishInitial]:checked').val()
+	let timeDelta = parseInt($('input[name=textPublishDelta]').val())
+
 	if (editExistingObject == -1) {
 		dragItem.publishedDetails.push(newDetails);
 		dragItem.publishedInitial.push(initial);
@@ -1375,84 +1534,160 @@ function ClosePublishConnectionPrompt() {
 function NewSubscribeConnectionPrompt(message_id, simulator_id) {
 	DisplayOrClosePrompt("modalSubscribeDetails", "block");
 
-	var messageName = messageObjects[message_id].name;
-	var simulatorName = simulatorObjects[simulator_id].name;
-	var div01 = document.getElementById("modalSubscribeDetailsTitle01");
-	var div02 = document.getElementById("modalSubscribeDetailsTitle02");
-	div01.innerHTML = "Message Name: " + messageName + " <br>Message Variables:";
-	div02.innerHTML = "Simulator Name: " + simulatorName + " <br>Simulator Variables:";
+	let messageName = messageObjects[message_id].name;
+	let simulatorName = simulatorObjects[simulator_id].name;
 
-	var messageVariableDiv = document.getElementById("modalSubscribeDetailsMessageList");
-	while (messageVariableDiv.firstChild) {
-		messageVariableDiv.removeChild(messageVariableDiv.firstChild);
-	}
-	let i = 0;
-	var addContentType = document.createElement("button");
-	addContentType.style = "width:100%;height:42px;";
-	addContentType.id = i;
-	addContentType.disabled = true;
-	addContentType.originalObjectId = message_id;
-	addContentType.variableObjectId = -1;
-	addContentType.onclick = function () {
-		var getSelectSimId = this.variableObjectId;
-		SubscribeConnectionPromptSelectMessageVar(getSelectSimId);
-	};
-	var addContent = document.createTextNode("(DEFAULT)");
-	addContentType.appendChild(addContent);
-	messageVariableDiv.appendChild(addContentType);
-	for (i = 0; i < messageObjects[message_id].original.variables.length; i++) {
-		console.log("add variable to list here... " + i);
-		addContentType = document.createElement("button");
-		addContentType.style = "width:100%;height:42px;";
-		addContentType.id = i;
-		addContentType.disabled = true;
-		addContentType.originalObjectId = message_id;
-		addContentType.variableObjectId = i;
-		addContentType.onclick = function () {
-			var getSelectSimId = this.variableObjectId;
-			SubscribeConnectionPromptSelectMessageVar(getSelectSimId);
-		};
-		addContent = document.createTextNode(messageObjects[message_id].original.variables[i].name + " ("
-			+ messageObjects[message_id].original.variables[i].valueType + ")");
-		addContentType.appendChild(addContent);
-		messageVariableDiv.appendChild(addContentType);
+	let segment = $('#modalSubscribeDetailsSegment')
+	segment.empty()
+
+	let simulator = $('<div>').addClass('nine wide middle aligned column').text('Simulator Name:')
+	simulator.append($('<label>').addClass('ui color-simulator label').text(simulatorName))
+
+	let message = $('<div>').addClass('six wide middle aligned column').text('Message Name:')
+	message.append($('<label>').addClass('ui color-message label').text(messageName))
+
+	segment.append(simulator)
+	segment.append(message)
+
+	let i, messageVar, label, simVar, dropdown, menu, j, item, newDropdown
+	dropdown = $('<div>', {
+		class: 'ui selection dropdown',
+		originalObjectId: message_id,
+		simulatorObjectId: -1,
+		variableObjectId: -1,
+	})
+
+	menu = $('<div>').addClass('menu')
+	item = $('<div>', {
+		class: 'item',
+		'data-value': -1,
+		text: "(DEFAULT)",
+		originalObjectId: message_id,
+	})
+
+	menu.append(item)
+
+
+	for (j = 0; j < messageObjects[message_id].original.variables.length; j++) {
+		item = $('<div>', {
+			class: 'item',
+			'data-value': j,
+			text: messageObjects[message_id].original.variables[j].name + " ("
+				+ messageObjects[message_id].original.variables[j].valueType + ")",
+			originalObjectId: message_id,
+		})
+
+		menu.append(item)
 	}
 
-	var simulatorVariableDiv = document.getElementById("modalSubscribeDetailsSimList");
-	while (simulatorVariableDiv.firstChild) {
-		simulatorVariableDiv.removeChild(simulatorVariableDiv.firstChild);
-	}
+	dropdown.append($('<input>', { type: 'hidden' }))
+	dropdown.append($('<i>', { class: 'dropdown icon' }))
+	dropdown.append($('<div>', { class: 'default text', text: '(DEFAULT)' }))
+	dropdown.append(menu)
+
 	for (i = 0; i < simulatorObjects[simulator_id].original.variables.length; i++) {
 		console.log("add variable to list here... " + i);
-		addContentType = document.createElement("button");
-		addContentType.id = i;
-		addContentType.style = "width:50%; height:42px; position:relative; verticalAlign:top;";
-		addContentType.disabled = false;
-		addContentType.originalObjectId = simulator_id;
-		addContentType.messageObjectId = i;
-		addContentType.variableObjectId = -1;
-		addContentType.onclick = function () {
-			var getSelectMessageVarId = this.messageObjectId;
-			var getSelectMessageId = this.originalObjectId;
-			SubscribeConnectionPromptSelectSimVar(getSelectMessageId, getSelectMessageVarId);
-		};
-		addContent = document.createTextNode(simulatorObjects[simulator_id].original.variables[i].name + " ("
-			+ simulatorObjects[simulator_id].original.variables[i].valueType + ")");
-		addContentType.appendChild(addContent);
-		var addContentType2 = document.createElement("button");
-		addContentType2.id = i;
-		addContentType2.varId = -1;
-		addContentType2.style = "width:50%; height:42px; position:relative; verticalAlign;:top;";
-		addContentType2.disabled = true;
-		addContentType2.onclick = function () {
+		simVar = $('<div>').addClass('nine wide middle aligned continued column')
+		label = $('<label>').text(simulatorObjects[simulator_id].original.variables[i].name + " ("
+			+ simulatorObjects[simulator_id].original.variables[i].valueType + ")")
 
-		};
-		var addContent = document.createTextNode("(DEFAULT)");
-		addContentType2.appendChild(addContent);
-		addContentType.varRef = addContentType2;
-		simulatorVariableDiv.appendChild(addContentType2);
-		simulatorVariableDiv.appendChild(addContentType);
+		simVar.append(label)
+
+		messageVar = $('<div>').addClass('six wide middle aligned continued column')
+
+		newDropdown = dropdown.clone().attr('simulatorObjectId', i)
+
+		messageVar.append(newDropdown)
+
+		segment.append(simVar)
+		segment.append(messageVar)
+
+		newDropdown.dropdown()
 	}
+
+	$('input[name="radioSubscribeInitial"][value="false"]').parent().checkbox('check')
+	$('input[name="textSubscribeDelta"]').val("1")
+	$('input[name="textSubscribeRelative"]').val("0")
+	$('input[name="textSubscribeTimestep"]').val("0")
+
+	// var messageName = messageObjects[message_id].name;
+	// var simulatorName = simulatorObjects[simulator_id].name;
+	// var div01 = document.getElementById("modalSubscribeDetailsTitle01");
+	// var div02 = document.getElementById("modalSubscribeDetailsTitle02");
+	// div01.innerHTML = "Message Name: " + messageName + " <br>Message Variables:";
+	// div02.innerHTML = "Simulator Name: " + simulatorName + " <br>Simulator Variables:";
+
+	// var messageVariableDiv = document.getElementById("modalSubscribeDetailsMessageList");
+	// while (messageVariableDiv.firstChild) {
+	// 	messageVariableDiv.removeChild(messageVariableDiv.firstChild);
+	// }
+	// let i = 0;
+	// var addContentType = document.createElement("button");
+	// addContentType.style = "width:100%;height:42px;";
+	// addContentType.id = i;
+	// addContentType.disabled = true;
+	// addContentType.originalObjectId = message_id;
+	// addContentType.variableObjectId = -1;
+	// addContentType.onclick = function () {
+	// 	var getSelectSimId = this.variableObjectId;
+	// 	SubscribeConnectionPromptSelectMessageVar(getSelectSimId);
+	// };
+	// var addContent = document.createTextNode("(DEFAULT)");
+	// addContentType.appendChild(addContent);
+	// messageVariableDiv.appendChild(addContentType);
+	// for (i = 0; i < messageObjects[message_id].original.variables.length; i++) {
+	// 	console.log("add variable to list here... " + i);
+	// 	addContentType = document.createElement("button");
+	// 	addContentType.style = "width:100%;height:42px;";
+	// 	addContentType.id = i;
+	// 	addContentType.disabled = true;
+	// 	addContentType.originalObjectId = message_id;
+	// 	addContentType.variableObjectId = i;
+	// 	addContentType.onclick = function () {
+	// 		var getSelectSimId = this.variableObjectId;
+	// 		SubscribeConnectionPromptSelectMessageVar(getSelectSimId);
+	// 	};
+	// 	addContent = document.createTextNode(messageObjects[message_id].original.variables[i].name + " ("
+	// 		+ messageObjects[message_id].original.variables[i].valueType + ")");
+	// 	addContentType.appendChild(addContent);
+	// 	messageVariableDiv.appendChild(addContentType);
+	// }
+
+	// var simulatorVariableDiv = document.getElementById("modalSubscribeDetailsSimList");
+	// while (simulatorVariableDiv.firstChild) {
+	// 	simulatorVariableDiv.removeChild(simulatorVariableDiv.firstChild);
+	// }
+	// for (i = 0; i < simulatorObjects[simulator_id].original.variables.length; i++) {
+	// 	console.log("add variable to list here... " + i);
+	// 	addContentType = document.createElement("button");
+	// 	addContentType.id = i;
+	// 	addContentType.style = "width:50%; height:42px; position:relative; verticalAlign:top;";
+	// 	addContentType.disabled = false;
+	// 	addContentType.originalObjectId = simulator_id;
+	// 	addContentType.messageObjectId = i;
+	// 	addContentType.variableObjectId = -1;
+	// 	addContentType.onclick = function () {
+	// 		var getSelectMessageVarId = this.messageObjectId;
+	// 		var getSelectMessageId = this.originalObjectId;
+	// 		SubscribeConnectionPromptSelectSimVar(getSelectMessageId, getSelectMessageVarId);
+	// 	};
+	// 	addContent = document.createTextNode(simulatorObjects[simulator_id].original.variables[i].name + " ("
+	// 		+ simulatorObjects[simulator_id].original.variables[i].valueType + ")");
+	// 	addContentType.appendChild(addContent);
+	// 	var addContentType2 = document.createElement("button");
+	// 	addContentType2.id = i;
+	// 	addContentType2.varId = -1;
+	// 	addContentType2.style = "width:50%; height:42px; position:relative; verticalAlign;:top;";
+	// 	addContentType2.disabled = true;
+	// 	addContentType2.onclick = function () {
+
+	// 	};
+	// 	var addContent = document.createTextNode("(DEFAULT)");
+	// 	addContentType2.appendChild(addContent);
+	// 	addContentType.varRef = addContentType2;
+	// 	simulatorVariableDiv.appendChild(addContentType2);
+	// 	simulatorVariableDiv.appendChild(addContentType);
+	// }
 }
 
 /*	EditSubscribeConnectionPrompt()
@@ -1461,121 +1696,209 @@ function NewSubscribeConnectionPrompt(message_id, simulator_id) {
 function EditSubscribeConnectionPrompt() {
 	DisplayOrClosePrompt("modalSubscribeDetails", "block");
 
-	console.log("edit subscribe connection prompt ... editExistingObject = "
-		+ editExistingObject + ", editExistingObject2 = " + editExistingObject2 + " id of Message = "
-		+ simulatorObjects[editExistingObject].subscribedMessages[editExistingObject2]);
-	var originalMessageId = simulatorObjects[editExistingObject].subscribedMessages[editExistingObject2];
-	var messageName = messageObjects[originalMessageId].name;
-	var simulatorName = simulatorObjects[editExistingObject].name;
-	var subscribedDetail = simulatorObjects[editExistingObject].subscribedDetails[editExistingObject2];
-	var div01 = document.getElementById("modalSubscribeDetailsTitle01");
-	var div02 = document.getElementById("modalSubscribeDetailsTitle02");
-	div01.innerHTML = "Message Name: " + messageName + " <br>Message Variables:";
-	div02.innerHTML = "Simulator Name: " + simulatorName + " <br>Simulator Variables:";
-	var messageVariableDiv = document.getElementById("modalSubscribeDetailsMessageList");
-	while (messageVariableDiv.firstChild) {
-		messageVariableDiv.removeChild(messageVariableDiv.firstChild);
+	let originalMessageId = simulatorObjects[editExistingObject].subscribedMessages[editExistingObject2];
+	let messageName = messageObjects[originalMessageId].name;
+	let simulatorName = simulatorObjects[editExistingObject].name;
+	let subscribedDetail = simulatorObjects[editExistingObject].subscribedDetails[editExistingObject2];
+
+	let segment = $('#modalSubscribeDetailsSegment')
+	segment.empty()
+
+	let simulator = $('<div>').addClass('nine wide middle aligned column').text('Simulator Name:')
+	simulator.append($('<label>').addClass('ui color-simulator label').text(simulatorName))
+
+	let message = $('<div>').addClass('six wide middle aligned column').text('Message Name:')
+	message.append($('<label>').addClass('ui color-message label').text(messageName))
+
+	segment.append(simulator)
+	segment.append(message)
+
+	let i, messageVar, label, simVar, dropdown, menu, j, item, newDropdown, dropdowns = []
+	dropdown = $('<div>', {
+		class: 'ui selection dropdown',
+		originalObjectId: originalMessageId,
+		simulatorObjectId: -1,
+		variableObjectId: -1,
+	})
+
+	menu = $('<div>').addClass('menu')
+	item = $('<div>', {
+		class: 'item',
+		'data-value': -1,
+		text: "(DEFAULT)",
+		originalObjectId: originalMessageId,
+	})
+
+	menu.append(item)
+
+
+	for (j = 0; j < messageObjects[originalMessageId].original.variables.length; j++) {
+		item = $('<div>', {
+			class: 'item',
+			'data-value': j,
+			text: messageObjects[originalMessageId].original.variables[j].name + " ("
+				+ messageObjects[originalMessageId].original.variables[j].valueType + ")",
+			originalObjectId: originalMessageId,
+		})
+
+		menu.append(item)
 	}
 
-	let i = 0;
-	var addContentType = document.createElement("button");
-	addContentType.style = "width: 100%; height:42px;";
-	addContentType.id = i;
-	addContentType.disabled = true;
-	//addContentType.originalObjectId = editExistingObject2;
-	addContentType.originalObjectId = originalMessageId;
-	addContentType.variableObjectId = -1;
-	addContentType.onclick = function () {
-		var getSelectSimId = this.variableObjectId;
-		SubscribeConnectionPromptSelectMessageVar(getSelectSimId);
-	};
-	var addContent = document.createTextNode("(DEFAULT)");
-	addContentType.appendChild(addContent);
-	messageVariableDiv.appendChild(addContentType);
-	for (i = 0; i < messageObjects[originalMessageId].original.variables.length; i++) {
-		console.log("add variable to list here... " + i);
-		addContentType = document.createElement("button");
-		addContentType.style = "width:100%; height:42px;";
-		addContentType.id = i;
-		addContentType.disabled = true;
-		//addContentType.originalObjectId = editExistingObject2;
-		addContentType.originalObjectId = originalMessageId;
-		addContentType.variableObjectId = i;
-		addContentType.onclick = function () {
-			var getSelectSimId = this.variableObjectId;
-			SubscribeConnectionPromptSelectMessageVar(getSelectSimId);
-		};
-		addContent = document.createTextNode(messageObjects[originalMessageId].original.variables[i].name + " ("
-			+ messageObjects[originalMessageId].original.variables[i].valueType + ")");
-		addContentType.appendChild(addContent);
-		messageVariableDiv.appendChild(addContentType);
-	}
+	dropdown.append($('<input>', { type: 'hidden' }))
+	dropdown.append($('<i>', { class: 'dropdown icon' }))
+	dropdown.append($('<div>', { class: 'default text', text: '(DEFAULT)' }))
+	dropdown.append(menu)
 
-	var simulatorVariableDiv = document.getElementById("modalSubscribeDetailsSimList");
-	while (simulatorVariableDiv.firstChild) {
-		simulatorVariableDiv.removeChild(simulatorVariableDiv.firstChild);
-	}
 	for (i = 0; i < simulatorObjects[editExistingObject].original.variables.length; i++) {
 		console.log("add variable to list here... " + i);
-		addContentType = document.createElement("button");
-		addContentType.id = i;
-		addContentType.style = "width:50%; height:42px; position:relative; verticalAlign:top;"
-		addContentType.disabled = false;
-		addContentType.originalObjectId = editExistingObject;
-		addContentType.messageObjectId = i;
-		addContentType.variableObjectId = -1;
-		addContentType.onclick = function () {
-			var getSelectMessageVarId = this.messageObjectId;
-			var getSelectMessageId = this.originalObjectId;
-			SubscribeConnectionPromptSelectSimVar(getSelectMessageId, getSelectMessageVarId);
-		};
-		addContent = document.createTextNode(simulatorObjects[editExistingObject].original.variables[i].name + " ("
-			+ simulatorObjects[editExistingObject].original.variables[i].valueType + ")");
-		addContentType.appendChild(addContent);
-		var addContentType2 = document.createElement("button");
-		addContentType2.id = i;
-		addContentType2.varId = -1;
-		addContentType2.style = "width:50%; height:42px; position:relative; verticalAlign:top;";
-		addContentType2.disabled = true;
-		addContentType2.onclick = function () {
+		simVar = $('<div>').addClass('nine wide middle aligned continued column')
+		label = $('<label>').text(simulatorObjects[editExistingObject].original.variables[i].name + " ("
+			+ simulatorObjects[editExistingObject].original.variables[i].valueType + ")")
 
-		};
-		var addContentText = "(DEFAULT)";
-		let j = 0;
-		for (j = 0; j < subscribedDetail.length; j++) {
-			if (subscribedDetail[j][0] == i && subscribedDetail[j][1] != -1) {
-				// then "publishedDetail[j][1]" is the index of the simulator's variable that corresponds to it
-				addContentText = messageObjects[originalMessageId].original.variables[subscribedDetail[j][1]].name + " ("
-					+ messageObjects[originalMessageId].original.variables[subscribedDetail[j][1]].valueType + ")";
-				addContentType2.varId = subscribedDetail[j][1];
-			}
-		}
-		var addContent = document.createTextNode(addContentText);
-		addContentType2.appendChild(addContent);
+		simVar.append(label)
 
-		addContentType.varRef = addContentType2;
-		simulatorVariableDiv.appendChild(addContentType2);
-		simulatorVariableDiv.appendChild(addContentType);
+		messageVar = $('<div>').addClass('six wide middle aligned continued column')
+
+		newDropdown = dropdown.clone().attr('simulatorObjectId', i)
+
+		messageVar.append(newDropdown)
+
+		segment.append(simVar)
+		segment.append(messageVar)
+
+		newDropdown.dropdown()
+		dropdowns.push(newDropdown)
 	}
 
-	var initial = "false";
-	var timeDelta = 1;
-	var relative = 0;
-	var timestep = 0;
-	initial = simulatorObjects[editExistingObject].subscribedInitial[editExistingObject2];
-	timeDelta = simulatorObjects[editExistingObject].subscribedTimeDelta[editExistingObject2];
-	relative = simulatorObjects[editExistingObject].subscribedRelative[editExistingObject2];
-	timestep = simulatorObjects[editExistingObject].subscribedTimestep[editExistingObject2];
-	var radioList = document.getElementsByName("radioSubscribeInitial");
-	for (i = 0; i < radioList.length; i++) {
-		if (radioList[i].value == initial) {
-			radioList[i].checked = true;
-			break;
+	for (i = 0; i < subscribedDetail.length; i++) {
+		if (subscribedDetail[i][1] >= -1) {
+			// then "publishedDetail[j][1]" is the index of the simulator's variable that corresponds to it
+			console.log(dropdowns[subscribedDetail[i][0]])
+			$(dropdowns[subscribedDetail[i][0]]).dropdown('set selected', String(subscribedDetail[i][1]))
 		}
 	}
-	document.getElementsByName("textSubscribeDelta")[0].value = timeDelta;
-	document.getElementsByName("textSubscribeRelative")[0].value = relative;
-	document.getElementsByName("textSubscribeTimestep")[0].value = timestep;
+
+	$(`input[name="radioSubscribeInitial"][value="${simulatorObjects[editExistingObject].subscribedInitial[editExistingObject2]}"]`).parent().checkbox('check')
+	$('input[name="textSubscribeDelta"]').val(simulatorObjects[editExistingObject].subscribedTimeDelta[editExistingObject2])
+	$('input[name="textSubscribeRelative"]').val(simulatorObjects[editExistingObject].subscribedRelative[editExistingObject2])
+	$('input[name="textSubscribeTimestep"]').val(simulatorObjects[editExistingObject].subscribedTimestep[editExistingObject2])
+
+
+	// console.log("edit subscribe connection prompt ... editExistingObject = "
+	// 	+ editExistingObject + ", editExistingObject2 = " + editExistingObject2 + " id of Message = "
+	// 	+ simulatorObjects[editExistingObject].subscribedMessages[editExistingObject2]);
+	// var originalMessageId = simulatorObjects[editExistingObject].subscribedMessages[editExistingObject2];
+	// var messageName = messageObjects[originalMessageId].name;
+	// var simulatorName = simulatorObjects[editExistingObject].name;
+	// var subscribedDetail = simulatorObjects[editExistingObject].subscribedDetails[editExistingObject2];
+	// var div01 = document.getElementById("modalSubscribeDetailsTitle01");
+	// var div02 = document.getElementById("modalSubscribeDetailsTitle02");
+	// div01.innerHTML = "Message Name: " + messageName + " <br>Message Variables:";
+	// div02.innerHTML = "Simulator Name: " + simulatorName + " <br>Simulator Variables:";
+	// var messageVariableDiv = document.getElementById("modalSubscribeDetailsMessageList");
+	// while (messageVariableDiv.firstChild) {
+	// 	messageVariableDiv.removeChild(messageVariableDiv.firstChild);
+	// }
+
+	// let i = 0;
+	// var addContentType = document.createElement("button");
+	// addContentType.style = "width: 100%; height:42px;";
+	// addContentType.id = i;
+	// addContentType.disabled = true;
+	// //addContentType.originalObjectId = editExistingObject2;
+	// addContentType.originalObjectId = originalMessageId;
+	// addContentType.variableObjectId = -1;
+	// addContentType.onclick = function () {
+	// 	var getSelectSimId = this.variableObjectId;
+	// 	SubscribeConnectionPromptSelectMessageVar(getSelectSimId);
+	// };
+	// var addContent = document.createTextNode("(DEFAULT)");
+	// addContentType.appendChild(addContent);
+	// messageVariableDiv.appendChild(addContentType);
+	// for (i = 0; i < messageObjects[originalMessageId].original.variables.length; i++) {
+	// 	console.log("add variable to list here... " + i);
+	// 	addContentType = document.createElement("button");
+	// 	addContentType.style = "width:100%; height:42px;";
+	// 	addContentType.id = i;
+	// 	addContentType.disabled = true;
+	// 	//addContentType.originalObjectId = editExistingObject2;
+	// 	addContentType.originalObjectId = originalMessageId;
+	// 	addContentType.variableObjectId = i;
+	// 	addContentType.onclick = function () {
+	// 		var getSelectSimId = this.variableObjectId;
+	// 		SubscribeConnectionPromptSelectMessageVar(getSelectSimId);
+	// 	};
+	// 	addContent = document.createTextNode(messageObjects[originalMessageId].original.variables[i].name + " ("
+	// 		+ messageObjects[originalMessageId].original.variables[i].valueType + ")");
+	// 	addContentType.appendChild(addContent);
+	// 	messageVariableDiv.appendChild(addContentType);
+	// }
+
+	// var simulatorVariableDiv = document.getElementById("modalSubscribeDetailsSimList");
+	// while (simulatorVariableDiv.firstChild) {
+	// 	simulatorVariableDiv.removeChild(simulatorVariableDiv.firstChild);
+	// }
+	// for (i = 0; i < simulatorObjects[editExistingObject].original.variables.length; i++) {
+	// 	console.log("add variable to list here... " + i);
+	// 	addContentType = document.createElement("button");
+	// 	addContentType.id = i;
+	// 	addContentType.style = "width:50%; height:42px; position:relative; verticalAlign:top;"
+	// 	addContentType.disabled = false;
+	// 	addContentType.originalObjectId = editExistingObject;
+	// 	addContentType.messageObjectId = i;
+	// 	addContentType.variableObjectId = -1;
+	// 	addContentType.onclick = function () {
+	// 		var getSelectMessageVarId = this.messageObjectId;
+	// 		var getSelectMessageId = this.originalObjectId;
+	// 		SubscribeConnectionPromptSelectSimVar(getSelectMessageId, getSelectMessageVarId);
+	// 	};
+	// 	addContent = document.createTextNode(simulatorObjects[editExistingObject].original.variables[i].name + " ("
+	// 		+ simulatorObjects[editExistingObject].original.variables[i].valueType + ")");
+	// 	addContentType.appendChild(addContent);
+	// 	var addContentType2 = document.createElement("button");
+	// 	addContentType2.id = i;
+	// 	addContentType2.varId = -1;
+	// 	addContentType2.style = "width:50%; height:42px; position:relative; verticalAlign:top;";
+	// 	addContentType2.disabled = true;
+	// 	addContentType2.onclick = function () {
+
+	// 	};
+	// 	var addContentText = "(DEFAULT)";
+	// 	let j = 0;
+	// 	for (j = 0; j < subscribedDetail.length; j++) {
+	// 		if (subscribedDetail[j][0] == i && subscribedDetail[j][1] != -1) {
+	// 			// then "publishedDetail[j][1]" is the index of the simulator's variable that corresponds to it
+	// 			addContentText = messageObjects[originalMessageId].original.variables[subscribedDetail[j][1]].name + " ("
+	// 				+ messageObjects[originalMessageId].original.variables[subscribedDetail[j][1]].valueType + ")";
+	// 			addContentType2.varId = subscribedDetail[j][1];
+	// 		}
+	// 	}
+	// 	var addContent = document.createTextNode(addContentText);
+	// 	addContentType2.appendChild(addContent);
+
+	// 	addContentType.varRef = addContentType2;
+	// 	simulatorVariableDiv.appendChild(addContentType2);
+	// 	simulatorVariableDiv.appendChild(addContentType);
+	// }
+
+	// var initial = "false";
+	// var timeDelta = 1;
+	// var relative = 0;
+	// var timestep = 0;
+	// initial = simulatorObjects[editExistingObject].subscribedInitial[editExistingObject2];
+	// timeDelta = simulatorObjects[editExistingObject].subscribedTimeDelta[editExistingObject2];
+	// relative = simulatorObjects[editExistingObject].subscribedRelative[editExistingObject2];
+	// timestep = simulatorObjects[editExistingObject].subscribedTimestep[editExistingObject2];
+	// var radioList = document.getElementsByName("radioSubscribeInitial");
+	// for (i = 0; i < radioList.length; i++) {
+	// 	if (radioList[i].value == initial) {
+	// 		radioList[i].checked = true;
+	// 		break;
+	// 	}
+	// }
+	// document.getElementsByName("textSubscribeDelta")[0].value = timeDelta;
+	// document.getElementsByName("textSubscribeRelative")[0].value = relative;
+	// document.getElementsByName("textSubscribeTimestep")[0].value = timestep;
 }
 
 /*	SubscribeConnectionPromptSelectSimVar()
@@ -1636,39 +1959,61 @@ function SubscribeConnectionPromptSelectMessageVar(message_id) {
 function SaveSubscribeConnectionPrompt() {
 	// dragItem is the reference to the Simulator
 	console.log("saving subscribe data...");
-	var newDetails = [];
-	// list of pairs: [index of message variable, index of simulator variable or -1 for default]
-	var simList = document.getElementById("modalSubscribeDetailsSimList").children;
-	let i = 0;
-	for (i = 0; i < simList.length; i++) {
-		if (typeof (simList[i].varRef) !== 'undefined') {
-			console.log("SimList[i] = " + simList[i].id);
-			console.log("VarRef = " + simList[i].varRef);
-			newDetails.push([simList[i].id, simList[i].varRef.varId]);
-			console.log("I added the following details : " + simList[i].id + " " + simList[i].varRef.varId);
+	let newDetails = [];
+	$('#modalSubscribeDetailsSegment .dropdown').each(function () {
+		let j = parseInt($(this).dropdown('get value'))
+		if (j != -1) {
+			newDetails.push([parseInt($(this).attr('simulatorObjectId')), j]);
 		}
-	}
+	})
 
-	var initial = "false";
-	var timeDelta = 1;
-	var relative = 0;
-	var timestep = 0;
-	var radioList = document.getElementsByName("radioSubscribeInitial");
-	for (i = 0; i < radioList.length; i++) {
-		if (radioList[i].checked) {
-			initial = radioList[i].value;
-			break;
-		}
-	}
-	if (document.getElementsByName("textSubscribeDelta")[0].value != "") {
-		timeDelta = document.getElementsByName("textSubscribeDelta")[0].value;
-	}
-	if (document.getElementsByName("textSubscribeRelative")[0].value != "") {
-		relative = document.getElementsByName("textSubscribeRelative")[0].value;
-	}
-	if (document.getElementsByName("textSubscribeTimestep")[0].value != "") {
-		timestep = document.getElementsByName("textSubscribeTimestep")[0].value;
-	}
+
+	// for (i = 0; i < messageList.length; i++) {
+	// 	if (typeof (messageList[i].varRef) !== 'undefined') {
+	// 		console.log("MessageList[i] = " + messageList[i].id);
+	// 		console.log("VarRef = " + messageList[i].varRef);
+	// 		newDetails.push([messageList[i].id, messageList[i].varRef.varId]);
+	// 		console.log("I added the following details : " + messageList[i].id + " " + messageList[i].varRef.varId);
+	// 	}
+	// }
+
+	let initial = $('input[name=radioSubscribeInitial]:checked').val()
+	let timeDelta = parseInt($('input[name=textSubscribeDelta]').val())
+	let relative = parseInt($('input[name=textSubscribeRelative]').val())
+	let timestep = parseInt($('input[name=textSubscribeTimestep]').val())
+	// var newDetails = [];
+	// // list of pairs: [index of message variable, index of simulator variable or -1 for default]
+	// var simList = document.getElementById("modalSubscribeDetailsSimList").children;
+	// let i = 0;
+	// for (i = 0; i < simList.length; i++) {
+	// 	if (typeof (simList[i].varRef) !== 'undefined') {
+	// 		console.log("SimList[i] = " + simList[i].id);
+	// 		console.log("VarRef = " + simList[i].varRef);
+	// 		newDetails.push([simList[i].id, simList[i].varRef.varId]);
+	// 		console.log("I added the following details : " + simList[i].id + " " + simList[i].varRef.varId);
+	// 	}
+	// }
+
+	// var initial = "false";
+	// var timeDelta = 1;
+	// var relative = 0;
+	// var timestep = 0;
+	// var radioList = document.getElementsByName("radioSubscribeInitial");
+	// for (i = 0; i < radioList.length; i++) {
+	// 	if (radioList[i].checked) {
+	// 		initial = radioList[i].value;
+	// 		break;
+	// 	}
+	// }
+	// if (document.getElementsByName("textSubscribeDelta")[0].value != "") {
+	// 	timeDelta = document.getElementsByName("textSubscribeDelta")[0].value;
+	// }
+	// if (document.getElementsByName("textSubscribeRelative")[0].value != "") {
+	// 	relative = document.getElementsByName("textSubscribeRelative")[0].value;
+	// }
+	// if (document.getElementsByName("textSubscribeTimestep")[0].value != "") {
+	// 	timestep = document.getElementsByName("textSubscribeTimestep")[0].value;
+	// }
 	if (editExistingObject == -1) {
 		dragItem.subscribedDetails.push(newDetails);
 		dragItem.subscribedInitial.push(initial);
@@ -1730,7 +2075,7 @@ function ImportObject() {
 	var obj = JSON.parse(content);
 	if (importType == 1) {
 		listOfSimulators.push(obj.simdef);
-		ResetObjectSubPanel1();
+		AppendObjectToSubPanel1()
 	} else if (importType == 2) {
 		listOfMessages.push(obj.mesdef);
 		ResetObjectSubPanel2();
@@ -1818,63 +2163,74 @@ function AddNewObjectSimulator2() {
 		}
 
 	}
-	let i = 0;
-	for (i = 0; i < listOfSimulators.length; i++) {
-		var addContentType = document.createElement("button");
-		addContentType.className = "btn-list-item";
-		addContentType.id = i;
-		addContentType.style.backgroundColor = "#fed";
-		addContentType.onclick = function () {
-			console.log("onclick at index = " + this.id);
-			if (selectState == 0) {
-				CreateNewSimulatorOnCanvas(this.id);
-			} else if (selectState == 1) {
-				ConfigureSimulatorFromList(this.id);
-			} else if (selectState == 2) {
+	// let i = 0;
+	// for (i = 0; i < listOfSimulators.length; i++) {
+	// 	var addContentType = document.createElement("button");
+	// 	addContentType.className = "btn-list-item";
+	// 	addContentType.id = i;
+	// 	addContentType.style.backgroundColor = "#fed";
+	// 	addContentType.onclick = function () {
+	// 		console.log("onclick at index = " + this.id);
+	// 		if (selectState == 0) {
+	// 			CreateNewSimulatorOnCanvas(this.id);
+	// 		} else if (selectState == 1) {
+	// 			ConfigureSimulatorFromList(this.id);
+	// 		} else if (selectState == 2) {
 
-			} else if (selectState == 3) {
-				DeleteSimulatorFromList(this.id);
-			}
-		};
-		var addContent = document.createTextNode(listOfSimulators[i].name);
-		addContentType.appendChild(addContent);
-		panel.appendChild(addContentType);
-	}
+	// 		} else if (selectState == 3) {
+	// 			DeleteSimulatorFromList(this.id);
+	// 		}
+	// 	};
+	// 	var addContent = document.createTextNode(listOfSimulators[i].name);
+	// 	addContentType.appendChild(addContent);
+	// 	panel.appendChild(addContentType);
+	// }
+	ResetObjectSubPanel1()
 	if (selectState == 0) {
 		DisableCertainObjectButtons();
 	}
 	CloseNewSimulatorObjectPrompt2();
+}
+/*	ClearObjectSubPanel1()
+	- Clear sub-panel (canvas) on the main screen.
+*/
+function ClearObjectSubPanel1() {
+	$('#objectsubpanel1').empty()
+}
+
+/*	AppendObjectToSubPanel1()
+	- Append object to sub-panel (canvas) on the main screen.
+*/
+function AppendObjectToSubPanel1(index = listOfSimulators.length - 1) {
+	console.log(index)
+	let panel = $('#objectsubpanel1')
+	button = $('<button>').addClass('ui color-simulator button btn-list-item').text(listOfSimulators[index].name)
+	button.attr('id', index)
+	button.click(function () {
+		console.log("onclick at index = " + this.id);
+		if (selectState == 0) {
+			CreateNewSimulatorOnCanvas(this.id);
+		} else if (selectState == 1) {
+			ConfigureSimulatorFromList(this.id);
+		} else if (selectState == 2) {
+
+		} else if (selectState == 3) {
+			DeleteSimulatorFromList(button, this.id);
+		}
+	})
+	panel.append(button)
+
 }
 
 /*	ResetObjectSubPanel1()
 	- Reset sub-panel (canvas) on the main screen, that normally holds simulators.
 */
 function ResetObjectSubPanel1() {
-	var panel = document.getElementById("objectsubpanel1");
-	while (panel.firstChild) {
-		panel.removeChild(panel.firstChild);
-	}
+	let panel = $('#objectsubpanel1')
+	panel.empty()
 	let i = 0;
 	for (i = 0; i < listOfSimulators.length; i++) {
-		var addContentType = document.createElement("button");
-		addContentType.className = "btn-list-item";
-		addContentType.id = i;
-		addContentType.style.backgroundColor = "#fed";
-		addContentType.onclick = function () {
-			console.log("onclick at index = " + this.id);
-			if (selectState == 0) {
-				CreateNewSimulatorOnCanvas(this.id);
-			} else if (selectState == 1) {
-				ConfigureSimulatorFromList(this.id);
-			} else if (selectState == 2) {
-
-			} else if (selectState == 3) {
-				DeleteSimulatorFromList(this.id);
-			}
-		};
-		var addContent = document.createTextNode(listOfSimulators[i].name);
-		addContentType.appendChild(addContent);
-		panel.appendChild(addContentType);
+		AppendObjectToSubPanel1(i)
 	}
 }
 
@@ -1935,29 +2291,29 @@ function AddNewObjectMessage() {
 			}
 		}
 	}
+	ResetObjectSubPanel1()
+	// let i = 0;
+	// for (i = 0; i < listOfMessages.length; i++) {
+	// 	var addContentType = document.createElement("button");
+	// 	addContentType.className = "btn-list-item";
+	// 	addContentType.id = i;
+	// 	addContentType.style.backgroundColor = "#def";
+	// 	addContentType.onclick = function () {
+	// 		console.log("onclick at index = " + this.id);
+	// 		if (selectState == 0) {
+	// 			CreateNewMessageOnCanvas(this.id);
+	// 		} else if (selectState == 1) {
+	// 			ConfigureMessageFromList(this.id);
+	// 		} else if (selectState == 2) {
 
-	let i = 0;
-	for (i = 0; i < listOfMessages.length; i++) {
-		var addContentType = document.createElement("button");
-		addContentType.className = "btn-list-item";
-		addContentType.id = i;
-		addContentType.style.backgroundColor = "#def";
-		addContentType.onclick = function () {
-			console.log("onclick at index = " + this.id);
-			if (selectState == 0) {
-				CreateNewMessageOnCanvas(this.id);
-			} else if (selectState == 1) {
-				ConfigureMessageFromList(this.id);
-			} else if (selectState == 2) {
-
-			} else if (selectState == 3) {
-				DeleteMessageFromList(this.id);
-			}
-		};
-		var addContent = document.createTextNode(listOfMessages[i].name);
-		addContentType.appendChild(addContent);
-		panel.appendChild(addContentType);
-	}
+	// 		} else if (selectState == 3) {
+	// 			DeleteMessageFromList(this.id);
+	// 		}
+	// 	};
+	// 	var addContent = document.createTextNode(listOfMessages[i].name);
+	// 	addContentType.appendChild(addContent);
+	// 	panel.appendChild(addContentType);
+	// }
 	if (selectState == 0) {
 		DisableCertainObjectButtons();
 	}
@@ -1970,23 +2326,14 @@ function AddNewObjectMessage() {
 function AddObjectToMessageDef() {
 	var newMessageObjectName = document.getElementsByName("NewMessageObjectName")[0].value;
 	document.getElementsByName("NewMessageObjectName")[0].value = "";
-	var newMessageObjectType = "";
-	var radioList = document.getElementsByName("NewMessageObject");
-	let i = 0;
-	for (i = 0; i < radioList.length; i++) {
-		if (radioList[i].checked) {
-			newMessageObjectType = radioList[i].value;
-			// radioList[i].checked = false;
-			break;
-		}
-	}
+	let newMessageObjectType = $('.checked').find('input[name="NewMessageObject"]').attr('value')
 	listOfMessageObjects.push({ name: newMessageObjectName, valueType: newMessageObjectType });
 	let panel = $('#modalNewMessagePanel1')
 	if (listOfMessageObjects.length === 1) {
 		panel.show()
 	}
 
-	let child = $('<div>').addClass('listitemdiv ui compact segment')
+	let child = $('<div>').addClass('div-list-item ui compact segment')
 	child.append($('<label>').text(`${newMessageObjectName} (${newMessageObjectType})`).attr('style', 'vertical-align:sub;'))
 	var button = $('<button>', {
 		class: "ui compact icon button right floated", id: newMessageObjectName
@@ -2010,48 +2357,55 @@ function AddObjectToMessageDef() {
 function AddObjectToSimulatorDef() {
 	var newMessageObjectName = document.getElementsByName("NewSimulatorObjectName")[0].value;
 	document.getElementsByName("NewSimulatorObjectName")[0].value = "";
-	var newMessageObjectType = "";
-	var radioList = document.getElementsByName("NewSimulatorObject");
-	let i = 0;
-	for (i = 0; i < radioList.length; i++) {
-		if (radioList[i].checked) {
-			newMessageObjectType = radioList[i].value;
-			radioList[i].checked = false;
-			break;
-		}
-	}
+	let newMessageObjectType = $('.checked').find('input[name="NewSimulatorObject"]').attr('value')
 	listOfMessageObjects.push({ name: newMessageObjectName, valueType: newMessageObjectType });
-	UpdateObjectToSimulatorDef();
+	let panel = $('#modalNewSimulatorPanel1')
+	if (listOfMessageObjects.length === 1) {
+		panel.show()
+	}
+
+	let child = $('<div>').addClass('div-list-item ui compact segment')
+	child.append($('<label>').text(`${newMessageObjectName} (${newMessageObjectType})`).attr('style', 'vertical-align:sub;'))
+	var button = $('<button>', {
+		class: "ui compact icon button right floated", id: newMessageObjectName
+	}).click(
+		() => {
+			RemoveObjectToSimulatorDef(child, newMessageObjectName)
+		}
+	)
+	button.append($('<i>').addClass('times icon'))
+	child.append(button)
+	panel.append(child)
+
+	CheckEnableObjectToSimulatorDef();
 }
 
 /*	UpdateObjectToSimulatorDef()
 	- Update view of variable objects in simulator def (during defining a new simulator).
 */
 function UpdateObjectToSimulatorDef() {
-	var panel = document.getElementById("modalNewSimulatorPanel1");
-	while (panel.firstChild) {
-		panel.removeChild(panel.firstChild);
-	}
+	let panel = $('#modalNewSimulatorPanel1')
 	let i = 0;
 	for (i = 0; i < listOfMessageObjects.length; i++) {
-		var addContentType = document.createElement("div");
-		addContentType.className = "div-list-item";
-		var addContent1 = document.createTextNode(listOfMessageObjects[i].name + " (" + listOfMessageObjects[i].valueType + ")");
-		addContentType.appendChild(addContent1);
-		var addContent2 = document.createElement("button");
-		addContent2.id = i;
-		addContent2.onclick = function () {
-			console.log("onclick at index = " + this.id);
-			RemoveObjectToSimulatorDef(this.id);
-		};
-		addContent2.style = "float:right;";
-		var addContent3 = document.createTextNode("X");
-		addContent2.appendChild(addContent3);
-		addContentType.appendChild(addContent2);
-
-		panel.appendChild(addContentType);
+		var child = $('<div>').addClass('div-list-item ui compact segment')
+		child.append($('<label>').text(`${listOfMessageObjects[i].name} (${listOfMessageObjects[i].valueType})`).attr('style', 'vertical-align:sub;'))
+		var button = $('<button>').addClass('ui compact icon button right floated').attr('id', i).click(
+			() => {
+				RemoveObjectToSimulatorDef(child, listOfMessageObjects[i].name)
+			}
+		)
+		button.append($('<i>').addClass('times icon'))
+		child.append(button)
+		panel.append(child)
 	}
-	CheckEnableObjectToSimulatorDef();
+
+	if (listOfMessageObjects.length > 0) {
+		panel.show()
+	} else {
+		panel.hide()
+	}
+
+	CheckEnableObjectToMessageDef();
 }
 
 /*	UpdateObjectToMessageDef()
@@ -2061,7 +2415,7 @@ function UpdateObjectToMessageDef() {
 	let panel = $('#modalNewMessagePanel1')
 	let i = 0;
 	for (i = 0; i < listOfMessageObjects.length; i++) {
-		var child = $('<div>').addClass('listitemdiv ui compact segment')
+		var child = $('<div>').addClass('div-list-item ui compact segment')
 		child.append($('<label>').text(`${listOfMessageObjects[i].name} (${listOfMessageObjects[i].valueType})`).attr('style', 'vertical-align:sub;'))
 		var button = $('<button>').addClass('ui compact icon button right floated').attr('id', i).click(
 			() => {
@@ -2071,6 +2425,12 @@ function UpdateObjectToMessageDef() {
 		button.append($('<i>').addClass('times icon'))
 		child.append(button)
 		panel.append(child)
+	}
+
+	if (listOfMessageObjects.length > 0) {
+		panel.show()
+	} else {
+		panel.hide()
 	}
 
 	CheckEnableObjectToMessageDef();
@@ -2100,10 +2460,21 @@ function RemoveObjectToMessageDef(child, btn_id) {
 /*	RemoveObjectToSimulatorDef()
 	- Remove variable object from simulator (when defining simulator for project).
 */
-function RemoveObjectToSimulatorDef(btn_id) {
+function RemoveObjectToSimulatorDef(child, btn_id) {
+
 	console.log("Removing object from list.");
-	listOfMessageObjects.splice(btn_id, 1);
-	UpdateObjectToSimulatorDef();
+	let i
+	for (i = 0; i < listOfMessageObjects.length; ++i) {
+		if (listOfMessageObjects[i].name == btn_id) {
+			listOfMessageObjects.splice(i, 1);
+		}
+	}
+
+	child.remove()
+
+	if (listOfMessageObjects.length === 0) {
+		$('#modalNewSimulatorPanel1').hide()
+	}
 }
 
 /*	CheckEnableObjectToMessageDef()
@@ -2111,25 +2482,10 @@ function RemoveObjectToSimulatorDef(btn_id) {
 */
 function CheckEnableObjectToMessageDef() {
 	var btnToEnable = document.getElementsByName("btnAddObjectToMessage")[0];
-	var nameEntered = false;
+
 	var nameTextBox = document.getElementsByName("NewMessageObjectName")[0].value;
-	if (nameTextBox.length > 0) {
-		nameEntered = true;
-	}
-	var typeEntered = false;
-	var radioList = document.getElementsByName("NewMessageObject");
-	let i = 0;
-	for (i = 0; i < radioList.length; i++) {
-		if (radioList[i].checked) {
-			typeEntered = true;
-			break;
-		}
-	}
-	if (nameEntered == true && typeEntered == true) {
-		btnToEnable.disabled = false;
-	} else {
-		btnToEnable.disabled = true;
-	}
+
+	btnToEnable.disabled = nameTextBox.length == 0
 }
 
 /*	CheckEnableObjectToSimulatorDef()
@@ -2137,25 +2493,12 @@ function CheckEnableObjectToMessageDef() {
 */
 function CheckEnableObjectToSimulatorDef() {
 	var btnToEnable = document.getElementsByName("btnAddObjectToSimulator")[0];
-	var nameEntered = false;
+
 	var nameTextBox = document.getElementsByName("NewSimulatorObjectName")[0].value;
-	if (nameTextBox.length > 0) {
-		nameEntered = true;
-	}
-	var typeEntered = false;
-	var radioList = document.getElementsByName("NewSimulatorObject");
-	let i = 0;
-	for (i = 0; i < radioList.length; i++) {
-		if (radioList[i].checked) {
-			typeEntered = true;
-			break;
-		}
-	}
-	if (nameEntered == true && typeEntered == true) {
-		btnToEnable.disabled = false;
-	} else {
-		btnToEnable.disabled = true;
-	}
+
+	console.log("Checking to enable it... length is = " + nameTextBox.length + ", text is = " + nameTextBox);
+	btnToEnable.disabled = nameTextBox.length == 0
+
 }
 
 /*	CheckEnableSubmitObject()
@@ -2200,46 +2543,82 @@ function AddFunctionToSimulatorDef() {
 	var newMessageFunctionName = document.getElementsByName("NewSimulatorFunctionName")[0].value;
 	document.getElementsByName("NewSimulatorFunctionName")[0].value = "";
 	listOfMessageFunctions.push({ name: newMessageFunctionName });
-	UpdateFunctionToSimulatorDef();
+
+	let panel = $('#modalNewSimulatorPanel2')
+	if (listOfMessageFunctions.length === 1) {
+		panel.show()
+	}
+
+	let child = $('<div>').addClass('div-list-item ui compact segment')
+	child.append($('<label>').text(newMessageFunctionName).attr('style', 'vertical-align:sub;'))
+	var button = $('<button>', {
+		class: "ui compact icon button right floated", id: newMessageFunctionName
+	}).click(
+		() => {
+			console.log("onclick at index = " + this.id);
+			RemoveFunctionToSimulatorDef(child, newMessageFunctionName)
+		}
+	)
+	button.append($('<i>').addClass('times icon'))
+	child.append(button)
+	panel.append(child)
+
+	CheckEnableObjectToSimulatorDef();
+
+	// var newMessageFunctionName = document.getElementsByName("NewSimulatorFunctionName")[0].value;
+	// document.getElementsByName("NewSimulatorFunctionName")[0].value = "";
+	// listOfMessageFunctions.push({ name: newMessageFunctionName });
+	// UpdateFunctionToSimulatorDef();
 }
 
 /*	UpdateFunctionToSimulatorDef()
 	- Update view of function list in simulator-definition prompt.
 */
 function UpdateFunctionToSimulatorDef() {
-	var panel = document.getElementById("modalNewSimulatorPanel2");
-	while (panel.firstChild) {
-		panel.removeChild(panel.firstChild);
-	}
+	let panel = $('#modalNewSimulatorPanel2')
 	let i = 0;
 	for (i = 0; i < listOfMessageFunctions.length; i++) {
-		var addContentType = document.createElement("div");
-		addContentType.className = "div-list-item";
-		var addContent1 = document.createTextNode(listOfMessageFunctions[i].name);
-		addContentType.appendChild(addContent1);
-		var addContent2 = document.createElement("button");
-		addContent2.id = i;
-		addContent2.onclick = function () {
-			console.log("onclick at index = " + this.id);
-
-			RemoveFunctionToSimulatorDef(this.id);
-		};
-		addContent2.style = "float:right;";
-		var addContent3 = document.createTextNode("X");
-		addContent2.appendChild(addContent3);
-		addContentType.appendChild(addContent2);
-		panel.appendChild(addContentType);
+		var child = $('<div>').addClass('div-list-item ui compact segment')
+		child.append($('<label>').text(listOfMessageFunctions[i].name).attr('style', 'vertical-align:sub;'))
+		var button = $('<button>').addClass('ui compact icon button right floated').attr('id', i).click(
+			() => {
+				console.log("onclick at index = " + this.id);
+				RemoveFunctionToSimulatorDef(child, listOfMessageFunctions[i].name)
+			}
+		)
+		button.append($('<i>').addClass('times icon'))
+		child.append(button)
+		panel.append(child)
 	}
+
+	if (listOfMessageFunctions.length > 0) {
+		panel.show()
+	} else {
+		panel.hide()
+	}
+
 	CheckEnableFunctionToSimulatorDef();
 }
 
 /*	RemoveFunctionToSimulatorDef()
 	- Remove function from list on simulator definition prompt.
 */
-function RemoveFunctionToSimulatorDef(btn_id) {
+function RemoveFunctionToSimulatorDef(child, btn_id) {
+
 	console.log("Removing object from list.");
-	listOfMessageFunctions.splice(btn_id, 1);
-	UpdateFunctionToSimulatorDef();
+	console.log(btn_id);
+	let i
+	for (i = 0; i < listOfMessageFunctions.length; ++i) {
+		if (listOfMessageFunctions[i].name == btn_id) {
+			listOfMessageFunctions.splice(i, 1);
+		}
+	}
+
+	child.remove()
+
+	if (listOfMessageFunctions.length === 0) {
+		$('#modalNewSimulatorPanel2').hide()
+	}
 }
 
 /*	AddNewObjectImport()
@@ -2256,7 +2635,7 @@ function CreateNewSimulatorOnCanvas(btn_id) {
 	console.log("User wants to add a simulator to the canvas");
 
 	var panel = document.getElementById("canvassubpanel1");
-	var addContentType = document.createElement("div");
+	var addContentType = document.createElement("button");
 	addContentType.className = "div-canvas-sim";
 	addContentType.setAttribute("name", "");
 	var addContent1 = document.createTextNode(listOfSimulators[btn_id].name);
@@ -2308,35 +2687,39 @@ function CreateExistingSimulatorOnCanvas(sim_id) {
 /*	DeleteSimulatorFromList()
 	- Delete simulator from project, from list on the left and from the canvas.
 */
-function DeleteSimulatorFromList(btn_id) {
-	var panel = document.getElementById("objectsubpanel1");
-	while (panel.firstChild) {
-		panel.removeChild(panel.firstChild);
-	}
-	var deleteSimName = listOfSimulators[btn_id].name;
+function DeleteSimulatorFromList(button, btn_id) {
+	console.log(button)
+	let deleteSimName = listOfSimulators[btn_id].name;
 	listOfSimulators.splice(btn_id, 1);
-	let i = 0;
-	for (i = 0; i < listOfSimulators.length; i++) {
-		var addContentType = document.createElement("button");
-		addContentType.className = "btn-list-item";
-		addContentType.id = i;
-		addContentType.style.backgroundColor = "#fed";
-		addContentType.onclick = function () {
-			console.log("onclick at index = " + this.id);
-			if (selectState == 0) {
-				CreateNewSimulatorOnCanvas(this.id);
-			} else if (selectState == 1) {
+	button.remove()
+	// var panel = document.getElementById("objectsubpanel1");
+	// while (panel.firstChild) {
+	// 	panel.removeChild(panel.firstChild);
+	// }
+	// var deleteSimName = listOfSimulators[btn_id].name;
+	// listOfSimulators.splice(btn_id, 1);
+	// let i = 0;
+	// for (i = 0; i < listOfSimulators.length; i++) {
+	// 	var addContentType = document.createElement("button");
+	// 	addContentType.className = "btn-list-item";
+	// 	addContentType.id = i;
+	// 	addContentType.style.backgroundColor = "#fed";
+	// 	addContentType.onclick = function () {
+	// 		console.log("onclick at index = " + this.id);
+	// 		if (selectState == 0) {
+	// 			CreateNewSimulatorOnCanvas(this.id);
+	// 		} else if (selectState == 1) {
 
-			} else if (selectState == 2) {
+	// 		} else if (selectState == 2) {
 
-			} else if (selectState == 3) {
-				DeleteSimulatorFromList(this.id);
-			}
-		};
-		var addContent = document.createTextNode(listOfSimulators[i].name);
-		addContentType.appendChild(addContent);
-		panel.appendChild(addContentType);
-	}
+	// 		} else if (selectState == 3) {
+	// 			DeleteSimulatorFromList(this.id);
+	// 		}
+	// 	};
+	// 	var addContent = document.createTextNode(listOfSimulators[i].name);
+	// 	addContentType.appendChild(addContent);
+	// 	panel.appendChild(addContentType);
+	// }
 	console.log("Deleting sim from project, check if it's on the canvas = " + deleteSimName);
 	for (i = simulatorObjects.length - 1; i >= 0; i--) {
 		console.log("... " + simulatorObjects[i].name);
@@ -2433,41 +2816,61 @@ function DeleteMessageFromList(btn_id) {
 */
 function EditSimLocalTime() {
 	DisplayOrClosePrompt("modalLocalTime", "block");
-	var divNumber = document.getElementsByName("divTimeDelta")[0];
-	divNumber.innerHTML = "Current Time Delta: " + simulatorObjects[editExistingObject].timeDelta;
-	divNumber = document.getElementsByName("divTimeScale")[0];
-	divNumber.innerHTML = "Current Time Multiplier: " + simulatorObjects[editExistingObject].timeScale;
-	divNumber = document.getElementsByName("divTimeVarScale")[0];
-	divNumber.innerHTML = "Current Time Variable Multiplier: " + simulatorObjects[editExistingObject].timeVarDelta;
 
-	var dropdown = document.getElementById("dropdownVar");
-	while (dropdown.firstChild) {
-		dropdown.removeChild(dropdown.firstChild);
+
+	// var divNumber = document.getElementsByName("divTimeDelta")[0];
+	// divNumber.innerHTML = "Current Time Delta: " + simulatorObjects[editExistingObject].timeDelta;
+	// divNumber = document.getElementsByName("divTimeScale")[0];
+	// divNumber.innerHTML = "Current Time Multiplier: " + simulatorObjects[editExistingObject].timeScale;
+	// divNumber = document.getElementsByName("divTimeVarScale")[0];
+	// divNumber.innerHTML = "Current Time Variable Multiplier: " + simulatorObjects[editExistingObject].timeVarDelta;
+
+	$('input[name="newTimeDelta"]').val(simulatorObjects[editExistingObject].timeDelta)
+	$('input[name="newTimeScale"]').val(simulatorObjects[editExistingObject].timeScale)
+
+	let dropdown = $('#dropdownVar .menu')
+	dropdown.empty()
+
+	let item
+	let i
+	for (i = 0; i < simulatorObjects[editExistingObject].original.functions.length; i++) {
+		item = $('<div>').addClass('item').text(
+			`${simulatorObjects[editExistingObject].original.variables[i].name} (${simulatorObjects[editExistingObject].original.variables[i].valueType})`
+		)
+		item.attr('data-value', simulatorObjects[editExistingObject].original.variables[i].name)
+		dropdown.append(item)
 	}
-	var addContentType = document.createElement("a");
-	addContentType.href = "#";
-	addContentType.innerHTML = "''";
-	addContentType.onclick = function () {
-		console.log("Clicked that: " + this.innerHTML);
-		//stageConditionV1 = this.name;
-		document.getElementsByName("divTimeVarScale")[0].innerHTML
-			= "Current Time Variable Multiplier: ''";
-		simulatorObjects[editExistingObject].timeVarDelta = "";
-	};
-	dropdown.appendChild(addContentType);
-	let i = 0;
-	for (i = 0; i < simulatorObjects[editExistingObject].original.variables.length; i++) {
-		addContentType = document.createElement("a");
-		addContentType.name = i;
-		addContentType.href = "#";
-		addContentType.innerHTML = simulatorObjects[editExistingObject].original.variables[i].name
-			+ " (" + simulatorObjects[editExistingObject].original.variables[i].valueType + ")";
-		addContentType.onclick = function () {
-			console.log("Clicked that: " + this.innerHTML);
-			UpdateTimeVarDelta(this.name);
-		};
-		dropdown.appendChild(addContentType);
-	}
+
+	item = $('<div>').addClass('item').text("''")
+	item.attr('data-value', "''")
+
+	dropdown.append(item)
+	$('#dropdownVar').dropdown('set selected', simulatorObjects[editExistingObject].timeVarDelta)
+
+	// var addContentType = document.createElement("a");
+	// addContentType.href = "#";
+	// addContentType.innerHTML = "''";
+	// addContentType.onclick = function () {
+	// 	console.log("Clicked that: " + this.innerHTML);
+	// 	//stageConditionV1 = this.name;
+	// 	document.getElementsByName("divTimeVarScale")[0].innerHTML
+	// 		= "Current Time Variable Multiplier: ''";
+	// 	simulatorObjects[editExistingObject].timeVarDelta = "";
+	// };
+	// dropdown.appendChild(addContentType);
+	// let i = 0;
+	// for (i = 0; i < simulatorObjects[editExistingObject].original.variables.length; i++) {
+	// 	addContentType = document.createElement("a");
+	// 	addContentType.name = i;
+	// 	addContentType.href = "#";
+	// 	addContentType.innerHTML = simulatorObjects[editExistingObject].original.variables[i].name
+	// 		+ " (" + simulatorObjects[editExistingObject].original.variables[i].valueType + ")";
+	// 	addContentType.onclick = function () {
+	// 		console.log("Clicked that: " + this.innerHTML);
+	// 		UpdateTimeVarDelta(this.name);
+	// 	};
+	// 	dropdown.appendChild(addContentType);
+	// }
 
 
 }
@@ -2485,6 +2888,24 @@ function CloseEditSimLocalTime() {
 */
 function EditServer() {
 	DisplayOrClosePrompt("modalServer", "block");
+
+	if (hostName == 'localhost') {
+		$('input[name="HostNameObject"][value="localhost"]').parent().checkbox('check')
+	} else {
+		$('input[name="HostNameObject"][value="network"]').parent().checkbox('check')
+	}
+
+	$('input[name="PortNumberObject"]').val(portNumber)
+}
+
+function SaveEditServer() {
+	hostName = $('input[name="HostNameObject"]:checked').val()
+	if (hostName != 'localhost') {
+		hostName = "123.456.78.9"
+	}
+	portNumber = $('input[name="PortNumberObject"]').val()
+
+	CloseEditServer()
 }
 
 /*	CloseEditServer()
@@ -2500,63 +2921,90 @@ function CloseEditServer() {
 function EditSimulateFunctions() {
 	DisplayOrClosePrompt("modalSimulateFunctions", "block");
 
-	var dropdown = document.getElementById("dropdownInitializeFunction");
-	while (dropdown.firstChild) {
-		dropdown.removeChild(dropdown.firstChild);
-	}
-	var addContentType = document.createElement("a");
-	addContentType.href = "#";
-	addContentType.innerHTML = "''";
-	addContentType.onclick = function () {
-		document.getElementsByName("divInitializeFunction")[0].innerHTML
-			= "Initialize Function: " + "";
-		simulatorObjects[editExistingObject].initialize = "";
-	};
-	dropdown.appendChild(addContentType);
-	let i = 0;
+	let dropdown = $('#dropdownInitializeFunction .menu')
+	dropdown.empty()
+
+	let item
+	let i
 	for (i = 0; i < simulatorObjects[editExistingObject].original.functions.length; i++) {
-		addContentType = document.createElement("a");
-		addContentType.href = "#";
-		addContentType.name = i;
-		addContentType.innerHTML = simulatorObjects[editExistingObject].original.functions[i].name;
-		addContentType.onclick = function () {
-			UpdateInitializeFunction(this.name);
-		};
-		dropdown.appendChild(addContentType);
-	}
-	dropdown = document.getElementById("dropdownSimulateFunction");
-	while (dropdown.firstChild) {
-		dropdown.removeChild(dropdown.firstChild);
-	}
-	addContentType = document.createElement("a");
-	addContentType.href = "#";
-	addContentType.innerHTML = "''";
-	addContentType.onclick = function () {
-		document.getElementsByName("divSimulateFunction")[0].innerHTML
-			= "Simulate Function: " + "";
-		simulatorObjects[editExistingObject].simulate = "";
-	};
-	dropdown.appendChild(addContentType);
-	for (i = 0; i < simulatorObjects[editExistingObject].original.functions.length; i++) {
-		addContentType = document.createElement("a");
-		addContentType.href = "#";
-		addContentType.name = i;
-		addContentType.innerHTML = simulatorObjects[editExistingObject].original.functions[i].name;
-		addContentType.onclick = function () {
-			UpdateSimulateFunction(this.name);
-		};
-		dropdown.appendChild(addContentType);
+		item = $('<div>').addClass('item').text(simulatorObjects[editExistingObject].original.functions[i].name)
+		item.attr('data-value', simulatorObjects[editExistingObject].original.functions[i].name)
+		dropdown.append(item)
 	}
 
-	var newTimeDelta = simulatorObjects[editExistingObject].simulateTimeDelta;
-	var div = document.getElementsByName("divSimulateFunctionTimestepDelta")[0];
-	div.innerHTML = "Simulate Function timestep delta: " + newTimeDelta;
-	var newInitialize = simulatorObjects[editExistingObject].initialize;
-	div = document.getElementsByName("divInitializeFunction")[0];
-	div.innerHTML = "Initialize Function: " + newInitialize;
-	var newSimulate = simulatorObjects[editExistingObject].simulate;
-	div = document.getElementsByName("divSimulateFunction")[0];
-	div.innerHTML = "Simulate Function: " + newSimulate;
+	item = $('<div>').addClass('item').text("''")
+	item.attr('data-value', "''")
+
+	dropdown.append(item)
+	$('#dropdownSimulateFunction').dropdown('set selected', simulatorObjects[editExistingObject].initialize)
+
+
+
+	// var addContentType = document.createElement("a");
+	// addContentType.href = "#";
+	// addContentType.innerHTML = "''";
+	// addContentType.onclick = function () {
+	// 	document.getElementsByName("divInitializeFunction")[0].innerHTML
+	// 		= "Initialize Function: " + "";
+	// 	simulatorObjects[editExistingObject].initialize = "";
+	// };
+	// dropdown.appendChild(addContentType);
+	// i = 0;
+	// for (i = 0; i < simulatorObjects[editExistingObject].original.functions.length; i++) {
+	// 	addContentType = document.createElement("a");
+	// 	addContentType.href = "#";
+	// 	addContentType.name = i;
+	// 	addContentType.innerHTML = simulatorObjects[editExistingObject].original.functions[i].name;
+	// 	addContentType.onclick = function () {
+	// 		UpdateInitializeFunction(this.name);
+	// 	};
+	// 	dropdown.appendChild(addContentType);
+	// }
+	dropdown = $('#dropdownSimulateFunction .menu')
+	dropdown.empty()
+	for (i = 0; i < simulatorObjects[editExistingObject].original.functions.length; i++) {
+		item = $('<div>').addClass('item').text(simulatorObjects[editExistingObject].original.functions[i].name)
+		item.attr('data-value', simulatorObjects[editExistingObject].original.functions[i].name)
+		dropdown.append(item)
+	}
+
+	item = $('<div>').addClass('item').text("''")
+	item.attr('data-value', "''")
+	dropdown.append(item)
+
+	$('#dropdownSimulateFunction').dropdown('set selected', simulatorObjects[editExistingObject].simulate)
+
+	$('input[name="SimulateFunctionTimestepDelta"]').val(simulatorObjects[editExistingObject].simulateTimeDelta)
+
+	// addContentType = document.createElement("a");
+	// addContentType.href = "#";
+	// addContentType.innerHTML = "''";
+	// addContentType.onclick = function () {
+	// 	document.getElementsByName("divSimulateFunction")[0].innerHTML
+	// 		= "Simulate Function: " + "";
+	// 	simulatorObjects[editExistingObject].simulate = "";
+	// };
+	// dropdown.appendChild(addContentType);
+	// for (i = 0; i < simulatorObjects[editExistingObject].original.functions.length; i++) {
+	// 	addContentType = document.createElement("a");
+	// 	addContentType.href = "#";
+	// 	addContentType.name = i;
+	// 	addContentType.innerHTML = simulatorObjects[editExistingObject].original.functions[i].name;
+	// 	addContentType.onclick = function () {
+	// 		UpdateSimulateFunction(this.name);
+	// 	};
+	// 	dropdown.appendChild(addContentType);
+	// }
+
+	// var newTimeDelta = simulatorObjects[editExistingObject].simulateTimeDelta;
+	// var div = document.getElementsByName("divSimulateFunctionTimestepDelta")[0];
+	// div.innerHTML = "Simulate Function timestep delta: " + newTimeDelta;
+	// var newInitialize = simulatorObjects[editExistingObject].initialize;
+	// div = document.getElementsByName("divInitializeFunction")[0];
+	// div.innerHTML = "Initialize Function: " + newInitialize;
+	// var newSimulate = simulatorObjects[editExistingObject].simulate;
+	// div = document.getElementsByName("divSimulateFunction")[0];
+	// div.innerHTML = "Simulate Function: " + newSimulate;
 }
 
 /*	CloseSimulateFunctions()
@@ -2570,11 +3018,13 @@ function CloseSimulateFunctions() {
 	SaveSimulateFunctionTimeDelta()
 	- Save configuration value (time delta) inside configuration prompt for simulator.
 */
-function SaveSimulateFunctionTimeDelta() {
-	var newTimeDelta = document.getElementsByName("SimulateFunctionTimestepDelta")[0].value;
+function SaveSimulateFunction() {
+	simulatorObjects[editExistingObject].initialize = $('#dropdownInitializeFunction').dropdown('get value')
+	simulatorObjects[editExistingObject].simulate = $('#dropdownSimulateFunction').dropdown('get value')
+
+	let newTimeDelta = $('input[name="SimulateFunctionTimestepDelta"]').val()
 	simulatorObjects[editExistingObject].simulateTimeDelta = parseInt(newTimeDelta);
-	var div = document.getElementsByName("divSimulateFunctionTimestepDelta")[0];
-	div.innerHTML = "Simulate Function timestep delta: " + newTimeDelta;
+	CloseSimulateFunctions()
 }
 
 /*	EditStageConditions()
@@ -2590,234 +3040,324 @@ var stageConditionSet = [];
 function EditStageConditions() {
 	DisplayOrClosePrompt("modalStageConditions", "block");
 
-	var dropdown = document.getElementById("dropdownStageConditionPickVar1");
-	while (dropdown.firstChild) {
-		dropdown.removeChild(dropdown.firstChild);
-	}
-	let i = 0;
-	for (i = 0; i < simulatorObjects[editExistingObject].original.variables.length; i++) {
-		var addContentType = document.createElement("a");
-		addContentType.href = "#";
-		addContentType.innerHTML = simulatorObjects[editExistingObject].original.variables[i].name +
-			" (" + simulatorObjects[editExistingObject].original.variables[i].valueType + ")";
-		addContentType.name = simulatorObjects[editExistingObject].original.variables[i].name;
-		addContentType.onclick = function () {
-			console.log("Clicked that: " + this.innerHTML);
-			stageConditionV1 = this.name;
+	$('#dropdownStageConditionPickVar1 .menu, #dropdownStageConditionPickVar2 .menu').each(function (index) {
+		let dropdown = $(this)
+		dropdown.empty()
 
-			document.getElementById("divStageConditionStatement").innerHTML
-				= "If [" + stageConditionV1 + "] [" + stageConditionV2 + "] [" + stageConditionV3 + "] AND ...";
-		};
-		dropdown.appendChild(addContentType);
-	}
-
-	dropdown = document.getElementById("dropdownStageConditionPickRTIVar1");
-	while (dropdown.firstChild) {
-		dropdown.removeChild(dropdown.firstChild);
-	}
-	for (i = 0; i < 4; i++) {
-		var addContentType = document.createElement("a");
-		addContentType.href = "#";
-		if (i == 0) {
-			addContentType.innerHTML = "RTI_vTimestep";
-		} else if (i == 1) {
-			addContentType.innerHTML = "RTI_stage";
-		} else if (i == 2) {
-			addContentType.innerHTML = "RTI_stageVTimestepMul";
-		} else if (i == 3) {
-			addContentType.innerHTML = "RTI_stageVTimestep";
+		let item
+		let i
+		for (i = 0; i < simulatorObjects[editExistingObject].original.variables.length; i++) {
+			item = $('<div>').addClass('item').text(simulatorObjects[editExistingObject].original.variables[i].name +
+				" (" + simulatorObjects[editExistingObject].original.variables[i].valueType + ")")
+			item.attr('data-value', simulatorObjects[editExistingObject].original.variables[i].name)
+			dropdown.append(item)
 		}
-		addContentType.name = addContentType.innerHTML;
-		addContentType.onclick = function () {
-			console.log("Clicked this: " + this.innerHTML);
 
-			stageConditionV1 = this.name;
-			document.getElementById("divStageConditionStatement").innerHTML
-				= "If [" + stageConditionV1 + "] [" + stageConditionV2 + "] [" + stageConditionV3 + "] AND ...";
-		};
-		dropdown.appendChild(addContentType);
-	}
+		dropdown.parent().dropdown({
+			action: 'activate',
+			onChange: function (value, text, $item) {
+				if (value) {
+					$('#' + $(this).attr('for')).text(value)
+					$(`.dropdown[for="${$(this).attr('for')}"]`).not('#' + $(this).attr('id')).dropdown('restore defaults')
+					$(`input[for="${$(this).attr('for')}"]`).val('').blur()
+					if ($(this).attr('for').endsWith('3')) {
+						stageConditionV3b = $(this.val)
+						stageConditionV3a = ""
+					}
 
-	dropdown = document.getElementById("dropdownStageConditionCondition1");
-	while (dropdown.firstChild) {
-		dropdown.removeChild(dropdown.firstChild);
-	}
-	for (i = 0; i < 6; i++) {
-		var addContentType = document.createElement("a");
-		addContentType.href = "#";
-		if (i == 0) {
-			addContentType.innerHTML = "=";
-		} else if (i == 1) {
-			addContentType.innerHTML = ">";
-		} else if (i == 2) {
-			addContentType.innerHTML = "<";
-		} else if (i == 3) {
-			addContentType.innerHTML = ">=";
-		} else if (i == 4) {
-			addContentType.innerHTML = "<=";
-		} else if (i == 5) {
-			addContentType.innerHTML = "!=";
-		}
-		addContentType.name = addContentType.innerHTML;
-		addContentType.onclick = function () {
-			console.log("Clicked that: " + unescape(this.innerHTML));
-
-			if (this.name == "&gt;") {
-				stageConditionV2 = ">";
-			} else if (this.name == "&lt;") {
-				stageConditionV2 = "<";
-			} else if (this.name == "&gt;=") {
-				stageConditionV2 = ">=";
-			} else if (this.name == "&lt;=") {
-				stageConditionV2 = "<=";
-			} else {
-				stageConditionV2 = unescape(this.name);
+				}
 			}
-			console.log("(stageCondition is = )" + stageConditionV2);
-			//stageConditionV2 = this.innerHTML;
-			document.getElementById("divStageConditionStatement").innerHTML
-				= "If [" + stageConditionV1 + "] [" + stageConditionV2 + "] [" + stageConditionV3 + "] AND ...";
-		};
-		dropdown.appendChild(addContentType);
-	}
+		})
+	})
 
-	dropdown = document.getElementById("dropdownStageConditionPickVar2");
-	while (dropdown.firstChild) {
-		dropdown.removeChild(dropdown.firstChild);
-	}
-	for (i = 0; i < simulatorObjects[editExistingObject].original.variables.length; i++) {
-		var addContentType = document.createElement("a");
-		addContentType.href = "#";
-		addContentType.innerHTML = simulatorObjects[editExistingObject].original.variables[i].name +
-			" (" + simulatorObjects[editExistingObject].original.variables[i].valueType + ")";
-		addContentType.name = simulatorObjects[editExistingObject].original.variables[i].name;
-		addContentType.onclick = function () {
-			console.log("Clicked that: " + this.innerHTML);
+	$('#dropdownStageConditionPickRTIVar1 .menu, #dropdownStageConditionPickRTIVar2 .menu').each(function (index) {
+		let dropdown = $(this)
+		dropdown.empty()
 
-			stageConditionV3 = this.name;
-			stageConditionV3b = this.name;
-			stageConditionV3a = "";
-
-			document.getElementById("divStageConditionStatement").innerHTML
-				= "If [" + stageConditionV1 + "] [" + stageConditionV2 + "] [" + stageConditionV3 + "] AND ...";
-		};
-		dropdown.appendChild(addContentType);
-	}
-
-	dropdown = document.getElementById("dropdownStageConditionPickRTIVar2");
-	while (dropdown.firstChild) {
-		dropdown.removeChild(dropdown.firstChild);
-	}
-	for (i = 0; i < 4; i++) {
-		var addContentType = document.createElement("a");
-		addContentType.href = "#";
-		if (i == 0) {
-			addContentType.innerHTML = "RTI_vTimestep";
-		} else if (i == 1) {
-			addContentType.innerHTML = "RTI_stage";
-		} else if (i == 2) {
-			addContentType.innerHTML = "RTI_stageVTimestepMul";
-		} else if (i == 3) {
-			addContentType.innerHTML = "RTI_stageVTimestep";
+		let item
+		for (variable of ["RTI_vTimestep", "RTI_stage", "RTI_stageVTimestepMul", "RTI_stageVTimestep"]) {
+			item = $('<div>').addClass('item').text(variable)
+			item.attr(variable)
+			dropdown.append(item)
 		}
-		addContentType.name = addContentType.innerHTML;
-		addContentType.onclick = function () {
-			console.log("Clicked that: " + this.innerHTML);
 
-			stageConditionV3 = this.name;
-			stageConditionV3b = this.name;
-			stageConditionV3a = "";
+		dropdown.parent().dropdown({
+			action: 'activate',
+			onChange: function (value, text, $item) {
+				if (value) {
+					$('#' + $(this).attr('for')).text(value)
+					$(`.dropdown[for="${$(this).attr('for')}"]`).not('#' + $(this).attr('id')).dropdown('restore defaults')
+					$(`input[for="${$(this).attr('for')}"]`).val('').blur()
+					if ($(this).attr('for').endsWith('3')) {
+						stageConditionV3b = value
+						stageConditionV3a = ""
+					}
 
-			document.getElementById("divStageConditionStatement").innerHTML
-				= "If [" + stageConditionV1 + "] [" + stageConditionV2 + "] [" + stageConditionV3 + "] AND ...";
-		};
-		dropdown.appendChild(addContentType);
-	}
-
-
-	var panel = document.getElementById("modalStageConditionsPanel");
-	while (panel.firstChild) {
-		panel.removeChild(panel.firstChild);
-	}
-	for (i = 0; i < simulatorObjects[editExistingObject].stageConditions.length; i++) {
-		var addContentType = document.createElement("div");
-		addContentType.className = "div-list-item";
-		var addContent1 = document.createElement("div");
-		addContent1.style = "width:80%;float:left;";
-		var sentence = "in stage = " + simulatorObjects[editExistingObject].stageConditions[i].oldStage + ", ";
-		let j = 0;
-		for (j = 0; j < simulatorObjects[editExistingObject].stageConditions[i].conditions.length; j++) {
-			var tempVarName2 = simulatorObjects[editExistingObject].stageConditions[i].conditions[j].varName2;
-			if (tempVarName2 == "") {
-				sentence = sentence + "if [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].varName
-					+ "] [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].condition
-					+ "] [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].value + "] ";
-			} else {
-				sentence = sentence + "if [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].varName
-					+ "] [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].condition
-					+ "] [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].varName2 + "] ";
+				}
 			}
-			if (j < simulatorObjects[editExistingObject].stageConditions[i].conditions.length - 1) {
-				sentence = sentence + "AND ";
+		})
+	})
+
+	let dropdown = $('#dropdownStageConditionCondition1 .menu')
+	dropdown.empty()
+
+	let item
+	for (variable of ["==", "!=", ">", "<", ">=", "<="]) {
+		item = $('<div>').addClass('item').text(variable)
+		item.attr(variable)
+		dropdown.append(item)
+	}
+
+	dropdown.parent().dropdown({
+		action: 'activate',
+		onChange: function (value, text, $item) {
+			if (value) {
+				$('#' + $(this).attr('for')).text(unescape(value))
 			}
 		}
-		sentence = sentence + "go to stage = " + simulatorObjects[editExistingObject].stageConditions[i].newStage;
-		addContent1.innerHTML = sentence;
-		addContentType.appendChild(addContent1);
-		var addContent2 = document.createElement("button");
-		addContent2.name = i;
-		addContent2.onclick = function () {
-			//RemoveStageConditionFromSubList(this.name);
-			RemoveStageConditionFromList(this.name);
-		};
-		addContent2.style = "float:right;";
-		var addContent3 = document.createTextNode("X");
-		addContent2.appendChild(addContent3);
-		addContentType.appendChild(addContent2);
+	})
 
-		panel.appendChild(addContentType);
-	}
-
-	stageConditionSubSet = [];
-
-	var subpanel = document.getElementById("modalStageConditionsSubPanel");
-	while (subpanel.firstChild) {
-		subpanel.removeChild(subpanel.firstChild);
-	}
-	for (i = 0; i < stageConditionSubSet.length; i++) {
-		var addContentType = document.createElement("div");
-		addContentType.className = "div-list-item";
-		var tempVarName2 = stageConditionSubSet[i].varName2;
-		var addContent1 = document.createElement("div");
-		addContent1.style = "width:70%;float:left;";
-		if (tempVarName2 == "") {
-			addContent1.innerHTML = "if [" + stageConditionSubSet[i].varName + "] ["
-				+ stageConditionSubSet[i].condition + "] [" + stageConditionSubSet[i].value + "] && ...";
-		} else {
-			addContent1.innerHTML = "if [" + stageConditionSubSet[i].varName + "] ["
-				+ stageConditionSubSet[i].condition + "] [" + stageConditionSubSet[i].varName2 + "] && ...";
+	let input = $('input[name="TextStageConditionsPickValue2"]')
+	input.change(function () {
+		if ($(this).val()) {
+			$('#' + $(this).attr('for')).text(value)
+			$(`.dropdown[for="${$(this).attr('for')}"]`).dropdown('restore defaults')
+			stageConditionV3a = $(this).val()
+			stageConditionV3b = ""
 		}
-		addContentType.appendChild(addContent1);
-		var addContent2 = document.createElement("button");
-		addContent2.name = i;
-		addContent2.onclick = function () {
-			RemoveStageConditionFromSubList(this.name);
-		};
-		addContent2.style = "float:right;";
-		var addContent3 = document.createTextNode("X");
-		addContent2.appendChild(addContent3);
-		addContentType.appendChild(addContent2);
-
-		subpanel.appendChild(addContentType);
 	}
-	stageConditionV1 = "";
-	stageConditionV2 = "";
-	stageConditionV3 = "";
-	stageConditionV3a = "";
-	stageConditionV3b = "";
-	document.getElementsByName("TextStageConditionsPickValue2")[0].value = "";
-	document.getElementById("divStageConditionStatement").innerHTML
-		= "If [" + stageConditionV1 + "] [" + stageConditionV2 + "] [" + stageConditionV3 + "] AND ...";
+	)
+	input.val('').blur()
+
+	// var dropdown = document.getElementById("dropdownStageConditionPickVar1");
+	// while (dropdown.firstChild) {
+	// 	dropdown.removeChild(dropdown.firstChild);
+	// }
+	// let i = 0;
+	// for (i = 0; i < simulatorObjects[editExistingObject].original.variables.length; i++) {
+	// 	var addContentType = document.createElement("a");
+	// 	addContentType.href = "#";
+	// 	addContentType.innerHTML = simulatorObjects[editExistingObject].original.variables[i].name +
+	// 		" (" + simulatorObjects[editExistingObject].original.variables[i].valueType + ")";
+	// 	addContentType.name = simulatorObjects[editExistingObject].original.variables[i].name;
+	// 	addContentType.onclick = function () {
+	// 		console.log("Clicked that: " + this.innerHTML);
+	// 		stageConditionV1 = this.name;
+
+	// 		document.getElementById("divStageConditionStatement").innerHTML
+	// 			= "If [" + stageConditionV1 + "] [" + stageConditionV2 + "] [" + stageConditionV3 + "] AND ...";
+	// 	};
+	// 	dropdown.appendChild(addContentType);
+	// }
+
+	// dropdown = document.getElementById("dropdownStageConditionPickRTIVar1");
+	// while (dropdown.firstChild) {
+	// 	dropdown.removeChild(dropdown.firstChild);
+	// }
+	// for (i = 0; i < 4; i++) {
+	// 	var addContentType = document.createElement("a");
+	// 	addContentType.href = "#";
+	// 	if (i == 0) {
+	// 		addContentType.innerHTML = "RTI_vTimestep";
+	// 	}
+	// 	else if (i == 1) {
+	// 		addContentType.innerHTML = "RTI_stage";
+	// 	} else if (i == 2) {
+	// 		addContentType.innerHTML = "RTI_stageVTimestepMul";
+	// 	} else if (i == 3) {
+	// 		addContentType.innerHTML = "RTI_stageVTimestep";
+	// 	}
+	// 	addContentType.name = addContentType.innerHTML;
+	// 	addContentType.onclick = function () {
+	// 		console.log("Clicked this: " + this.innerHTML);
+
+	// 		stageConditionV1 = this.name;
+	// 		document.getElementById("divStageConditionStatement").innerHTML
+	// 			= "If [" + stageConditionV1 + "] [" + stageConditionV2 + "] [" + stageConditionV3 + "] AND ...";
+	// 	};
+	// 	dropdown.appendChild(addContentType);
+	// }
+
+	// dropdown = document.getElementById("dropdownStageConditionCondition1");
+	// while (dropdown.firstChild) {
+	// 	dropdown.removeChild(dropdown.firstChild);
+	// }
+	// for (i = 0; i < 6; i++) {
+	// 	var addContentType = document.createElement("a");
+	// 	addContentType.href = "#";
+	// 	if (i == 0) {
+	// 		addContentType.innerHTML = "=";
+	// 	} else if (i == 1) {
+	// 		addContentType.innerHTML = ">";
+	// 	} else if (i == 2) {
+	// 		addContentType.innerHTML = "<";
+	// 	} else if (i == 3) {
+	// 		addContentType.innerHTML = ">=";
+	// 	} else if (i == 4) {
+	// 		addContentType.innerHTML = "<=";
+	// 	} else if (i == 5) {
+	// 		addContentType.innerHTML = "!=";
+	// 	}
+	// 	addContentType.name = addContentType.innerHTML;
+	// 	addContentType.onclick = function () {
+	// 		console.log("Clicked that: " + unescape(this.innerHTML));
+
+	// 		if (this.name == "&gt;") {
+	// 			stageConditionV2 = ">";
+	// 		} else if (this.name == "&lt;") {
+	// 			stageConditionV2 = "<";
+	// 		} else if (this.name == "&gt;=") {
+	// 			stageConditionV2 = ">=";
+	// 		} else if (this.name == "&lt;=") {
+	// 			stageConditionV2 = "<=";
+	// 		} else {
+	// 			stageConditionV2 = unescape(this.name);
+	// 		}
+	// 		console.log("(stageCondition is = )" + stageConditionV2);
+	// 		//stageConditionV2 = this.innerHTML;
+	// 		document.getElementById("divStageConditionStatement").innerHTML
+	// 			= "If [" + stageConditionV1 + "] [" + stageConditionV2 + "] [" + stageConditionV3 + "] AND ...";
+	// 	};
+	// 	dropdown.appendChild(addContentType);
+	// }
+
+	// dropdown = document.getElementById("dropdownStageConditionPickVar2");
+	// while (dropdown.firstChild) {
+	// 	dropdown.removeChild(dropdown.firstChild);
+	// }
+	// for (i = 0; i < simulatorObjects[editExistingObject].original.variables.length; i++) {
+	// 	var addContentType = document.createElement("a");
+	// 	addContentType.href = "#";
+	// 	addContentType.innerHTML = simulatorObjects[editExistingObject].original.variables[i].name +
+	// 		" (" + simulatorObjects[editExistingObject].original.variables[i].valueType + ")";
+	// 	addContentType.name = simulatorObjects[editExistingObject].original.variables[i].name;
+	// 	addContentType.onclick = function () {
+	// 		console.log("Clicked that: " + this.innerHTML);
+
+	// 		stageConditionV3 = this.name;
+	// 		stageConditionV3b = this.name;
+	// 		stageConditionV3a = "";
+
+	// 		document.getElementById("divStageConditionStatement").innerHTML
+	// 			= "If [" + stageConditionV1 + "] [" + stageConditionV2 + "] [" + stageConditionV3 + "] AND ...";
+	// 	};
+	// 	dropdown.appendChild(addContentType);
+	// }
+
+	// dropdown = document.getElementById("dropdownStageConditionPickRTIVar2");
+	// while (dropdown.firstChild) {
+	// 	dropdown.removeChild(dropdown.firstChild);
+	// }
+	// for (i = 0; i < 4; i++) {
+	// 	var addContentType = document.createElement("a");
+	// 	addContentType.href = "#";
+	// 	if (i == 0) {
+	// 		addContentType.innerHTML = "RTI_vTimestep";
+	// 	} else if (i == 1) {
+	// 		addContentType.innerHTML = "RTI_stage";
+	// 	} else if (i == 2) {
+	// 		addContentType.innerHTML = "RTI_stageVTimestepMul";
+	// 	} else if (i == 3) {
+	// 		addContentType.innerHTML = "RTI_stageVTimestep";
+	// 	}
+	// 	addContentType.name = addContentType.innerHTML;
+	// 	addContentType.onclick = function () {
+	// 		console.log("Clicked that: " + this.innerHTML);
+
+	// 		stageConditionV3 = this.name;
+	// 		stageConditionV3b = this.name;
+	// 		stageConditionV3a = "";
+
+	// 		document.getElementById("divStageConditionStatement").innerHTML
+	// 			= "If [" + stageConditionV1 + "] [" + stageConditionV2 + "] [" + stageConditionV3 + "] AND ...";
+	// 	};
+	// 	dropdown.appendChild(addContentType);
+	// }
+
+
+	// var panel = document.getElementById("modalStageConditionsPanel");
+	// while (panel.firstChild) {
+	// 	panel.removeChild(panel.firstChild);
+	// }
+	// for (i = 0; i < simulatorObjects[editExistingObject].stageConditions.length; i++) {
+	// 	var addContentType = document.createElement("div");
+	// 	addContentType.className = "div-list-item";
+	// 	var addContent1 = document.createElement("div");
+	// 	addContent1.style = "width:80%;float:left;";
+	// 	var sentence = "in stage = " + simulatorObjects[editExistingObject].stageConditions[i].oldStage + ", ";
+	// 	let j = 0;
+	// 	for (j = 0; j < simulatorObjects[editExistingObject].stageConditions[i].conditions.length; j++) {
+	// 		var tempVarName2 = simulatorObjects[editExistingObject].stageConditions[i].conditions[j].varName2;
+	// 		if (tempVarName2 == "") {
+	// 			sentence = sentence + "if [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].varName
+	// 				+ "] [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].condition
+	// 				+ "] [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].value + "] ";
+	// 		} else {
+	// 			sentence = sentence + "if [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].varName
+	// 				+ "] [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].condition
+	// 				+ "] [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].varName2 + "] ";
+	// 		}
+	// 		if (j < simulatorObjects[editExistingObject].stageConditions[i].conditions.length - 1) {
+	// 			sentence = sentence + "AND ";
+	// 		}
+	// 	}
+	// 	sentence = sentence + "go to stage = " + simulatorObjects[editExistingObject].stageConditions[i].newStage;
+	// 	addContent1.innerHTML = sentence;
+	// 	addContentType.appendChild(addContent1);
+	// 	var addContent2 = document.createElement("button");
+	// 	addContent2.name = i;
+	// 	addContent2.onclick = function () {
+	// 		//RemoveStageConditionFromSubList(this.name);
+	// 		RemoveStageConditionFromList(this.name);
+	// 	};
+	// 	addContent2.style = "float:right;";
+	// 	var addContent3 = document.createTextNode("X");
+	// 	addContent2.appendChild(addContent3);
+	// 	addContentType.appendChild(addContent2);
+
+	// 	panel.appendChild(addContentType);
+	// }
+
+	// stageConditionSubSet = [];
+
+	// var subpanel = document.getElementById("modalStageConditionsSubPanel");
+	// while (subpanel.firstChild) {
+	// 	subpanel.removeChild(subpanel.firstChild);
+	// }
+	// for (i = 0; i < stageConditionSubSet.length; i++) {
+	// 	var addContentType = document.createElement("div");
+	// 	addContentType.className = "div-list-item";
+	// 	var tempVarName2 = stageConditionSubSet[i].varName2;
+	// 	var addContent1 = document.createElement("div");
+	// 	addContent1.style = "width:70%;float:left;";
+	// 	if (tempVarName2 == "") {
+	// 		addContent1.innerHTML = "if [" + stageConditionSubSet[i].varName + "] ["
+	// 			+ stageConditionSubSet[i].condition + "] [" + stageConditionSubSet[i].value + "] && ...";
+	// 	} else {
+	// 		addContent1.innerHTML = "if [" + stageConditionSubSet[i].varName + "] ["
+	// 			+ stageConditionSubSet[i].condition + "] [" + stageConditionSubSet[i].varName2 + "] && ...";
+	// 	}
+	// 	addContentType.appendChild(addContent1);
+	// 	var addContent2 = document.createElement("button");
+	// 	addContent2.name = i;
+	// 	addContent2.onclick = function () {
+	// 		RemoveStageConditionFromSubList(this.name);
+	// 	};
+	// 	addContent2.style = "float:right;";
+	// 	var addContent3 = document.createTextNode("X");
+	// 	addContent2.appendChild(addContent3);
+	// 	addContentType.appendChild(addContent2);
+
+	// 	subpanel.appendChild(addContentType);
+	// }
+	// stageConditionV1 = "";
+	// stageConditionV2 = "";
+	// stageConditionV3 = "";
+	// stageConditionV3a = "";
+	// stageConditionV3b = "";
+	// document.getElementsByName("TextStageConditionsPickValue2")[0].value = "";
+	// document.getElementById("divStageConditionStatement").innerHTML
+	// 	= "If [" + stageConditionV1 + "] [" + stageConditionV2 + "] [" + stageConditionV3 + "] AND ...";
 }
 
 /*	CloseStageConditions()
@@ -3133,37 +3673,45 @@ function UpdatePortNumber() {
 	portNumber = newNumber;
 }
 
+function SaveSimLocalTime() {
+	simulatorObjects[editExistingObject].timeDelta = parseInt($('input[name="newTimeDelta"]').val())
+	simulatorObjects[editExistingObject].timeScale = parseInt($('input[name="newTimeScale"]').val())
+	simulatorObjects[editExistingObject].timeVarDelta = $('#dropdownVar').dropdown('get value')
+
+	CloseEditSimLocalTime()
+}
+
 /*	UpdateTimeDelta()
 	- Change time delta (from prompt).
 */
-function UpdateTimeDelta() {
-	var newNumber = document.getElementsByName("NewTimeDelta")[0].value;
-	var divNumber = document.getElementsByName("divTimeDelta")[0];
-	divNumber.innerHTML = "Current Time Delta: " + newNumber;
-	simulatorObjects[editExistingObject].timeDelta = parseInt(newNumber);
-}
+// function UpdateTimeDelta() {
+// 	var newNumber = document.getElementsByName("NewTimeDelta")[0].value;
+// 	var divNumber = document.getElementsByName("divTimeDelta")[0];
+// 	divNumber.innerHTML = "Current Time Delta: " + newNumber;
+// 	simulatorObjects[editExistingObject].timeDelta = parseInt(newNumber);
+// }
 
 /*	UpdateTimeScale()
 	- Change time scale (from prompt).
 */
-function UpdateTimeScale() {
-	var newNumber = document.getElementsByName("NewTimeScale")[0].value;
-	var divNumber = document.getElementsByName("divTimeScale")[0];
-	divNumber.innerHTML = "Current Time Multiplier: " + newNumber;
-	simulatorObjects[editExistingObject].timeScale = parseInt(newNumber);
-}
+// function UpdateTimeScale() {
+// 	var newNumber = document.getElementsByName("NewTimeScale")[0].value;
+// 	var divNumber = document.getElementsByName("divTimeScale")[0];
+// 	divNumber.innerHTML = "Current Time Multiplier: " + newNumber;
+// 	simulatorObjects[editExistingObject].timeScale = parseInt(newNumber);
+// }
 
 /*	UpdateTimeVarDelta()
 	- Change time delta variable reference from simulator (from prompt).
 */
-function UpdateTimeVarDelta(index) {
-	document.getElementsByName("divTimeVarScale")[0].innerHTML
-		= "Current Time Variable Multiplier: "
-		+ simulatorObjects[editExistingObject].original.variables[index].name
-		+ " (" + simulatorObjects[editExistingObject].original.variables[index].valueType + ")";
-	simulatorObjects[editExistingObject].timeVarDelta
-		= simulatorObjects[editExistingObject].original.variables[index].name;
-}
+// function UpdateTimeVarDelta(index) {
+// 	document.getElementsByName("divTimeVarScale")[0].innerHTML
+// 		= "Current Time Variable Multiplier: "
+// 		+ simulatorObjects[editExistingObject].original.variables[index].name
+// 		+ " (" + simulatorObjects[editExistingObject].original.variables[index].valueType + ")";
+// 	simulatorObjects[editExistingObject].timeVarDelta
+// 		= simulatorObjects[editExistingObject].original.variables[index].name;
+// }
 
 /*	UpdateInitializeFunction()
 	- Change 'initialize' function to call for sim in specific stage (from prompt).
@@ -3325,8 +3873,8 @@ function UpdateEndConditionCompareValue() {
 */
 function AddStageConditionToSubList() {
 	stageConditionSubSet.push({
-		varName: stageConditionV1,
-		condition: stageConditionV2,
+		varName: $('#stageCondition1').text(),
+		condition: unescape($('#stageCondition2').text()),
 		value: stageConditionV3a,
 		varName2: stageConditionV3b
 	});
@@ -3363,14 +3911,14 @@ function AddStageConditionToSubList() {
 		subpanel.appendChild(addContentType);
 	}
 
-	stageConditionV1 = "";
-	stageConditionV2 = "";
-	stageConditionV3 = "";
-	stageConditionV3a = "";
-	stageConditionV3b = "";
-	document.getElementsByName("TextStageConditionsPickValue2")[0].value = "";
-	document.getElementById("divStageConditionStatement").innerHTML
-		= "If [" + stageConditionV1 + "] [" + stageConditionV2 + "] [" + stageConditionV3 + "] AND ...";
+	// stageConditionV1 = "";
+	// stageConditionV2 = "";
+	// stageConditionV3 = "";
+	// stageConditionV3a = "";
+	// stageConditionV3b = "";
+	// document.getElementsByName("TextStageConditionsPickValue2")[0].value = "";
+	// document.getElementById("divStageConditionStatement").innerHTML
+	// 	= "If [" + stageConditionV1 + "] [" + stageConditionV2 + "] [" + stageConditionV3 + "] AND ...";
 }
 
 /*	RemoveStageConditionFromSubList()
@@ -3422,11 +3970,9 @@ function AddStageConditionToList() {
 		newStage: newStage
 	});
 
-	var panel = document.getElementById("modalStageConditionsPanel");
-	while (panel.firstChild) {
-		panel.removeChild(panel.firstChild);
-	}
-	let i = 0;
+	let panel = $('#modalStageCondtionsPanel')
+	panel.empty()
+	let i
 	for (i = 0; i < simulatorObjects[editExistingObject].stageConditions.length; i++) {
 		var addContentType = document.createElement("div");
 		addContentType.className = "div-list-item";
@@ -3464,6 +4010,50 @@ function AddStageConditionToList() {
 
 		panel.appendChild(addContentType);
 	}
+
+
+	// var panel = document.getElementById("modalStageConditionsPanel");
+	// while (panel.firstChild) {
+	// 	panel.removeChild(panel.firstChild);
+	// }
+	// let i = 0;
+	// for (i = 0; i < simulatorObjects[editExistingObject].stageConditions.length; i++) {
+	// 	var addContentType = document.createElement("div");
+	// 	addContentType.className = "div-list-item";
+	// 	var addContent1 = document.createElement("div");
+	// 	addContent1.style = "width:80%;float:left;";
+	// 	var sentence = "in stage = " + simulatorObjects[editExistingObject].stageConditions[i].oldStage + ", ";
+	// 	let j = 0;
+	// 	for (j = 0; j < simulatorObjects[editExistingObject].stageConditions[i].conditions.length; j++) {
+	// 		var tempVarName2 = simulatorObjects[editExistingObject].stageConditions[i].conditions[j].varName2;
+	// 		if (tempVarName2 == "") {
+	// 			sentence = sentence + "if [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].varName
+	// 				+ "] [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].condition
+	// 				+ "] [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].value + "] ";
+	// 		} else {
+	// 			sentence = sentence + "if [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].varName
+	// 				+ "] [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].condition
+	// 				+ "] [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].varName2 + "] ";
+	// 		}
+	// 		if (j < simulatorObjects[editExistingObject].stageConditions[i].conditions.length - 1) {
+	// 			sentence = sentence + "AND ";
+	// 		}
+	// 	}
+	// 	sentence = sentence + "go to stage = " + simulatorObjects[editExistingObject].stageConditions[i].newStage;
+	// 	addContent1.innerHTML = sentence;
+	// 	addContentType.appendChild(addContent1);
+	// 	var addContent2 = document.createElement("button");
+	// 	addContent2.name = i;
+	// 	addContent2.onclick = function () {
+	// 		RemoveStageConditionFromList(this.name);
+	// 	};
+	// 	addContent2.style = "float:right;";
+	// 	var addContent3 = document.createTextNode("X");
+	// 	addContent2.appendChild(addContent3);
+	// 	addContentType.appendChild(addContent2);
+
+	// 	panel.appendChild(addContentType);
+	// }
 
 	stageConditionSubSet = [];
 
@@ -3792,8 +4382,8 @@ function ConfigureItemFromCanvas(e) {
 
 	ConfigureClearInspectorPanel();
 
-	var panel = document.getElementById("inspectorpanel");
-	var clickedOnItem = -1;
+	let panel = $('#inspectorpanel')
+	let clickedOnItem = -1;
 	let i = 0;
 	for (i = 0; i < simulatorObjects.length; i++) {
 		if (e.target === simulatorObjects[i].objectRef) {
@@ -3803,52 +4393,93 @@ function ConfigureItemFromCanvas(e) {
 	}
 
 	if (clickedOnItem > -1) {
-		var addContentType = document.createElement("div");
-		addContentType.style = "width: 100%; height: 40px; padding: 8px;";
-		addContentType.innerHTML = "<b>Simulator on Canvas:</b>";
-		panel.appendChild(addContentType);
+		let header = $('<div>').addClass('ui compact segment')
+		let label = $('<label>').addClass('ui color-simulator large label').text(simulatorObjects[i].name)
+		header.append($('<h3>').text('Simulator in Project'))
+		header.append(label)
 
-		addContentType = document.createElement("div");
-		addContentType.style = "width: 100%; height: 42px; padding: 8px;";
-		var addContent = document.createTextNode("Name : " + simulatorObjects[i].name);
-		addContentType.appendChild(addContent);
-		panel.appendChild(addContentType);
+		let content = $('<div>').addClass('ui compact segment')
+		let buttons = $('<div>').addClass('ui vertical buttons')
+
+		let button0 = $('<button>').addClass('ui color-simulator basic button').text('Change Local Time')
+		button0.click(() => {
+			editExistingObject = clickedOnItem;
+			EditSimLocalTime();
+		})
+		let button1 = $('<button>').addClass('ui color-simulator basic button').text('Set Initialize and Simulate Functions')
+		button1.click(() => {
+			editExistingObject = clickedOnItem;
+			EditSimulateFunctions();
+		})
+		let button2 = $('<button>').addClass('ui color-simulator basic button').text('Change Stage Transition Conditions')
+		button2.click(() => {
+			editExistingObject = clickedOnItem;
+			EditStageConditions();
+		})
+		let button3 = $('<button>').addClass('ui color-simulator basic button').text('Change End System Conditions')
+		button3.click(() => {
+			editExistingObject = clickedOnItem;
+			EditEndConditions();
+		})
+
+		buttons.append(button0)
+		buttons.append(button1)
+		buttons.append(button2)
+		buttons.append(button3)
+
+		content.append(buttons)
+
+		panel.append(header)
+		panel.append(content)
+
+		// var addContentType = document.createElement("div");
+		// addContentType.style = "width: 100%; height: 40px; padding: 8px;";
+		// addContentType.innerHTML = "<b>Simulator on Canvas:</b>";
+		// panel.appendChild(addContentType);
+
+		// addContentType = document.createElement("div");
+		// addContentType.style = "width: 100%; height: 42px; padding: 8px;";
+		// var addContent = document.createTextNode("Name : " + simulatorObjects[i].name);
+		// addContentType.appendChild(addContent);
+		// panel.appendChild(addContentType);
 
 		// (use for-loop to create 4 similar buttons)
-		for (i = 0; i < 4; i++) {
-			addContentType = document.createElement("button");
-			addContentType.style = "width: 100%; height: 40px;";
-			var addContent;
-			if (i == 0) {
-				addContentType.onclick = function () {
-					editExistingObject = clickedOnItem;
-					EditSimLocalTime();
-				};
-				addContent = document.createTextNode("Change Local Time");
-			} else if (i == 1) {
-				addContentType.onclick = function () {
-					editExistingObject = clickedOnItem;
-					EditSimulateFunctions();
-				};
-				addContent = document.createTextNode("Set Initialize and Simulate Functions");
-			} else if (i == 2) {
-				addContentType.onclick = function () {
-					editExistingObject = clickedOnItem;
-					EditStageConditions();
-				};
-				addContent = document.createTextNode("Change Stage Transition Conditions");
-			} else if (i == 3) {
-				addContentType.onclick = function () {
-					editExistingObject = clickedOnItem;
-					EditEndConditions();
-				};
-				addContent = document.createTextNode("Change End System Conditions");
-			}
-			addContentType.appendChild(addContent);
-			panel.appendChild(addContentType);
-		}
+		// for (i = 0; i < 4; i++) {
+		// 	addContentType = document.createElement("button");
+		// 	addContentType.style = "width: 100%; height: 40px;";
+		// 	var addContent;
+		// 	if (i == 0) {
+		// 		addContentType.onclick = function () {
+		// 			editExistingObject = clickedOnItem;
+		// 			EditSimLocalTime();
+		// 		};
+		// 		addContent = document.createTextNode("Change Local Time");
+		// 	} else if (i == 1) {
+		// 		addContentType.onclick = function () {
+		// 			editExistingObject = clickedOnItem;
+		// 			EditSimulateFunctions();
+		// 		};
+		// 		addContent = document.createTextNode("Set Initialize and Simulate Functions");
+		// 	} else if (i == 2) {
+		// 		addContentType.onclick = function () {
+		// 			editExistingObject = clickedOnItem;
+		// 			EditStageConditions();
+		// 		};
+		// 		addContent = document.createTextNode("Change Stage Transition Conditions");
+		// 	} else if (i == 3) {
+		// 		addContentType.onclick = function () {
+		// 			editExistingObject = clickedOnItem;
+		// 			EditEndConditions();
+		// 		};
+		// 		addContent = document.createTextNode("Change End System Conditions");
+		// 	}
+		// 	addContentType.appendChild(addContent);
+		// 	panel.appendChild(addContentType);
+		// }
 		return;
 	}
+
+	panel = document.getElementById("inspectorpanel")
 
 	clickedOnItem = -1;
 	var listOfMessageVars = document.getElementsByClassName("div-canvas-message");
@@ -3859,15 +4490,27 @@ function ConfigureItemFromCanvas(e) {
 		}
 	}
 	if (clickedOnItem > -1) {
-		var addContentType = document.createElement("div");
-		addContentType.style = "width: 100%; height: 40px; padding: 8px;";
-		addContentType.innerHTML = "<b>Message on Canvas:</b>";
-		panel.appendChild(addContentType);
-		var addContentType = document.createElement("div");
-		addContentType.style = "width: 100%; height: 42px; padding: 8px;";
-		var addContent = document.createTextNode("Name : " + messageObjects[clickedOnItem].name);
-		addContentType.appendChild(addContent);
-		panel.appendChild(addContentType);
+
+		let messageName = messageObjects[clickedOnItem].name
+
+		let panel = $('#inspectorpanel')
+		let header = $('<div>').addClass('ui compact segment')
+		let message = $('<label>').addClass('ui color-message large label').text(messageName)
+		header.append($('<h3>').text('Message on Canvas'))
+		header.append(message)
+
+
+		panel.append(header)
+
+		// var addContentType = document.createElement("div");
+		// addContentType.style = "width: 100%; height: 40px; padding: 8px;";
+		// addContentType.innerHTML = "<b>Message on Canvas:</b>";
+		// panel.appendChild(addContentType);
+		// var addContentType = document.createElement("div");
+		// addContentType.style = "width: 100%; height: 42px; padding: 8px;";
+		// var addContent = document.createTextNode("Name : " + messageObjects[clickedOnItem].name);
+		// addContentType.appendChild(addContent);
+		// panel.appendChild(addContentType);
 		return;
 	}
 
@@ -3880,29 +4523,55 @@ function ConfigureItemFromCanvas(e) {
 		}
 	}
 	if (clickedOnItem > -1) {
-		var addContentType = document.createElement("div");
-		addContentType.style = "width: 100%; height: 40px; padding: 8px;";
-		addContentType.innerHTML = "<b>Publish-Definition on Canvas:</b>";
-		panel.appendChild(addContentType);
-		var simName = simulatorObjects[listOfSimPub[clickedOnItem].nameParent].name;
-		var messageName = messageObjects[simulatorObjects[listOfSimPub[clickedOnItem].nameParent].publishedMessages[listOfSimPub[clickedOnItem].name]].name;
-		var addContentType = document.createElement("div");
-		addContentType.style = "width: 100%; height: 42px; padding: 8px;";
-		var addContent = document.createTextNode("Source -> Dest. : " + simName + " -> " + messageName);
-		addContentType.appendChild(addContent);
-		panel.appendChild(addContentType);
-		addContentType = document.createElement("button");
-		addContentType.style = "width: 100%; height: 40px;";
-		addContentType.onclick = function () {
+		ConfigureClearInspectorPanel();
+		let simName = simulatorObjects[listOfSimPub[clickedOnItem].nameParent].name;
+		let messageName = messageObjects[simulatorObjects[listOfSimPub[clickedOnItem].nameParent].publishedMessages[listOfSimPub[clickedOnItem].name]].name;
+
+		let panel = $('#inspectorpanel')
+		let header = $('<div>').addClass('ui compact segment')
+		let sim = $('<label>').addClass('ui color-simulator large label').text(simName)
+		let arrow = $('<i>').addClass('arrow right icon')
+		let message = $('<label>').addClass('ui color-message large label').text(messageName)
+		header.append($('<h3>').text('Publish-Definition on Canvas'))
+		header.append(sim)
+		header.append(arrow)
+		header.append(message)
+
+		let content = $('<div>').addClass('ui compact segment')
+		let button = $('<button>').addClass('ui red basic button').text('Change Publish Parameters')
+		button.click(() => {
 			editExistingObject = listOfSimPub[clickedOnItem].nameParent;		//index in 'simulatorObjects' of sim
 			editExistingObject2 = listOfSimPub[clickedOnItem].name;				//index in 'simulatorObjects[i].publishedMessages'
 			EditPublishConnectionPrompt();
-		};
-		var addContent = document.createTextNode("Change Publish Parameters");
-		addContentType.appendChild(addContent);
-		panel.appendChild(addContentType);
-		console.log("clicked on Publish item, name = " + listOfSimPub[clickedOnItem].name
-			+ " , nameParent = " + listOfSimPub[clickedOnItem].nameParent);
+		})
+		content.append(button)
+
+		panel.append(header)
+		panel.append(content)
+
+		// var addContentType = document.createElement("div");
+		// addContentType.style = "width: 100%; height: 40px; padding: 8px;";
+		// addContentType.innerHTML = "<b>Publish-Definition on Canvas:</b>";
+		// panel.appendChild(addContentType);
+		// var simName = simulatorObjects[listOfSimPub[clickedOnItem].nameParent].name;
+		// var messageName = messageObjects[simulatorObjects[listOfSimPub[clickedOnItem].nameParent].publishedMessages[listOfSimPub[clickedOnItem].name]].name;
+		// var addContentType = document.createElement("div");
+		// addContentType.style = "width: 100%; height: 42px; padding: 8px;";
+		// var addContent = document.createTextNode("Source -> Dest. : " + simName + " -> " + messageName);
+		// addContentType.appendChild(addContent);
+		// panel.appendChild(addContentType);
+		// addContentType = document.createElement("button");
+		// addContentType.style = "width: 100%; height: 40px;";
+		// addContentType.onclick = function () {
+		// 	editExistingObject = listOfSimPub[clickedOnItem].nameParent;		//index in 'simulatorObjects' of sim
+		// 	editExistingObject2 = listOfSimPub[clickedOnItem].name;				//index in 'simulatorObjects[i].publishedMessages'
+		// 	EditPublishConnectionPrompt();
+		// };
+		// var addContent = document.createTextNode("Change Publish Parameters");
+		// addContentType.appendChild(addContent);
+		// panel.appendChild(addContentType);
+		// console.log("clicked on Publish item, name = " + listOfSimPub[clickedOnItem].name
+		// 	+ " , nameParent = " + listOfSimPub[clickedOnItem].nameParent);
 		return;
 	}
 
@@ -3915,29 +4584,54 @@ function ConfigureItemFromCanvas(e) {
 		}
 	}
 	if (clickedOnItem > -1) {
-		var addContentType = document.createElement("div");
-		addContentType.style = "width: 100%; height: 40px; padding: 8px;";
-		addContentType.innerHTML = "<b>Subscribe-Definition on Canvas:</b>";
-		panel.appendChild(addContentType);
-		var simName = simulatorObjects[listOfSimSub[clickedOnItem].nameParent].name;
-		var messageName = messageObjects[simulatorObjects[listOfSimSub[clickedOnItem].nameParent].subscribedMessages[listOfSimSub[clickedOnItem].name]].name;
-		var addContentType = document.createElement("div");
-		addContentType.style = "width: 100%; height: 42px; padding: 8px;";
-		var addContent = document.createTextNode("Source -> Dest. : " + messageName + " -> " + simName);
-		addContentType.appendChild(addContent);
-		panel.appendChild(addContentType);
-		addContentType = document.createElement("button");
-		addContentType.style = "width: 100%; height: 40px;";
-		addContentType.onclick = function () {
+		ConfigureClearInspectorPanel();
+		let simName = simulatorObjects[listOfSimSub[clickedOnItem].nameParent].name;
+		let messageName = messageObjects[simulatorObjects[listOfSimSub[clickedOnItem].nameParent].subscribedMessages[listOfSimSub[clickedOnItem].name]].name;
+		let panel = $('#inspectorpanel')
+		let header = $('<div>').addClass('ui compact segment')
+		let message = $('<label>').addClass('ui color-message large label').text(messageName)
+		let arrow = $('<i>').addClass('arrow right icon')
+		let sim = $('<label>').addClass('ui color-simulator large label').text(simName)
+		header.append($('<h3>').text('Subscribe-Definition on Canvas'))
+		header.append(message)
+		header.append(arrow)
+		header.append(sim)
+
+		let content = $('<div>').addClass('ui compact segment')
+		let button = $('<button>').addClass('ui red basic button').text('Change Subscribe Parameters')
+		button.click(() => {
 			editExistingObject = listOfSimSub[clickedOnItem].nameParent;
 			editExistingObject2 = listOfSimSub[clickedOnItem].name;
 			EditSubscribeConnectionPrompt();
-		};
-		var addContent = document.createTextNode("Change Subscribe Parameters");
-		addContentType.appendChild(addContent);
-		panel.appendChild(addContentType);
-		console.log("clicked on Subscribe item, name = " + listOfSimSub[clickedOnItem].name
-			+ " , nameParent = " + listOfSimSub[clickedOnItem].nameParent);
+		})
+		content.append(button)
+
+		panel.append(header)
+		panel.append(content)
+
+		// var addContentType = document.createElement("div");
+		// addContentType.style = "width: 100%; height: 40px; padding: 8px;";
+		// addContentType.innerHTML = "<b>Subscribe-Definition on Canvas:</b>";
+		// panel.appendChild(addContentType);
+		// var simName = simulatorObjects[listOfSimSub[clickedOnItem].nameParent].name;
+		// var messageName = messageObjects[simulatorObjects[listOfSimSub[clickedOnItem].nameParent].subscribedMessages[listOfSimSub[clickedOnItem].name]].name;
+		// var addContentType = document.createElement("div");
+		// addContentType.style = "width: 100%; height: 42px; padding: 8px;";
+		// var addContent = document.createTextNode("Source -> Dest. : " + messageName + " -> " + simName);
+		// addContentType.appendChild(addContent);
+		// panel.appendChild(addContentType);
+		// addContentType = document.createElement("button");
+		// addContentType.style = "width: 100%; height: 40px;";
+		// addContentType.onclick = function () {
+		// 	editExistingObject = listOfSimSub[clickedOnItem].nameParent;
+		// 	editExistingObject2 = listOfSimSub[clickedOnItem].name;
+		// 	EditSubscribeConnectionPrompt();
+		// };
+		// var addContent = document.createTextNode("Change Subscribe Parameters");
+		// addContentType.appendChild(addContent);
+		// panel.appendChild(addContentType);
+		// console.log("clicked on Subscribe item, name = " + listOfSimSub[clickedOnItem].name
+		// 	+ " , nameParent = " + listOfSimSub[clickedOnItem].nameParent);
 		return;
 	}
 
@@ -3947,30 +4641,46 @@ function ConfigureItemFromCanvas(e) {
 		clickedOnItem = 0;
 	}
 	if (clickedOnItem > -1) {
-		var addContentType = document.createElement("div");
-		addContentType.style = "width: 100%; height: 40px; padding: 8px;";
-		addContentType.innerHTML = "<b>RTI Server:</b>";
-		panel.appendChild(addContentType);
-		addContentType = document.createElement("hr");
-		panel.appendChild(addContentType);
-		addContentType = document.createElement("div");
-		addContentType.style = "width: 100%; height: 40px; padding: 8px;";
-		addContentType.innerHTML = "Host Name: " + hostName;
-		panel.appendChild(addContentType);
-		addContentType = document.createElement("div");
-		addContentType.style = "width: 100%; height: 40px; padding: 8px;";
-		addContentType.innerHTML = "Port Number: " + portNumber;
-		panel.appendChild(addContentType);
-		addContentType = document.createElement("hr");
-		panel.appendChild(addContentType);
-		addContentType = document.createElement("button");
-		addContentType.style = "width: 100%; height: 40px;";
-		addContentType.onclick = function () {
+		let panel = $('#inspectorpanel')
+		let header = $('<div>').addClass('ui compact segment')
+		header.append($('<h3>').text('RTI Server'))
+
+		let content = $('<div>').addClass('ui compact segment')
+		let button = $('<button>').addClass('ui color-message basic button').text('Change Launch Parameters')
+		button.click(() => {
 			EditServer();
-		};
-		var addContent = document.createTextNode("Change Launch Parameters");
-		addContentType.appendChild(addContent);
-		panel.appendChild(addContentType);
+		})
+		content.append($('<p>').text("Host Name: " + hostName))
+		content.append($('<p>').text("Port Number: " + portNumber))
+		content.append(button)
+
+		panel.append(header)
+		panel.append(content)
+
+		// var addContentType = document.createElement("div");
+		// addContentType.style = "width: 100%; height: 40px; padding: 8px;";
+		// addContentType.innerHTML = "<b>RTI Server:</b>";
+		// panel.appendChild(addContentType);
+		// addContentType = document.createElement("hr");
+		// panel.appendChild(addContentType);
+		// addContentType = document.createElement("div");
+		// addContentType.style = "width: 100%; height: 40px; padding: 8px;";
+		// addContentType.innerHTML = "Host Name: " + hostName;
+		// panel.appendChild(addContentType);
+		// addContentType = document.createElement("div");
+		// addContentType.style = "width: 100%; height: 40px; padding: 8px;";
+		// addContentType.innerHTML = "Port Number: " + portNumber;
+		// panel.appendChild(addContentType);
+		// addContentType = document.createElement("hr");
+		// panel.appendChild(addContentType);
+		// addContentType = document.createElement("button");
+		// addContentType.style = "width: 100%; height: 40px;";
+		// addContentType.onclick = function () {
+		// 	EditServer();
+		// };
+		// var addContent = document.createTextNode("Change Launch Parameters");
+		// addContentType.appendChild(addContent);
+		// panel.appendChild(addContentType);
 		return;
 	}
 }
@@ -3981,41 +4691,63 @@ function ConfigureItemFromCanvas(e) {
 function ConfigureSimulatorFromList(btn_id) {
 	ConfigureClearInspectorPanel();
 
-	var panel = document.getElementById("inspectorpanel");
-	var selectedObject = listOfSimulators[btn_id];
-	var addContentType = document.createElement("div");
-	addContentType.style = "width: 100%; height: 40px; padding: 8px;";
-	addContentType.innerHTML = "<b>Simulator in Project:</b>";
-	panel.appendChild(addContentType);
+	let panel = $('#inspectorpanel')
+	let selectedObject = listOfSimulators[btn_id]
+	let header = $('<div>').addClass('ui compact segment')
+	let label = $('<label>').addClass('ui color-simulator large label').text(selectedObject.name)
+	header.append($('<h3>').text('Simulator in Project'))
+	header.append(label)
 
-	addContentType = document.createElement("div");
-	addContentType.style = "width: 100%; height: 42px; padding: 8px;";
-	var addContent = document.createTextNode("Name : " + selectedObject.name);
-	addContentType.appendChild(addContent);
-	panel.appendChild(addContentType);
-
-	addContentType = document.createElement("hr");
-	panel.appendChild(addContentType);
-	addContentType = document.createElement("div");
-	addContentType.style = "margin-bottom: 32px; padding: 8px;";
-	var addContent = document.createTextNode("WARNING: Editing properties of this Simulator after it has been added to the project canvas may cause unforeseen effects. Please check the properties of this Simulator on the canvas after any updates.");
-	addContentType.appendChild(addContent);
-	panel.appendChild(addContentType);
-	/*
-		Inspector should allow changing:
-			- name, variables, function names 
-				- changing should delete all sub/pub connections?
-	*/
-
-	addContentType = document.createElement("button");
-	addContentType.style = "width: 100%; height: 40px;";
-	addContentType.onclick = function () {
+	let content = $('<div>').addClass('ui compact segment')
+	let warning = $('<div>').addClass('ui warning').text('WARNING: Editing properties of this Simulator after it has been added to the project canvas may cause unforeseen effects. Please check the properties of this Simulator on the canvas after any updates.')
+	let divider = $('<div>').addClass('ui hidden divider')
+	let button = $('<button>').addClass('ui color-simulator basic button').text('Change Properties')
+	button.click(() => {
 		editExistingObject = btn_id;
 		NewSimulatorObjectPrompt();
-	};
-	var addContent = document.createTextNode("Change Properties");
-	addContentType.appendChild(addContent);
-	panel.appendChild(addContentType);
+	})
+	content.append(warning)
+	content.append(divider)
+	content.append(button)
+
+	panel.append(header)
+	panel.append(content)
+
+	// var panel = document.getElementById("inspectorpanel");
+	// var selectedObject = listOfSimulators[btn_id];
+	// var addContentType = document.createElement("div");
+	// addContentType.style = "width: 100%; height: 40px; padding: 8px;";
+	// addContentType.innerHTML = "<b>Simulator in Project:</b>";
+	// panel.appendChild(addContentType);
+
+	// addContentType = document.createElement("div");
+	// addContentType.style = "width: 100%; height: 42px; padding: 8px;";
+	// var addContent = document.createTextNode("Name : " + selectedObject.name);
+	// addContentType.appendChild(addContent);
+	// panel.appendChild(addContentType);
+
+	// addContentType = document.createElement("hr");
+	// panel.appendChild(addContentType);
+	// addContentType = document.createElement("div");
+	// addContentType.style = "margin-bottom: 32px; padding: 8px;";
+	// var addContent = document.createTextNode("WARNING: Editing properties of this Simulator after it has been added to the project canvas may cause unforeseen effects. Please check the properties of this Simulator on the canvas after any updates.");
+	// addContentType.appendChild(addContent);
+	// panel.appendChild(addContentType);
+	// /*
+	// 	Inspector should allow changing:
+	// 		- name, variables, function names 
+	// 			- changing should delete all sub/pub connections?
+	// */
+
+	// addContentType = document.createElement("button");
+	// addContentType.style = "width: 100%; height: 40px;";
+	// addContentType.onclick = function () {
+	// 	editExistingObject = btn_id;
+	// 	NewSimulatorObjectPrompt();
+	// };
+	// var addContent = document.createTextNode("Change Properties");
+	// addContentType.appendChild(addContent);
+	// panel.appendChild(addContentType);
 }
 
 /*	ConfigureMessageFromList()
@@ -4024,51 +4756,76 @@ function ConfigureSimulatorFromList(btn_id) {
 function ConfigureMessageFromList(btn_id) {
 	ConfigureClearInspectorPanel();
 
-	var panel = document.getElementById("inspectorpanel");
-	var selectedObject = listOfMessages[btn_id];
-	var addContentType = document.createElement("div");
-	addContentType.style = "width: 100%; height: 40px; padding: 8px;";
-	addContentType.innerHTML = "<b>Message in Project:</b>";
-	panel.appendChild(addContentType);
+	let panel = $('#inspectorpanel')
+	let selectedObject = listOfMessages[btn_id]
+	let header = $('<div>').addClass('ui compact segment')
+	let label = $('<label>').addClass('ui color-message large label').text(selectedObject.name)
+	header.append($('<h3>').text('Message in Project'))
+	header.append(label)
 
-	addContentType = document.createElement("div");
-	addContentType.style = "width: 100%; height: 42px; padding: 8px;";
-	var addContent = document.createTextNode("Name : " + selectedObject.name);
-	addContentType.appendChild(addContent);
-	panel.appendChild(addContentType);
+	let content = $('<div>').addClass('ui compact segment')
+	let warning = $('<div>').addClass('ui warning').text('WARNING: Editing properties of this Message after it has been added to the project canvas may cause unforeseen effects. Please check the properties of this Message on the canvas after any updates.')
+	let divider = $('<div>').addClass('ui hidden divider')
+	let button = $('<button>').addClass('ui color-message basic button').text('Change Properties')
+	button.click(() => {
+		editExistingObject = btn_id;
+		NewMessageObjectPrompt();
+	})
+	content.append(warning)
+	content.append(divider)
+	content.append(button)
 
-	addContentType = document.createElement("hr");
-	panel.appendChild(addContentType);
-	addContentType = document.createElement("div");
-	addContentType.style = "margin-bottom: 32px; padding: 8px;";
-	var addContent = document.createTextNode("WARNING: Editing properties of this Message after it has been added to the project canvas may cause unforeseen effects. Please check the properties of this Message on the canvas after any updates.");
-	addContentType.appendChild(addContent);
-	panel.appendChild(addContentType);
+	panel.append(header)
+	panel.append(content)
+
+	// var panel = document.getElementById("inspectorpanel");
+	// var selectedObject = listOfMessages[btn_id];
+	// var addContentType = document.createElement("div");
+	// addContentType.style = "width: 100%; height: 40px; padding: 8px;";
+	// addContentType.innerHTML = "<b>Message in Project:</b>";
+	// panel.appendChild(addContentType);
+
+	// addContentType = document.createElement("div");
+	// addContentType.style = "width: 100%; height: 42px; padding: 8px;";
+	// var addContent = document.createTextNode("Name : " + selectedObject.name);
+	// addContentType.appendChild(addContent);
+	// panel.appendChild(addContentType);
+
+	// addContentType = document.createElement("hr");
+	// panel.appendChild(addContentType);
+	// addContentType = document.createElement("div");
+	// addContentType.style = "margin-bottom: 32px; padding: 8px;";
+	// var addContent = document.createTextNode("WARNING: Editing properties of this Message after it has been added to the project canvas may cause unforeseen effects. Please check the properties of this Message on the canvas after any updates.");
+	// addContentType.appendChild(addContent);
+	// panel.appendChild(addContentType);
 	/*
 		Inspector should allow changing:
 			- variables 
 				- changing should delete all sub/pub connections?
 	*/
 
-	addContentType = document.createElement("button");
-	addContentType.style = "width: 100%; height: 40px;";
-	addContentType.onclick = function () {
-		editExistingObject = btn_id;
-		NewMessageObjectPrompt();
-	};
-	var addContent = document.createTextNode("Change Properties");
-	addContentType.appendChild(addContent);
-	panel.appendChild(addContentType);
+	// addContentType = document.createElement("button");
+	// addContentType.style = "width: 100%; height: 40px;";
+	// addContentType.onclick = function () {
+	// 	editExistingObject = btn_id;
+	// 	NewMessageObjectPrompt();
+	// };
+	// var addContent = document.createTextNode("Change Properties");
+	// addContentType.appendChild(addContent);
+	// panel.appendChild(addContentType);
 }
 
 /*	ConfigureClearInspectorPanel()
 	- Clear items in inspector panel.
 */
 function ConfigureClearInspectorPanel() {
-	var inspectorPanel = document.getElementById("inspectorpanel");
-	while (inspectorPanel.firstChild) {
-		inspectorPanel.removeChild(inspectorPanel.firstChild);
-	}
+	// var inspectorPanel = document.getElementById("inspectorpanel");
+	// while (inspectorPanel.firstChild) {
+	// 	inspectorPanel.removeChild(inspectorPanel.firstChild);
+	// }
+
+	let inspectorPanel = $('#inspectorpanel')
+	inspectorPanel.empty()
 }
 
 /*	NewProject()
@@ -4110,7 +4867,7 @@ function ClearProject() {
 
 	UpdateCanvasGrid();
 	DrawAllArrowsOnCanvas();
-	ResetObjectSubPanel1();
+	ClearObjectSubPanel1();
 	ResetObjectSubPanel2();
 	UpdateSelectedStage(0);
 }

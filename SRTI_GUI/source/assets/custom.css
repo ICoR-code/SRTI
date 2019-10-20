@@ -45,11 +45,14 @@ html {
 }
 
 .div-canvas-sim {
+    box-sizing: content-box;
     width: 80px;
     height: 80px;
     background-color: rgb(255, 167, 147);
     border: 10px solid rgba(136, 136, 136, .5);
     border-radius: 10%;
+    color: white;
+    padding: 0;
     touch-action: none;
     user-select: none;
     word-wrap: break-all;
@@ -83,6 +86,7 @@ html {
 }
 
 .div-canvas-message {
+    box-sizing: content-box;
     width: calc(4000px);
     height: 20px;
     padding: 0px 0px 0px 8px;
@@ -149,18 +153,12 @@ html {
     /* background-color: #eee; */
     width: 20%;
     height: calc(var(--containerheight) - 5px);
+    overflow-y: hidden;
     min-width: 100px;
     /* border: 1px solid black; */
 }
 
-#objectsubpanel1 {
-    /* background-color: #ddd; */
-    width: calc(100% - 1px);
-    height: 47%;
-    /* border: 1px solid black; */
-}
-
-#objectsubpanel2 {
+.objectsubpanel {
     /* background-color: #ddd; */
     width: calc(100% - 1px);
     height: 47%;
@@ -181,18 +179,22 @@ html {
     width: 100%;
     height: 16%;
     padding: 6px;
-    background: center center no-repeat #eee;
+    /* background: center center no-repeat #eee; */
     cursor: pointer;
     overflow: hidden;
 }
 
 .div-list-item {
-    width: calc(100% - 2px - 2% - 4%);
-    height: 36px;
-    padding: 4% 2% 0% 4%;
-    background: center center no-repeat #eee;
+    /* width: calc(100% - 2px - 2% - 4%); */
+    /* height: 36px; */
+    /* padding: 6px; */
+    /* background: center center no-repeat #eee; */
     overflow: hidden;
-    border: 1px solid black;
+    /* border: 1px solid black; */
+}
+
+.div-list-item.compact {
+    padding: 6px;
 }
 
 #canvaspanel {
@@ -371,4 +373,248 @@ pre>.hljs {
 
 kbd {
     padding: 0.5em;
+}
+
+/* colors */
+
+.ui.warning {
+    color: #573a08;
+}
+
+/* .ui.color-simulator {
+    background-color: #447740;
+    color: white;
+}
+
+.ui.color-simulator.basic {
+    color: #447740!important;
+    webkit-box-shadow: 0 0 0 1px #447740 inset!important;
+    box-shadow: 0 0 0 1px #447740 inset!important;
+    border-width: 2px;
+}
+
+.ui.color-simulator.basic.button:hover, .ui.color-simulator.basic.button:focus, .ui.color-simulator.basic.button:active {
+    background: transparent !important;
+    color: #447740!important;
+    webkit-box-shadow: 0 0 0 1px #447740 inset!important;
+    box-shadow: 0 0 0 1px #447740 inset!important;
+}
+
+.ui.color-message.basic {
+    color: #3c64c3!important;
+    webkit-box-shadow: 0 0 0 1px #3c64c3 inset!important;
+    box-shadow: 0 0 0 1px #3c64c3 inset!important;
+    border-width: 2px;
+}
+
+.ui.color-message.basic.button:hover, .ui.color-message.basic.button:focus, .ui.color-message.basic.button:active {
+    background: transparent !important;
+    color: #3c64c3!important;
+    webkit-box-shadow: 0 0 0 1px #3c64c3 inset!important;
+    box-shadow: 0 0 0 1px #3c64c3 inset!important;
+}
+
+.ui.color-message {
+    background-color: #3c64c3;
+    color: white;
+} */
+
+.ui.color-simulator {
+    background-color: #447740;
+    border-color: #447740;
+    color: #FFFFFF;
+}
+
+.ui.color-simulator.buttons .button, .ui.color-simulator.button {
+    background-color: #447740;
+    color: #FFFFFF;
+    text-shadow: none;
+    background-image: none;
+}
+
+.ui.color-simulator.button {
+    -webkit-box-shadow: 0px 0em 0px 0px rgba(34, 36, 38, 0.15) inset;
+    box-shadow: 0px 0em 0px 0px rgba(34, 36, 38, 0.15) inset;
+}
+
+.ui.color-simulator.buttons .button:hover, .ui.color-simulator.button:hover {
+    background-color: #164b17;
+    color: #FFFFFF;
+    text-shadow: none;
+}
+
+.ui.color-simulator.buttons .button:focus, .ui.color-simulator.button:focus {
+    background-color: #164b17;
+    color: #FFFFFF;
+    text-shadow: none;
+}
+
+.ui.color-simulator.buttons .button:active, .ui.color-simulator.button:active {
+    background-color: #164b17;
+    color: #FFFFFF;
+    text-shadow: none;
+}
+
+.ui.color-simulator.buttons .active.button, .ui.color-simulator.buttons .active.button:active, .ui.color-simulator.active.button, .ui.color-simulator.button .active.button:active {
+    background-color: #164b17;
+    color: #FFFFFF;
+    text-shadow: none;
+}
+
+.ui.basic.color-simulator, .ui.basic.color-simulator.buttons .button, .ui.basic.color-simulator.button {
+    -webkit-box-shadow: 0px 0px 0px 1px #447740 inset !important;
+    box-shadow: 0px 0px 0px 1px #447740 inset !important;
+    color: #447740 !important;
+}
+
+.ui.basic.color-simulator.buttons .button:hover, .ui.basic.color-simulator.button:hover {
+    background: transparent !important;
+    -webkit-box-shadow: 0px 0px 0px 1px #164b17 inset !important;
+    box-shadow: 0px 0px 0px 1px #164b17 inset !important;
+    color: #164b17 !important;
+}
+
+.ui.basic.color-simulator.buttons .button:focus, .ui.basic.color-simulator.button:focus {
+    background: transparent !important;
+    -webkit-box-shadow: 0px 0px 0px 1px #164b17 inset !important;
+    box-shadow: 0px 0px 0px 1px #164b17 inset !important;
+    color: #164b17 !important;
+}
+
+.ui.basic.color-simulator.buttons .active.button, .ui.basic.color-simulator.active.button {
+    background: transparent !important;
+    -webkit-box-shadow: 0px 0px 0px 1px #164b17 inset !important;
+    box-shadow: 0px 0px 0px 1px #164b17 inset !important;
+    color: #164b17 !important;
+}
+
+.ui.basic.color-simulator.buttons .button:active, .ui.basic.color-simulator.button:active {
+    -webkit-box-shadow: 0px 0px 0px 1px #164b17 inset !important;
+    box-shadow: 0px 0px 0px 1px #164b17 inset !important;
+    color: #164b17 !important;
+}
+
+.ui.buttons:not(.vertical)>.basic.blue.button:not(:first-child) {
+    margin-left: -1px;
+}
+
+.ui.color-message {
+    background-color: #3c64c3;
+    border-color: #3c64c3;
+    color: #FFFFFF;
+}
+
+.ui.color-message.buttons .button, .ui.color-message.button {
+    background-color: #3c64c3;
+    color: #FFFFFF;
+    text-shadow: none;
+    background-image: none;
+}
+
+.ui.color-message.button {
+    -webkit-box-shadow: 0px 0em 0px 0px rgba(34, 36, 38, 0.15) inset;
+    box-shadow: 0px 0em 0px 0px rgba(34, 36, 38, 0.15) inset;
+}
+
+.ui.color-message.buttons .button:hover, .ui.color-message.button:hover {
+    background-color: #003b92;
+    color: #FFFFFF;
+    text-shadow: none;
+}
+
+.ui.color-message.buttons .button:focus, .ui.color-message.button:focus {
+    background-color: #003b92;
+    color: #FFFFFF;
+    text-shadow: none;
+}
+
+.ui.color-message.buttons .button:active, .ui.color-message.button:active {
+    background-color: #003b92;
+    color: #FFFFFF;
+    text-shadow: none;
+}
+
+.ui.color-message.buttons .active.button, .ui.color-message.buttons .active.button:active, .ui.color-message.active.button, .ui.color-message.button .active.button:active {
+    background-color: #003b92;
+    color: #FFFFFF;
+    text-shadow: none;
+}
+
+.ui.basic.color-message, .ui.basic.color-message.buttons .button, .ui.basic.color-message.button {
+    -webkit-box-shadow: 0px 0px 0px 1px #3c64c3 inset !important;
+    box-shadow: 0px 0px 0px 1px #3c64c3 inset !important;
+    color: #3c64c3 !important;
+}
+
+.ui.basic.color-message.buttons .button:hover, .ui.basic.color-message.button:hover {
+    background: transparent !important;
+    -webkit-box-shadow: 0px 0px 0px 1px #003b92 inset !important;
+    box-shadow: 0px 0px 0px 1px #003b92 inset !important;
+    color: #003b92 !important;
+}
+
+.ui.basic.color-message.buttons .button:focus, .ui.basic.color-message.button:focus {
+    background: transparent !important;
+    -webkit-box-shadow: 0px 0px 0px 1px #003b92 inset !important;
+    box-shadow: 0px 0px 0px 1px #003b92 inset !important;
+    color: #003b92 !important;
+}
+
+.ui.basic.color-message.buttons .active.button, .ui.basic.color-message.active.button {
+    background: transparent !important;
+    -webkit-box-shadow: 0px 0px 0px 1px #003b92 inset !important;
+    box-shadow: 0px 0px 0px 1px #003b92 inset !important;
+    color: #003b92 !important;
+}
+
+.ui.basic.color-message.buttons .button:active, .ui.basic.color-message.button:active {
+    -webkit-box-shadow: 0px 0px 0px 1px #003b92 inset !important;
+    box-shadow: 0px 0px 0px 1px #003b92 inset !important;
+    color: #003b92 !important;
+}
+
+.ui.buttons:not(.vertical)>.basic.blue.button:not(:first-child) {
+    margin-left: -1px;
+}
+
+/* padding and space*/
+
+.ui.selection.short.dropdown {
+    min-width: 0px;
+}
+
+label.padded {
+    padding: .67857143em 0em;
+    display: inline-block;
+}
+
+.expanding {
+    width: 100%;
+}
+
+.ui.compact.grid .row:not(:first-child), .ui.grid .compact.row:not(:first-child) {
+    padding-top: 0;
+}
+
+.ui.compact.grid .row:not(:last-child), .ui.grid .compact.row:not(:last-child) {
+    padding-bottom: 0;
+}
+
+.continued {
+    padding-top: 0!important;
+}
+
+.continuing {
+    padding-bottom: 0!important;
+}
+
+.ui.modal .ui.form .fields {
+    margin-bottom: 0!important;
+}
+
+/* modal */
+
+.ui.modal .content {
+    max-height: 650px;
+    overflow-y: auto;
 }
