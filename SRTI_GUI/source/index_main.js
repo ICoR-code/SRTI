@@ -296,14 +296,24 @@ function CheckRedrawCanvasGrid() {
 
 	let i = 0;
 	for (i = 0; i < simulatorObjects.length; i++) {
-		if (((simulatorObjects[i].topPos / 100) + 2 + i) > maxSizeY
+		//!!!!
+		/*if (((simulatorObjects[i].topPos / 100) + 2 + i) > maxSizeY
 			&& simulatorObjects[i].stage == stage) {
 			maxSizeY = (simulatorObjects[i].topPos / 100) + 2 + i;
 		}
 		if (((simulatorObjects[i].leftPos / 100) - 1 + 2) > maxSizeX
 			&& simulatorObjects[i].stage == stage) {
 			maxSizeX = ((simulatorObjects[i].leftPos / 100) - 1 + 2);
+		}*/
+		if (((simulatorObjects[i].topPos / 100) + 2) > maxSizeY
+			&& simulatorObjects[i].stage == stage) {
+			maxSizeY = (simulatorObjects[i].topPos / 100) + 2;
 		}
+		if (((simulatorObjects[i].leftPos / 100) - 1 + i + 2) > maxSizeX
+			&& simulatorObjects[i].stage == stage) {
+			maxSizeX = ((simulatorObjects[i].leftPos / 100) - 1 + i + 2);
+		}
+		//!!!!
 	}
 
 	gridSizeX = maxSizeX;
@@ -511,6 +521,7 @@ function drag(e) {
 	- set position of div on canvas to specific x/y coordinates.
 */
 function setTranslate(xPos, yPos, el) {
+	console.log("For object " + ", translate x = " + xPos + " , translate y = " + yPos);
 	el.style.transform = "translate3d(" + xPos + "px, " + yPos + "px, 0)";
 }
 
@@ -633,7 +644,10 @@ function MoveObjectsOnCanvasUpOne(j) {
 	let i = 0;
 	for (i = j; i < simulatorObjects.length; i++) {
 		dragItem = simulatorObjects[i].objectRef;
-		simulatorObjects[i].offsetY = simulatorObjects[i].offsetY + 100;
+		//!!!!
+		//simulatorObjects[i].offsetY = simulatorObjects[i].offsetY + 100;
+		simulatorObjects[i].offsetX = simulatorObjects[i].offsetX + 100;
+		//!!!!
 		setTranslate(simulatorObjects[i].offsetX, simulatorObjects[i].offsetY, dragItem);
 	}
 }
@@ -812,8 +826,11 @@ function DrawArrowOnCanvas1() {
 		if (simulatorObjects[i].stage == stage) {
 			console.log("simulatorObjects.offsetY = " + simulatorObjects[i].offsetY + " , topPos = " + simulatorObjects[i].topPos);
 			for (j = 0; j < simulatorObjects[i].publishedMessages.length; j++) {
-				var leftPos = parseInt(simulatorObjects[i].leftPos, 10) + (j * 5);
-				var topPos = parseInt(simulatorObjects[i].offsetY, 10) + (i * 100) + 100 + 2 + (14 * j);
+				//!!!!var leftPos = parseInt(simulatorObjects[i].leftPos, 10) + (j * 5);
+				//var topPos = parseInt(simulatorObjects[i].offsetY, 10) + (i * 100) + 100 + 2 + (14 * j);
+				var leftPos = parseInt(simulatorObjects[i].offsetX, 10) + (i * 100) + (j * 5) + 2;
+				var topPos = parseInt(simulatorObjects[i].topPos, 10) + 100 + 2 + (14 * j);
+				//!!!!
 				var htmlString = "<svg width='" + (leftPos + 10) + "' height='" + (gridSizeY * 100) + "' style='position: absolute;'>";
 				htmlString += "<defs>";
 				htmlString += "	<marker id='arrow' markerWidth='13' markerHeight='13' refx='2' refy='6' orient='auto'>";
@@ -832,7 +849,9 @@ function DrawArrowOnCanvas1() {
 		if (simulatorObjects[i].stage == stage) {
 			let j = 0;
 			for (j = 0; j < simulatorObjects[i].publishedMessages.length; j++) {
-				var leftPos = parseInt(simulatorObjects[i].leftPos, 10) + (j * 5);
+				//!!!!var leftPos = parseInt(simulatorObjects[i].leftPos, 10) + (j * 5);
+				var leftPos = parseInt(simulatorObjects[i].offsetX, 10) + (i * 100) + (j * 5) + 2;
+				//!!!!
 				var topPos = 0;
 				var bottomPos = (10 + (42 * simulatorObjects[i].publishedMessages[j]) - 10 + 3);
 				var htmlString = "<svg width='" + (leftPos + 10) + "' height='" + (bottomPos + 10) + "' style='position: absolute;'>";
@@ -862,8 +881,11 @@ function DrawArrowObjectOnCanvas1() {
 			let j = 0;
 			for (j = 0; j < simulatorObjects[i].publishedMessages.length; j++) {
 				var addContentType = document.createElement("svg");
-				var leftOffset = parseInt(simulatorObjects[i].leftPos, 10);
-				var topOffset = parseInt(simulatorObjects[i].offsetY, 10) + (i * 100) + 100 + 2 + (14 * j);
+				//!!!!var leftOffset = parseInt(simulatorObjects[i].leftPos, 10);
+				//var topOffset = parseInt(simulatorObjects[i].offsetY, 10) + (i * 100) + 100 + 2 + (14 * j);
+				var leftOffset = parseInt(simulatorObjects[i].offsetX, 10) + (i * 100) + 1;
+				var topOffset = parseInt(simulatorObjects[i].topPos, 10) + 100 + 2 + (14 * j);
+				//!!!!
 				addContentType.className = "div-canvas-pub";
 				addContentType.name = j;
 				addContentType.nameParent = i;
@@ -886,8 +908,11 @@ function DrawArrowOnCanvas2() {
 			console.log("simulatorObjects.offsetY = " + simulatorObjects[i].offsetY + " , topPos = " + simulatorObjects[i].topPos);
 			let j = 0;
 			for (j = 0; j < simulatorObjects[i].subscribedMessages.length; j++) {
-				var leftPos = parseInt(simulatorObjects[i].leftPos, 10) + 100 - (j * 5);
-				var topPos = parseInt(simulatorObjects[i].offsetY, 10) + (i * 100) + 100 + (14 * j) + 10 + 10;
+				//!!!!var leftPos = parseInt(simulatorObjects[i].leftPos, 10) + 100 - (j * 5);
+				//var topPos = parseInt(simulatorObjects[i].offsetY, 10) + (i * 100) + 100 + (14 * j) + 10 + 10;
+				var leftPos = parseInt(simulatorObjects[i].offsetX, 10) + (i * 100) + 100 - (j * 5) - 2;
+				var topPos = parseInt(simulatorObjects[i].topPos, 10) + 100 + (14 * j) + 10 + 10;
+				//!!!!
 				var htmlString = "<svg width='" + (leftPos + 10) + "' height='" + (gridSizeY * 100) + "' style='position: absolute;'>";
 				htmlString += "<defs>";
 				htmlString += "	<marker id='arrow' markerWidth='13' markerHeight='13' refx='2' refy='6' orient='auto'>";
@@ -906,7 +931,9 @@ function DrawArrowOnCanvas2() {
 		if (simulatorObjects[i].stage == stage) {
 			let j = 0;
 			for (j = 0; j < simulatorObjects[i].subscribedMessages.length; j++) {
-				var leftPos = parseInt(simulatorObjects[i].leftPos, 10) + 100 - (j * 5);
+				//!!!!var leftPos = parseInt(simulatorObjects[i].leftPos, 10) + 100 - (j * 5);
+				var leftPos = parseInt(simulatorObjects[i].offsetX, 10) + (i * 100) + 100 - (j * 5) - 2;
+				//!!!!
 				var topPos = 0;
 				var bottomPos = (10 + (42 * parseInt(simulatorObjects[i].subscribedMessages[j])));
 				var htmlString = "<svg width='" + (leftPos + 10) + "' height='" + (bottomPos + 10) + "' style='position: absolute;'>";
@@ -935,8 +962,11 @@ function DrawArrowObjectOnCanvas2() {
 			let j = 0;
 			for (j = 0; j < simulatorObjects[i].subscribedMessages.length; j++) {
 				var addContentType = document.createElement("svg");
-				var leftOffset = parseInt(simulatorObjects[i].leftPos, 10) + 100 - 48;
-				var topOffset = parseInt(simulatorObjects[i].offsetY, 10) + (i * 100) + 100 + 2 + (14 * j);
+				//!!!!var leftOffset = parseInt(simulatorObjects[i].leftPos, 10) + 100 - 48;
+				//var topOffset = parseInt(simulatorObjects[i].offsetY, 10) + (i * 100) + 100 + 2 + (14 * j);
+				var leftOffset = parseInt(simulatorObjects[i].offsetX, 10) + (i * 100) + 100 - 48 - 1;
+				var topOffset = parseInt(simulatorObjects[i].topPos, 10) + 100 + 2 + (14 * j);
+				//!!!!
 				addContentType.className = "div-canvas-sub";
 				addContentType.name = j;
 				addContentType.nameParent = i;
@@ -2709,11 +2739,12 @@ function CreateNewSimulatorOnCanvas(btn_id) {
 
 	var listOfCurrentItems = document.getElementsByClassName("div-canvas-sim");
 	// add offset... for some reason, default would add object below original position of existing objects.
-	var newOffsetY = (listOfCurrentItems.length - 1) * 100;
+	//!!!!var newOffsetY = 0;//!!!! (listOfCurrentItems.length - 1) * 100;
+	var newOffsetX = (listOfCurrentItems.length - 1) * 100;
 	simulatorObjects.push({
 		name: listOfSimulators[btn_id].name, original: listOfSimulators[btn_id],
 		stage: parseInt(stage), objectRef: addContentType, order: 0,
-		offsetX: 0, offsetY: -newOffsetY, leftPos: 0, topPos: 0,
+		offsetX: -newOffsetX, offsetY: 0, leftPos: 0, topPos: 0,
 		subscribedMessages: [], publishedMessages: [],
 		subscribedDetails: [], publishedDetails: [],
 		timeDelta: 1, timeVarDelta: "", timeScale: 1,
@@ -2723,7 +2754,9 @@ function CreateNewSimulatorOnCanvas(btn_id) {
 		initialize: "", simulate: "", simulateTimeDelta: 1,
 		stageConditions: [], endConditions: []
 	});
-	setTranslate(0, newOffsetY, addContentType);
+	//setTranslate(0, newOffsetY, addContentType);
+	setTranslate(-newOffsetX, 0, addContentType);
+	//!!!!
 
 	DisableCertainObjectButtons();
 }
