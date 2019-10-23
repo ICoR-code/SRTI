@@ -245,6 +245,13 @@ function UpdateSelectedStateButtons(selectId) {
 	// 	btn3.style.backgroundImage = "url(./srti_modules/images/icon_delete_03.png)";
 	// 	btn3.style.backgroundColor = "#aaa";
 	// }
+	$('button[name="select-state-buttons"]').each(function (index) {
+		if (index == selectId) {
+			$(this).addClass('grey')
+		} else {
+			$(this).removeClass('grey')
+		}
+	})
 
 	selectState = selectId;
 
@@ -321,38 +328,61 @@ function UpdateSelectedStage(btn_id) {
 	stage = btn_id;
 
 	// redraw buttons on top bar.
-	var panel = document.getElementById("canvastabpanel");
-	while (panel.firstChild) {
-		panel.removeChild(panel.firstChild);
-	}
-	var addContentType = document.createElement("button");
-	addContentType.id = "btn-canvastab";
-	addContentType.onclick = function () {
-		AddNewStage();
-	};
-	var addContent = document.createTextNode("+");
-	addContentType.appendChild(addContent);
-	panel.appendChild(addContentType);
-	let i = 0;
+	let panel = $('#canvastabpanel')
+	panel.empty()
+
+	let button = $('<button>').addClass('ui compact basic icon button btn-canvastab').click(AddNewStage)
+	button.append($('<i>').addClass('plus icon'))
+
+	panel.append(button)
+
+	let i = 0
 	for (i = 0; i < numOfStages; i++) {
-		var addContentType = document.createElement("button");
-		addContentType.id = "btn-canvastab";
-		addContentType.name = i;
+		button = $('<button>').addClass('ui compact basic button btn-canvastab').attr('name', i).text(i)
+		button.click(function () {
+			stage = parseInt(this.name)
+			UpdateSelectedStage(stage)
+		})
+
 		if (stage == i) {
-			addContentType.style.backgroundColor = "#aaa";
-			addContentType.style.color = "#fff";
-		} else {
-			addContentType.style.backgroundColor = "#eee";
-			addContentType.style.color = "#000";
+			button.addClass('secondary')
 		}
-		addContentType.onclick = function () {
-			stage = i;
-			UpdateSelectedStage(this.name);
-		};
-		var addContent = document.createTextNode(i);
-		addContentType.appendChild(addContent);
-		panel.appendChild(addContentType);
+
+		panel.append(button)
 	}
+
+	// var panel = document.getElementById("canvastabpanel");
+	// while (panel.firstChild) {
+	// 	panel.removeChild(panel.firstChild);
+	// }
+	// var addContentType = document.createElement("button");
+	// addContentType.id = "btn-canvastab";
+	// addContentType.onclick = function () {
+	// 	AddNewStage();
+	// };
+	// var addContent = document.createTextNode("+");
+	// addContentType.appendChild(addContent);
+	// panel.appendChild(addContentType);
+	// let i = 0;
+	// for (i = 0; i < numOfStages; i++) {
+	// 	var addContentType = document.createElement("button");
+	// 	addContentType.id = "btn-canvastab";
+	// 	addContentType.name = i;
+	// 	if (stage == i) {
+	// 		addContentType.style.backgroundColor = "#aaa";
+	// 		addContentType.style.color = "#fff";
+	// 	} else {
+	// 		addContentType.style.backgroundColor = "#eee";
+	// 		addContentType.style.color = "#000";
+	// 	}
+	// 	addContentType.onclick = function () {
+	// 		stage = i;
+	// 		UpdateSelectedStage(this.name);
+	// 	};
+	// 	var addContent = document.createTextNode(i);
+	// 	addContentType.appendChild(addContent);
+	// 	panel.appendChild(addContentType);
+	// }
 
 	CheckRedrawCanvasGrid();
 	DrawAllArrowsOnCanvas();
@@ -1013,6 +1043,8 @@ function NewSimulatorObjectPrompt2() {
 	DisplayOrClosePrompt("modalNewSim2", "block");
 	if (editExistingObject == -1) {
 		// nothing, it already gets cleared in different location
+		$('#modalNewSimulatorPanel1').hide()
+		$('#modalNewSimulatorPanel2').hide()
 	} else {
 		listOfMessageFunctions = listOfSimulators[editExistingObject].functions;
 		listOfMessageObjects = listOfSimulators[editExistingObject].variables;
@@ -2131,10 +2163,10 @@ function AddNewObjectSimulator() {
 */
 function AddNewObjectSimulator2() {
 	console.log("User finished providing extra details about simulator. Add it now.");
-	var panel = document.getElementById("objectsubpanel1");
-	while (panel.firstChild) {
-		panel.removeChild(panel.firstChild);
-	}
+	// var panel = document.getElementById("objectsubpanel1");
+	// while (panel.firstChild) {
+	// 	panel.removeChild(panel.firstChild);
+	// }
 	var newSimName = document.getElementsByName("NewSimName")[0].value;
 	var newRefName = document.getElementsByName("NewSimRef")[0].value;
 	var newFilePath = document.getElementsByName("wrapperFileDirText")[0].innerHTML;
@@ -2215,7 +2247,7 @@ function AppendObjectToSubPanel1(index = listOfSimulators.length - 1) {
 		} else if (selectState == 2) {
 
 		} else if (selectState == 3) {
-			DeleteSimulatorFromList(button, this.id);
+			DeleteSimulatorFromList(this.id);
 		}
 	})
 	panel.append(button)
@@ -2234,36 +2266,65 @@ function ResetObjectSubPanel1() {
 	}
 }
 
+/*	AppendObjectToSubPanel2()
+	- Append object to sub-panel (canvas) on the main screen.
+*/
+function AppendObjectToSubPanel2(index = listOfMessages.length - 1) {
+	console.log(index)
+	let panel = $('#objectsubpanel2')
+	button = $('<button>').addClass('ui color-message button btn-list-item').text(listOfMessages[index].name)
+	button.attr('id', index)
+	button.click(function () {
+		console.log("onclick at index = " + this.id);
+		if (selectState == 0) {
+			CreateNewMessageOnCanvas(this.id);
+		} else if (selectState == 1) {
+			ConfigureMessageFromList(this.id);
+		} else if (selectState == 2) {
+
+		} else if (selectState == 3) {
+			DeleteMessageFromList(this.id);
+		}
+	})
+	panel.append(button)
+
+}
+
 /*	ResetObjectSubPanel2()
 	- Reset sub-panel (canvas) on the main screen, that normally holds messages.
 */
 function ResetObjectSubPanel2() {
-	var panel = document.getElementById("objectsubpanel2");
-	while (panel.firstChild) {
-		panel.removeChild(panel.firstChild);
-	}
+	$('#objectsubpanel2').empty()
 	let i = 0;
 	for (i = 0; i < listOfMessages.length; i++) {
-		var addContentType = document.createElement("button");
-		addContentType.className = "btn-list-item";
-		addContentType.id = i;
-		addContentType.style.backgroundColor = "#def";
-		addContentType.onclick = function () {
-			console.log("onclick at index = " + this.id);
-			if (selectState == 0) {
-				CreateNewMessageOnCanvas(this.id);
-			} else if (selectState == 1) {
-				ConfigureMessageFromList(this.id);
-			} else if (selectState == 2) {
-
-			} else if (selectState == 3) {
-				DeleteMessageFromList(this.id);
-			}
-		};
-		var addContent = document.createTextNode(listOfMessages[i].name);
-		addContentType.appendChild(addContent);
-		panel.appendChild(addContentType);
+		AppendObjectToSubPanel2(i)
 	}
+	// var panel = document.getElementById("objectsubpanel2");
+	// while (panel.firstChild) {
+	// 	panel.removeChild(panel.firstChild);
+	// }
+	// let i = 0;
+	// for (i = 0; i < listOfMessages.length; i++) {
+	// 	var addContentType = document.createElement("button");
+	// 	addContentType.className = "btn-list-item";
+	// 	addContentType.id = i;
+	// 	addContentType.style.backgroundColor = "#def";
+	// 	addContentType.onclick = function () {
+	// 		console.log("onclick at index = " + this.id);
+	// 		if (selectState == 0) {
+	// 			CreateNewMessageOnCanvas(this.id);
+	// 		} else if (selectState == 1) {
+	// 			ConfigureMessageFromList(this.id);
+	// 		} else if (selectState == 2) {
+
+	// 		} else if (selectState == 3) {
+	// 			DeleteMessageFromList(this.id);
+	// 		}
+	// 	};
+	// 	var addContent = document.createTextNode(listOfMessages[i].name);
+	// 	addContentType.appendChild(addContent);
+	// 	panel.appendChild(addContentType);
+	// }
 }
 
 /*	AddNewObjectMessage()
@@ -2291,7 +2352,7 @@ function AddNewObjectMessage() {
 			}
 		}
 	}
-	ResetObjectSubPanel1()
+	ResetObjectSubPanel2()
 	// let i = 0;
 	// for (i = 0; i < listOfMessages.length; i++) {
 	// 	var addContentType = document.createElement("button");
@@ -2336,10 +2397,10 @@ function AddObjectToMessageDef() {
 	let child = $('<div>').addClass('div-list-item ui compact segment')
 	child.append($('<label>').text(`${newMessageObjectName} (${newMessageObjectType})`).attr('style', 'vertical-align:sub;'))
 	var button = $('<button>', {
-		class: "ui compact icon button right floated", id: newMessageObjectName
-	}).click(
-		() => {
-			RemoveObjectToMessageDef(child, newMessageObjectName)
+		class: "ui compact icon button right floated", name: newMessageObjectName
+	}).data('pointer', child).click(
+		function () {
+			RemoveObjectToMessageDef($(this).data('pointer'), $(this).attr('name'))
 		}
 	)
 	button.append($('<i>').addClass('times icon'))
@@ -2367,10 +2428,10 @@ function AddObjectToSimulatorDef() {
 	let child = $('<div>').addClass('div-list-item ui compact segment')
 	child.append($('<label>').text(`${newMessageObjectName} (${newMessageObjectType})`).attr('style', 'vertical-align:sub;'))
 	var button = $('<button>', {
-		class: "ui compact icon button right floated", id: newMessageObjectName
-	}).click(
-		() => {
-			RemoveObjectToSimulatorDef(child, newMessageObjectName)
+		class: "ui compact icon button right floated", name: newMessageObjectName
+	}).data('pointer', child).click(
+		function () {
+			RemoveObjectToSimulatorDef($(this).data('pointer'), $(this).attr('name'))
 		}
 	)
 	button.append($('<i>').addClass('times icon'))
@@ -2385,13 +2446,14 @@ function AddObjectToSimulatorDef() {
 */
 function UpdateObjectToSimulatorDef() {
 	let panel = $('#modalNewSimulatorPanel1')
-	let i = 0;
+	let i = 0, name;
 	for (i = 0; i < listOfMessageObjects.length; i++) {
 		var child = $('<div>').addClass('div-list-item ui compact segment')
+		name = listOfMessageObjects[i].name
 		child.append($('<label>').text(`${listOfMessageObjects[i].name} (${listOfMessageObjects[i].valueType})`).attr('style', 'vertical-align:sub;'))
-		var button = $('<button>').addClass('ui compact icon button right floated').attr('id', i).click(
-			() => {
-				RemoveObjectToSimulatorDef(child, listOfMessageObjects[i].name)
+		var button = $('<button>').addClass('ui compact icon button right floated').attr('name', name).data('pointer', child).click(
+			function () {
+				RemoveObjectToSimulatorDef($(this).data('pointer'), $(this).attr('name'))
 			}
 		)
 		button.append($('<i>').addClass('times icon'))
@@ -2417,11 +2479,12 @@ function UpdateObjectToMessageDef() {
 	for (i = 0; i < listOfMessageObjects.length; i++) {
 		var child = $('<div>').addClass('div-list-item ui compact segment')
 		child.append($('<label>').text(`${listOfMessageObjects[i].name} (${listOfMessageObjects[i].valueType})`).attr('style', 'vertical-align:sub;'))
-		var button = $('<button>').addClass('ui compact icon button right floated').attr('id', i).click(
-			() => {
-				RemoveObjectToMessageDef(child, listOfMessageObjects[i].name)
-			}
-		)
+		var button = $('<button>').addClass('ui compact icon button right floated').attr('name',
+			listOfMessageObjects[i].name).data('pointer', child).click(
+				function () {
+					RemoveObjectToMessageDef($(this).data('pointer'), $(this).attr('name'))
+				}
+			)
 		button.append($('<i>').addClass('times icon'))
 		child.append(button)
 		panel.append(child)
@@ -2552,11 +2615,11 @@ function AddFunctionToSimulatorDef() {
 	let child = $('<div>').addClass('div-list-item ui compact segment')
 	child.append($('<label>').text(newMessageFunctionName).attr('style', 'vertical-align:sub;'))
 	var button = $('<button>', {
-		class: "ui compact icon button right floated", id: newMessageFunctionName
-	}).click(
-		() => {
+		class: "ui compact icon button right floated", name: newMessageFunctionName
+	}).data('pointer', child).click(
+		function () {
 			console.log("onclick at index = " + this.id);
-			RemoveFunctionToSimulatorDef(child, newMessageFunctionName)
+			RemoveFunctionToSimulatorDef($(this).data('pointer'), $(this).attr('name'))
 		}
 	)
 	button.append($('<i>').addClass('times icon'))
@@ -2580,12 +2643,13 @@ function UpdateFunctionToSimulatorDef() {
 	for (i = 0; i < listOfMessageFunctions.length; i++) {
 		var child = $('<div>').addClass('div-list-item ui compact segment')
 		child.append($('<label>').text(listOfMessageFunctions[i].name).attr('style', 'vertical-align:sub;'))
-		var button = $('<button>').addClass('ui compact icon button right floated').attr('id', i).click(
-			() => {
-				console.log("onclick at index = " + this.id);
-				RemoveFunctionToSimulatorDef(child, listOfMessageFunctions[i].name)
-			}
-		)
+		var button = $('<button>').addClass('ui compact icon button right floated').attr('name',
+			listOfMessageFunctions[i].name).data('pointer', child).click(
+				function () {
+					console.log("onclick at index = " + this.name);
+					RemoveFunctionToSimulatorDef($(this).data('pointer'), $(this).attr('name'))
+				}
+			)
 		button.append($('<i>').addClass('times icon'))
 		child.append(button)
 		panel.append(child)
@@ -2659,7 +2723,7 @@ function CreateNewSimulatorOnCanvas(btn_id) {
 		initialize: "", simulate: "", simulateTimeDelta: 1,
 		stageConditions: [], endConditions: []
 	});
-	setTranslate(0, -newOffsetY, addContentType);
+	setTranslate(0, newOffsetY, addContentType);
 
 	DisableCertainObjectButtons();
 }
@@ -2687,17 +2751,15 @@ function CreateExistingSimulatorOnCanvas(sim_id) {
 /*	DeleteSimulatorFromList()
 	- Delete simulator from project, from list on the left and from the canvas.
 */
-function DeleteSimulatorFromList(button, btn_id) {
-	console.log(button)
-	let deleteSimName = listOfSimulators[btn_id].name;
-	listOfSimulators.splice(btn_id, 1);
-	button.remove()
+function DeleteSimulatorFromList(btn_id) {
+
 	// var panel = document.getElementById("objectsubpanel1");
 	// while (panel.firstChild) {
 	// 	panel.removeChild(panel.firstChild);
 	// }
-	// var deleteSimName = listOfSimulators[btn_id].name;
-	// listOfSimulators.splice(btn_id, 1);
+	var deleteSimName = listOfSimulators[btn_id].name;
+	listOfSimulators.splice(btn_id, 1);
+	ResetObjectSubPanel1()
 	// let i = 0;
 	// for (i = 0; i < listOfSimulators.length; i++) {
 	// 	var addContentType = document.createElement("button");
@@ -2773,34 +2835,35 @@ function CreateExistingMessageOnCanvas(message_id) {
 	- Delete message from project on left list and canvas in main screen.
 */
 function DeleteMessageFromList(btn_id) {
-	var panel = document.getElementById("objectsubpanel2");
-	while (panel.firstChild) {
-		panel.removeChild(panel.firstChild);
-	}
+	// var panel = document.getElementById("objectsubpanel2");
+	// while (panel.firstChild) {
+	// 	panel.removeChild(panel.firstChild);
+	// }
 	var deleteMessageName = listOfMessages[btn_id].name;
 	listOfMessages.splice(btn_id, 1);
-	let i = 0;
-	for (i = 0; i < listOfMessages.length; i++) {
-		var addContentType = document.createElement("button");
-		addContentType.className = "btn-list-item";
-		addContentType.id = i;
-		addContentType.style.backgroundColor = "#def";
-		addContentType.onclick = function () {
-			console.log("onclick at index = " + this.id);
-			if (selectState == 0) {
-				CreateNewMessageOnCanvas(this.id);
-			} else if (selectState == 1) {
+	ResetObjectSubPanel2()
+	// let i = 0;
+	// for (i = 0; i < listOfMessages.length; i++) {
+	// 	var addContentType = document.createElement("button");
+	// 	addContentType.className = "btn-list-item";
+	// 	addContentType.id = i;
+	// 	addContentType.style.backgroundColor = "#def";
+	// 	addContentType.onclick = function () {
+	// 		console.log("onclick at index = " + this.id);
+	// 		if (selectState == 0) {
+	// 			CreateNewMessageOnCanvas(this.id);
+	// 		} else if (selectState == 1) {
 
-			} else if (selectState == 2) {
+	// 		} else if (selectState == 2) {
 
-			} else if (selectState == 3) {
-				DeleteMessageFromList(this.id);
-			}
-		};
-		var addContent = document.createTextNode(listOfMessages[i].name);
-		addContentType.appendChild(addContent);
-		panel.appendChild(addContentType);
-	}
+	// 		} else if (selectState == 3) {
+	// 			DeleteMessageFromList(this.id);
+	// 		}
+	// 	};
+	// 	var addContent = document.createTextNode(listOfMessages[i].name);
+	// 	addContentType.appendChild(addContent);
+	// 	panel.appendChild(addContentType);
+	// }
 	for (i = messageObjects.length - 1; i >= 0; i--) {
 		console.log("... " + i + " of " + (messageObjects.length - 1) + " " + messageObjects[i].name);
 		if (messageObjects[i].name == deleteMessageName) {
@@ -2833,7 +2896,7 @@ function EditSimLocalTime() {
 
 	let item
 	let i
-	for (i = 0; i < simulatorObjects[editExistingObject].original.functions.length; i++) {
+	for (i = 0; i < simulatorObjects[editExistingObject].original.variables.length; i++) {
 		item = $('<div>').addClass('item').text(
 			`${simulatorObjects[editExistingObject].original.variables[i].name} (${simulatorObjects[editExistingObject].original.variables[i].valueType})`
 		)
@@ -3058,16 +3121,16 @@ function EditStageConditions() {
 			onChange: function (value, text, $item) {
 				if (value) {
 					$('#' + $(this).attr('for')).text(value)
-					$(`.dropdown[for="${$(this).attr('for')}"]`).not('#' + $(this).attr('id')).dropdown('restore defaults')
+					$(`.dropdown[for="${$(this).attr('for')}"]`).not('#' + $(this).attr('id')).dropdown('clear')
 					$(`input[for="${$(this).attr('for')}"]`).val('').blur()
 					if ($(this).attr('for').endsWith('3')) {
-						stageConditionV3b = $(this.val)
+						stageConditionV3b = value
 						stageConditionV3a = ""
 					}
 
 				}
 			}
-		})
+		}).dropdown('clear')
 	})
 
 	$('#dropdownStageConditionPickRTIVar1 .menu, #dropdownStageConditionPickRTIVar2 .menu').each(function (index) {
@@ -3086,7 +3149,7 @@ function EditStageConditions() {
 			onChange: function (value, text, $item) {
 				if (value) {
 					$('#' + $(this).attr('for')).text(value)
-					$(`.dropdown[for="${$(this).attr('for')}"]`).not('#' + $(this).attr('id')).dropdown('restore defaults')
+					$(`.dropdown[for="${$(this).attr('for')}"]`).not('#' + $(this).attr('id')).dropdown('clear')
 					$(`input[for="${$(this).attr('for')}"]`).val('').blur()
 					if ($(this).attr('for').endsWith('3')) {
 						stageConditionV3b = value
@@ -3095,7 +3158,7 @@ function EditStageConditions() {
 
 				}
 			}
-		})
+		}).dropdown('clear')
 	})
 
 	let dropdown = $('#dropdownStageConditionCondition1 .menu')
@@ -3112,16 +3175,16 @@ function EditStageConditions() {
 		action: 'activate',
 		onChange: function (value, text, $item) {
 			if (value) {
-				$('#' + $(this).attr('for')).text(unescape(value))
+				$('#' + $(this).attr('for')).html(value)
 			}
 		}
-	})
+	}).dropdown('clear')
 
 	let input = $('input[name="TextStageConditionsPickValue2"]')
-	input.change(function () {
+	input.keyup(function () {
 		if ($(this).val()) {
-			$('#' + $(this).attr('for')).text(value)
-			$(`.dropdown[for="${$(this).attr('for')}"]`).dropdown('restore defaults')
+			$('#' + $(this).attr('for')).text($(this).val())
+			$(`.dropdown[for="${$(this).attr('for')}"]`).dropdown('clear')
 			stageConditionV3a = $(this).val()
 			stageConditionV3b = ""
 		}
@@ -3350,11 +3413,12 @@ function EditStageConditions() {
 
 	// 	subpanel.appendChild(addContentType);
 	// }
-	// stageConditionV1 = "";
-	// stageConditionV2 = "";
-	// stageConditionV3 = "";
-	// stageConditionV3a = "";
-	// stageConditionV3b = "";
+	stageConditionV1 = "";
+	stageConditionV2 = "";
+	stageConditionV3 = "";
+	stageConditionV3a = "";
+	stageConditionV3b = "";
+	$('#stageCondition1, #stageCondition2, #stageCondition3').text('')
 	// document.getElementsByName("TextStageConditionsPickValue2")[0].value = "";
 	// document.getElementById("divStageConditionStatement").innerHTML
 	// 	= "If [" + stageConditionV1 + "] [" + stageConditionV2 + "] [" + stageConditionV3 + "] AND ...";
@@ -3373,226 +3437,316 @@ function CloseStageConditions() {
 function EditEndConditions() {
 	DisplayOrClosePrompt("modalEndConditions", "block");
 
-	var dropdown = document.getElementById("dropdownEndConditionPickVar1");
-	while (dropdown.firstChild) {
-		dropdown.removeChild(dropdown.firstChild);
-	}
-	let i = 0;
-	for (i = 0; i < simulatorObjects[editExistingObject].original.variables.length; i++) {
-		var addContentType = document.createElement("a");
-		addContentType.href = "#";
-		addContentType.innerHTML = simulatorObjects[editExistingObject].original.variables[i].name +
-			" (" + simulatorObjects[editExistingObject].original.variables[i].valueType + ")";
-		addContentType.name = simulatorObjects[editExistingObject].original.variables[i].name;
-		addContentType.onclick = function () {
-			console.log("Clicked that: " + this.innerHTML);
-			stageConditionV1 = this.name;
+	$('#dropdownEndConditionPickVar1 .menu, #dropdownEndConditionPickVar2 .menu').each(function (index) {
+		let dropdown = $(this)
+		dropdown.empty()
 
-			document.getElementById("divEndConditionStatement").innerHTML
-				= "If [" + stageConditionV1 + "] [" + stageConditionV2 + "] [" + stageConditionV3 + "] AND ...";
-		};
-		dropdown.appendChild(addContentType);
-	}
-
-	dropdown = document.getElementById("dropdownEndConditionPickRTIVar1");
-	while (dropdown.firstChild) {
-		dropdown.removeChild(dropdown.firstChild);
-	}
-	for (i = 0; i < 4; i++) {
-		var addContentType = document.createElement("a");
-		addContentType.href = "#";
-		if (i == 0) {
-			addContentType.innerHTML = "RTI_vTimestep";
-		} else if (i == 1) {
-			addContentType.innerHTML = "RTI_stage";
-		} else if (i == 2) {
-			addContentType.innerHTML = "RTI_stageVTimestepMul";
-		} else if (i == 3) {
-			addContentType.innerHTML = "RTI_stageVTimestep";
+		let item
+		let i
+		for (i = 0; i < simulatorObjects[editExistingObject].original.variables.length; i++) {
+			item = $('<div>').addClass('item').text(simulatorObjects[editExistingObject].original.variables[i].name +
+				" (" + simulatorObjects[editExistingObject].original.variables[i].valueType + ")")
+			item.attr('data-value', simulatorObjects[editExistingObject].original.variables[i].name)
+			dropdown.append(item)
 		}
-		addContentType.name = addContentType.innerHTML;
-		addContentType.onclick = function () {
-			console.log("Clicked this: " + this.innerHTML);
-			stageConditionV1 = this.name;
-			document.getElementById("divEndConditionStatement").innerHTML
-				= "If [" + stageConditionV1 + "] [" + stageConditionV2 + "] [" + stageConditionV3 + "] AND ...";
-		};
-		dropdown.appendChild(addContentType);
-	}
 
-	dropdown = document.getElementById("dropdownEndConditionCondition1");
-	while (dropdown.firstChild) {
-		dropdown.removeChild(dropdown.firstChild);
-	}
-	for (i = 0; i < 6; i++) {
-		var addContentType = document.createElement("a");
-		addContentType.href = "#";
-		if (i == 0) {
-			addContentType.innerHTML = "=";
-		} else if (i == 1) {
-			addContentType.innerHTML = ">";
-		} else if (i == 2) {
-			addContentType.innerHTML = "<";
-		} else if (i == 3) {
-			addContentType.innerHTML = ">=";
-		} else if (i == 4) {
-			addContentType.innerHTML = "<=";
-		} else if (i == 5) {
-			addContentType.innerHTML = "!=";
-		}
-		addContentType.name = addContentType.innerHTML;
-		addContentType.onclick = function () {
-			console.log("Clicked that: " + unescape(this.innerHTML));
-			if (this.name == "&gt;") {
-				stageConditionV2 = ">";
-			} else if (this.name == "&lt;") {
-				stageConditionV2 = "<";
-			} else if (this.name == "&gt;=") {
-				stageConditionV2 = ">=";
-			} else if (this.name == "&lt;=") {
-				stageConditionV2 = "<=";
-			} else {
-				stageConditionV2 = unescape(this.name);
+		dropdown.parent().dropdown({
+			action: 'activate',
+			onChange: function (value, text, $item) {
+				if (value) {
+					$('#' + $(this).attr('for')).text(value)
+					$(`.dropdown[for="${$(this).attr('for')}"]`).not('#' + $(this).attr('id')).dropdown('clear')
+					$(`input[for="${$(this).attr('for')}"]`).val('').blur()
+					if ($(this).attr('for').endsWith('3')) {
+						stageConditionV3b = value
+						stageConditionV3a = ""
+					}
+
+				}
 			}
-			//stageConditionV2 = this.innerHTML;
-			document.getElementById("divEndConditionStatement").innerHTML
-				= "If [" + stageConditionV1 + "] [" + stageConditionV2 + "] [" + stageConditionV3 + "] AND ...";
-		};
-		dropdown.appendChild(addContentType);
-	}
+		}).dropdown('clear')
+	})
 
-	dropdown = document.getElementById("dropdownEndConditionPickVar2");
-	while (dropdown.firstChild) {
-		dropdown.removeChild(dropdown.firstChild);
-	}
-	for (i = 0; i < simulatorObjects[editExistingObject].original.variables.length; i++) {
-		var addContentType = document.createElement("a");
-		addContentType.href = "#";
-		addContentType.innerHTML = simulatorObjects[editExistingObject].original.variables[i].name +
-			" (" + simulatorObjects[editExistingObject].original.variables[i].valueType + ")";
-		addContentType.name = simulatorObjects[editExistingObject].original.variables[i].name;
-		addContentType.onclick = function () {
-			console.log("Clicked that: " + this.innerHTML);
-			stageConditionV3 = this.name;
-			stageConditionV3b = this.name;
-			stageConditionV3a = "";
-			document.getElementById("divEndConditionStatement").innerHTML
-				= "If [" + stageConditionV1 + "] [" + stageConditionV2 + "] [" + stageConditionV3 + "] AND ...";
-		};
-		dropdown.appendChild(addContentType);
-	}
+	$('#dropdownEndConditionPickRTIVar1 .menu, #dropdownEndConditionPickRTIVar2 .menu').each(function (index) {
+		let dropdown = $(this)
+		dropdown.empty()
 
-	dropdown = document.getElementById("dropdownEndConditionPickRTIVar2");
-	while (dropdown.firstChild) {
-		dropdown.removeChild(dropdown.firstChild);
-	}
-	for (i = 0; i < 4; i++) {
-		var addContentType = document.createElement("a");
-		addContentType.href = "#";
-		if (i == 0) {
-			addContentType.innerHTML = "RTI_vTimestep";
-		} else if (i == 1) {
-			addContentType.innerHTML = "RTI_stage";
-		} else if (i == 2) {
-			addContentType.innerHTML = "RTI_stageVTimestepMul";
-		} else if (i == 3) {
-			addContentType.innerHTML = "RTI_stageVTimestep";
+		let item
+		for (variable of ["RTI_vTimestep", "RTI_stage", "RTI_stageVTimestepMul", "RTI_stageVTimestep"]) {
+			item = $('<div>').addClass('item').text(variable)
+			item.attr(variable)
+			dropdown.append(item)
 		}
-		addContentType.name = addContentType.innerHTML;
-		addContentType.onclick = function () {
-			console.log("Clicked that: " + this.innerHTML);
-			stageConditionV3 = this.name;
-			stageConditionV3b = this.name;
-			stageConditionV3a = "";
-			document.getElementById("divEndConditionStatement").innerHTML
-				= "If [" + stageConditionV1 + "] [" + stageConditionV2 + "] [" + stageConditionV3 + "] AND ...";
-		};
-		dropdown.appendChild(addContentType);
+
+		dropdown.parent().dropdown({
+			action: 'activate',
+			onChange: function (value, text, $item) {
+				if (value) {
+					$('#' + $(this).attr('for')).text(value)
+					$(`.dropdown[for="${$(this).attr('for')}"]`).not('#' + $(this).attr('id')).dropdown('clear')
+					$(`input[for="${$(this).attr('for')}"]`).val('').blur()
+					if ($(this).attr('for').endsWith('3')) {
+						stageConditionV3b = value
+						stageConditionV3a = ""
+					}
+
+				}
+			}
+		}).dropdown('clear')
+	})
+
+	let dropdown = $('#dropdownEndConditionCondition1 .menu')
+	dropdown.empty()
+
+	let item
+	for (variable of ["==", "!=", ">", "<", ">=", "<="]) {
+		item = $('<div>').addClass('item').text(variable)
+		item.attr(variable)
+		dropdown.append(item)
 	}
 
-	var panel = document.getElementById("modalEndConditionsPanel");
-	while (panel.firstChild) {
-		panel.removeChild(panel.firstChild);
-	}
-	for (i = 0; i < simulatorObjects[editExistingObject].endConditions.length; i++) {
-		var addContentType = document.createElement("div");
-		addContentType.className = "div-list-item";
-		var addContent1 = document.createElement("div");
-		addContent1.style = "width:80%;float:left;";
-		var sentence = "in stage = " + simulatorObjects[editExistingObject].endConditions[i].oldStage + ", ";
-		let j = 0;
-		for (j = 0; j < simulatorObjects[editExistingObject].endConditions[i].conditions.length; j++) {
-			var tempVarName2 = simulatorObjects[editExistingObject].endConditions[i].conditions[j].varName2;
-			if (tempVarName2 == "") {
-				sentence = sentence + "if [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].varName
-					+ "] [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].condition
-					+ "] [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].value + "] ";
-			} else {
-				sentence = sentence + "if [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].varName
-					+ "] [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].condition
-					+ "] [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].varName2 + "] ";
-			}
-			if (j < simulatorObjects[editExistingObject].endConditions[i].conditions.length - 1) {
-				sentence = sentence + "AND ";
+	dropdown.parent().dropdown({
+		action: 'activate',
+		onChange: function (value, text, $item) {
+			if (value) {
+				$('#' + $(this).attr('for')).html(value)
 			}
 		}
-		sentence = sentence + "then end simulation system.";
-		addContent1.innerHTML = sentence;
-		addContentType.appendChild(addContent1);
-		var addContent2 = document.createElement("button");
-		addContent2.name = i;
-		addContent2.onclick = function () {
-			//RemoveEndConditionFromSubList(this.name);
-			RemoveEndConditionFromList(this.name);
-		};
-		addContent2.style = "float:right;";
-		var addContent3 = document.createTextNode("X");
-		addContent2.appendChild(addContent3);
-		addContentType.appendChild(addContent2);
+	}).dropdown('clear')
 
-		panel.appendChild(addContentType);
-	}
-
-	stageConditionSubSet = [];
-
-	var subpanel = document.getElementById("modalEndConditionsSubPanel");
-	while (subpanel.firstChild) {
-		subpanel.removeChild(subpanel.firstChild);
-	}
-	for (i = 0; i < stageConditionSubSet.length; i++) {
-		var addContentType = document.createElement("div");
-		addContentType.className = "div-list-item";
-		var tempVarName2 = stageConditionSubSet[i].varName2;
-		var addContent1 = document.createElement("div");
-		addContent1.style = "width:70%;float:left;";
-		if (tempVarName2 == "") {
-			addContent1.innerHTML = "if [" + stageConditionSubSet[i].varName + "] ["
-				+ stageConditionSubSet[i].condition + "] [" + stageConditionSubSet[i].value + "] && ...";
-		} else {
-			addContent1.innerHTML = "if [" + stageConditionSubSet[i].varName + "] ["
-				+ stageConditionSubSet[i].condition + "] [" + stageConditionSubSet[i].varName2 + "] && ...";
+	let input = $('input[name="TextEndConditionsPickValue2"]')
+	input.keyup(function () {
+		if ($(this).val()) {
+			$('#' + $(this).attr('for')).text($(this).val())
+			$(`.dropdown[for="${$(this).attr('for')}"]`).dropdown('clear')
+			stageConditionV3a = $(this).val()
+			stageConditionV3b = ""
 		}
-		addContentType.appendChild(addContent1);
-		var addContent2 = document.createElement("button");
-		addContent2.name = i;
-		addContent2.onclick = function () {
-			RemoveEndConditionFromSubList(this.name);
-		};
-		addContent2.style = "float:right;";
-		var addContent3 = document.createTextNode("X");
-		addContent2.appendChild(addContent3);
-		addContentType.appendChild(addContent2);
-
-		subpanel.appendChild(addContentType);
 	}
+	)
+	input.val('').blur()
+
+	// var dropdown = document.getElementById("dropdownEndConditionPickVar1");
+	// while (dropdown.firstChild) {
+	// 	dropdown.removeChild(dropdown.firstChild);
+	// }
+	// let i = 0;
+	// for (i = 0; i < simulatorObjects[editExistingObject].original.variables.length; i++) {
+	// 	var addContentType = document.createElement("a");
+	// 	addContentType.href = "#";
+	// 	addContentType.innerHTML = simulatorObjects[editExistingObject].original.variables[i].name +
+	// 		" (" + simulatorObjects[editExistingObject].original.variables[i].valueType + ")";
+	// 	addContentType.name = simulatorObjects[editExistingObject].original.variables[i].name;
+	// 	addContentType.onclick = function () {
+	// 		console.log("Clicked that: " + this.innerHTML);
+	// 		stageConditionV1 = this.name;
+
+	// 		document.getElementById("divEndConditionStatement").innerHTML
+	// 			= "If [" + stageConditionV1 + "] [" + stageConditionV2 + "] [" + stageConditionV3 + "] AND ...";
+	// 	};
+	// 	dropdown.appendChild(addContentType);
+	// }
+
+	// dropdown = document.getElementById("dropdownEndConditionPickRTIVar1");
+	// while (dropdown.firstChild) {
+	// 	dropdown.removeChild(dropdown.firstChild);
+	// }
+	// for (i = 0; i < 4; i++) {
+	// 	var addContentType = document.createElement("a");
+	// 	addContentType.href = "#";
+	// 	if (i == 0) {
+	// 		addContentType.innerHTML = "RTI_vTimestep";
+	// 	} else if (i == 1) {
+	// 		addContentType.innerHTML = "RTI_stage";
+	// 	} else if (i == 2) {
+	// 		addContentType.innerHTML = "RTI_stageVTimestepMul";
+	// 	} else if (i == 3) {
+	// 		addContentType.innerHTML = "RTI_stageVTimestep";
+	// 	}
+	// 	addContentType.name = addContentType.innerHTML;
+	// 	addContentType.onclick = function () {
+	// 		console.log("Clicked this: " + this.innerHTML);
+	// 		stageConditionV1 = this.name;
+	// 		document.getElementById("divEndConditionStatement").innerHTML
+	// 			= "If [" + stageConditionV1 + "] [" + stageConditionV2 + "] [" + stageConditionV3 + "] AND ...";
+	// 	};
+	// 	dropdown.appendChild(addContentType);
+	// }
+
+	// dropdown = document.getElementById("dropdownEndConditionCondition1");
+	// while (dropdown.firstChild) {
+	// 	dropdown.removeChild(dropdown.firstChild);
+	// }
+	// for (i = 0; i < 6; i++) {
+	// 	var addContentType = document.createElement("a");
+	// 	addContentType.href = "#";
+	// 	if (i == 0) {
+	// 		addContentType.innerHTML = "=";
+	// 	} else if (i == 1) {
+	// 		addContentType.innerHTML = ">";
+	// 	} else if (i == 2) {
+	// 		addContentType.innerHTML = "<";
+	// 	} else if (i == 3) {
+	// 		addContentType.innerHTML = ">=";
+	// 	} else if (i == 4) {
+	// 		addContentType.innerHTML = "<=";
+	// 	} else if (i == 5) {
+	// 		addContentType.innerHTML = "!=";
+	// 	}
+	// 	addContentType.name = addContentType.innerHTML;
+	// 	addContentType.onclick = function () {
+	// 		console.log("Clicked that: " + unescape(this.innerHTML));
+	// 		if (this.name == "&gt;") {
+	// 			stageConditionV2 = ">";
+	// 		} else if (this.name == "&lt;") {
+	// 			stageConditionV2 = "<";
+	// 		} else if (this.name == "&gt;=") {
+	// 			stageConditionV2 = ">=";
+	// 		} else if (this.name == "&lt;=") {
+	// 			stageConditionV2 = "<=";
+	// 		} else {
+	// 			stageConditionV2 = unescape(this.name);
+	// 		}
+	// 		//stageConditionV2 = this.innerHTML;
+	// 		document.getElementById("divEndConditionStatement").innerHTML
+	// 			= "If [" + stageConditionV1 + "] [" + stageConditionV2 + "] [" + stageConditionV3 + "] AND ...";
+	// 	};
+	// 	dropdown.appendChild(addContentType);
+	// }
+
+	// dropdown = document.getElementById("dropdownEndConditionPickVar2");
+	// while (dropdown.firstChild) {
+	// 	dropdown.removeChild(dropdown.firstChild);
+	// }
+	// for (i = 0; i < simulatorObjects[editExistingObject].original.variables.length; i++) {
+	// 	var addContentType = document.createElement("a");
+	// 	addContentType.href = "#";
+	// 	addContentType.innerHTML = simulatorObjects[editExistingObject].original.variables[i].name +
+	// 		" (" + simulatorObjects[editExistingObject].original.variables[i].valueType + ")";
+	// 	addContentType.name = simulatorObjects[editExistingObject].original.variables[i].name;
+	// 	addContentType.onclick = function () {
+	// 		console.log("Clicked that: " + this.innerHTML);
+	// 		stageConditionV3 = this.name;
+	// 		stageConditionV3b = this.name;
+	// 		stageConditionV3a = "";
+	// 		document.getElementById("divEndConditionStatement").innerHTML
+	// 			= "If [" + stageConditionV1 + "] [" + stageConditionV2 + "] [" + stageConditionV3 + "] AND ...";
+	// 	};
+	// 	dropdown.appendChild(addContentType);
+	// }
+
+	// dropdown = document.getElementById("dropdownEndConditionPickRTIVar2");
+	// while (dropdown.firstChild) {
+	// 	dropdown.removeChild(dropdown.firstChild);
+	// }
+	// for (i = 0; i < 4; i++) {
+	// 	var addContentType = document.createElement("a");
+	// 	addContentType.href = "#";
+	// 	if (i == 0) {
+	// 		addContentType.innerHTML = "RTI_vTimestep";
+	// 	} else if (i == 1) {
+	// 		addContentType.innerHTML = "RTI_stage";
+	// 	} else if (i == 2) {
+	// 		addContentType.innerHTML = "RTI_stageVTimestepMul";
+	// 	} else if (i == 3) {
+	// 		addContentType.innerHTML = "RTI_stageVTimestep";
+	// 	}
+	// 	addContentType.name = addContentType.innerHTML;
+	// 	addContentType.onclick = function () {
+	// 		console.log("Clicked that: " + this.innerHTML);
+	// 		stageConditionV3 = this.name;
+	// 		stageConditionV3b = this.name;
+	// 		stageConditionV3a = "";
+	// 		document.getElementById("divEndConditionStatement").innerHTML
+	// 			= "If [" + stageConditionV1 + "] [" + stageConditionV2 + "] [" + stageConditionV3 + "] AND ...";
+	// 	};
+	// 	dropdown.appendChild(addContentType);
+	// }
+
+	// var panel = document.getElementById("modalEndConditionsPanel");
+	// while (panel.firstChild) {
+	// 	panel.removeChild(panel.firstChild);
+	// }
+	// for (i = 0; i < simulatorObjects[editExistingObject].endConditions.length; i++) {
+	// 	var addContentType = document.createElement("div");
+	// 	addContentType.className = "div-list-item";
+	// 	var addContent1 = document.createElement("div");
+	// 	addContent1.style = "width:80%;float:left;";
+	// 	var sentence = "in stage = " + simulatorObjects[editExistingObject].endConditions[i].oldStage + ", ";
+	// 	let j = 0;
+	// 	for (j = 0; j < simulatorObjects[editExistingObject].endConditions[i].conditions.length; j++) {
+	// 		var tempVarName2 = simulatorObjects[editExistingObject].endConditions[i].conditions[j].varName2;
+	// 		if (tempVarName2 == "") {
+	// 			sentence = sentence + "if [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].varName
+	// 				+ "] [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].condition
+	// 				+ "] [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].value + "] ";
+	// 		} else {
+	// 			sentence = sentence + "if [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].varName
+	// 				+ "] [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].condition
+	// 				+ "] [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].varName2 + "] ";
+	// 		}
+	// 		if (j < simulatorObjects[editExistingObject].endConditions[i].conditions.length - 1) {
+	// 			sentence = sentence + "AND ";
+	// 		}
+	// 	}
+	// 	sentence = sentence + "then end simulation system.";
+	// 	addContent1.innerHTML = sentence;
+	// 	addContentType.appendChild(addContent1);
+	// 	var addContent2 = document.createElement("button");
+	// 	addContent2.name = i;
+	// 	addContent2.onclick = function () {
+	// 		//RemoveEndConditionFromSubList(this.name);
+	// 		RemoveEndConditionFromList(this.name);
+	// 	};
+	// 	addContent2.style = "float:right;";
+	// 	var addContent3 = document.createTextNode("X");
+	// 	addContent2.appendChild(addContent3);
+	// 	addContentType.appendChild(addContent2);
+
+	// 	panel.appendChild(addContentType);
+	// }
+
+	// stageConditionSubSet = [];
+
+	// var subpanel = document.getElementById("modalEndConditionsSubPanel");
+	// while (subpanel.firstChild) {
+	// 	subpanel.removeChild(subpanel.firstChild);
+	// }
+	// for (i = 0; i < stageConditionSubSet.length; i++) {
+	// 	var addContentType = document.createElement("div");
+	// 	addContentType.className = "div-list-item";
+	// 	var tempVarName2 = stageConditionSubSet[i].varName2;
+	// 	var addContent1 = document.createElement("div");
+	// 	addContent1.style = "width:70%;float:left;";
+	// 	if (tempVarName2 == "") {
+	// 		addContent1.innerHTML = "if [" + stageConditionSubSet[i].varName + "] ["
+	// 			+ stageConditionSubSet[i].condition + "] [" + stageConditionSubSet[i].value + "] && ...";
+	// 	} else {
+	// 		addContent1.innerHTML = "if [" + stageConditionSubSet[i].varName + "] ["
+	// 			+ stageConditionSubSet[i].condition + "] [" + stageConditionSubSet[i].varName2 + "] && ...";
+	// 	}
+	// 	addContentType.appendChild(addContent1);
+	// 	var addContent2 = document.createElement("button");
+	// 	addContent2.name = i;
+	// 	addContent2.onclick = function () {
+	// 		RemoveEndConditionFromSubList(this.name);
+	// 	};
+	// 	addContent2.style = "float:right;";
+	// 	var addContent3 = document.createTextNode("X");
+	// 	addContent2.appendChild(addContent3);
+	// 	addContentType.appendChild(addContent2);
+
+	// 	subpanel.appendChild(addContentType);
+	// }
 	stageConditionV1 = "";
 	stageConditionV2 = "";
 	stageConditionV3 = "";
 	stageConditionV3a = "";
 	stageConditionV3b = "";
-	document.getElementsByName("TextEndConditionsPickValue2")[0].value = "";
-	document.getElementById("divEndConditionStatement").innerHTML
-		= "If [" + stageConditionV1 + "] [" + stageConditionV2 + "] [" + stageConditionV3 + "] AND ...";
+	$('#endCondition1, #endCondition2, #endCondition3').text('')
+	// document.getElementsByName("TextEndConditionsPickValue2")[0].value = "";
+	// document.getElementById("divEndConditionStatement").innerHTML
+	// 	= "If [" + stageConditionV1 + "] [" + stageConditionV2 + "] [" + stageConditionV3 + "] AND ...";
 }
 
 /*	CloseEndConditions()
@@ -3879,37 +4033,39 @@ function AddStageConditionToSubList() {
 		varName2: stageConditionV3b
 	});
 
-	var subpanel = document.getElementById("modalStageConditionsSubPanel");
-	while (subpanel.firstChild) {
-		subpanel.removeChild(subpanel.firstChild);
-	}
-	let i = 0;
-	for (i = 0; i < stageConditionSubSet.length; i++) {
-		var addContentType = document.createElement("div");
-		addContentType.className = "div-list-item";
-		var tempVarName2 = stageConditionSubSet[i].varName2;
-		var addContent1 = document.createElement("div");
-		addContent1.style = "width:70%;float:left;";
-		if (tempVarName2 == "") {
-			addContent1.innerHTML = "if [" + stageConditionSubSet[i].varName + "] ["
-				+ stageConditionSubSet[i].condition + "] [" + stageConditionSubSet[i].value + "] AND ...";
-		} else {
-			addContent1.innerHTML = "if [" + stageConditionSubSet[i].varName + "] ["
-				+ stageConditionSubSet[i].condition + "] [" + stageConditionSubSet[i].varName2 + "] AND ...";
-		}
-		addContentType.appendChild(addContent1);
-		var addContent2 = document.createElement("button");
-		addContent2.name = i;
-		addContent2.onclick = function () {
-			RemoveStageConditionFromSubList(this.name);
-		};
-		addContent2.style = "float:right;";
-		var addContent3 = document.createTextNode("X");
-		addContent2.appendChild(addContent3);
-		addContentType.appendChild(addContent2);
+	// var subpanel = document.getElementById("modalStageConditionsSubPanel");
+	// while (subpanel.firstChild) {
+	// 	subpanel.removeChild(subpanel.firstChild);
+	// }
+	// let i = 0;
+	// for (i = 0; i < stageConditionSubSet.length; i++) {
+	// 	var addContentType = document.createElement("div");
+	// 	addContentType.className = "div-list-item";
+	// 	var tempVarName2 = stageConditionSubSet[i].varName2;
+	// 	var addContent1 = document.createElement("div");
+	// 	addContent1.style = "width:70%;float:left;";
+	// 	if (tempVarName2 == "") {
+	// 		addContent1.innerHTML = "if [" + stageConditionSubSet[i].varName + "] ["
+	// 			+ stageConditionSubSet[i].condition + "] [" + stageConditionSubSet[i].value + "] AND ...";
+	// 	} else {
+	// 		addContent1.innerHTML = "if [" + stageConditionSubSet[i].varName + "] ["
+	// 			+ stageConditionSubSet[i].condition + "] [" + stageConditionSubSet[i].varName2 + "] AND ...";
+	// 	}
+	// 	addContentType.appendChild(addContent1);
+	// 	var addContent2 = document.createElement("button");
+	// 	addContent2.name = i;
+	// 	addContent2.onclick = function () {
+	// 		RemoveStageConditionFromSubList(this.name);
+	// 	};
+	// 	addContent2.style = "float:right;";
+	// 	var addContent3 = document.createTextNode("X");
+	// 	addContent2.appendChild(addContent3);
+	// 	addContentType.appendChild(addContent2);
 
-		subpanel.appendChild(addContentType);
-	}
+	// 	subpanel.appendChild(addContentType);
+	// }
+
+	ResetStageConditionSubList()
 
 	// stageConditionV1 = "";
 	// stageConditionV2 = "";
@@ -3927,35 +4083,67 @@ function AddStageConditionToSubList() {
 function RemoveStageConditionFromSubList(btn_id) {
 	stageConditionSubSet.splice(btn_id, 1);
 
-	var subpanel = document.getElementById("modalStageConditionsSubPanel");
-	while (subpanel.firstChild) {
-		subpanel.removeChild(subpanel.firstChild);
-	}
-	let i = 0;
+	ResetStageConditionSubList()
+
+	// var subpanel = document.getElementById("modalStageConditionsSubPanel");
+	// while (subpanel.firstChild) {
+	// 	subpanel.removeChild(subpanel.firstChild);
+	// }
+	// let i = 0;
+	// for (i = 0; i < stageConditionSubSet.length; i++) {
+	// 	var addContentType = document.createElement("div");
+	// 	addContentType.className = "div-list-item";
+	// 	var tempVarName2 = stageConditionSubSet[i].varName2;
+	// 	var addContent1 = document.createElement("div");
+	// 	addContent1.style = "width:70%;float:left;";
+	// 	if (tempVarName2 == "") {
+	// 		addContent1.innerHTML = "if [" + stageConditionSubSet[i].varName + "] ["
+	// 			+ stageConditionSubSet[i].condition + "] [" + stageConditionSubSet[i].value + "] AND ...";
+	// 	} else {
+	// 		addContent1.innerHTML = "if [" + stageConditionSubSet[i].varName + "] ["
+	// 			+ stageConditionSubSet[i].condition + "] [" + stageConditionSubSet[i].varName2 + "] AND ...";
+	// 	}
+	// 	addContentType.appendChild(addContent1);
+	// 	var addContent2 = document.createElement("button");
+	// 	addContent2.name = i;
+	// 	addContent2.onclick = function () {
+	// 		RemoveStageConditionFromSubList(this.name);
+	// 	};
+	// 	addContent2.style = "float:right;";
+	// 	var addContent3 = document.createTextNode("X");
+	// 	addContent2.appendChild(addContent3);
+	// 	addContentType.appendChild(addContent2);
+	// 	subpanel.appendChild(addContentType);
+	// }
+}
+
+function ResetStageConditionSubList() {
+
+	let subpanel = $("#modalStageConditionsSubPanel");
+	subpanel.empty()
+
+	let i = 0, item, label, text, tempVarName2, button, icon;
 	for (i = 0; i < stageConditionSubSet.length; i++) {
-		var addContentType = document.createElement("div");
-		addContentType.className = "div-list-item";
-		var tempVarName2 = stageConditionSubSet[i].varName2;
-		var addContent1 = document.createElement("div");
-		addContent1.style = "width:70%;float:left;";
+		item = $('<div>').addClass('div-list-item')
+		label = $('<div>').addClass('ui grey expanding middle aligned label')
 		if (tempVarName2 == "") {
-			addContent1.innerHTML = "if [" + stageConditionSubSet[i].varName + "] ["
-				+ stageConditionSubSet[i].condition + "] [" + stageConditionSubSet[i].value + "] AND ...";
+			text = "if [" + stageConditionSubSet[i].varName + "] ["
+				+ stageConditionSubSet[i].condition + "] [" + stageConditionSubSet[i].value + "] AND ..."
 		} else {
-			addContent1.innerHTML = "if [" + stageConditionSubSet[i].varName + "] ["
-				+ stageConditionSubSet[i].condition + "] [" + stageConditionSubSet[i].varName2 + "] AND ...";
+			text = "if [" + stageConditionSubSet[i].varName + "] ["
+				+ stageConditionSubSet[i].condition + "] [" + stageConditionSubSet[i].varName2 + "] AND ..."
 		}
-		addContentType.appendChild(addContent1);
-		var addContent2 = document.createElement("button");
-		addContent2.name = i;
-		addContent2.onclick = function () {
+		label.append($('<label>').text(text).css('max-width', '95%'))
+		button = $('<a>').addClass('ui opaque right floated')
+		icon = $('<i>').addClass('inverted  delete icon').click(function () {
 			RemoveStageConditionFromSubList(this.name);
-		};
-		addContent2.style = "float:right;";
-		var addContent3 = document.createTextNode("X");
-		addContent2.appendChild(addContent3);
-		addContentType.appendChild(addContent2);
-		subpanel.appendChild(addContentType);
+		}
+		)
+
+		button.append(icon)
+		label.append(button)
+		item.append(label)
+		subpanel.append(item)
 	}
 }
 
@@ -3970,46 +4158,7 @@ function AddStageConditionToList() {
 		newStage: newStage
 	});
 
-	let panel = $('#modalStageCondtionsPanel')
-	panel.empty()
-	let i
-	for (i = 0; i < simulatorObjects[editExistingObject].stageConditions.length; i++) {
-		var addContentType = document.createElement("div");
-		addContentType.className = "div-list-item";
-		var addContent1 = document.createElement("div");
-		addContent1.style = "width:80%;float:left;";
-		var sentence = "in stage = " + simulatorObjects[editExistingObject].stageConditions[i].oldStage + ", ";
-		let j = 0;
-		for (j = 0; j < simulatorObjects[editExistingObject].stageConditions[i].conditions.length; j++) {
-			var tempVarName2 = simulatorObjects[editExistingObject].stageConditions[i].conditions[j].varName2;
-			if (tempVarName2 == "") {
-				sentence = sentence + "if [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].varName
-					+ "] [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].condition
-					+ "] [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].value + "] ";
-			} else {
-				sentence = sentence + "if [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].varName
-					+ "] [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].condition
-					+ "] [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].varName2 + "] ";
-			}
-			if (j < simulatorObjects[editExistingObject].stageConditions[i].conditions.length - 1) {
-				sentence = sentence + "AND ";
-			}
-		}
-		sentence = sentence + "go to stage = " + simulatorObjects[editExistingObject].stageConditions[i].newStage;
-		addContent1.innerHTML = sentence;
-		addContentType.appendChild(addContent1);
-		var addContent2 = document.createElement("button");
-		addContent2.name = i;
-		addContent2.onclick = function () {
-			RemoveStageConditionFromList(this.name);
-		};
-		addContent2.style = "float:right;";
-		var addContent3 = document.createTextNode("X");
-		addContent2.appendChild(addContent3);
-		addContentType.appendChild(addContent2);
-
-		panel.appendChild(addContentType);
-	}
+	ResetStageConditionList()
 
 
 	// var panel = document.getElementById("modalStageConditionsPanel");
@@ -4056,36 +4205,37 @@ function AddStageConditionToList() {
 	// }
 
 	stageConditionSubSet = [];
+	ResetStageConditionSubList()
 
-	var subpanel = document.getElementById("modalStageConditionsSubPanel");
-	while (subpanel.firstChild) {
-		subpanel.removeChild(subpanel.firstChild);
-	}
-	for (i = 0; i < stageConditionSubSet.length; i++) {
-		var addContentType = document.createElement("div");
-		addContentType.className = "div-list-item";
-		var tempVarName2 = stageConditionSubSet[i].varName2;
-		var addContent1 = document.createElement("div");
-		addContent1.style = "width:70%;float:left;";
-		if (tempVarName2 == "") {
-			addContent1.innerHTML = "if [" + stageConditionSubSet[i].varName + "] ["
-				+ stageConditionSubSet[i].condition + "] [" + stageConditionSubSet[i].value + "] && ...";
-		} else {
-			addContent1.innerHTML = "if [" + stageConditionSubSet[i].varName + "] ["
-				+ stageConditionSubSet[i].condition + "] [" + stageConditionSubSet[i].varName2 + "] && ...";
-		}
-		addContentType.appendChild(addContent1);
-		var addContent2 = document.createElement("button");
-		addContent2.name = i;
-		addContent2.onclick = function () {
-			RemoveStageConditionFromSubList(this.name);
-		};
-		addContent2.style = "float:right;";
-		var addContent3 = document.createTextNode("X");
-		addContent2.appendChild(addContent3);
-		addContentType.appendChild(addContent2);
-		subpanel.appendChild(addContentType);
-	}
+	// var subpanel = document.getElementById("modalStageConditionsSubPanel");
+	// while (subpanel.firstChild) {
+	// 	subpanel.removeChild(subpanel.firstChild);
+	// }
+	// for (i = 0; i < stageConditionSubSet.length; i++) {
+	// 	var addContentType = document.createElement("div");
+	// 	addContentType.className = "div-list-item";
+	// 	var tempVarName2 = stageConditionSubSet[i].varName2;
+	// 	var addContent1 = document.createElement("div");
+	// 	addContent1.style = "width:70%;float:left;";
+	// 	if (tempVarName2 == "") {
+	// 		addContent1.innerHTML = "if [" + stageConditionSubSet[i].varName + "] ["
+	// 			+ stageConditionSubSet[i].condition + "] [" + stageConditionSubSet[i].value + "] && ...";
+	// 	} else {
+	// 		addContent1.innerHTML = "if [" + stageConditionSubSet[i].varName + "] ["
+	// 			+ stageConditionSubSet[i].condition + "] [" + stageConditionSubSet[i].varName2 + "] && ...";
+	// 	}
+	// 	addContentType.appendChild(addContent1);
+	// 	var addContent2 = document.createElement("button");
+	// 	addContent2.name = i;
+	// 	addContent2.onclick = function () {
+	// 		RemoveStageConditionFromSubList(this.name);
+	// 	};
+	// 	addContent2.style = "float:right;";
+	// 	var addContent3 = document.createTextNode("X");
+	// 	addContent2.appendChild(addContent3);
+	// 	addContentType.appendChild(addContent2);
+	// 	subpanel.appendChild(addContentType);
+	// }
 }
 
 /*	RemoveStageConditionToList()
@@ -4094,17 +4244,62 @@ function AddStageConditionToList() {
 function RemoveStageConditionFromList(btn_name) {
 	simulatorObjects[editExistingObject].stageConditions.splice(btn_name, 1);
 
-	var panel = document.getElementById("modalStageConditionsPanel");
-	while (panel.firstChild) {
-		panel.removeChild(panel.firstChild);
-	}
-	let i = 0;
+	ResetStageConditionList()
+
+	// var panel = document.getElementById("modalStageConditionsPanel");
+	// while (panel.firstChild) {
+	// 	panel.removeChild(panel.firstChild);
+	// }
+	// let i = 0;
+	// for (i = 0; i < simulatorObjects[editExistingObject].stageConditions.length; i++) {
+	// 	var addContentType = document.createElement("div");
+	// 	addContentType.className = "div-list-item";
+	// 	var addContent1 = document.createElement("div");
+	// 	addContent1.style = "width:80%;float:left;";
+	// 	var sentence = "in stage = " + simulatorObjects[editExistingObject].stageConditions[i].oldStage + ", ";
+	// 	let j = 0;
+	// 	for (j = 0; j < simulatorObjects[editExistingObject].stageConditions[i].conditions.length; j++) {
+	// 		var tempVarName2 = simulatorObjects[editExistingObject].stageConditions[i].conditions[j].varName2;
+	// 		if (tempVarName2 == "") {
+	// 			sentence = sentence + "if [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].varName
+	// 				+ "] [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].condition
+	// 				+ "] [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].value + "] ";
+	// 		} else {
+	// 			sentence = sentence + "if [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].varName
+	// 				+ "] [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].condition
+	// 				+ "] [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].varName2 + "] ";
+	// 		}
+	// 		if (j < simulatorObjects[editExistingObject].stageConditions[i].conditions.length - 1) {
+	// 			sentence = sentence + "AND ";
+	// 		}
+	// 	}
+	// 	sentence = sentence + "go to stage = " + simulatorObjects[editExistingObject].stageConditions[i].newStage;
+	// 	addContent1.innerHTML = sentence;
+	// 	addContentType.appendChild(addContent1);
+	// 	//addContentType.appendChild(addContent1);
+	// 	var addContent2 = document.createElement("button");
+	// 	addContent2.name = i;
+	// 	addContent2.onclick = function () {
+	// 		RemoveStageConditionFromList(this.name);
+	// 	};
+	// 	addContent2.style = "float:right;";
+	// 	var addContent3 = document.createTextNode("X");
+	// 	addContent2.appendChild(addContent3);
+	// 	addContentType.appendChild(addContent2);
+
+	// 	panel.appendChild(addContentType);
+	// }
+}
+
+function ResetStageConditionList() {
+
+	let panel = $('#modalStageConditionsPanel')
+	panel.empty()
+	let i = 0, item, label, sentence, button, icon
 	for (i = 0; i < simulatorObjects[editExistingObject].stageConditions.length; i++) {
-		var addContentType = document.createElement("div");
-		addContentType.className = "div-list-item";
-		var addContent1 = document.createElement("div");
-		addContent1.style = "width:80%;float:left;";
-		var sentence = "in stage = " + simulatorObjects[editExistingObject].stageConditions[i].oldStage + ", ";
+		item = $('<div>').addClass('div-list-item')
+		label = $('<div>').addClass('ui grey expanding label')
+		sentence = "in stage " + simulatorObjects[editExistingObject].stageConditions[i].oldStage + ", ";
 		let j = 0;
 		for (j = 0; j < simulatorObjects[editExistingObject].stageConditions[i].conditions.length; j++) {
 			var tempVarName2 = simulatorObjects[editExistingObject].stageConditions[i].conditions[j].varName2;
@@ -4121,22 +4316,21 @@ function RemoveStageConditionFromList(btn_name) {
 				sentence = sentence + "AND ";
 			}
 		}
-		sentence = sentence + "go to stage = " + simulatorObjects[editExistingObject].stageConditions[i].newStage;
-		addContent1.innerHTML = sentence;
-		addContentType.appendChild(addContent1);
-		//addContentType.appendChild(addContent1);
-		var addContent2 = document.createElement("button");
-		addContent2.name = i;
-		addContent2.onclick = function () {
-			RemoveStageConditionFromList(this.name);
-		};
-		addContent2.style = "float:right;";
-		var addContent3 = document.createTextNode("X");
-		addContent2.appendChild(addContent3);
-		addContentType.appendChild(addContent2);
+		sentence = sentence + "go to stage " + simulatorObjects[editExistingObject].stageConditions[i].newStage;
+		label.append($('<label>').text(sentence).css('max-width', '95%'))
 
-		panel.appendChild(addContentType);
+		button = $('<a>').addClass('ui opaque right floated')
+		icon = $('<i>').addClass('inverted  delete icon').click(function () {
+			RemoveStageConditionFromList(this.name);
+		}
+		)
+
+		button.append(icon)
+		label.append(button)
+		item.append(label)
+		panel.append(item)
 	}
+
 }
 
 /*	AddEndConditionToSubList()
@@ -4144,55 +4338,57 @@ function RemoveStageConditionFromList(btn_name) {
 */
 function AddEndConditionToSubList() {
 	stageConditionSubSet.push({
-		varName: stageConditionV1,
-		condition: stageConditionV2,
+		varName: $('#endCondition1').text(),
+		condition: unescape($('#endCondition2').text()),
 		value: stageConditionV3a,
 		varName2: stageConditionV3b
 	});
 
-	var subpanel = document.getElementById("modalEndConditionsSubPanel");
-	while (subpanel.firstChild) {
-		subpanel.removeChild(subpanel.firstChild);
-	}
-	let i = 0;
-	for (i = 0; i < stageConditionSubSet.length; i++) {
-		var addContentType = document.createElement("div");
-		addContentType.className = "div-list-item";
-		var tempVarName2 = stageConditionSubSet[i].varName2;
-		var addContent1 = document.createElement("div");
-		addContent1.style = "width:70%;float:left;";
-		if (tempVarName2 == "") {
-			addContent1.innerHTML = "if [" + stageConditionSubSet[i].varName + "] ["
-				+ stageConditionSubSet[i].condition + "] ["
-				+ stageConditionSubSet[i].value + "] AND ...";
-		} else {
-			addContent1.innerHTML = "if [" + stageConditionSubSet[i].varName + "] ["
-				+ stageConditionSubSet[i].condition + "] ["
-				+ stageConditionSubSet[i].varName2 + "] AND ...";
-		}
-		addContentType.appendChild(addContent1);
-		var addContent2 = document.createElement("button");
-		addContent2.name = i;
-		addContent2.onclick = function () {
-			RemoveEndConditionFromSubList(this.name);
-		};
-		addContent2.style = "float:right;";
-		var addContent3 = document.createTextNode("X");
-		addContent2.appendChild(addContent3);
-		addContentType.appendChild(addContent2);
+	ResetEndConditionSubList()
 
-		subpanel.appendChild(addContentType);
-	}
+	// var subpanel = document.getElementById("modalEndConditionsSubPanel");
+	// while (subpanel.firstChild) {
+	// 	subpanel.removeChild(subpanel.firstChild);
+	// }
+	// let i = 0;
+	// for (i = 0; i < stageConditionSubSet.length; i++) {
+	// 	var addContentType = document.createElement("div");
+	// 	addContentType.className = "div-list-item";
+	// 	var tempVarName2 = stageConditionSubSet[i].varName2;
+	// 	var addContent1 = document.createElement("div");
+	// 	addContent1.style = "width:70%;float:left;";
+	// 	if (tempVarName2 == "") {
+	// 		addContent1.innerHTML = "if [" + stageConditionSubSet[i].varName + "] ["
+	// 			+ stageConditionSubSet[i].condition + "] ["
+	// 			+ stageConditionSubSet[i].value + "] AND ...";
+	// 	} else {
+	// 		addContent1.innerHTML = "if [" + stageConditionSubSet[i].varName + "] ["
+	// 			+ stageConditionSubSet[i].condition + "] ["
+	// 			+ stageConditionSubSet[i].varName2 + "] AND ...";
+	// 	}
+	// 	addContentType.appendChild(addContent1);
+	// 	var addContent2 = document.createElement("button");
+	// 	addContent2.name = i;
+	// 	addContent2.onclick = function () {
+	// 		RemoveEndConditionFromSubList(this.name);
+	// 	};
+	// 	addContent2.style = "float:right;";
+	// 	var addContent3 = document.createTextNode("X");
+	// 	addContent2.appendChild(addContent3);
+	// 	addContentType.appendChild(addContent2);
 
-	stageConditionV1 = "";
-	stageConditionV2 = "";
-	stageConditionV3 = "";
-	stageConditionV3a = "";
-	stageConditionV3b = "";
-	document.getElementsByName("TextEndConditionsPickValue2")[0].value = "";
-	document.getElementById("divEndConditionStatement").innerHTML
-		= "If [" + stageConditionV1 + "] [" + stageConditionV2
-		+ "] [" + stageConditionV3 + "] AND ...";
+	// 	subpanel.appendChild(addContentType);
+	// }
+
+	// stageConditionV1 = "";
+	// stageConditionV2 = "";
+	// stageConditionV3 = "";
+	// stageConditionV3a = "";
+	// stageConditionV3b = "";
+	// document.getElementsByName("TextEndConditionsPickValue2")[0].value = "";
+	// document.getElementById("divEndConditionStatement").innerHTML
+	// 	= "If [" + stageConditionV1 + "] [" + stageConditionV2
+	// 	+ "] [" + stageConditionV3 + "] AND ...";
 
 }
 
@@ -4202,38 +4398,69 @@ function AddEndConditionToSubList() {
 function RemoveEndConditionFromSubList(btn_id) {
 	stageConditionSubSet.splice(btn_id, 1);
 
-	var subpanel = document.getElementById("modalEndConditionsSubPanel");
-	while (subpanel.firstChild) {
-		subpanel.removeChild(subpanel.firstChild);
-	}
-	let i = 0;
-	for (i = 0; i < stageConditionSubSet.length; i++) {
-		var addContentType = document.createElement("div");
-		addContentType.className = "div-list-item";
-		var tempVarName2 = stageConditionSubSet[i].varName2;
-		var addContent1 = document.createElement("div");
-		addContent1.style = "width:70%;float:left;";
-		if (tempVarName2 == "") {
-			addContent1.innerHTML = "if [" + stageConditionSubSet[i].varName + "] ["
-				+ stageConditionSubSet[i].condition + "] ["
-				+ stageConditionSubSet[i].value + "] AND ...";
-		} else {
-			addContent1.innerHTML = "if [" + stageConditionSubSet[i].varName + "] ["
-				+ stageConditionSubSet[i].condition
-				+ "] [" + stageConditionSubSet[i].varName2 + "] AND ...";
-		}
-		addContentType.appendChild(addContent1);
-		var addContent2 = document.createElement("button");
-		addContent2.name = i;
-		addContent2.onclick = function () {
-			RemoveEndConditionFromSubList(this.name);
-		};
-		addContent2.style = "float:right;";
-		var addContent3 = document.createTextNode("X");
-		addContent2.appendChild(addContent3);
-		addContentType.appendChild(addContent2);
+	ResetEndConditionSubList()
 
-		subpanel.appendChild(addContentType);
+	// var subpanel = document.getElementById("modalEndConditionsSubPanel");
+	// while (subpanel.firstChild) {
+	// 	subpanel.removeChild(subpanel.firstChild);
+	// }
+	// let i = 0;
+	// for (i = 0; i < stageConditionSubSet.length; i++) {
+	// 	var addContentType = document.createElement("div");
+	// 	addContentType.className = "div-list-item";
+	// 	var tempVarName2 = stageConditionSubSet[i].varName2;
+	// 	var addContent1 = document.createElement("div");
+	// 	addContent1.style = "width:70%;float:left;";
+	// 	if (tempVarName2 == "") {
+	// 		addContent1.innerHTML = "if [" + stageConditionSubSet[i].varName + "] ["
+	// 			+ stageConditionSubSet[i].condition + "] ["
+	// 			+ stageConditionSubSet[i].value + "] AND ...";
+	// 	} else {
+	// 		addContent1.innerHTML = "if [" + stageConditionSubSet[i].varName + "] ["
+	// 			+ stageConditionSubSet[i].condition
+	// 			+ "] [" + stageConditionSubSet[i].varName2 + "] AND ...";
+	// 	}
+	// 	addContentType.appendChild(addContent1);
+	// 	var addContent2 = document.createElement("button");
+	// 	addContent2.name = i;
+	// 	addContent2.onclick = function () {
+	// 		RemoveEndConditionFromSubList(this.name);
+	// 	};
+	// 	addContent2.style = "float:right;";
+	// 	var addContent3 = document.createTextNode("X");
+	// 	addContent2.appendChild(addContent3);
+	// 	addContentType.appendChild(addContent2);
+
+	// 	subpanel.appendChild(addContentType);
+	// }
+}
+
+function ResetEndConditionSubList() {
+	let subpanel = $("#modalEndConditionsSubPanel");
+	subpanel.empty()
+
+	let i = 0, item, label, text, tempVarName2, button, icon;
+	for (i = 0; i < stageConditionSubSet.length; i++) {
+		item = $('<div>').addClass('div-list-item')
+		label = $('<div>').addClass('ui grey expanding middle aligned label')
+		if (tempVarName2 == "") {
+			text = "if [" + stageConditionSubSet[i].varName + "] ["
+				+ stageConditionSubSet[i].condition + "] [" + stageConditionSubSet[i].value + "] AND ..."
+		} else {
+			text = "if [" + stageConditionSubSet[i].varName + "] ["
+				+ stageConditionSubSet[i].condition + "] [" + stageConditionSubSet[i].varName2 + "] AND ..."
+		}
+		label.append($('<label>').text(text).css('max-width', '95%'))
+		button = $('<a>').addClass('ui opaque right floated')
+		icon = $('<i>').addClass('inverted  delete icon').click(function () {
+			RemoveStageConditionFromSubList(this.name);
+		}
+		)
+
+		button.append(icon)
+		label.append(button)
+		item.append(label)
+		subpanel.append(item)
 	}
 }
 
@@ -4246,82 +4473,85 @@ function AddEndConditionToList() {
 		conditions: stageConditionSubSet
 	});
 
-	var panel = document.getElementById("modalEndConditionsPanel");
-	while (panel.firstChild) {
-		panel.removeChild(panel.firstChild);
-	}
-	let i = 0;
-	for (i = 0; i < simulatorObjects[editExistingObject].endConditions.length; i++) {
-		var addContentType = document.createElement("div");
-		addContentType.className = "div-list-item";
-		var addContent1 = document.createElement("div");
-		addContent1.style = "width:80%;float:left;";
-		var sentence = "in stage = " + simulatorObjects[editExistingObject].endConditions[i].oldStage + ", ";
-		let j = 0;
-		for (j = 0; j < simulatorObjects[editExistingObject].endConditions[i].conditions.length; j++) {
-			var tempVarName2 = simulatorObjects[editExistingObject].endConditions[i].conditions[j].varName2;
-			if (tempVarName2 == "") {
-				sentence = sentence + "if [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].varName
-					+ "] [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].condition
-					+ "] [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].value + "] ";
-			} else {
-				sentence = sentence + "if [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].varName
-					+ "] [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].condition
-					+ "] [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].varName2 + "] ";
-			}
-			if (j < simulatorObjects[editExistingObject].endConditions[i].conditions.length - 1) {
-				sentence = sentence + "AND ";
-			}
-		}
-		sentence = sentence + "then end simulation system.";
-		addContent1.innerHTML = sentence;
-		addContentType.appendChild(addContent1);
-		var addContent2 = document.createElement("button");
-		addContent2.name = i;
-		addContent2.onclick = function () {
-			RemoveEndConditionFromList(this.name);
-		};
-		addContent2.style = "float:right;";
-		var addContent3 = document.createTextNode("X");
-		addContent2.appendChild(addContent3);
-		addContentType.appendChild(addContent2);
+	ResetEndConditionList()
 
-		panel.appendChild(addContentType);
-	}
+	// var panel = document.getElementById("modalEndConditionsPanel");
+	// while (panel.firstChild) {
+	// 	panel.removeChild(panel.firstChild);
+	// }
+	// let i = 0;
+	// for (i = 0; i < simulatorObjects[editExistingObject].endConditions.length; i++) {
+	// 	var addContentType = document.createElement("div");
+	// 	addContentType.className = "div-list-item";
+	// 	var addContent1 = document.createElement("div");
+	// 	addContent1.style = "width:80%;float:left;";
+	// 	var sentence = "in stage = " + simulatorObjects[editExistingObject].endConditions[i].oldStage + ", ";
+	// 	let j = 0;
+	// 	for (j = 0; j < simulatorObjects[editExistingObject].endConditions[i].conditions.length; j++) {
+	// 		var tempVarName2 = simulatorObjects[editExistingObject].endConditions[i].conditions[j].varName2;
+	// 		if (tempVarName2 == "") {
+	// 			sentence = sentence + "if [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].varName
+	// 				+ "] [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].condition
+	// 				+ "] [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].value + "] ";
+	// 		} else {
+	// 			sentence = sentence + "if [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].varName
+	// 				+ "] [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].condition
+	// 				+ "] [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].varName2 + "] ";
+	// 		}
+	// 		if (j < simulatorObjects[editExistingObject].endConditions[i].conditions.length - 1) {
+	// 			sentence = sentence + "AND ";
+	// 		}
+	// 	}
+	// 	sentence = sentence + "then end simulation system.";
+	// 	addContent1.innerHTML = sentence;
+	// 	addContentType.appendChild(addContent1);
+	// 	var addContent2 = document.createElement("button");
+	// 	addContent2.name = i;
+	// 	addContent2.onclick = function () {
+	// 		RemoveEndConditionFromList(this.name);
+	// 	};
+	// 	addContent2.style = "float:right;";
+	// 	var addContent3 = document.createTextNode("X");
+	// 	addContent2.appendChild(addContent3);
+	// 	addContentType.appendChild(addContent2);
+
+	// 	panel.appendChild(addContentType);
+	// }
 
 	stageConditionSubSet = [];
+	ResetEndConditionSubList()
 
-	var subpanel = document.getElementById("modalEndConditionsSubPanel");
-	while (subpanel.firstChild) {
-		subpanel.removeChild(subpanel.firstChild);
-	}
-	for (i = 0; i < stageConditionSubSet.length; i++) {
-		var addContentType = document.createElement("div");
-		addContentType.className = "div-list-item";
-		var tempVarName2 = stageConditionSubSet[i].varName2;
-		var addContent1 = document.createElement("div");
-		addContent1.style = "width:70%;float:left;";
-		if (tempVarName2 == "") {
-			addContent1.innerHTML = "if [" + stageConditionSubSet[i].varName + "] ["
-				+ stageConditionSubSet[i].condition + "] ["
-				+ stageConditionSubSet[i].value + "] && ...";
-		} else {
-			addContent1.innerHTML = "if [" + stageConditionSubSet[i].varName + "] ["
-				+ stageConditionSubSet[i].condition + "] ["
-				+ stageConditionSubSet[i].varName2 + "] && ...";
-		}
-		addContentType.appendChild(addContent1);
-		var addContent2 = document.createElement("button");
-		addContent2.name = i;
-		addContent2.onclick = function () {
-			RemoveEndConditionFromSubList(this.name);
-		};
-		addContent2.style = "float:right;";
-		var addContent3 = document.createTextNode("X");
-		addContent2.appendChild(addContent3);
-		addContentType.appendChild(addContent2);
-		subpanel.appendChild(addContentType);
-	}
+	// var subpanel = document.getElementById("modalEndConditionsSubPanel");
+	// while (subpanel.firstChild) {
+	// 	subpanel.removeChild(subpanel.firstChild);
+	// }
+	// for (i = 0; i < stageConditionSubSet.length; i++) {
+	// 	var addContentType = document.createElement("div");
+	// 	addContentType.className = "div-list-item";
+	// 	var tempVarName2 = stageConditionSubSet[i].varName2;
+	// 	var addContent1 = document.createElement("div");
+	// 	addContent1.style = "width:70%;float:left;";
+	// 	if (tempVarName2 == "") {
+	// 		addContent1.innerHTML = "if [" + stageConditionSubSet[i].varName + "] ["
+	// 			+ stageConditionSubSet[i].condition + "] ["
+	// 			+ stageConditionSubSet[i].value + "] && ...";
+	// 	} else {
+	// 		addContent1.innerHTML = "if [" + stageConditionSubSet[i].varName + "] ["
+	// 			+ stageConditionSubSet[i].condition + "] ["
+	// 			+ stageConditionSubSet[i].varName2 + "] && ...";
+	// 	}
+	// 	addContentType.appendChild(addContent1);
+	// 	var addContent2 = document.createElement("button");
+	// 	addContent2.name = i;
+	// 	addContent2.onclick = function () {
+	// 		RemoveEndConditionFromSubList(this.name);
+	// 	};
+	// 	addContent2.style = "float:right;";
+	// 	var addContent3 = document.createTextNode("X");
+	// 	addContent2.appendChild(addContent3);
+	// 	addContentType.appendChild(addContent2);
+	// 	subpanel.appendChild(addContentType);
+	// }
 }
 
 /*	RemoveEndConditionFromList()
@@ -4330,17 +4560,60 @@ function AddEndConditionToList() {
 function RemoveEndConditionFromList(btn_name) {
 	simulatorObjects[editExistingObject].endConditions.splice(btn_name, 1);
 
-	var panel = document.getElementById("modalEndConditionsPanel");
-	while (panel.firstChild) {
-		panel.removeChild(panel.firstChild);
-	}
-	let i = 0;
+	ResetEndConditionList()
+
+	// var panel = document.getElementById("modalEndConditionsPanel");
+	// while (panel.firstChild) {
+	// 	panel.removeChild(panel.firstChild);
+	// }
+	// let i = 0;
+	// for (i = 0; i < simulatorObjects[editExistingObject].endConditions.length; i++) {
+	// 	var addContentType = document.createElement("div");
+	// 	addContentType.className = "div-list-item";
+	// 	var addContent1 = document.createElement("div");
+	// 	addContent1.style = "width:80%;float:left;";
+	// 	var sentence = "in stage = " + simulatorObjects[editExistingObject].endConditions[i].oldStage + ", ";
+	// 	let j = 0;
+	// 	for (j = 0; j < simulatorObjects[editExistingObject].endConditions[i].conditions.length; j++) {
+	// 		var tempVarName2 = simulatorObjects[editExistingObject].endConditions[i].conditions[j].varName2;
+	// 		if (tempVarName2 == "") {
+	// 			sentence = sentence + "if [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].varName
+	// 				+ "] [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].condition
+	// 				+ "] [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].value + "] ";
+	// 		} else {
+	// 			sentence = sentence + "if [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].varName
+	// 				+ "] [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].condition
+	// 				+ "] [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].varName2 + "] ";
+	// 		}
+	// 		if (j < simulatorObjects[editExistingObject].endConditions[i].conditions.length - 1) {
+	// 			sentence = sentence + "AND ";
+	// 		}
+	// 	}
+	// 	sentence = sentence + "then end simulation system.";
+	// 	addContent1.innerHTML = sentence;
+	// 	addContentType.appendChild(addContent1);
+	// 	var addContent2 = document.createElement("button");
+	// 	addContent2.name = i;
+	// 	addContent2.onclick = function () {
+	// 		RemoveEndConditionFromList(this.name);
+	// 	};
+	// 	addContent2.style = "float:right;";
+	// 	var addContent3 = document.createTextNode("X");
+	// 	addContent2.appendChild(addContent3);
+	// 	addContentType.appendChild(addContent2);
+
+	// 	panel.appendChild(addContentType);
+	// }
+}
+
+function ResetEndConditionList() {
+	let panel = $('#modalEndConditionsPanel')
+	panel.empty()
+	let i = 0, item, label, sentence, button, icon
 	for (i = 0; i < simulatorObjects[editExistingObject].endConditions.length; i++) {
-		var addContentType = document.createElement("div");
-		addContentType.className = "div-list-item";
-		var addContent1 = document.createElement("div");
-		addContent1.style = "width:80%;float:left;";
-		var sentence = "in stage = " + simulatorObjects[editExistingObject].endConditions[i].oldStage + ", ";
+		item = $('<div>').addClass('div-list-item')
+		label = $('<div>').addClass('ui grey expanding label')
+		sentence = "in stage " + simulatorObjects[editExistingObject].endConditions[i].oldStage + ", ";
 		let j = 0;
 		for (j = 0; j < simulatorObjects[editExistingObject].endConditions[i].conditions.length; j++) {
 			var tempVarName2 = simulatorObjects[editExistingObject].endConditions[i].conditions[j].varName2;
@@ -4357,20 +4630,19 @@ function RemoveEndConditionFromList(btn_name) {
 				sentence = sentence + "AND ";
 			}
 		}
-		sentence = sentence + "then end simulation system.";
-		addContent1.innerHTML = sentence;
-		addContentType.appendChild(addContent1);
-		var addContent2 = document.createElement("button");
-		addContent2.name = i;
-		addContent2.onclick = function () {
-			RemoveEndConditionFromList(this.name);
-		};
-		addContent2.style = "float:right;";
-		var addContent3 = document.createTextNode("X");
-		addContent2.appendChild(addContent3);
-		addContentType.appendChild(addContent2);
+		sentence = sentence + "go to stage " + simulatorObjects[editExistingObject].endConditions[i].newStage;
+		label.append($('<label>').text(sentence).css('max-width', '95%'))
 
-		panel.appendChild(addContentType);
+		button = $('<a>').addClass('ui opaque right floated')
+		icon = $('<i>').addClass('inverted  delete icon').click(function () {
+			RemoveStageConditionFromList(this.name);
+		}
+		)
+
+		button.append(icon)
+		label.append(button)
+		item.append(label)
+		panel.append(item)
 	}
 }
 

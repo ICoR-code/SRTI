@@ -44,15 +44,15 @@
 		<div class="container">
 			<div id="executepanel">
 				<div class="ui icon buttons">
-					<button class="ui button" id="btn-pointer" onclick="UpdateSelectedStateButtons(0)"><i
-							class="mouse pointer icon"></i>
+					<button class="ui grey button" name="select-state-buttons" id="btn-pointer"
+						onclick="UpdateSelectedStateButtons(0)"><i class="mouse pointer icon"></i>
 					</button>
-					<button class="ui button" id="btn-settings" onclick="UpdateSelectedStateButtons(1)"><i
-							class="wrench icon"></i></button>
-					<button class="ui button" id="btn-arrows" onclick="UpdateSelectedStateButtons(2)"><i
-							class="exchange icon"></i></button>
-					<button class="ui button" id="btn-delete" onclick="UpdateSelectedStateButtons(3)"><i
-							class="times icon"></i></button>
+					<button class="ui button" name="select-state-buttons" id="btn-settings"
+						onclick="UpdateSelectedStateButtons(1)"><i class="wrench icon"></i></button>
+					<button class="ui button" name="select-state-buttons" id="btn-arrows"
+						onclick="UpdateSelectedStateButtons(2)"><i class="exchange icon"></i></button>
+					<button class="ui button" name="select-state-buttons" id="btn-delete"
+						onclick="UpdateSelectedStateButtons(3)"><i class="times icon"></i></button>
 				</div>
 				&nbsp;&nbsp;
 				<div class="ui icon buttons">
@@ -75,14 +75,19 @@
 					<div class="ui segment objectsubpanel" style="overflow-y: scroll;">
 						<div class="ui expanding vertical buttons" id="objectsubpanel1"></div>
 					</div>
-					<div class="ui segment" id="objectsubpanel2" style="overflow-y: scroll;"></div>
+					<div class="ui segment objectsubpanel" style="overflow-y: scroll;">
+						<div class="ui expanding vertical buttons" id="objectsubpanel2"></div>
+					</div>
 				</div>
 				<div id="separator" class="separator"></div>
 				<div id="canvaspanel">
-					<div id="canvastabpanel">
-						<button id="btn-canvastab" onclick="AddNewStage()">+</button>
-						<button id="btn-canvastab" name=0 style="background-color: #aaa; color: #fff;"
+					<div class="ui basic buttons" id="canvastabpanel">
+						<button class="ui compact icon button btn-canvastab" onclick="AddNewStage()"><i
+								class="plus icon"></i></button>
+						<button class="ui basic secondary compact button btn-canvastab" name=0
 							onclick="UpdateSelectedStage(this.name)">0</button>
+						<!-- <button id="btn-canvastab" name=0 style="background-color: #aaa; color: #fff;"
+							onclick="UpdateSelectedStage(this.name)">0</button> -->
 					</div>
 					<div id="canvassubpanel1" style="overflow-y: scroll; overflow-x: scroll;"
 						onscroll="CanvasOnScroll(this)">
@@ -886,54 +891,57 @@ determine time scale: </pre>
 		<div class="header">Stage Conditions</div>
 		<div class="ui content">
 			<div class="ui form grid">
-				<div class="one wide column">
+				<div class="vertically divided row">
+					<div class="one wide column">
+					</div>
+					<div class="six wide top aligned vertically-expanding column" style="box-shadow: none;">
+						<div class="ui selection dropdown" id="dropdownStageConditionPickVar1" for="stageCondition1">
+							<input type="hidden" name="dropdownStageConditionPickVar1">
+							<i class="dropdown icon"></i>
+							<div class="default text">Pick Var</div>
+							<div class="menu">
+							</div>
+						</div>
+						<div class="ui horizontal divider">OR</div>
+						<div class="ui selection dropdown" id="dropdownStageConditionPickRTIVar1" for="stageCondition1">
+							<input type="hidden" name="dropdownStageConditionPickRTIVar1">
+							<i class="dropdown icon"></i>
+							<div class="default text">Pick RTI Var</div>
+							<div class="menu">
+							</div>
+						</div>
+					</div>
+					<div class="three wide top aligned vertically-expanding column">
+						<div class="ui selection short dropdown" id="dropdownStageConditionCondition1"
+							for="stageCondition2">
+							<input type="hidden" name="dropdownStageConditionCondition1">
+							<i class="dropdown icon"></i>
+							<div class="default text">Pick</div>
+							<div class="menu">
+							</div>
+						</div>
+					</div>
+					<div class="six wide top aligned column">
+						<div class="ui selection dropdown" id="dropdownStageConditionPickVar2" for="stageCondition3">
+							<input type="hidden" name="dropdownStageConditionPickVar2">
+							<i class="dropdown icon"></i>
+							<div class="default text">Pick Var</div>
+							<div class="menu">
+							</div>
+						</div>
+						<div class="ui horizontal divider">OR</div>
+						<div class="ui selection dropdown" id="dropdownStageConditionPickRTIVar2" for="stageCondition3">
+							<input type="hidden" name="dropdownStageConditionPickRTIVar2">
+							<i class="dropdown icon"></i>
+							<div class="default text">Pick RTI Var</div>
+							<div class="menu">
+							</div>
+						</div>
+						<div class="ui horizontal divider">OR</div>
+						<input type="text" name="TextStageConditionsPickValue2" for="stageCondition3">
+					</div>
 				</div>
-				<div class="six wide top aligned column">
-					<div class="ui selection dropdown" id="dropdownStageConditionPickVar1" for="stageCondition1">
-						<input type="hidden" name="dropdownStageConditionPickVar1">
-						<i class="dropdown icon"></i>
-						<div class="default text">Pick Var</div>
-						<div class="menu">
-						</div>
-					</div>
-					<div class="ui horizontal divider">OR</div>
-					<div class="ui selection dropdown" id="dropdownStageConditionPickRTIVar1" for="stageCondition1">
-						<input type="hidden" name="dropdownStageConditionPickRTIVar1">
-						<i class="dropdown icon"></i>
-						<div class="default text">Pick RTI Var</div>
-						<div class="menu">
-						</div>
-					</div>
-				</div>
-				<div class="three wide top aligned column">
-					<div class="ui selection short dropdown" id="dropdownStageConditionCondition1"
-						for="stageCondition2">
-						<input type="hidden" name="dropdownStageConditionCondition1">
-						<i class="dropdown icon"></i>
-						<div class="default text">Pick</div>
-						<div class="menu">
-						</div>
-					</div>
-				</div>
-				<div class="six wide top aligned column">
-					<div class="ui selection dropdown" id="dropdownStageConditionPickVar2" for="stageCondition3">
-						<input type="hidden" name="dropdownStageConditionPickVar2">
-						<i class="dropdown icon"></i>
-						<div class="default text">Pick Var</div>
-						<div class="menu">
-						</div>
-					</div>
-					<div class="ui horizontal divider">OR</div>
-					<div class="ui selection dropdown" id="dropdownStageConditionPickRTIVar2" for="stageCondition3">
-						<input type="hidden" name="dropdownStageConditionPickRTIVar2">
-						<i class="dropdown icon"></i>
-						<div class="default text">Pick RTI Var</div>
-						<div class="menu">
-						</div>
-					</div>
-					<div class="ui horizontal divider">OR</div>
-					<input type="text" name="TextStageConditionsPickValue2" for="stageCondition3">
-				</div>
+
 				<div class="one wide column">
 					<label>If</label>
 				</div>
@@ -944,7 +952,7 @@ determine time scale: </pre>
 					[<label id="stageCondition2"></label>]
 				</div>
 				<div class="six wide column">
-					<label id="stageCondition3"></label>]
+					[<label id="stageCondition3"></label>]
 				</div>
 
 				<div class="two column row">
@@ -958,24 +966,47 @@ determine time scale: </pre>
 					</div>
 				</div>
 			</div>
-			<div id="modalStageConditionsSubPanel"
-				style="margin:2px;float:left;width:calc(60% - 2px);height:80px;background-color:#DDD;overflow-y:scroll;border:1px solid black;">
+
+			<!-- <div class="ui segment" id="modalStageConditionsSubPanel"
+				style="margin:2px;float:left;width:calc(60% - 2px);height:80px;background-color:#DDD;overflow-y:scroll;border:1px solid black;"
+			> -->
+			<div class="ui less-padded segment" id="modalStageConditionsSubPanel"
+				style="height:80px;overflow-y: scroll;">
 			</div>
-			<div style="margin:2px;float:right;width:calc(36% - 2px);height:80px;">
+			<div class="ui form grid">
+				<div class="middle aligned three column row">
+					<div class="seven wide column">
+						<label class="ui pointing label" style="margin: 0px;">If these are all true, go to stage
+						</label>
+					</div>
+					<div class="three wide column">
+						<input type="text" name="TextStageConditionsNewStage">
+					</div>
+					<div class="six wide right floated column">
+						<button type="button" class="ui expanding button" onclick="AddStageConditionToList()">
+							Add to Conditions List
+						</button>
+					</div>
+				</div>
+			</div>
+
+			<!-- <div style="margin:2px;float:right;width:calc(36% - 2px);height:80px;">
 				If these are all true, go to stage: <input type="text" size="4" name="TextStageConditionsNewStage">
 				<br>
 				<br>
 				<button style="width:100%;" onclick="AddStageConditionToList()">Add to Conditions List</button>
-			</div>
+			</div> -->
 
-			<div id="modalStageConditionsPanel"
-				style="margin:2px;float:left;width:calc(100% - 2px);height:100px;background-color:#DDD;overflow-y:scroll;border:1px solid black;">
+			<div class="ui less-padded segment" id="modalStageConditionsPanel" style="height:100px;overflow-y: scroll;">
 			</div>
+			<!-- <div id="modalStageConditionsPanel"
+				style="margin:2px;float:left;width:calc(100% - 2px);height:100px;background-color:#DDD;overflow-y:scroll;border:1px solid black;">
+			</div> -->
 		</div>
 
 		<div class="actions">
 			<!-- <button class="ui button positive" onclick="SaveSimulateFunction()">Confirm</button> -->
-			<button class="ui button deny" onclick="CloseStageConditions()">Cancel</button>
+			<button class="ui button deny" onclick="CloseStageConditions()">Return</button>
 		</div>
 		<!-- <b>Stage Conditions:</b>
 		<br>
@@ -1060,109 +1091,117 @@ determine time scale: </pre>
 
 		<!-- <button id="btn-modalcancel" onclick="CloseStageConditions()">Return</button> -->
 	</div>
-	<div class="modal" id="modalEndConditions" style="width:500px;height:600px;">
-		<b>End Conditions:</b>
-		<br>
-		<br>
-		<br>
-		<div id="divEndConditionStatement" style="float:left;width:calc(65%);">
-			If [ ] [ ] [ ] AND ...
-		</div>
-		<div style="float:right;width:calc(35%);">
-			<button style="width:100%;" onclick="AddEndConditionToSubList()">Add to Condition</button>
-		</div>
-		<br>
-		<br>
-		Pick one of the following:
-		<br>
-		<button class="dropbtn" style="width:250px;margin:2px;" onclick="DropdownEndConditionPickVar1()">Pick Var
-			(click
-			to show/hide)</button>
-		<div id="dropdownEndConditionPickVar1" class="dropdown-content">
-			<a href="#">Link 1</a>
-			<a href="#">Link 2</a>
-			<a href="#">Link 3</a>
-		</div>
-		<br>
-		<button class="dropbtn" style="width:250px;margin:2px;" onclick="DropdownEndConditionPickRTIVar1()">Pick RTI
-			Var
-			(click to show/hide)</button>
-		<div id="dropdownEndConditionPickRTIVar1" class="dropdown-content">
-			<a href="#">Link 1</a>
-			<a href="#">Link 2</a>
-			<a href="#">Link 3</a>
-		</div>
-		<br>
-		---
-		<br>
-		Pick one of the following:
-		<br>
-		<button class="dropbtn" style="width:250px;margin:2px;" onclick="DropdownEndConditionCondition1()">Pick
-			Condition (click to show/hide)</button>
-		<div id="dropdownEndConditionCondition1" class="dropdown-content">
-			<a href="#">Link 1</a>
-			<a href="#">Link 2</a>
-			<a href="#">Link 3</a>
-		</div>
-		<br>
-		---
-		<br>
-		Pick one of the following:
-		<br>
-		<button class="dropbtn" style="width:250px;margin:2px;" onclick="DropdownEndConditionPickVar2()">Pick Var
-			(click
-			to show/hide)</button>
-		<div id="dropdownEndConditionPickVar2" class="dropdown-content">
-			<a href="#">Link 1</a>
-			<a href="#">Link 2</a>
-			<a href="#">Link 3</a>
-		</div>
-		<br>
-		<button class="dropbtn" style="width:250px;margin:2px;" onclick="DropdownEndConditionPickRTIVar2()">Pick RTI
-			Var
-			(click to show/hide)</button>
-		<div id="dropdownEndConditionPickRTIVar2" class="dropdown-content">
-			<a href="#">Link 1</a>
-			<a href="#">Link 2</a>
-			<a href="#">Link 3</a>
-		</div>
-		<br>
-		Compare Value: <input type="text" size="4" name="TextEndConditionsPickValue2"> <button
-			onclick="UpdateEndConditionCompareValue()">CONFIRM</button>
-		<br>
-		---
-		<br>
-		<br>
-		<div id="modalEndConditionsSubPanel"
-			style="margin:2px;float:left;width:calc(60% - 2px);height:80px;background-color:#DDD;overflow-y:scroll;border:1px solid black;">
-			<!-- <div class="div-list-item">Item 1 (integer)   
-				<button style="float:right;">X</button>
+	<div class="ui modal" id="modalEndConditions">
+		<div class="header">End Conditions</div>
+		<div class="ui content">
+			<div class="ui form grid">
+				<div class="one wide column">
+				</div>
+				<div class="six wide top aligned column">
+					<div class="ui selection dropdown" id="dropdownEndConditionPickVar1" for="endCondition1">
+						<input type="hidden" name="dropdownEndConditionPickVar1">
+						<i class="dropdown icon"></i>
+						<div class="default text">Pick Var</div>
+						<div class="menu">
+						</div>
+					</div>
+					<div class="ui horizontal divider">OR</div>
+					<div class="ui selection dropdown" id="dropdownEndConditionPickRTIVar1" for="endCondition1">
+						<input type="hidden" name="dropdownEndConditionPickRTIVar1">
+						<i class="dropdown icon"></i>
+						<div class="default text">Pick RTI Var</div>
+						<div class="menu">
+						</div>
+					</div>
+				</div>
+				<div class="three wide top aligned column">
+					<div class="ui selection short dropdown" id="dropdownEndConditionCondition1" for="endCondition2">
+						<input type="hidden" name="dropdownEndConditionCondition1">
+						<i class="dropdown icon"></i>
+						<div class="default text">Pick</div>
+						<div class="menu">
+						</div>
+					</div>
+				</div>
+				<div class="six wide top aligned column">
+					<div class="ui selection dropdown" id="dropdownEndConditionPickVar2" for="endCondition3">
+						<input type="hidden" name="dropdownEndConditionPickVar2">
+						<i class="dropdown icon"></i>
+						<div class="default text">Pick Var</div>
+						<div class="menu">
+						</div>
+					</div>
+					<div class="ui horizontal divider">OR</div>
+					<div class="ui selection dropdown" id="dropdownEndConditionPickRTIVar2" for="endCondition3">
+						<input type="hidden" name="dropdownEndConditionPickRTIVar2">
+						<i class="dropdown icon"></i>
+						<div class="default text">Pick RTI Var</div>
+						<div class="menu">
+						</div>
+					</div>
+					<div class="ui horizontal divider">OR</div>
+					<input type="text" name="TextEndConditionsPickValue2" for="endCondition3">
+				</div>
+				<div class="one wide column">
+					<label>If</label>
+				</div>
+				<div class="six wide column">
+					[<label id="endCondition1"></label>]
+				</div>
+				<div class="three wide column">
+					[<label id="endCondition2"></label>]
+				</div>
+				<div class="six wide column">
+					[<label id="endCondition3"></label>]
+				</div>
+
+				<div class="two column row">
+					<div class="three wide column">
+						<label>AND ...</label>
+					</div>
+					<div class="six wide right floated column">
+						<button type="button" class="ui expanding button" onclick="AddEndConditionToSubList()">
+							Add to Condition
+						</button>
+					</div>
+				</div>
 			</div>
-			<div class="div-list-item">Item 2 (integer) 
-				<button style="float:right;">X</button>
+
+			<!-- <div class="ui segment" id="modalStageConditionsSubPanel"
+						style="margin:2px;float:left;width:calc(60% - 2px);height:80px;background-color:#DDD;overflow-y:scroll;border:1px solid black;"
+					> -->
+			<div class="ui less-padded segment" id="modalEndConditionsSubPanel" style="height:80px;overflow-y: scroll;">
 			</div>
-			<button class="listitem"> </button> -->
-		</div>
-		<div style="margin:2px;float:right;width:calc(36% - 2px);height:80px;">
-			<button style="width:100%;" onclick="AddEndConditionToList()">Add to Conditions List</button>
-		</div>
-		<br>
-		<br>
-		<br>
-		<br>
-		<div id="modalEndConditionsPanel"
-			style="margin:2px;float:left;width:calc(100% - 2px);height:100px;background-color:#DDD;overflow-y:scroll;border:1px solid black;">
-			<!-- <div class="div-list-item">Item 1 (integer)   
-				<button style="float:right;">X</button>
+			<div class="ui form grid">
+				<div class="middle aligned three column row">
+					<div class="ten wide column">
+					</div>
+					<div class="six wide right floated column">
+						<button type="button" class="ui expanding button" onclick="AddEndConditionToList()">
+							Add to Conditions List
+						</button>
+					</div>
+				</div>
 			</div>
-			<div class="div-list-item">Item 2 (integer) 
-				<button style="float:right;">X</button>
+
+			<!-- <div style="margin:2px;float:right;width:calc(36% - 2px);height:80px;">
+						If these are all true, go to stage: <input type="text" size="4" name="TextStageConditionsNewStage">
+						<br>
+						<br>
+						<button style="width:100%;" onclick="AddStageConditionToList()">Add to Conditions List</button>
+					</div> -->
+
+			<div class="ui less-padded segment" id="modalEndConditionsPanel" style="height:100px;overflow-y: scroll;">
 			</div>
-			<button class="listitem"> </button> -->
+			<!-- <div id="modalStageConditionsPanel"
+						style="margin:2px;float:left;width:calc(100% - 2px);height:100px;background-color:#DDD;overflow-y:scroll;border:1px solid black;">
+					</div> -->
 		</div>
-		<br>
-		<br>
-		<button id="btn-modalcancel" onclick="CloseEndConditions()">Return</button>
+
+		<div class="actions">
+			<!-- <button class="ui button positive" onclick="SaveSimulateFunction()">Confirm</button> -->
+			<button class="ui button deny" onclick="CloseEndConditions()">Return</button>
+		</div>
 	</div>
 
 	<div class="ui modal" id="modalSaveAs">
