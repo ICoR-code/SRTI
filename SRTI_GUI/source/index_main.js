@@ -521,7 +521,6 @@ function drag(e) {
 	- set position of div on canvas to specific x/y coordinates.
 */
 function setTranslate(xPos, yPos, el) {
-	console.log("For object " + ", translate x = " + xPos + " , translate y = " + yPos);
 	el.style.transform = "translate3d(" + xPos + "px, " + yPos + "px, 0)";
 }
 
