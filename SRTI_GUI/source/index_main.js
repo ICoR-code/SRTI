@@ -331,26 +331,31 @@ function UpdateSelectedStage(btn_id) {
 	let panel = $('#canvastabpanel')
 	panel.empty()
 
-	let button = $('<button>').addClass('ui compact basic icon button btn-canvastab').click(AddNewStage)
-	button.append($('<i>').addClass('plus icon'))
 
-	panel.append(button)
-
-	let i = 0
+	let i = 0, button
 	for (i = 0; i < numOfStages; i++) {
-		button = $('<button>').addClass('ui compact basic button btn-canvastab').attr('name', i).text(i)
+		button = $('<a>').addClass('ui item').attr('name', i).text(i)
 		button.click(function () {
 			stage = parseInt(this.name)
 			UpdateSelectedStage(stage)
 		})
 
 		if (stage == i) {
-			button.addClass('secondary')
+			button.addClass('active')
+		} else {
+			button.removeClass('active')
 		}
 
 		panel.append(button)
 	}
 
+	let menu = $('<div>').addClass('right menu')
+
+	button = $('<a>').addClass('ui item').click(AddNewStage)
+	button.append($('<i>').addClass('plus icon'))
+	
+	menu.append(button)
+	panel.append(menu)
 	// var panel = document.getElementById("canvastabpanel");
 	// while (panel.firstChild) {
 	// 	panel.removeChild(panel.firstChild);

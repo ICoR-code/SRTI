@@ -153,9 +153,10 @@ html {
 #objectpanel {
     /* background-color: #eee; */
     width: 20%;
-    height: calc(var(--containerheight) - 5px);
+    height: calc(var(--containerheight) - 2px);
     overflow-y: hidden;
     min-width: 100px;
+    margin-bottom: 0px;
     /* border: 1px solid black; */
 }
 
@@ -693,4 +694,9 @@ label.padded {
 
 .opaque {
     opacity: 1!important;
+}
+
+.ui.menu .active.item {
+    background-color: #e0e1e2;
+    /* color: rgba(0, 0, 0, 0.6); */
 }

@@ -81,15 +81,21 @@
 				</div>
 				<div id="separator" class="separator"></div>
 				<div id="canvaspanel">
-					<div class="ui basic buttons" id="canvastabpanel">
-						<button class="ui compact icon button btn-canvastab" onclick="AddNewStage()"><i
+					<div class="ui top attached menu" id="canvastabpanel">
+						<a class="ui active item" name=0 onclick="UpdateSelectedStage(this.name)">0</a>
+						<div class="right menu">
+							<a class="item" onclick="AddNewStage()">
+								<i class="plus icon"></i>
+							</a>
+						</div>
+						<!-- <button class="ui compact icon button btn-canvastab" onclick="AddNewStage()"><i
 								class="plus icon"></i></button>
 						<button class="ui basic secondary compact button btn-canvastab" name=0
-							onclick="UpdateSelectedStage(this.name)">0</button>
+							onclick="UpdateSelectedStage(this.name)">0</button> -->
 						<!-- <button id="btn-canvastab" name=0 style="background-color: #aaa; color: #fff;"
 							onclick="UpdateSelectedStage(this.name)">0</button> -->
 					</div>
-					<div id="canvassubpanel1" style="overflow-y: scroll; overflow-x: scroll;"
+					<div class="ui" id="canvassubpanel1" style="overflow-y: scroll; overflow-x: scroll;"
 						onscroll="CanvasOnScroll(this)">
 						<!-- <canvas style="width:calc(100% - 8px);height:calc(100% - 8px);background-color: #002;"> </canvas> -->
 
