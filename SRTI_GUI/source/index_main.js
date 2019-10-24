@@ -84,6 +84,14 @@ var saveAsFolderText = document.getElementsByName("saveAsFileDirText")[0];
 saveAsFolder.onchange = function () {
 	var files = saveAsFolder.files, len = files.length;
 	var totalText = "";
+	console.log("Listing folder...");
+	console.log("value = " + saveAsFolder.value);
+	let i = 0;
+	for (i = 0; i < saveAsFolder.files.length; i++) {
+		console.log("Folder: " + saveAsFolder.files[i].path);
+		console.log("Webkit folder: " + saveAsFolder.files[i].webkitRelativePath);
+	}
+
 	totalText = totalText + files[0].path;
 	saveAsFolderText.innerHTML = totalText;
 }
@@ -296,6 +304,7 @@ function CheckRedrawCanvasGrid() {
 
 	let i = 0;
 	for (i = 0; i < simulatorObjects.length; i++) {
+		//!!!!
 		if (((simulatorObjects[i].topPos / 100) + 2 + i) > maxSizeY
 			&& simulatorObjects[i].stage == stage) {
 			maxSizeY = (simulatorObjects[i].topPos / 100) + 2 + i;
@@ -304,6 +313,15 @@ function CheckRedrawCanvasGrid() {
 			&& simulatorObjects[i].stage == stage) {
 			maxSizeX = ((simulatorObjects[i].leftPos / 100) - 1 + 2);
 		}
+		/*if (((simulatorObjects[i].topPos / 100) + 2) > maxSizeY
+			&& simulatorObjects[i].stage == stage) {
+			maxSizeY = (simulatorObjects[i].topPos / 100) + 2;
+		}
+		if (((simulatorObjects[i].leftPos / 100) - 1 + i + 2) > maxSizeX
+			&& simulatorObjects[i].stage == stage) {
+			maxSizeX = ((simulatorObjects[i].leftPos / 100) - 1 + i + 2);
+		}*/
+		//!!!!
 	}
 
 	gridSizeX = maxSizeX;
@@ -638,7 +656,10 @@ function MoveObjectsOnCanvasUpOne(j) {
 	let i = 0;
 	for (i = j; i < simulatorObjects.length; i++) {
 		dragItem = simulatorObjects[i].objectRef;
+		//!!!!
 		simulatorObjects[i].offsetY = simulatorObjects[i].offsetY + 100;
+		//simulatorObjects[i].offsetX = simulatorObjects[i].offsetX + 100;
+		//!!!!
 		setTranslate(simulatorObjects[i].offsetX, simulatorObjects[i].offsetY, dragItem);
 	}
 }
@@ -817,8 +838,12 @@ function DrawArrowOnCanvas1() {
 		if (simulatorObjects[i].stage == stage) {
 			console.log("simulatorObjects.offsetY = " + simulatorObjects[i].offsetY + " , topPos = " + simulatorObjects[i].topPos);
 			for (j = 0; j < simulatorObjects[i].publishedMessages.length; j++) {
-				var leftPos = parseInt(simulatorObjects[i].leftPos, 10) + (j * 5);
+				//!!!!
+				var leftPos = parseInt(simulatorObjects[i].leftPos, 10) + (j * 5) + 2;
 				var topPos = parseInt(simulatorObjects[i].offsetY, 10) + (i * 100) + 100 + 2 + (14 * j);
+				//var leftPos = parseInt(simulatorObjects[i].offsetX, 10) + (i * 100) + (j * 5) + 2;
+				//var topPos = parseInt(simulatorObjects[i].topPos, 10) + 100 + 2 + (14 * j);
+				//!!!!
 				var htmlString = "<svg width='" + (leftPos + 10) + "' height='" + (gridSizeY * 100) + "' style='position: absolute;'>";
 				htmlString += "<defs>";
 				htmlString += "	<marker id='arrow' markerWidth='13' markerHeight='13' refx='2' refy='6' orient='auto'>";
@@ -837,7 +862,10 @@ function DrawArrowOnCanvas1() {
 		if (simulatorObjects[i].stage == stage) {
 			let j = 0;
 			for (j = 0; j < simulatorObjects[i].publishedMessages.length; j++) {
-				var leftPos = parseInt(simulatorObjects[i].leftPos, 10) + (j * 5);
+				//!!!!
+				var leftPos = parseInt(simulatorObjects[i].leftPos, 10) + (j * 5) + 2;
+				//var leftPos = parseInt(simulatorObjects[i].offsetX, 10) + (i * 100) + (j * 5) + 2;
+				//!!!!
 				var topPos = 0;
 				var bottomPos = (10 + (42 * simulatorObjects[i].publishedMessages[j]) - 10 + 3);
 				var htmlString = "<svg width='" + (leftPos + 10) + "' height='" + (bottomPos + 10) + "' style='position: absolute;'>";
@@ -867,8 +895,12 @@ function DrawArrowObjectOnCanvas1() {
 			let j = 0;
 			for (j = 0; j < simulatorObjects[i].publishedMessages.length; j++) {
 				var addContentType = document.createElement("svg");
-				var leftOffset = parseInt(simulatorObjects[i].leftPos, 10);
+				//!!!!
+				var leftOffset = parseInt(simulatorObjects[i].leftPos, 10) + 1;
 				var topOffset = parseInt(simulatorObjects[i].offsetY, 10) + (i * 100) + 100 + 2 + (14 * j);
+				//var leftOffset = parseInt(simulatorObjects[i].offsetX, 10) + (i * 100) + 1;
+				//var topOffset = parseInt(simulatorObjects[i].topPos, 10) + 100 + 2 + (14 * j);
+				//!!!!
 				addContentType.className = "div-canvas-pub";
 				addContentType.name = j;
 				addContentType.nameParent = i;
@@ -891,8 +923,12 @@ function DrawArrowOnCanvas2() {
 			console.log("simulatorObjects.offsetY = " + simulatorObjects[i].offsetY + " , topPos = " + simulatorObjects[i].topPos);
 			let j = 0;
 			for (j = 0; j < simulatorObjects[i].subscribedMessages.length; j++) {
-				var leftPos = parseInt(simulatorObjects[i].leftPos, 10) + 100 - (j * 5);
+				//!!!!
+				var leftPos = parseInt(simulatorObjects[i].leftPos, 10) + 100 - (j * 5) - 2;
 				var topPos = parseInt(simulatorObjects[i].offsetY, 10) + (i * 100) + 100 + (14 * j) + 10 + 10;
+				//var leftPos = parseInt(simulatorObjects[i].offsetX, 10) + (i * 100) + 100 - (j * 5) - 2;
+				//var topPos = parseInt(simulatorObjects[i].topPos, 10) + 100 + (14 * j) + 10 + 10;
+				//!!!!
 				var htmlString = "<svg width='" + (leftPos + 10) + "' height='" + (gridSizeY * 100) + "' style='position: absolute;'>";
 				htmlString += "<defs>";
 				htmlString += "	<marker id='arrow' markerWidth='13' markerHeight='13' refx='2' refy='6' orient='auto'>";
@@ -911,7 +947,10 @@ function DrawArrowOnCanvas2() {
 		if (simulatorObjects[i].stage == stage) {
 			let j = 0;
 			for (j = 0; j < simulatorObjects[i].subscribedMessages.length; j++) {
-				var leftPos = parseInt(simulatorObjects[i].leftPos, 10) + 100 - (j * 5);
+				//!!!!
+				var leftPos = parseInt(simulatorObjects[i].leftPos, 10) + 100 - (j * 5) - 2;
+				//var leftPos = parseInt(simulatorObjects[i].offsetX, 10) + (i * 100) + 100 - (j * 5) - 2;
+				//!!!!
 				var topPos = 0;
 				var bottomPos = (10 + (42 * parseInt(simulatorObjects[i].subscribedMessages[j])));
 				var htmlString = "<svg width='" + (leftPos + 10) + "' height='" + (bottomPos + 10) + "' style='position: absolute;'>";
@@ -940,8 +979,12 @@ function DrawArrowObjectOnCanvas2() {
 			let j = 0;
 			for (j = 0; j < simulatorObjects[i].subscribedMessages.length; j++) {
 				var addContentType = document.createElement("svg");
-				var leftOffset = parseInt(simulatorObjects[i].leftPos, 10) + 100 - 48;
+				//!!!!
+				var leftOffset = parseInt(simulatorObjects[i].leftPos, 10) + 100 - 48 - 1;
 				var topOffset = parseInt(simulatorObjects[i].offsetY, 10) + (i * 100) + 100 + 2 + (14 * j);
+				//var leftOffset = parseInt(simulatorObjects[i].offsetX, 10) + (i * 100) + 100 - 48 - 1;
+				//var topOffset = parseInt(simulatorObjects[i].topPos, 10) + 100 + 2 + (14 * j);
+				//!!!!
 				addContentType.className = "div-canvas-sub";
 				addContentType.name = j;
 				addContentType.nameParent = i;
@@ -2704,7 +2747,9 @@ function CreateNewSimulatorOnCanvas(btn_id) {
 	console.log("User wants to add a simulator to the canvas");
 
 	var panel = document.getElementById("canvassubpanel1");
-	var addContentType = document.createElement("button");
+	//!!!!
+	//var addContentType = document.createElement("button");
+	var addContentType = document.createElement("div");
 	addContentType.className = "div-canvas-sim";
 	addContentType.setAttribute("name", "");
 	var addContent1 = document.createTextNode(listOfSimulators[btn_id].name);
@@ -2714,11 +2759,13 @@ function CreateNewSimulatorOnCanvas(btn_id) {
 
 	var listOfCurrentItems = document.getElementsByClassName("div-canvas-sim");
 	// add offset... for some reason, default would add object below original position of existing objects.
+	//!!!!
 	var newOffsetY = (listOfCurrentItems.length - 1) * 100;
+	var newOffsetX = 0;//(listOfCurrentItems.length - 1) * 100;
 	simulatorObjects.push({
 		name: listOfSimulators[btn_id].name, original: listOfSimulators[btn_id],
 		stage: parseInt(stage), objectRef: addContentType, order: 0,
-		offsetX: 0, offsetY: -newOffsetY, leftPos: 0, topPos: 0,
+		offsetX: newOffsetX, offsetY: -newOffsetY, leftPos: 0, topPos: 0,
 		subscribedMessages: [], publishedMessages: [],
 		subscribedDetails: [], publishedDetails: [],
 		timeDelta: 1, timeVarDelta: "", timeScale: 1,
@@ -2729,6 +2776,8 @@ function CreateNewSimulatorOnCanvas(btn_id) {
 		stageConditions: [], endConditions: []
 	});
 	setTranslate(0, -newOffsetY, addContentType);
+	//setTranslate(-newOffsetX, 0, addContentType);
+	//!!!!
 
 	DisableCertainObjectButtons();
 }
@@ -5172,16 +5221,18 @@ function SaveProject() {
 			var simdef = {
 				simdef: listOfSimulators[i]
 			};
-			fs.writeFileSync(savepath + listOfSimulators[i].name + "_def.simdef", JSON.stringify(simdef), 'utf-8');
+			fs.writeFileSync(savepath + listOfSimulators[i].name + "_def.simdef", JSON.stringify(simdef, null, 4), 'utf-8');
 		}
 		for (i = 0; i < listOfMessages.length; i++) {
 			var mesdef = {
 				mesdef: listOfMessages[i]
 			};
-			fs.writeFileSync(savepath + listOfMessages[i].name + "_def.mesdef", JSON.stringify(mesdef), 'utf-8');
+			fs.writeFileSync(savepath + listOfMessages[i].name + "_def.mesdef", JSON.stringify(mesdef, null, 4), 'utf-8');
 		}
 	} catch (e) {
+		console.log("failed to save file: " + e);
 		alert('failed to save file!');
+
 	}
 }
 
@@ -5198,7 +5249,7 @@ function CreateProjectText() {
 		messageObjects: messageObjects,
 		numOfStages: numOfStages
 	};
-	content = JSON.stringify(obj);
+	content = JSON.stringify(obj, null, 4);
 	return content;
 }
 
@@ -5236,6 +5287,12 @@ function CloseOpenProject() {
 function SaveSaveAsProject() {
 	var newSavePath = "";
 	var saveAsFolder = document.getElementsByName("saveAsFileDir")[0];
+	console.log("Printint out folders.");
+	let i = 0;
+	for (i = 0; i < saveAsFolder.files.length; i++) {
+		//!!!!
+		console.log("Folder: " + saveAsFolder.files[i].path);
+	}
 	newSavePath = saveAsFolder.files[0].path + "\\";
 	savepath = newSavePath;
 	savename = document.getElementsByName("TextSaveAsFileName")[0].value;
@@ -5470,7 +5527,7 @@ function WriteWrapperConfigFiles() {
 			};
 
 			//errorLocation = 3;
-			content = JSON.stringify(obj);
+			content = JSON.stringify(obj, null, 4);
 			try {
 				var fs = require('fs');
 				fs.writeFileSync(savePathLocal + saveNameLocal + ".json", content, 'utf-8');
@@ -5819,6 +5876,89 @@ function ConnectToRTIServer() {
 
 function HandleRTIInputData(data) {
 	// How should we display system-wide messages to the user?
+
+	// example test to get a specific part of the message:
+	var obj = JSON.parse(data);
+	var step = obj.vTimestamp;
+	var textConsoleLastAction = document.getElementById("TextConsoleLastAction");
+	textConsoleLastAction.innerHTML = "Step = " + step + " . Full RTI Message: " + data;
+
+	// reminder: 'stage' can be found in 'RTI_StartStep' -> 'content' -> 'stage'.
+	var stage = -1;
+	if (obj.name == "RTI_StartStep") {
+		var content = JSON.parse(obj.content);
+		stage = content.stage;
+	}
+
+
+	UpdateStepAndStage(step, stage);
+
+	UpdateInspectorPanelMessage(data);
+
+}
+
+function UpdateStepAndStage(step, stage) {
+	if (stage == -1) {
+		// don't update global stage locally, don't change display for stage
+		// only update 'div' for 'step'
+	} else {
+		// update 'div' for both 'step' and 'stage'
+	}
+}
+
+var receivedMessageBuffer = [];
+var receivedMessageBufferLength = 6;
+function UpdateInspectorPanelMessage(data) {
+	// keep track of most recent 6 messages received
+
+	if (receivedMessageBuffer.length < receivedMessageBufferLength) {
+		receivedMessageBuffer = [];
+		let i = 0;
+		for (i = 0; i < receivedMessageBufferLength; i++) {
+			receivedMessageBuffer.push({ name: "N/A", message: "N/A" });
+		}
+	}
+
+	receivedMessageBuffer.splice(0, 1);
+
+	var obj = JSON.parse(data);
+	var objName = obj.name;
+
+	receivedMessageBuffer.push({ name: objName, message: data });
+
+	UpdateInspectorPanelMessageObjects("(message content here)");
+}
+
+function UpdateInspectorPanelMessageObjects(message) {
+	var inspectorPanel = document.getElementById("inspectorpanel");
+	while (inspectorPanel.firstChild) {
+		inspectorPanel.removeChild(inspectorPanel.firstChild);
+	}
+
+	var inspectorPanelString = "";
+	for (i = 0; i < receivedMessageBufferLength; i++) {
+		inspectorPanelString = inspectorPanelString + receivedMessageBuffer[i].name + ", " + "<br>";
+
+		var addContentType = document.createElement("button");
+		addContentType.style = "width: 100%; height: 40px; padding: 8px;";
+		addContentType.innerHTML = receivedMessageBuffer[i].name;
+		addContentType.name = receivedMessageBuffer[i].message;
+		addContentType.onclick = function () {
+			UpdateInspectorPanelMessageContent(this.name);
+		};
+		inspectorPanel.appendChild(addContentType);
+	}
+	var addContentType = document.createElement("div");
+	// unable to give 'div' a name? Makes it much harder to reference/update later...
+	addContentType.style = "width: 100%; height: 40px; padding: 4px;";
+	addContentType.innerHTML = message;
+	inspectorPanel.appendChild(addContentType);
+}
+
+function UpdateInspectorPanelMessageContent(message) {
+	var message2 = JSON.stringify(JSON.parse(message), null, 4);
+	var message3 = message2;//message2.replace(/\n/g, "<br>");
+	UpdateInspectorPanelMessageObjects(message3);
 }
 
 var execSims;
