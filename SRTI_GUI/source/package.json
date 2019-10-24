@@ -1,6 +1,6 @@
 {
   "name": "SRTI-v2-00-00-Manager-GUI",
-  "version": "0.69.01",
+  "version": "0.74.01",
   "license": "CC0-1.0",
   "description": "A GUI application to help run a local SRTI simulator system.",
   "main": "main.js",

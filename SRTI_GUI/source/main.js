@@ -63,13 +63,13 @@ const menutemplate = [
 		submenu: [
 			/*{ label: '(to add later)', role: '(to add later)'}*/
 			{
-				label: 'Undo', role: 'undo', id: 'undo', enabled: true,
+				label: 'Undo', accelerator: "Ctrl+Z",
 				click: function () {
 					mainWindow.webContents.executeJavaScript("Undo()");
 				}
 			},
 			{
-				label: 'Redo', role: 'redo', id: 'redo', enabled: true,
+				label: 'Redo', accelerator: "Ctrl+Y",
 				click: function () {
 					mainWindow.webContents.executeJavaScript("Redo()");
 				}
