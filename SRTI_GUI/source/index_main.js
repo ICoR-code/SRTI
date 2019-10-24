@@ -353,7 +353,7 @@ function UpdateSelectedStage(btn_id) {
 
 	button = $('<a>').addClass('ui item').click(AddNewStage)
 	button.append($('<i>').addClass('plus icon'))
-	
+
 	menu.append(button)
 	panel.append(menu)
 	// var panel = document.getElementById("canvastabpanel");
@@ -2728,7 +2728,7 @@ function CreateNewSimulatorOnCanvas(btn_id) {
 		initialize: "", simulate: "", simulateTimeDelta: 1,
 		stageConditions: [], endConditions: []
 	});
-	setTranslate(0, newOffsetY, addContentType);
+	setTranslate(0, -newOffsetY, addContentType);
 
 	DisableCertainObjectButtons();
 }
