@@ -98,10 +98,10 @@ for i = 1:length(subChannels)
                            elseif (strcmp(subChannelObValue, "stageVTimestep") == 1)
                                setValue = int32(localTimestep / timestep_mul);
                            end
-                           if (isempty(str2num(setValue)))
-                               eval("obj." + subChannelObVar + " = " + "setValue" + ";");
-                           else
+                           if ((isa(setValue,'char') == 1) && ~isempty(str2num(setValue)))
                                eval("obj." + subChannelObVar + " = " + "str2num(setValue)" + ";");
+                           else
+                               eval("obj." + subChannelObVar + " = " + "setValue" + ";");
                            end
                        end
                        break;
@@ -121,10 +121,10 @@ for i = 1:length(subChannels)
                                  setValueJson = jsondecode(char(message));
                                  setValueContentJson = jsondecode(setValueJson.content);
                                  eval ("setValue = " + "setValueContentJson." + subChannelObValue + ";");
-                                 if (isempty(str2num(setValue)))
-                                     eval("obj." + subChannelObVar + " = " + "setValue" + ";");
+                                 if ((isa(setValue,'char') == 1) && ~isempty(str2num(setValue)))
+                                    eval("obj." + subChannelObVar + " = " + "str2num(setValue)" + ";");
                                  else
-                                     eval("obj." + subChannelObVar + " = " + "str2num(setValue)" + ";");
+                                    eval("obj." + subChannelObVar + " = " + "setValue" + ";");
                                  end
                             end
                            break;
@@ -278,10 +278,10 @@ while true
                            elseif (strcmp(subChannelObValue, "stageVTimestep") == 1)
                                setValue = int32(localTimestep / timestep_mul);
                            end
-                           if (isempty(str2num(setValue)))
-                               eval("obj." + subChannelObVar + " = " + "setValue" + ";");
-                           else
+                           if ((isa(setValue,'char') == 1) && ~isempty(str2num(setValue)))
                                eval("obj." + subChannelObVar + " = " + "str2num(setValue)" + ";");
+                           else
+                               eval("obj." + subChannelObVar + " = " + "setValue" + ";");
                            end
                        end
                        break;
@@ -301,10 +301,10 @@ while true
                                  setValueJson = jsondecode(char(message));
                                  setValueContentJson = jsondecode(setValueJson.content);
                                  eval ("setValue = " + "setValueContentJson." + subChannelObValue + ";");
-                                 if (isempty(str2num(setValue)))
-                                     eval("obj." + subChannelObVar + " = " + "setValue" + ";");
+                                 if ((isa(setValue,'char') == 1) && ~isempty(str2num(setValue)))
+                                    eval("obj." + subChannelObVar + " = " + "str2num(setValue)" + ";");
                                  else
-                                     eval("obj." + subChannelObVar + " = " + "str2num(setValue)" + ";");
+                                    eval("obj." + subChannelObVar + " = " + "setValue" + ";");
                                  end
                             end
                            break;
@@ -429,10 +429,10 @@ while true
                            elseif (strcmp(subChannelObValue, "stageVTimestep") == 1)
                                setValue = int32(localTimestep / timestep_mul);
                            end
-                           if (isempty(str2num(setValue)))
-                               eval("obj." + subChannelObVar + " = " + "setValue" + ";");
-                           else
+                           if ((isa(setValue,'char') == 1) && ~isempty(str2num(setValue)))
                                eval("obj." + subChannelObVar + " = " + "str2num(setValue)" + ";");
+                           else
+                               eval("obj." + subChannelObVar + " = " + "setValue" + ";");
                            end
                        end
                        break;
@@ -452,10 +452,10 @@ while true
                                  setValueJson = jsondecode(char(message));
                                  setValueContentJson = jsondecode(setValueJson.content);
                                  eval ("setValue = " + "setValueContentJson." + subChannelObValue + ";");
-                                 if (isempty(str2num(setValue)))
-                                     eval("obj." + subChannelObVar + " = " + "setValue" + ";");
+                                 if ((isa(setValue,'char') == 1) && ~isempty(str2num(setValue)))
+                                    eval("obj." + subChannelObVar + " = " + "str2num(setValue)" + ";");
                                  else
-                                     eval("obj." + subChannelObVar + " = " + "str2num(setValue)" + ";");
+                                    eval("obj." + subChannelObVar + " = " + "setValue" + ";");
                                  end
                             end
                            break;
