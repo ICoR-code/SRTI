@@ -1,3 +1,30 @@
 /*******************************
     User Variable Overrides
 *******************************/
+
+@blue: #3c64c3;
+@blueHover: saturate(darken(@blue, 10), 24);
+@blueFocus:saturate(darken(@blue, 21), 47);
+@blueDown: saturate(darken(@blue, 21), 47);
+@blueActive: saturate(darken(@blue, 21), 47);
+
+@lightBlue: @blue;
+@lightBlueHover: @blueHover;
+@lightBlueFocus: @blueFocus;
+@lightBlueDown: @blueDown;
+@lightBlueActive: @blueActive;
+
+
+@green: #447740;
+@greenHover: saturate(darken(@green, 8), 13);
+@greenFocus: saturate(darken(@green, 17), 25);
+@greenDown: saturate(darken(@green, 17), 25);
+@greenActive: saturate(darken(@green, 17), 25);
+
+@lightGreen: @green;
+@lightGreenHover: @greenHover;
+@lightGreenFocus: @greenFocus;
+@lightGreenDown: @greenDown;
+@lightGreenActive: @greenActive;
+
+@positiveColor: #21BA45;

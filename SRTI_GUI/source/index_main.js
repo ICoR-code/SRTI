@@ -96,8 +96,8 @@ saveAsFolder.onchange = function () {
 	saveAsFolderText.innerHTML = totalText;
 }
 // Reference to "File Input" box, to get where to open existing saved project.
-var openProjectFolder = document.getElementsByName("openProjectFileDir")[0];
-openProjectFolder.onchange = function () {
+function ImportProject() {
+	var openProjectFolder = document.getElementsByName("openProjectFileDir")[0];
 	var files = openProjectFolder.files;
 	var filename = files[0].path.replace(/^.*[\\\/]/, '');
 	filename = filename.replace(".project", '');
@@ -135,21 +135,24 @@ importObjectFolder.onchange = function () {
 var nSimulators = 0
 var nMessages = 0
 
+$(document).ready(function () {
+	// Initialize certain buttons and objects.
+	document.getElementById("btn-start").disabled = false;
+	document.getElementById("btn-play").disabled = true;
+	document.getElementById("btn-stop").disabled = true;
+	document.getElementById("btn-pause").disabled = true;
+	canvascontainer.addEventListener("mousedown", dragStart, false);
+	canvascontainer.addEventListener("mouseup", dragEnd, false);
+	canvascontainer.addEventListener("mousemove", drag, false);
+	resizePanel(document.getElementById("separator"), "H");
+	resizePanel(document.getElementById("separator2"), "H");
 
-// Initialize certain buttons and objects.
-document.getElementById("btn-start").disabled = false;
-document.getElementById("btn-play").disabled = true;
-document.getElementById("btn-stop").disabled = true;
-document.getElementById("btn-pause").disabled = true;
-canvascontainer.addEventListener("mousedown", dragStart, false);
-canvascontainer.addEventListener("mouseup", dragEnd, false);
-canvascontainer.addEventListener("mousemove", drag, false);
-resizePanel(document.getElementById("separator"), "H");
-resizePanel(document.getElementById("separator2"), "H");
+	UpdateCanvasGrid();
+	UpdateSelectedStateButtons(selectState);
+	AddProprietaryRTIMessage();
+})
 
-UpdateCanvasGrid();
-UpdateSelectedStateButtons(selectState);
-AddProprietaryRTIMessage();
+
 
 
 
@@ -272,25 +275,40 @@ function UpdateSelectedStateButtons(selectId) {
 */
 function UpdateCanvasGrid() {
 	console.log("UpdateCanvasGrid() called.");
+	let panel = $('#canvassubpanel1grid')
+	panel.empty()
 
-	var panel = document.getElementById("canvassubpanel1grid");
-
-	while (panel.firstChild) {
-		panel.removeChild(panel.firstChild);
-	}
-
-	let i = 0;
+	let i, j, cell;
 	for (i = 0; i < gridSizeX; i++) {
-		let j = 0;
 		for (j = 0; j < gridSizeY; j++) {
-			var addContentType = document.createElement("div");
-			addContentType.style
-				= "border:1px solid black; width:100px; height:100px; position:absolute; left:0px; top:0px;";
-			addContentType.style.left = '' + ((i + 1) * 100) + 'px';
-			addContentType.style.top = '' + (j * 100) + 'px';
-			panel.appendChild(addContentType);
+			cell = $('<div>').addClass('cell')
+			cell.css('left', `${(i + 1) * 100}px`)
+			cell.css('top', `${j * 100}px`)
+			panel.append(cell)
 		}
 	}
+
+
+	// var panel = document.getElementById("canvassubpanel1grid");
+
+	// while (panel.firstChild) {
+	// 	panel.removeChild(panel.firstChild);
+	// }
+
+
+
+	// let i = 0;
+	// for (i = 0; i < gridSizeX; i++) {
+	// 	let j = 0;
+	// 	for (j = 0; j < gridSizeY; j++) {
+	// 		var addContentType = document.createElement("div");
+	// 		addContentType.style
+	// 			= "border:1px solid black; width:100px; height:100px; position:absolute; left:0px; top:0px;";
+	// 		addContentType.style.left = '' + ((i + 1) * 100) + 'px';
+	// 		addContentType.style.top = '' + (j * 100) + 'px';
+	// 		panel.appendChild(addContentType);
+	// 	}
+	// }
 }
 
 /*	CheckRedrawCanvasGrid()
@@ -844,13 +862,13 @@ function DrawArrowOnCanvas1() {
 				//var leftPos = parseInt(simulatorObjects[i].offsetX, 10) + (i * 100) + (j * 5) + 2;
 				//var topPos = parseInt(simulatorObjects[i].topPos, 10) + 100 + 2 + (14 * j);
 				//!!!!
-				var htmlString = "<svg width='" + (leftPos + 10) + "' height='" + (gridSizeY * 100) + "' style='position: absolute;'>";
+				var htmlString = "<svg width='" + 22 + "' height='" + (gridSizeY * 100) + "' style='position: absolute; left:" + (leftPos - 12) + "px'>";
 				htmlString += "<defs>";
 				htmlString += "	<marker id='arrow' markerWidth='13' markerHeight='13' refx='2' refy='6' orient='auto'>";
 				htmlString += "		<path d='M2,2 L2,11 L10,6 L2,2' style='fill:red;' />";
 				htmlString += "	</marker>";
 				htmlString += "</defs>";
-				htmlString += "<path d='M" + leftPos + "," + topPos + "L" + leftPos + "," + ((gridSizeY * 100)) + "' style='stroke:red; stroke-width: 1.25px; fill: none; marker-end: url(#arrow);'/>"
+				htmlString += "<path d='M" + 12 + "," + topPos + "L" + 12 + "," + ((gridSizeY * 100)) + "' style='stroke:#DB2828; stroke-width: 1.25px; fill: none; marker-end: url(#arrow);'/>"
 				htmlString += "</svg>";
 				panel.insertAdjacentHTML("beforeend", htmlString);
 			}
@@ -868,14 +886,14 @@ function DrawArrowOnCanvas1() {
 				//!!!!
 				var topPos = 0;
 				var bottomPos = (10 + (42 * simulatorObjects[i].publishedMessages[j]) - 10 + 3);
-				var htmlString = "<svg width='" + (leftPos + 10) + "' height='" + (bottomPos + 10) + "' style='position: absolute;'>";
+				var htmlString = "<svg width='" + 22 + "' height='" + (bottomPos + 10) + "' style='position: absolute; left:" + (leftPos - 12) + "px'>";
 				htmlString += "<defs>";
 				htmlString += "	<marker id='arrow' markerWidth='10' markerHeight='10' refx='2' refy='6' orient='auto'>";
 				htmlString += "		<path d='M2,2 L2,11 L10,6 L2,2' style='fill:red;' />";
 				htmlString += "	</marker>";
 				htmlString += "</defs>";
 				// end point of arrow: starting position of Message object, - height of arrow + 3 
-				htmlString += "<path d='M" + leftPos + "," + topPos + "L" + leftPos + "," + bottomPos + "' style='stroke:red; stroke-width: 1.25px; fill: none; marker-end: url(#arrow);'/>"
+				htmlString += "<path d='M" + 12 + "," + topPos + "L" + 12 + "," + bottomPos + "' style='stroke:#DB2828; stroke-width: 1.25px; fill: none; marker-end: url(#arrow);'/>"
 				htmlString += "</svg>";
 				panel.insertAdjacentHTML("beforeend", htmlString);
 			}
@@ -929,13 +947,13 @@ function DrawArrowOnCanvas2() {
 				//var leftPos = parseInt(simulatorObjects[i].offsetX, 10) + (i * 100) + 100 - (j * 5) - 2;
 				//var topPos = parseInt(simulatorObjects[i].topPos, 10) + 100 + (14 * j) + 10 + 10;
 				//!!!!
-				var htmlString = "<svg width='" + (leftPos + 10) + "' height='" + (gridSizeY * 100) + "' style='position: absolute;'>";
+				var htmlString = "<svg width='" + 22 + "' height='" + (gridSizeY * 100) + "' style='position: absolute; left:" + (leftPos - 12) + "px'>";
 				htmlString += "<defs>";
 				htmlString += "	<marker id='arrow' markerWidth='13' markerHeight='13' refx='2' refy='6' orient='auto'>";
 				htmlString += "		<path d='M2,2 L2,11 L10,6 L2,2' style='fill:red;' />";
 				htmlString += "	</marker>";
 				htmlString += "</defs>";
-				htmlString += "<path d='M" + leftPos + "," + ((gridSizeY * 100)) + "L" + leftPos + "," + topPos + "' style='stroke:red; stroke-width: 1.25px; fill: none; marker-end: url(#arrow);'/>"
+				htmlString += "<path d='M" + 12 + "," + ((gridSizeY * 100)) + "L" + 12 + "," + topPos + "' style='stroke:#DB2828; stroke-width: 1.25px; fill: none; marker-end: url(#arrow);'/>"
 				htmlString += "</svg>";
 				panel.insertAdjacentHTML("beforeend", htmlString);
 			}
@@ -953,14 +971,14 @@ function DrawArrowOnCanvas2() {
 				//!!!!
 				var topPos = 0;
 				var bottomPos = (10 + (42 * parseInt(simulatorObjects[i].subscribedMessages[j])));
-				var htmlString = "<svg width='" + (leftPos + 10) + "' height='" + (bottomPos + 10) + "' style='position: absolute;'>";
+				var htmlString = "<svg width='" + 22 + "' height='" + (bottomPos + 10) + "' style='position: absolute; left:" + (leftPos - 12) + "px'>";
 				htmlString += "<defs>";
 				htmlString += "	<marker id='arrow' markerWidth='10' markerHeight='10' refx='2' refy='6' orient='auto'>";
 				htmlString += "		<path d='M2,2 L2,11 L10,6 L2,2' style='fill:red;' />";
 				htmlString += "	</marker>";
 				htmlString += "</defs>";
 				// end point of arrow: starting position of Message object, - height of arrow + 3 
-				htmlString += "<path d='M" + leftPos + "," + bottomPos + "L" + leftPos + "," + topPos + "' style='stroke:red; stroke-width: 1.25px; fill: none; marker-end: url(#arrow);'/>"
+				htmlString += "<path d='M" + 12 + "," + bottomPos + "L" + 12 + "," + topPos + "' style='stroke:red; stroke-width: 1.25px; fill: none; marker-end: url(#arrow);'/>"
 				htmlString += "</svg>";
 				panel.insertAdjacentHTML("beforeend", htmlString);
 			}
@@ -1152,10 +1170,10 @@ function NewPublishConnectionPrompt(message_id, simulator_id) {
 	segment.empty()
 
 	let message = $('<div>').addClass('nine wide middle aligned column').text('Message Name:')
-	message.append($('<label>').addClass('ui color-message label').text(messageName))
+	message.append($('<label>').addClass('ui blue label').text(messageName))
 
 	let simulator = $('<div>').addClass('six wide middle aligned column').text('Simulator Name:')
-	simulator.append($('<label>').addClass('ui color-simulator label').text(simulatorName))
+	simulator.append($('<label>').addClass('ui green label').text(simulatorName))
 
 	segment.append(message)
 	segment.append(simulator)
@@ -1302,10 +1320,10 @@ function EditPublishConnectionPrompt() {
 	segment.empty()
 
 	let message = $('<div>').addClass('nine wide middle aligned column').text('Message Name:')
-	message.append($('<label>').addClass('ui color-message label').text(messageName))
+	message.append($('<label>').addClass('ui blue label').text(messageName))
 
 	let simulator = $('<div>').addClass('six wide middle aligned column').text('Simulator Name:')
-	simulator.append($('<label>').addClass('ui color-simulator label').text(simulatorName))
+	simulator.append($('<label>').addClass('ui green label').text(simulatorName))
 
 	segment.append(message)
 	segment.append(simulator)
@@ -1621,10 +1639,10 @@ function NewSubscribeConnectionPrompt(message_id, simulator_id) {
 	segment.empty()
 
 	let simulator = $('<div>').addClass('nine wide middle aligned column').text('Simulator Name:')
-	simulator.append($('<label>').addClass('ui color-simulator label').text(simulatorName))
+	simulator.append($('<label>').addClass('ui green label').text(simulatorName))
 
 	let message = $('<div>').addClass('six wide middle aligned column').text('Message Name:')
-	message.append($('<label>').addClass('ui color-message label').text(messageName))
+	message.append($('<label>').addClass('ui blue label').text(messageName))
 
 	segment.append(simulator)
 	segment.append(message)
@@ -1785,10 +1803,10 @@ function EditSubscribeConnectionPrompt() {
 	segment.empty()
 
 	let simulator = $('<div>').addClass('nine wide middle aligned column').text('Simulator Name:')
-	simulator.append($('<label>').addClass('ui color-simulator label').text(simulatorName))
+	simulator.append($('<label>').addClass('ui green label').text(simulatorName))
 
 	let message = $('<div>').addClass('six wide middle aligned column').text('Message Name:')
-	message.append($('<label>').addClass('ui color-message label').text(messageName))
+	message.append($('<label>').addClass('ui blue label').text(messageName))
 
 	segment.append(simulator)
 	segment.append(message)
@@ -2284,7 +2302,7 @@ function ClearObjectSubPanel1() {
 function AppendObjectToSubPanel1(index = listOfSimulators.length - 1) {
 	console.log(index)
 	let panel = $('#objectsubpanel1')
-	button = $('<button>').addClass('ui color-simulator button btn-list-item').text(listOfSimulators[index].name)
+	button = $('<button>').addClass('ui green button btn-list-item').text(listOfSimulators[index].name)
 	button.attr('id', index)
 	button.click(function () {
 		console.log("onclick at index = " + this.id);
@@ -2320,7 +2338,7 @@ function ResetObjectSubPanel1() {
 function AppendObjectToSubPanel2(index = listOfMessages.length - 1) {
 	console.log(index)
 	let panel = $('#objectsubpanel2')
-	button = $('<button>').addClass('ui color-message button btn-list-item').text(listOfMessages[index].name)
+	button = $('<button>').addClass('ui blue button btn-list-item').text(listOfMessages[index].name)
 	button.attr('id', index)
 	button.click(function () {
 		console.log("onclick at index = " + this.id);
@@ -2750,11 +2768,11 @@ function CreateNewSimulatorOnCanvas(btn_id) {
 	//!!!!
 	//var addContentType = document.createElement("button");
 	var addContentType = document.createElement("div");
-	addContentType.className = "div-canvas-sim";
+	addContentType.className = "ui green button div-canvas-sim";
 	addContentType.setAttribute("name", "");
 	var addContent1 = document.createTextNode(listOfSimulators[btn_id].name);
 	addContentType.appendChild(addContent1);
-	addContentType.style = "position: relative; overflow-y:hidden;";
+	// addContentType.style = "position: relative; overflow-y:hidden;";
 	panel.appendChild(addContentType);
 
 	var listOfCurrentItems = document.getElementsByClassName("div-canvas-sim");
@@ -2792,11 +2810,11 @@ function CreateExistingSimulatorOnCanvas(sim_id) {
 	var newOffsetY = simulatorObjects[i].offsetY;
 	var newOffsetX = simulatorObjects[i].offsetX;
 	var addContentType = document.createElement("div");
-	addContentType.className = "div-canvas-sim";
+	addContentType.className = "ui green button div-canvas-sim";
 	addContentType.setAttribute("name", "");
 	var addContent1 = document.createTextNode(simulatorObjects[i].name);
 	addContentType.appendChild(addContent1);
-	addContentType.style = "position: relative; overflow-y:hidden;";
+	// addContentType.style = "position: relative; overflow-y:hidden;";
 	panel.appendChild(addContentType);
 	setTranslate(newOffsetX, newOffsetY, addContentType);
 	simulatorObjects[i].objectRef = addContentType;
@@ -2856,7 +2874,7 @@ function CreateNewMessageOnCanvas(btn_id) {
 	var panel = document.getElementById("canvassubpanel2grid");
 	var listOfCurrentItems = document.getElementsByClassName("div-canvas-message");
 	var addContentType = document.createElement("div");
-	addContentType.className = "div-canvas-message";
+	addContentType.className = "ui blue butto div-canvas-message";
 	addContentType.setAttribute("name", listOfMessages[btn_id].name);
 	var addContent1 = document.createTextNode(listOfMessages[btn_id].name);
 	addContentType.appendChild(addContent1);
@@ -2875,7 +2893,7 @@ function CreateExistingMessageOnCanvas(message_id) {
 	let i = message_id;
 	var listOfCurrentItems = document.getElementsByClassName("div-canvas-message");
 	var addContentType = document.createElement("div");
-	addContentType.className = "div-canvas-message";
+	addContentType.className = "ui blue button div-canvas-message";
 	addContentType.setAttribute("name", messageObjects[message_id].name);
 	var addContent1 = document.createTextNode(messageObjects[message_id].name);
 	addContentType.appendChild(addContent1);
@@ -4720,29 +4738,29 @@ function ConfigureItemFromCanvas(e) {
 
 	if (clickedOnItem > -1) {
 		let header = $('<div>').addClass('ui compact segment')
-		let label = $('<label>').addClass('ui color-simulator large label').text(simulatorObjects[i].name)
+		let label = $('<label>').addClass('ui green large label').text(simulatorObjects[i].name)
 		header.append($('<h3>').text('Simulator in Project'))
 		header.append(label)
 
 		let content = $('<div>').addClass('ui compact segment')
 		let buttons = $('<div>').addClass('ui vertical buttons')
 
-		let button0 = $('<button>').addClass('ui color-simulator basic button').text('Change Local Time')
+		let button0 = $('<button>').addClass('ui green basic button').text('Change Local Time')
 		button0.click(() => {
 			editExistingObject = clickedOnItem;
 			EditSimLocalTime();
 		})
-		let button1 = $('<button>').addClass('ui color-simulator basic button').text('Set Initialize and Simulate Functions')
+		let button1 = $('<button>').addClass('ui green basic button').text('Set Initialize and Simulate Functions')
 		button1.click(() => {
 			editExistingObject = clickedOnItem;
 			EditSimulateFunctions();
 		})
-		let button2 = $('<button>').addClass('ui color-simulator basic button').text('Change Stage Transition Conditions')
+		let button2 = $('<button>').addClass('ui green basic button').text('Change Stage Transition Conditions')
 		button2.click(() => {
 			editExistingObject = clickedOnItem;
 			EditStageConditions();
 		})
-		let button3 = $('<button>').addClass('ui color-simulator basic button').text('Change End System Conditions')
+		let button3 = $('<button>').addClass('ui green basic button').text('Change End System Conditions')
 		button3.click(() => {
 			editExistingObject = clickedOnItem;
 			EditEndConditions();
@@ -4821,7 +4839,7 @@ function ConfigureItemFromCanvas(e) {
 
 		let panel = $('#inspectorpanel')
 		let header = $('<div>').addClass('ui compact segment')
-		let message = $('<label>').addClass('ui color-message large label').text(messageName)
+		let message = $('<label>').addClass('ui blue large label').text(messageName)
 		header.append($('<h3>').text('Message on Canvas'))
 		header.append(message)
 
@@ -4855,9 +4873,9 @@ function ConfigureItemFromCanvas(e) {
 
 		let panel = $('#inspectorpanel')
 		let header = $('<div>').addClass('ui compact segment')
-		let sim = $('<label>').addClass('ui color-simulator large label').text(simName)
+		let sim = $('<label>').addClass('ui green large label').text(simName)
 		let arrow = $('<i>').addClass('arrow right icon')
-		let message = $('<label>').addClass('ui color-message large label').text(messageName)
+		let message = $('<label>').addClass('ui blue large label').text(messageName)
 		header.append($('<h3>').text('Publish-Definition on Canvas'))
 		header.append(sim)
 		header.append(arrow)
@@ -4915,9 +4933,9 @@ function ConfigureItemFromCanvas(e) {
 		let messageName = messageObjects[simulatorObjects[listOfSimSub[clickedOnItem].nameParent].subscribedMessages[listOfSimSub[clickedOnItem].name]].name;
 		let panel = $('#inspectorpanel')
 		let header = $('<div>').addClass('ui compact segment')
-		let message = $('<label>').addClass('ui color-message large label').text(messageName)
+		let message = $('<label>').addClass('ui blue large label').text(messageName)
 		let arrow = $('<i>').addClass('arrow right icon')
-		let sim = $('<label>').addClass('ui color-simulator large label').text(simName)
+		let sim = $('<label>').addClass('ui green large label').text(simName)
 		header.append($('<h3>').text('Subscribe-Definition on Canvas'))
 		header.append(message)
 		header.append(arrow)
@@ -4972,7 +4990,7 @@ function ConfigureItemFromCanvas(e) {
 		header.append($('<h3>').text('RTI Server'))
 
 		let content = $('<div>').addClass('ui compact segment')
-		let button = $('<button>').addClass('ui color-message basic button').text('Change Launch Parameters')
+		let button = $('<button>').addClass('ui blue basic button').text('Change Launch Parameters')
 		button.click(() => {
 			EditServer();
 		})
@@ -5020,14 +5038,14 @@ function ConfigureSimulatorFromList(btn_id) {
 	let panel = $('#inspectorpanel')
 	let selectedObject = listOfSimulators[btn_id]
 	let header = $('<div>').addClass('ui compact segment')
-	let label = $('<label>').addClass('ui color-simulator large label').text(selectedObject.name)
+	let label = $('<label>').addClass('ui green large label').text(selectedObject.name)
 	header.append($('<h3>').text('Simulator in Project'))
 	header.append(label)
 
 	let content = $('<div>').addClass('ui compact segment')
 	let warning = $('<div>').addClass('ui warning').text('WARNING: Editing properties of this Simulator after it has been added to the project canvas may cause unforeseen effects. Please check the properties of this Simulator on the canvas after any updates.')
 	let divider = $('<div>').addClass('ui hidden divider')
-	let button = $('<button>').addClass('ui color-simulator basic button').text('Change Properties')
+	let button = $('<button>').addClass('ui green basic button').text('Change Properties')
 	button.click(() => {
 		editExistingObject = btn_id;
 		NewSimulatorObjectPrompt();
@@ -5085,14 +5103,14 @@ function ConfigureMessageFromList(btn_id) {
 	let panel = $('#inspectorpanel')
 	let selectedObject = listOfMessages[btn_id]
 	let header = $('<div>').addClass('ui compact segment')
-	let label = $('<label>').addClass('ui color-message large label').text(selectedObject.name)
+	let label = $('<label>').addClass('ui blue large label').text(selectedObject.name)
 	header.append($('<h3>').text('Message in Project'))
 	header.append(label)
 
 	let content = $('<div>').addClass('ui compact segment')
 	let warning = $('<div>').addClass('ui warning').text('WARNING: Editing properties of this Message after it has been added to the project canvas may cause unforeseen effects. Please check the properties of this Message on the canvas after any updates.')
 	let divider = $('<div>').addClass('ui hidden divider')
-	let button = $('<button>').addClass('ui color-message basic button').text('Change Properties')
+	let button = $('<button>').addClass('ui blue basic button').text('Change Properties')
 	button.click(() => {
 		editExistingObject = btn_id;
 		NewMessageObjectPrompt();
