@@ -1,4 +1,0 @@
-\\ lines that start with \\ will not run.
-\\ This is the Windows version of the commands that need to execute to run this project. 
-cd (RTIServerLocation)
-java -jar SRTI_v2_16_02.jar

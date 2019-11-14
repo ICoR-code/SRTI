@@ -1732,7 +1732,11 @@
 
 .ui.blue.buttons .button,
 .ui.blue.button {
+<<<<<<< HEAD
   background-color: #3c64c3;
+=======
+  background-color: #2185D0;
+>>>>>>> master
   color: #FFFFFF;
   text-shadow: none;
   background-image: none;
@@ -1743,19 +1747,31 @@
 }
 .ui.blue.buttons .button:hover,
 .ui.blue.button:hover {
+<<<<<<< HEAD
   background-color: #1846b4;
+=======
+  background-color: #1678c2;
+>>>>>>> master
   color: #FFFFFF;
   text-shadow: none;
 }
 .ui.blue.buttons .button:focus,
 .ui.blue.button:focus {
+<<<<<<< HEAD
   background-color: #002c94;
+=======
+  background-color: #0d71bb;
+>>>>>>> master
   color: #FFFFFF;
   text-shadow: none;
 }
 .ui.blue.buttons .button:active,
 .ui.blue.button:active {
+<<<<<<< HEAD
   background-color: #002c94;
+=======
+  background-color: #1a69a4;
+>>>>>>> master
   color: #FFFFFF;
   text-shadow: none;
 }
@@ -1763,7 +1779,11 @@
 .ui.blue.buttons .active.button:active,
 .ui.blue.active.button,
 .ui.blue.button .active.button:active {
+<<<<<<< HEAD
   background-color: #002c94;
+=======
+  background-color: #1279c6;
+>>>>>>> master
   color: #FFFFFF;
   text-shadow: none;
 }
@@ -1771,27 +1791,46 @@
 /* Basic */
 .ui.basic.blue.buttons .button,
 .ui.basic.blue.button {
+<<<<<<< HEAD
   -webkit-box-shadow: 0px 0px 0px 1px #3c64c3 inset !important;
           box-shadow: 0px 0px 0px 1px #3c64c3 inset !important;
   color: #3c64c3 !important;
+=======
+  -webkit-box-shadow: 0px 0px 0px 1px #2185D0 inset !important;
+          box-shadow: 0px 0px 0px 1px #2185D0 inset !important;
+  color: #2185D0 !important;
+>>>>>>> master
 }
 .ui.basic.blue.buttons .button:hover,
 .ui.basic.blue.button:hover {
   background: transparent !important;
+<<<<<<< HEAD
   -webkit-box-shadow: 0px 0px 0px 1px #1846b4 inset !important;
           box-shadow: 0px 0px 0px 1px #1846b4 inset !important;
   color: #1846b4 !important;
+=======
+  -webkit-box-shadow: 0px 0px 0px 1px #1678c2 inset !important;
+          box-shadow: 0px 0px 0px 1px #1678c2 inset !important;
+  color: #1678c2 !important;
+>>>>>>> master
 }
 .ui.basic.blue.buttons .button:focus,
 .ui.basic.blue.button:focus {
   background: transparent !important;
+<<<<<<< HEAD
   -webkit-box-shadow: 0px 0px 0px 1px #002c94 inset !important;
           box-shadow: 0px 0px 0px 1px #002c94 inset !important;
   color: #1846b4 !important;
+=======
+  -webkit-box-shadow: 0px 0px 0px 1px #0d71bb inset !important;
+          box-shadow: 0px 0px 0px 1px #0d71bb inset !important;
+  color: #1678c2 !important;
+>>>>>>> master
 }
 .ui.basic.blue.buttons .active.button,
 .ui.basic.blue.active.button {
   background: transparent !important;
+<<<<<<< HEAD
   -webkit-box-shadow: 0px 0px 0px 1px #002c94 inset !important;
           box-shadow: 0px 0px 0px 1px #002c94 inset !important;
   color: #002c94 !important;
@@ -1801,6 +1840,17 @@
   -webkit-box-shadow: 0px 0px 0px 1px #002c94 inset !important;
           box-shadow: 0px 0px 0px 1px #002c94 inset !important;
   color: #002c94 !important;
+=======
+  -webkit-box-shadow: 0px 0px 0px 1px #1279c6 inset !important;
+          box-shadow: 0px 0px 0px 1px #1279c6 inset !important;
+  color: #1a69a4 !important;
+}
+.ui.basic.blue.buttons .button:active,
+.ui.basic.blue.button:active {
+  -webkit-box-shadow: 0px 0px 0px 1px #1a69a4 inset !important;
+          box-shadow: 0px 0px 0px 1px #1a69a4 inset !important;
+  color: #1a69a4 !important;
+>>>>>>> master
 }
 .ui.buttons:not(.vertical) > .basic.blue.button:not(:first-child) {
   margin-left: -1px;
@@ -1810,9 +1860,15 @@
 .ui.inverted.blue.buttons .button,
 .ui.inverted.blue.button {
   background-color: transparent;
+<<<<<<< HEAD
   -webkit-box-shadow: 0px 0px 0px 2px #3c64c3 inset !important;
           box-shadow: 0px 0px 0px 2px #3c64c3 inset !important;
   color: #3c64c3;
+=======
+  -webkit-box-shadow: 0px 0px 0px 2px #54C8FF inset !important;
+          box-shadow: 0px 0px 0px 2px #54C8FF inset !important;
+  color: #54C8FF;
+>>>>>>> master
 }
 .ui.inverted.blue.buttons .button:hover,
 .ui.inverted.blue.button:hover,
@@ -1828,6 +1884,7 @@
 }
 .ui.inverted.blue.buttons .button:hover,
 .ui.inverted.blue.button:hover {
+<<<<<<< HEAD
   background-color: #1846b4;
 }
 .ui.inverted.blue.buttons .button:focus,
@@ -1841,6 +1898,21 @@
 .ui.inverted.blue.buttons .button:active,
 .ui.inverted.blue.button:active {
   background-color: #002c94;
+=======
+  background-color: #3ac0ff;
+}
+.ui.inverted.blue.buttons .button:focus,
+.ui.inverted.blue.button:focus {
+  background-color: #2bbbff;
+}
+.ui.inverted.blue.buttons .active.button,
+.ui.inverted.blue.active.button {
+  background-color: #3ac0ff;
+}
+.ui.inverted.blue.buttons .button:active,
+.ui.inverted.blue.button:active {
+  background-color: #21b8ff;
+>>>>>>> master
 }
 
 /* Inverted Basic */
@@ -1855,37 +1927,65 @@
 .ui.inverted.blue.basic.buttons .button:hover,
 .ui.inverted.blue.buttons .basic.button:hover,
 .ui.inverted.blue.basic.button:hover {
+<<<<<<< HEAD
   -webkit-box-shadow: 0px 0px 0px 2px #1846b4 inset !important;
           box-shadow: 0px 0px 0px 2px #1846b4 inset !important;
   color: #3c64c3 !important;
+=======
+  -webkit-box-shadow: 0px 0px 0px 2px #3ac0ff inset !important;
+          box-shadow: 0px 0px 0px 2px #3ac0ff inset !important;
+  color: #54C8FF !important;
+>>>>>>> master
 }
 .ui.inverted.blue.basic.buttons .button:focus,
 .ui.inverted.blue.basic.buttons .button:focus,
 .ui.inverted.blue.basic.button:focus {
+<<<<<<< HEAD
   -webkit-box-shadow: 0px 0px 0px 2px #002c94 inset !important;
           box-shadow: 0px 0px 0px 2px #002c94 inset !important;
   color: #3c64c3 !important;
+=======
+  -webkit-box-shadow: 0px 0px 0px 2px #2bbbff inset !important;
+          box-shadow: 0px 0px 0px 2px #2bbbff inset !important;
+  color: #54C8FF !important;
+>>>>>>> master
 }
 .ui.inverted.blue.basic.buttons .active.button,
 .ui.inverted.blue.buttons .basic.active.button,
 .ui.inverted.blue.basic.active.button {
+<<<<<<< HEAD
   -webkit-box-shadow: 0px 0px 0px 2px #002c94 inset !important;
           box-shadow: 0px 0px 0px 2px #002c94 inset !important;
   color: #3c64c3 !important;
+=======
+  -webkit-box-shadow: 0px 0px 0px 2px #3ac0ff inset !important;
+          box-shadow: 0px 0px 0px 2px #3ac0ff inset !important;
+  color: #54C8FF !important;
+>>>>>>> master
 }
 .ui.inverted.blue.basic.buttons .button:active,
 .ui.inverted.blue.buttons .basic.button:active,
 .ui.inverted.blue.basic.button:active {
+<<<<<<< HEAD
   -webkit-box-shadow: 0px 0px 0px 2px #002c94 inset !important;
           box-shadow: 0px 0px 0px 2px #002c94 inset !important;
   color: #3c64c3 !important;
+=======
+  -webkit-box-shadow: 0px 0px 0px 2px #21b8ff inset !important;
+          box-shadow: 0px 0px 0px 2px #21b8ff inset !important;
+  color: #54C8FF !important;
+>>>>>>> master
 }
 
 /*--- Green ---*/
 
 .ui.green.buttons .button,
 .ui.green.button {
+<<<<<<< HEAD
   background-color: #447740;
+=======
+  background-color: #21BA45;
+>>>>>>> master
   color: #FFFFFF;
   text-shadow: none;
   background-image: none;
@@ -1896,19 +1996,31 @@
 }
 .ui.green.buttons .button:hover,
 .ui.green.button:hover {
+<<<<<<< HEAD
   background-color: #2d6628;
+=======
+  background-color: #16ab39;
+>>>>>>> master
   color: #FFFFFF;
   text-shadow: none;
 }
 .ui.green.buttons .button:focus,
 .ui.green.button:focus {
+<<<<<<< HEAD
   background-color: #194b16;
+=======
+  background-color: #0ea432;
+>>>>>>> master
   color: #FFFFFF;
   text-shadow: none;
 }
 .ui.green.buttons .button:active,
 .ui.green.button:active {
+<<<<<<< HEAD
   background-color: #194b16;
+=======
+  background-color: #198f35;
+>>>>>>> master
   color: #FFFFFF;
   text-shadow: none;
 }
@@ -1916,7 +2028,11 @@
 .ui.green.buttons .active.button:active,
 .ui.green.active.button,
 .ui.green.button .active.button:active {
+<<<<<<< HEAD
   background-color: #194b16;
+=======
+  background-color: #13ae38;
+>>>>>>> master
   color: #FFFFFF;
   text-shadow: none;
 }
@@ -1924,27 +2040,46 @@
 /* Basic */
 .ui.basic.green.buttons .button,
 .ui.basic.green.button {
+<<<<<<< HEAD
   -webkit-box-shadow: 0px 0px 0px 1px #447740 inset !important;
           box-shadow: 0px 0px 0px 1px #447740 inset !important;
   color: #447740 !important;
+=======
+  -webkit-box-shadow: 0px 0px 0px 1px #21BA45 inset !important;
+          box-shadow: 0px 0px 0px 1px #21BA45 inset !important;
+  color: #21BA45 !important;
+>>>>>>> master
 }
 .ui.basic.green.buttons .button:hover,
 .ui.basic.green.button:hover {
   background: transparent !important;
+<<<<<<< HEAD
   -webkit-box-shadow: 0px 0px 0px 1px #2d6628 inset !important;
           box-shadow: 0px 0px 0px 1px #2d6628 inset !important;
   color: #2d6628 !important;
+=======
+  -webkit-box-shadow: 0px 0px 0px 1px #16ab39 inset !important;
+          box-shadow: 0px 0px 0px 1px #16ab39 inset !important;
+  color: #16ab39 !important;
+>>>>>>> master
 }
 .ui.basic.green.buttons .button:focus,
 .ui.basic.green.button:focus {
   background: transparent !important;
+<<<<<<< HEAD
   -webkit-box-shadow: 0px 0px 0px 1px #194b16 inset !important;
           box-shadow: 0px 0px 0px 1px #194b16 inset !important;
   color: #2d6628 !important;
+=======
+  -webkit-box-shadow: 0px 0px 0px 1px #0ea432 inset !important;
+          box-shadow: 0px 0px 0px 1px #0ea432 inset !important;
+  color: #16ab39 !important;
+>>>>>>> master
 }
 .ui.basic.green.buttons .active.button,
 .ui.basic.green.active.button {
   background: transparent !important;
+<<<<<<< HEAD
   -webkit-box-shadow: 0px 0px 0px 1px #194b16 inset !important;
           box-shadow: 0px 0px 0px 1px #194b16 inset !important;
   color: #194b16 !important;
@@ -1954,6 +2089,17 @@
   -webkit-box-shadow: 0px 0px 0px 1px #194b16 inset !important;
           box-shadow: 0px 0px 0px 1px #194b16 inset !important;
   color: #194b16 !important;
+=======
+  -webkit-box-shadow: 0px 0px 0px 1px #13ae38 inset !important;
+          box-shadow: 0px 0px 0px 1px #13ae38 inset !important;
+  color: #198f35 !important;
+}
+.ui.basic.green.buttons .button:active,
+.ui.basic.green.button:active {
+  -webkit-box-shadow: 0px 0px 0px 1px #198f35 inset !important;
+          box-shadow: 0px 0px 0px 1px #198f35 inset !important;
+  color: #198f35 !important;
+>>>>>>> master
 }
 .ui.buttons:not(.vertical) > .basic.green.button:not(:first-child) {
   margin-left: -1px;
@@ -1963,9 +2109,15 @@
 .ui.inverted.green.buttons .button,
 .ui.inverted.green.button {
   background-color: transparent;
+<<<<<<< HEAD
   -webkit-box-shadow: 0px 0px 0px 2px #447740 inset !important;
           box-shadow: 0px 0px 0px 2px #447740 inset !important;
   color: #447740;
+=======
+  -webkit-box-shadow: 0px 0px 0px 2px #2ECC40 inset !important;
+          box-shadow: 0px 0px 0px 2px #2ECC40 inset !important;
+  color: #2ECC40;
+>>>>>>> master
 }
 .ui.inverted.green.buttons .button:hover,
 .ui.inverted.green.button:hover,
@@ -1981,6 +2133,7 @@
 }
 .ui.inverted.green.buttons .button:hover,
 .ui.inverted.green.button:hover {
+<<<<<<< HEAD
   background-color: #2d6628;
 }
 .ui.inverted.green.buttons .button:focus,
@@ -1994,6 +2147,21 @@
 .ui.inverted.green.buttons .button:active,
 .ui.inverted.green.button:active {
   background-color: #194b16;
+=======
+  background-color: #22be34;
+}
+.ui.inverted.green.buttons .button:focus,
+.ui.inverted.green.button:focus {
+  background-color: #19b82b;
+}
+.ui.inverted.green.buttons .active.button,
+.ui.inverted.green.active.button {
+  background-color: #1fc231;
+}
+.ui.inverted.green.buttons .button:active,
+.ui.inverted.green.button:active {
+  background-color: #25a233;
+>>>>>>> master
 }
 
 /* Inverted Basic */
@@ -2008,30 +2176,54 @@
 .ui.inverted.green.basic.buttons .button:hover,
 .ui.inverted.green.buttons .basic.button:hover,
 .ui.inverted.green.basic.button:hover {
+<<<<<<< HEAD
   -webkit-box-shadow: 0px 0px 0px 2px #2d6628 inset !important;
           box-shadow: 0px 0px 0px 2px #2d6628 inset !important;
   color: #447740 !important;
+=======
+  -webkit-box-shadow: 0px 0px 0px 2px #22be34 inset !important;
+          box-shadow: 0px 0px 0px 2px #22be34 inset !important;
+  color: #2ECC40 !important;
+>>>>>>> master
 }
 .ui.inverted.green.basic.buttons .button:focus,
 .ui.inverted.green.basic.buttons .button:focus,
 .ui.inverted.green.basic.button:focus {
+<<<<<<< HEAD
   -webkit-box-shadow: 0px 0px 0px 2px #194b16 inset !important;
           box-shadow: 0px 0px 0px 2px #194b16 inset !important;
   color: #447740 !important;
+=======
+  -webkit-box-shadow: 0px 0px 0px 2px #19b82b inset !important;
+          box-shadow: 0px 0px 0px 2px #19b82b inset !important;
+  color: #2ECC40 !important;
+>>>>>>> master
 }
 .ui.inverted.green.basic.buttons .active.button,
 .ui.inverted.green.buttons .basic.active.button,
 .ui.inverted.green.basic.active.button {
+<<<<<<< HEAD
   -webkit-box-shadow: 0px 0px 0px 2px #194b16 inset !important;
           box-shadow: 0px 0px 0px 2px #194b16 inset !important;
   color: #447740 !important;
+=======
+  -webkit-box-shadow: 0px 0px 0px 2px #1fc231 inset !important;
+          box-shadow: 0px 0px 0px 2px #1fc231 inset !important;
+  color: #2ECC40 !important;
+>>>>>>> master
 }
 .ui.inverted.green.basic.buttons .button:active,
 .ui.inverted.green.buttons .basic.button:active,
 .ui.inverted.green.basic.button:active {
+<<<<<<< HEAD
   -webkit-box-shadow: 0px 0px 0px 2px #194b16 inset !important;
           box-shadow: 0px 0px 0px 2px #194b16 inset !important;
   color: #447740 !important;
+=======
+  -webkit-box-shadow: 0px 0px 0px 2px #25a233 inset !important;
+          box-shadow: 0px 0px 0px 2px #25a233 inset !important;
+  color: #2ECC40 !important;
+>>>>>>> master
 }
 
 /*--- Orange ---*/
@@ -3267,7 +3459,11 @@
 
 .ui.primary.buttons .button,
 .ui.primary.button {
+<<<<<<< HEAD
   background-color: #3c64c3;
+=======
+  background-color: #2185D0;
+>>>>>>> master
   color: #FFFFFF;
   text-shadow: none;
   background-image: none;
@@ -3278,19 +3474,31 @@
 }
 .ui.primary.buttons .button:hover,
 .ui.primary.button:hover {
+<<<<<<< HEAD
   background-color: #3058b6;
+=======
+  background-color: #1678c2;
+>>>>>>> master
   color: #FFFFFF;
   text-shadow: none;
 }
 .ui.primary.buttons .button:focus,
 .ui.primary.button:focus {
+<<<<<<< HEAD
   background-color: #274faf;
+=======
+  background-color: #0d71bb;
+>>>>>>> master
   color: #FFFFFF;
   text-shadow: none;
 }
 .ui.primary.buttons .button:active,
 .ui.primary.button:active {
+<<<<<<< HEAD
   background-color: #30509c;
+=======
+  background-color: #1a69a4;
+>>>>>>> master
   color: #FFFFFF;
   text-shadow: none;
 }
@@ -3298,7 +3506,11 @@
 .ui.primary.buttons .active.button:active,
 .ui.primary.active.button,
 .ui.primary.button .active.button:active {
+<<<<<<< HEAD
   background-color: #2d56b9;
+=======
+  background-color: #1279c6;
+>>>>>>> master
   color: #FFFFFF;
   text-shadow: none;
 }
@@ -3306,27 +3518,46 @@
 /* Basic */
 .ui.basic.primary.buttons .button,
 .ui.basic.primary.button {
+<<<<<<< HEAD
   -webkit-box-shadow: 0px 0px 0px 1px #3c64c3 inset !important;
           box-shadow: 0px 0px 0px 1px #3c64c3 inset !important;
   color: #3c64c3 !important;
+=======
+  -webkit-box-shadow: 0px 0px 0px 1px #2185D0 inset !important;
+          box-shadow: 0px 0px 0px 1px #2185D0 inset !important;
+  color: #2185D0 !important;
+>>>>>>> master
 }
 .ui.basic.primary.buttons .button:hover,
 .ui.basic.primary.button:hover {
   background: transparent !important;
+<<<<<<< HEAD
   -webkit-box-shadow: 0px 0px 0px 1px #3058b6 inset !important;
           box-shadow: 0px 0px 0px 1px #3058b6 inset !important;
   color: #3058b6 !important;
+=======
+  -webkit-box-shadow: 0px 0px 0px 1px #1678c2 inset !important;
+          box-shadow: 0px 0px 0px 1px #1678c2 inset !important;
+  color: #1678c2 !important;
+>>>>>>> master
 }
 .ui.basic.primary.buttons .button:focus,
 .ui.basic.primary.button:focus {
   background: transparent !important;
+<<<<<<< HEAD
   -webkit-box-shadow: 0px 0px 0px 1px #274faf inset !important;
           box-shadow: 0px 0px 0px 1px #274faf inset !important;
   color: #3058b6 !important;
+=======
+  -webkit-box-shadow: 0px 0px 0px 1px #0d71bb inset !important;
+          box-shadow: 0px 0px 0px 1px #0d71bb inset !important;
+  color: #1678c2 !important;
+>>>>>>> master
 }
 .ui.basic.primary.buttons .active.button,
 .ui.basic.primary.active.button {
   background: transparent !important;
+<<<<<<< HEAD
   -webkit-box-shadow: 0px 0px 0px 1px #2d56b9 inset !important;
           box-shadow: 0px 0px 0px 1px #2d56b9 inset !important;
   color: #30509c !important;
@@ -3336,6 +3567,17 @@
   -webkit-box-shadow: 0px 0px 0px 1px #30509c inset !important;
           box-shadow: 0px 0px 0px 1px #30509c inset !important;
   color: #30509c !important;
+=======
+  -webkit-box-shadow: 0px 0px 0px 1px #1279c6 inset !important;
+          box-shadow: 0px 0px 0px 1px #1279c6 inset !important;
+  color: #1a69a4 !important;
+}
+.ui.basic.primary.buttons .button:active,
+.ui.basic.primary.button:active {
+  -webkit-box-shadow: 0px 0px 0px 1px #1a69a4 inset !important;
+          box-shadow: 0px 0px 0px 1px #1a69a4 inset !important;
+  color: #1a69a4 !important;
+>>>>>>> master
 }
 .ui.buttons:not(.vertical) > .basic.primary.button:not(:first-child) {
   margin-left: -1px;
@@ -3345,9 +3587,15 @@
 .ui.inverted.primary.buttons .button,
 .ui.inverted.primary.button {
   background-color: transparent;
+<<<<<<< HEAD
   -webkit-box-shadow: 0px 0px 0px 2px #3c64c3 inset !important;
           box-shadow: 0px 0px 0px 2px #3c64c3 inset !important;
   color: #3c64c3;
+=======
+  -webkit-box-shadow: 0px 0px 0px 2px #54C8FF inset !important;
+          box-shadow: 0px 0px 0px 2px #54C8FF inset !important;
+  color: #54C8FF;
+>>>>>>> master
 }
 .ui.inverted.primary.buttons .button:hover,
 .ui.inverted.primary.button:hover,
@@ -3363,6 +3611,7 @@
 }
 .ui.inverted.primary.buttons .button:hover,
 .ui.inverted.primary.button:hover {
+<<<<<<< HEAD
   background-color: #3058b6;
 }
 .ui.inverted.primary.buttons .button:focus,
@@ -3376,6 +3625,21 @@
 .ui.inverted.primary.buttons .button:active,
 .ui.inverted.primary.button:active {
   background-color: #30509c;
+=======
+  background-color: #3ac0ff;
+}
+.ui.inverted.primary.buttons .button:focus,
+.ui.inverted.primary.button:focus {
+  background-color: #2bbbff;
+}
+.ui.inverted.primary.buttons .active.button,
+.ui.inverted.primary.active.button {
+  background-color: #3ac0ff;
+}
+.ui.inverted.primary.buttons .button:active,
+.ui.inverted.primary.button:active {
+  background-color: #21b8ff;
+>>>>>>> master
 }
 
 /* Inverted Basic */
@@ -3390,30 +3654,54 @@
 .ui.inverted.primary.basic.buttons .button:hover,
 .ui.inverted.primary.buttons .basic.button:hover,
 .ui.inverted.primary.basic.button:hover {
+<<<<<<< HEAD
   -webkit-box-shadow: 0px 0px 0px 2px #3058b6 inset !important;
           box-shadow: 0px 0px 0px 2px #3058b6 inset !important;
   color: #3c64c3 !important;
+=======
+  -webkit-box-shadow: 0px 0px 0px 2px #3ac0ff inset !important;
+          box-shadow: 0px 0px 0px 2px #3ac0ff inset !important;
+  color: #54C8FF !important;
+>>>>>>> master
 }
 .ui.inverted.primary.basic.buttons .button:focus,
 .ui.inverted.primary.basic.buttons .button:focus,
 .ui.inverted.primary.basic.button:focus {
+<<<<<<< HEAD
   -webkit-box-shadow: 0px 0px 0px 2px #274faf inset !important;
           box-shadow: 0px 0px 0px 2px #274faf inset !important;
   color: #3c64c3 !important;
+=======
+  -webkit-box-shadow: 0px 0px 0px 2px #2bbbff inset !important;
+          box-shadow: 0px 0px 0px 2px #2bbbff inset !important;
+  color: #54C8FF !important;
+>>>>>>> master
 }
 .ui.inverted.primary.basic.buttons .active.button,
 .ui.inverted.primary.buttons .basic.active.button,
 .ui.inverted.primary.basic.active.button {
+<<<<<<< HEAD
   -webkit-box-shadow: 0px 0px 0px 2px #2d56b9 inset !important;
           box-shadow: 0px 0px 0px 2px #2d56b9 inset !important;
   color: #3c64c3 !important;
+=======
+  -webkit-box-shadow: 0px 0px 0px 2px #3ac0ff inset !important;
+          box-shadow: 0px 0px 0px 2px #3ac0ff inset !important;
+  color: #54C8FF !important;
+>>>>>>> master
 }
 .ui.inverted.primary.basic.buttons .button:active,
 .ui.inverted.primary.buttons .basic.button:active,
 .ui.inverted.primary.basic.button:active {
+<<<<<<< HEAD
   -webkit-box-shadow: 0px 0px 0px 2px #30509c inset !important;
           box-shadow: 0px 0px 0px 2px #30509c inset !important;
   color: #3c64c3 !important;
+=======
+  -webkit-box-shadow: 0px 0px 0px 2px #21b8ff inset !important;
+          box-shadow: 0px 0px 0px 2px #21b8ff inset !important;
+  color: #54C8FF !important;
+>>>>>>> master
 }
 
 /*-------------------

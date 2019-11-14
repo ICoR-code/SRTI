@@ -1,6 +1,7 @@
 /*******************************
     User Variable Overrides
 *******************************/
+<<<<<<< HEAD
 
 @blue: #3c64c3;
 @blueHover: saturate(darken(@blue, 10), 24);
@@ -28,3 +29,5 @@
 @lightGreenActive: @greenActive;
 
 @positiveColor: #21BA45;
+=======
+>>>>>>> master
