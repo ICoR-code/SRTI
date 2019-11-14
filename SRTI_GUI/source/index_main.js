@@ -54,7 +54,7 @@ var numOfStages = 1;
 var stage = 0;
 // Current state of selection. References the buttons in the top-left corner: 
 //		"Select," "Configure," "Connect," and "Delete".
-
+var selectState = 0;
 
 // Sub-objects for Message / Simulator (used interchangably) definitions: 
 //		'objects' = variables, 'functions' = functions in simulator.
@@ -2881,7 +2881,7 @@ function CreateNewMessageOnCanvas(btn_id) {
 	var panel = document.getElementById("canvassubpanel2grid");
 	var listOfCurrentItems = document.getElementsByClassName("div-canvas-message");
 	var addContentType = document.createElement("div");
-	addContentType.className = "ui blue butto div-canvas-message";
+	addContentType.className = "ui blue button div-canvas-message";
 	addContentType.setAttribute("name", listOfMessages[btn_id].name);
 	var addContent1 = document.createTextNode(listOfMessages[btn_id].name);
 	addContentType.appendChild(addContent1);
@@ -2902,7 +2902,10 @@ function CreateExistingMessageOnCanvas(message_id) {
 	var addContentType = document.createElement("div");
 	addContentType.className = "ui blue button div-canvas-message";
 	addContentType.setAttribute("name", messageObjects[message_id].name);
-	+ (10 + (42 * listOfCurrentItems.length)) + "px;";
+	var addContent1 = document.createTextNode(messageObjects[message_id].name);
+	addContentType.appendChild(addContent1);
+	addContentType.style = "position: absolute; overflow-y:hidden;" + "left:100px; top:"
+		+ (10 + (42 * listOfCurrentItems.length)) + "px;";
 	panel.appendChild(addContentType);
 	messageObjects[i].objectRef = addContentType;
 }
@@ -3060,7 +3063,7 @@ function CloseEditServer() {
 	header.append($('<h3>').text('RTI Server'))
 
 	let content = $('<div>').addClass('ui compact segment')
-	let button = $('<button>').addClass('ui color-message basic button').text('Change Launch Parameters')
+	let button = $('<button>').addClass('ui blue basic button').text('Change Launch Parameters')
 	button.click(() => {
 		EditServer();
 	})
@@ -3227,6 +3230,33 @@ function EditStageConditions() {
 		}).dropdown('clear')
 	})
 
+	$('#dropdownStageConditionPickRTIVar1 .menu, #dropdownStageConditionPickRTIVar2 .menu').each(function (index) {
+		let dropdown = $(this)
+		dropdown.empty()
+
+		let item
+		for (variable of ["RTI_vTimestep", "RTI_stage", "RTI_stageVTimestepMul", "RTI_stageVTimestep"]) {
+			item = $('<div>').addClass('item').text(variable)
+			item.attr(variable)
+			dropdown.append(item)
+		}
+
+		dropdown.parent().dropdown({
+			action: 'activate',
+			onChange: function (value, text, $item) {
+				if (value) {
+					$('#' + $(this).attr('for')).text(value)
+					$(`.dropdown[for="${$(this).attr('for')}"]`).not('#' + $(this).attr('id')).dropdown('clear')
+					$(`input[for="${$(this).attr('for')}"]`).val('').blur()
+					if ($(this).attr('for').endsWith('3')) {
+						stageConditionV3b = value
+						stageConditionV3a = ""
+					}
+
+				}
+			}
+		}).dropdown('clear')
+	})
 
 	let dropdown = $('#dropdownStageConditionCondition1 .menu')
 	dropdown.empty()
@@ -3254,7 +3284,606 @@ function EditStageConditions() {
 			$(`.dropdown[for="${$(this).attr('for')}"]`).dropdown('clear')
 			stageConditionV3a = $(this).val()
 			stageConditionV3b = ""
-			// 		var tempVarName2 = simulatorObjects[editExistingObject].stageConditions[i].conditions[j].varName2;
+		}
+	}
+	)
+	input.val('').blur()
+
+	// var dropdown = document.getElementById("dropdownStageConditionPickVar1");
+	// while (dropdown.firstChild) {
+	// 	dropdown.removeChild(dropdown.firstChild);
+	// }
+	// let i = 0;
+	// for (i = 0; i < simulatorObjects[editExistingObject].original.variables.length; i++) {
+	// 	var addContentType = document.createElement("a");
+	// 	addContentType.href = "#";
+	// 	addContentType.innerHTML = simulatorObjects[editExistingObject].original.variables[i].name +
+	// 		" (" + simulatorObjects[editExistingObject].original.variables[i].valueType + ")";
+	// 	addContentType.name = simulatorObjects[editExistingObject].original.variables[i].name;
+	// 	addContentType.onclick = function () {
+	// 		console.log("Clicked that: " + this.innerHTML);
+	// 		stageConditionV1 = this.name;
+
+	// 		document.getElementById("divStageConditionStatement").innerHTML
+	// 			= "If [" + stageConditionV1 + "] [" + stageConditionV2 + "] [" + stageConditionV3 + "] AND ...";
+	// 	};
+	// 	dropdown.appendChild(addContentType);
+	// }
+
+	// dropdown = document.getElementById("dropdownStageConditionPickRTIVar1");
+	// while (dropdown.firstChild) {
+	// 	dropdown.removeChild(dropdown.firstChild);
+	// }
+	// for (i = 0; i < 4; i++) {
+	// 	var addContentType = document.createElement("a");
+	// 	addContentType.href = "#";
+	// 	if (i == 0) {
+	// 		addContentType.innerHTML = "RTI_vTimestep";
+	// 	}
+	// 	else if (i == 1) {
+	// 		addContentType.innerHTML = "RTI_stage";
+	// 	} else if (i == 2) {
+	// 		addContentType.innerHTML = "RTI_stageVTimestepMul";
+	// 	} else if (i == 3) {
+	// 		addContentType.innerHTML = "RTI_stageVTimestep";
+	// 	}
+	// 	addContentType.name = addContentType.innerHTML;
+	// 	addContentType.onclick = function () {
+	// 		console.log("Clicked this: " + this.innerHTML);
+
+	// 		stageConditionV1 = this.name;
+	// 		document.getElementById("divStageConditionStatement").innerHTML
+	// 			= "If [" + stageConditionV1 + "] [" + stageConditionV2 + "] [" + stageConditionV3 + "] AND ...";
+	// 	};
+	// 	dropdown.appendChild(addContentType);
+	// }
+
+	// dropdown = document.getElementById("dropdownStageConditionCondition1");
+	// while (dropdown.firstChild) {
+	// 	dropdown.removeChild(dropdown.firstChild);
+	// }
+	// for (i = 0; i < 6; i++) {
+	// 	var addContentType = document.createElement("a");
+	// 	addContentType.href = "#";
+	// 	if (i == 0) {
+	// 		addContentType.innerHTML = "=";
+	// 	} else if (i == 1) {
+	// 		addContentType.innerHTML = ">";
+	// 	} else if (i == 2) {
+	// 		addContentType.innerHTML = "<";
+	// 	} else if (i == 3) {
+	// 		addContentType.innerHTML = ">=";
+	// 	} else if (i == 4) {
+	// 		addContentType.innerHTML = "<=";
+	// 	} else if (i == 5) {
+	// 		addContentType.innerHTML = "!=";
+	// 	}
+	// 	addContentType.name = addContentType.innerHTML;
+	// 	addContentType.onclick = function () {
+	// 		console.log("Clicked that: " + unescape(this.innerHTML));
+
+	// 		if (this.name == "&gt;") {
+	// 			stageConditionV2 = ">";
+	// 		} else if (this.name == "&lt;") {
+	// 			stageConditionV2 = "<";
+	// 		} else if (this.name == "&gt;=") {
+	// 			stageConditionV2 = ">=";
+	// 		} else if (this.name == "&lt;=") {
+	// 			stageConditionV2 = "<=";
+	// 		} else {
+	// 			stageConditionV2 = unescape(this.name);
+	// 		}
+	// 		console.log("(stageCondition is = )" + stageConditionV2);
+	// 		//stageConditionV2 = this.innerHTML;
+	// 		document.getElementById("divStageConditionStatement").innerHTML
+	// 			= "If [" + stageConditionV1 + "] [" + stageConditionV2 + "] [" + stageConditionV3 + "] AND ...";
+	// 	};
+	// 	dropdown.appendChild(addContentType);
+	// }
+
+	// dropdown = document.getElementById("dropdownStageConditionPickVar2");
+	// while (dropdown.firstChild) {
+	// 	dropdown.removeChild(dropdown.firstChild);
+	// }
+	// for (i = 0; i < simulatorObjects[editExistingObject].original.variables.length; i++) {
+	// 	var addContentType = document.createElement("a");
+	// 	addContentType.href = "#";
+	// 	addContentType.innerHTML = simulatorObjects[editExistingObject].original.variables[i].name +
+	// 		" (" + simulatorObjects[editExistingObject].original.variables[i].valueType + ")";
+	// 	addContentType.name = simulatorObjects[editExistingObject].original.variables[i].name;
+	// 	addContentType.onclick = function () {
+	// 		console.log("Clicked that: " + this.innerHTML);
+
+	// 		stageConditionV3 = this.name;
+	// 		stageConditionV3b = this.name;
+	// 		stageConditionV3a = "";
+
+	// 		document.getElementById("divStageConditionStatement").innerHTML
+	// 			= "If [" + stageConditionV1 + "] [" + stageConditionV2 + "] [" + stageConditionV3 + "] AND ...";
+	// 	};
+	// 	dropdown.appendChild(addContentType);
+	// }
+
+	// dropdown = document.getElementById("dropdownStageConditionPickRTIVar2");
+	// while (dropdown.firstChild) {
+	// 	dropdown.removeChild(dropdown.firstChild);
+	// }
+	// for (i = 0; i < 4; i++) {
+	// 	var addContentType = document.createElement("a");
+	// 	addContentType.href = "#";
+	// 	if (i == 0) {
+	// 		addContentType.innerHTML = "RTI_vTimestep";
+	// 	} else if (i == 1) {
+	// 		addContentType.innerHTML = "RTI_stage";
+	// 	} else if (i == 2) {
+	// 		addContentType.innerHTML = "RTI_stageVTimestepMul";
+	// 	} else if (i == 3) {
+	// 		addContentType.innerHTML = "RTI_stageVTimestep";
+	// 	}
+	// 	addContentType.name = addContentType.innerHTML;
+	// 	addContentType.onclick = function () {
+	// 		console.log("Clicked that: " + this.innerHTML);
+
+	// 		stageConditionV3 = this.name;
+	// 		stageConditionV3b = this.name;
+	// 		stageConditionV3a = "";
+
+	// 		document.getElementById("divStageConditionStatement").innerHTML
+	// 			= "If [" + stageConditionV1 + "] [" + stageConditionV2 + "] [" + stageConditionV3 + "] AND ...";
+	// 	};
+	// 	dropdown.appendChild(addContentType);
+	// }
+
+
+	// var panel = document.getElementById("modalStageConditionsPanel");
+	// while (panel.firstChild) {
+	// 	panel.removeChild(panel.firstChild);
+	// }
+	// for (i = 0; i < simulatorObjects[editExistingObject].stageConditions.length; i++) {
+	// 	var addContentType = document.createElement("div");
+	// 	addContentType.className = "div-list-item";
+	// 	var addContent1 = document.createElement("div");
+	// 	addContent1.style = "width:80%;float:left;";
+	// 	var sentence = "in stage = " + simulatorObjects[editExistingObject].stageConditions[i].oldStage + ", ";
+	// 	let j = 0;
+	// 	for (j = 0; j < simulatorObjects[editExistingObject].stageConditions[i].conditions.length; j++) {
+	// 		var tempVarName2 = simulatorObjects[editExistingObject].stageConditions[i].conditions[j].varName2;
+	// 		if (tempVarName2 == "") {
+	// 			sentence = sentence + "if [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].varName
+	// 				+ "] [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].condition
+	// 				+ "] [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].value + "] ";
+	// 		} else {
+	// 			sentence = sentence + "if [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].varName
+	// 				+ "] [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].condition
+	// 				+ "] [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].varName2 + "] ";
+	// 		}
+	// 		if (j < simulatorObjects[editExistingObject].stageConditions[i].conditions.length - 1) {
+	// 			sentence = sentence + "AND ";
+	// 		}
+	// 	}
+	// 	sentence = sentence + "go to stage = " + simulatorObjects[editExistingObject].stageConditions[i].newStage;
+	// 	addContent1.innerHTML = sentence;
+	// 	addContentType.appendChild(addContent1);
+	// 	var addContent2 = document.createElement("button");
+	// 	addContent2.name = i;
+	// 	addContent2.onclick = function () {
+	// 		//RemoveStageConditionFromSubList(this.name);
+	// 		RemoveStageConditionFromList(this.name);
+	// 	};
+	// 	addContent2.style = "float:right;";
+	// 	var addContent3 = document.createTextNode("X");
+	// 	addContent2.appendChild(addContent3);
+	// 	addContentType.appendChild(addContent2);
+
+	// 	panel.appendChild(addContentType);
+	// }
+
+	// stageConditionSubSet = [];
+
+	// var subpanel = document.getElementById("modalStageConditionsSubPanel");
+	// while (subpanel.firstChild) {
+	// 	subpanel.removeChild(subpanel.firstChild);
+	// }
+	// for (i = 0; i < stageConditionSubSet.length; i++) {
+	// 	var addContentType = document.createElement("div");
+	// 	addContentType.className = "div-list-item";
+	// 	var tempVarName2 = stageConditionSubSet[i].varName2;
+	// 	var addContent1 = document.createElement("div");
+	// 	addContent1.style = "width:70%;float:left;";
+	// 	if (tempVarName2 == "") {
+	// 		addContent1.innerHTML = "if [" + stageConditionSubSet[i].varName + "] ["
+	// 			+ stageConditionSubSet[i].condition + "] [" + stageConditionSubSet[i].value + "] && ...";
+	// 	} else {
+	// 		addContent1.innerHTML = "if [" + stageConditionSubSet[i].varName + "] ["
+	// 			+ stageConditionSubSet[i].condition + "] [" + stageConditionSubSet[i].varName2 + "] && ...";
+	// 	}
+	// 	addContentType.appendChild(addContent1);
+	// 	var addContent2 = document.createElement("button");
+	// 	addContent2.name = i;
+	// 	addContent2.onclick = function () {
+	// 		RemoveStageConditionFromSubList(this.name);
+	// 	};
+	// 	addContent2.style = "float:right;";
+	// 	var addContent3 = document.createTextNode("X");
+	// 	addContent2.appendChild(addContent3);
+	// 	addContentType.appendChild(addContent2);
+
+	// 	subpanel.appendChild(addContentType);
+	// }
+	stageConditionV1 = "";
+	stageConditionV2 = "";
+	stageConditionV3 = "";
+	stageConditionV3a = "";
+	stageConditionV3b = "";
+	$('#stageCondition1, #stageCondition2, #stageCondition3').text('')
+	// document.getElementsByName("TextStageConditionsPickValue2")[0].value = "";
+	// document.getElementById("divStageConditionStatement").innerHTML
+	// 	= "If [" + stageConditionV1 + "] [" + stageConditionV2 + "] [" + stageConditionV3 + "] AND ...";
+
+}
+
+/*	CloseStageConditions()
+	- Close prompt to configure stage conditions for simulator on canvas.
+*/
+function CloseStageConditions() {
+	DisplayOrClosePrompt("modalStageConditions", "none");
+}
+
+/* EditEndConditions()
+	- Prompt to edit configuration for simulator (define when to transition to end system execution).
+*/
+function EditEndConditions() {
+	DisplayOrClosePrompt("modalEndConditions", "block");
+
+	$('#dropdownEndConditionPickVar1 .menu, #dropdownEndConditionPickVar2 .menu').each(function (index) {
+		let dropdown = $(this)
+		dropdown.empty()
+
+		let item
+		let i
+		for (i = 0; i < simulatorObjects[editExistingObject].original.variables.length; i++) {
+			item = $('<div>').addClass('item').text(simulatorObjects[editExistingObject].original.variables[i].name +
+				" (" + simulatorObjects[editExistingObject].original.variables[i].valueType + ")")
+			item.attr('data-value', simulatorObjects[editExistingObject].original.variables[i].name)
+			dropdown.append(item)
+		}
+
+		dropdown.parent().dropdown({
+			action: 'activate',
+			onChange: function (value, text, $item) {
+				if (value) {
+					$('#' + $(this).attr('for')).text(value)
+					$(`.dropdown[for="${$(this).attr('for')}"]`).not('#' + $(this).attr('id')).dropdown('clear')
+					$(`input[for="${$(this).attr('for')}"]`).val('').blur()
+					if ($(this).attr('for').endsWith('3')) {
+						stageConditionV3b = value
+						stageConditionV3a = ""
+					}
+
+				}
+			}
+		}).dropdown('clear')
+	})
+
+	$('#dropdownEndConditionPickRTIVar1 .menu, #dropdownEndConditionPickRTIVar2 .menu').each(function (index) {
+		let dropdown = $(this)
+		dropdown.empty()
+
+		let item
+		for (variable of ["RTI_vTimestep", "RTI_stage", "RTI_stageVTimestepMul", "RTI_stageVTimestep"]) {
+			item = $('<div>').addClass('item').text(variable)
+			item.attr(variable)
+			dropdown.append(item)
+		}
+
+		dropdown.parent().dropdown({
+			action: 'activate',
+			onChange: function (value, text, $item) {
+				if (value) {
+					$('#' + $(this).attr('for')).text(value)
+					$(`.dropdown[for="${$(this).attr('for')}"]`).not('#' + $(this).attr('id')).dropdown('clear')
+					$(`input[for="${$(this).attr('for')}"]`).val('').blur()
+					if ($(this).attr('for').endsWith('3')) {
+						stageConditionV3b = value
+						stageConditionV3a = ""
+					}
+
+				}
+			}
+		}).dropdown('clear')
+	})
+
+	let dropdown = $('#dropdownEndConditionCondition1 .menu')
+	dropdown.empty()
+
+	let item
+	for (variable of ["==", "!=", ">", "<", ">=", "<="]) {
+		item = $('<div>').addClass('item').text(variable)
+		item.attr(variable)
+		dropdown.append(item)
+	}
+
+	dropdown.parent().dropdown({
+		action: 'activate',
+		onChange: function (value, text, $item) {
+			if (value) {
+				$('#' + $(this).attr('for')).html(value)
+			}
+		}
+	}).dropdown('clear')
+
+	let input = $('input[name="TextEndConditionsPickValue2"]')
+	input.keyup(function () {
+		if ($(this).val()) {
+			$('#' + $(this).attr('for')).text($(this).val())
+			$(`.dropdown[for="${$(this).attr('for')}"]`).dropdown('clear')
+			stageConditionV3a = $(this).val()
+			stageConditionV3b = ""
+		}
+	}
+	)
+	input.val('').blur()
+
+	// var dropdown = document.getElementById("dropdownEndConditionPickVar1");
+	// while (dropdown.firstChild) {
+	// 	dropdown.removeChild(dropdown.firstChild);
+	// }
+	// let i = 0;
+	// for (i = 0; i < simulatorObjects[editExistingObject].original.variables.length; i++) {
+	// 	var addContentType = document.createElement("a");
+	// 	addContentType.href = "#";
+	// 	addContentType.innerHTML = simulatorObjects[editExistingObject].original.variables[i].name +
+	// 		" (" + simulatorObjects[editExistingObject].original.variables[i].valueType + ")";
+	// 	addContentType.name = simulatorObjects[editExistingObject].original.variables[i].name;
+	// 	addContentType.onclick = function () {
+	// 		console.log("Clicked that: " + this.innerHTML);
+	// 		stageConditionV1 = this.name;
+
+	// 		document.getElementById("divEndConditionStatement").innerHTML
+	// 			= "If [" + stageConditionV1 + "] [" + stageConditionV2 + "] [" + stageConditionV3 + "] AND ...";
+	// 	};
+	// 	dropdown.appendChild(addContentType);
+	// }
+
+	// dropdown = document.getElementById("dropdownEndConditionPickRTIVar1");
+	// while (dropdown.firstChild) {
+	// 	dropdown.removeChild(dropdown.firstChild);
+	// }
+	// for (i = 0; i < 4; i++) {
+	// 	var addContentType = document.createElement("a");
+	// 	addContentType.href = "#";
+	// 	if (i == 0) {
+	// 		addContentType.innerHTML = "RTI_vTimestep";
+	// 	} else if (i == 1) {
+	// 		addContentType.innerHTML = "RTI_stage";
+	// 	} else if (i == 2) {
+	// 		addContentType.innerHTML = "RTI_stageVTimestepMul";
+	// 	} else if (i == 3) {
+	// 		addContentType.innerHTML = "RTI_stageVTimestep";
+	// 	}
+	// 	addContentType.name = addContentType.innerHTML;
+	// 	addContentType.onclick = function () {
+	// 		console.log("Clicked this: " + this.innerHTML);
+	// 		stageConditionV1 = this.name;
+	// 		document.getElementById("divEndConditionStatement").innerHTML
+	// 			= "If [" + stageConditionV1 + "] [" + stageConditionV2 + "] [" + stageConditionV3 + "] AND ...";
+	// 	};
+	// 	dropdown.appendChild(addContentType);
+	// }
+
+	// dropdown = document.getElementById("dropdownEndConditionCondition1");
+	// while (dropdown.firstChild) {
+	// 	dropdown.removeChild(dropdown.firstChild);
+	// }
+	// for (i = 0; i < 6; i++) {
+	// 	var addContentType = document.createElement("a");
+	// 	addContentType.href = "#";
+	// 	if (i == 0) {
+	// 		addContentType.innerHTML = "=";
+	// 	} else if (i == 1) {
+	// 		addContentType.innerHTML = ">";
+	// 	} else if (i == 2) {
+	// 		addContentType.innerHTML = "<";
+	// 	} else if (i == 3) {
+	// 		addContentType.innerHTML = ">=";
+	// 	} else if (i == 4) {
+	// 		addContentType.innerHTML = "<=";
+	// 	} else if (i == 5) {
+	// 		addContentType.innerHTML = "!=";
+	// 	}
+	// 	addContentType.name = addContentType.innerHTML;
+	// 	addContentType.onclick = function () {
+	// 		console.log("Clicked that: " + unescape(this.innerHTML));
+	// 		if (this.name == "&gt;") {
+	// 			stageConditionV2 = ">";
+	// 		} else if (this.name == "&lt;") {
+	// 			stageConditionV2 = "<";
+	// 		} else if (this.name == "&gt;=") {
+	// 			stageConditionV2 = ">=";
+	// 		} else if (this.name == "&lt;=") {
+	// 			stageConditionV2 = "<=";
+	// 		} else {
+	// 			stageConditionV2 = unescape(this.name);
+	// 		}
+	// 		//stageConditionV2 = this.innerHTML;
+	// 		document.getElementById("divEndConditionStatement").innerHTML
+	// 			= "If [" + stageConditionV1 + "] [" + stageConditionV2 + "] [" + stageConditionV3 + "] AND ...";
+	// 	};
+	// 	dropdown.appendChild(addContentType);
+	// }
+
+	// dropdown = document.getElementById("dropdownEndConditionPickVar2");
+	// while (dropdown.firstChild) {
+	// 	dropdown.removeChild(dropdown.firstChild);
+	// }
+	// for (i = 0; i < simulatorObjects[editExistingObject].original.variables.length; i++) {
+	// 	var addContentType = document.createElement("a");
+	// 	addContentType.href = "#";
+	// 	addContentType.innerHTML = simulatorObjects[editExistingObject].original.variables[i].name +
+	// 		" (" + simulatorObjects[editExistingObject].original.variables[i].valueType + ")";
+	// 	addContentType.name = simulatorObjects[editExistingObject].original.variables[i].name;
+	// 	addContentType.onclick = function () {
+	// 		console.log("Clicked that: " + this.innerHTML);
+	// 		stageConditionV3 = this.name;
+	// 		stageConditionV3b = this.name;
+	// 		stageConditionV3a = "";
+	// 		document.getElementById("divEndConditionStatement").innerHTML
+	// 			= "If [" + stageConditionV1 + "] [" + stageConditionV2 + "] [" + stageConditionV3 + "] AND ...";
+	// 	};
+	// 	dropdown.appendChild(addContentType);
+	// }
+
+	// dropdown = document.getElementById("dropdownEndConditionPickRTIVar2");
+	// while (dropdown.firstChild) {
+	// 	dropdown.removeChild(dropdown.firstChild);
+	// }
+	// for (i = 0; i < 4; i++) {
+	// 	var addContentType = document.createElement("a");
+	// 	addContentType.href = "#";
+	// 	if (i == 0) {
+	// 		addContentType.innerHTML = "RTI_vTimestep";
+	// 	} else if (i == 1) {
+	// 		addContentType.innerHTML = "RTI_stage";
+	// 	} else if (i == 2) {
+	// 		addContentType.innerHTML = "RTI_stageVTimestepMul";
+	// 	} else if (i == 3) {
+	// 		addContentType.innerHTML = "RTI_stageVTimestep";
+	// 	}
+	// 	addContentType.name = addContentType.innerHTML;
+	// 	addContentType.onclick = function () {
+	// 		console.log("Clicked that: " + this.innerHTML);
+	// 		stageConditionV3 = this.name;
+	// 		stageConditionV3b = this.name;
+	// 		stageConditionV3a = "";
+	// 		document.getElementById("divEndConditionStatement").innerHTML
+	// 			= "If [" + stageConditionV1 + "] [" + stageConditionV2 + "] [" + stageConditionV3 + "] AND ...";
+	// 	};
+	// 	dropdown.appendChild(addContentType);
+	// }
+
+	// var panel = document.getElementById("modalEndConditionsPanel");
+	// while (panel.firstChild) {
+	// 	panel.removeChild(panel.firstChild);
+	// }
+	// for (i = 0; i < simulatorObjects[editExistingObject].endConditions.length; i++) {
+	// 	var addContentType = document.createElement("div");
+	// 	addContentType.className = "div-list-item";
+	// 	var addContent1 = document.createElement("div");
+	// 	addContent1.style = "width:80%;float:left;";
+	// 	var sentence = "in stage = " + simulatorObjects[editExistingObject].endConditions[i].oldStage + ", ";
+	// 	let j = 0;
+	// 	for (j = 0; j < simulatorObjects[editExistingObject].endConditions[i].conditions.length; j++) {
+	// 		var tempVarName2 = simulatorObjects[editExistingObject].endConditions[i].conditions[j].varName2;
+	// 		if (tempVarName2 == "") {
+	// 			sentence = sentence + "if [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].varName
+	// 				+ "] [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].condition
+	// 				+ "] [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].value + "] ";
+	// 		} else {
+	// 			sentence = sentence + "if [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].varName
+	// 				+ "] [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].condition
+	// 				+ "] [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].varName2 + "] ";
+	// 		}
+	// 		if (j < simulatorObjects[editExistingObject].endConditions[i].conditions.length - 1) {
+	// 			sentence = sentence + "AND ";
+	// 		}
+	// 	}
+	// 	sentence = sentence + "then end simulation system.";
+	// 	addContent1.innerHTML = sentence;
+	// 	addContentType.appendChild(addContent1);
+	// 	var addContent2 = document.createElement("button");
+	// 	addContent2.name = i;
+	// 	addContent2.onclick = function () {
+	// 		//RemoveEndConditionFromSubList(this.name);
+	// 		RemoveEndConditionFromList(this.name);
+	// 	};
+	// 	addContent2.style = "float:right;";
+	// 	var addContent3 = document.createTextNode("X");
+	// 	addContent2.appendChild(addContent3);
+	// 	addContentType.appendChild(addContent2);
+
+	// 	panel.appendChild(addContentType);
+	// }
+
+	// stageConditionSubSet = [];
+
+	// var subpanel = document.getElementById("modalEndConditionsSubPanel");
+	// while (subpanel.firstChild) {
+	// 	subpanel.removeChild(subpanel.firstChild);
+	// }
+	// for (i = 0; i < stageConditionSubSet.length; i++) {
+	// 	var addContentType = document.createElement("div");
+	// 	addContentType.className = "div-list-item";
+	// 	var tempVarName2 = stageConditionSubSet[i].varName2;
+	// 	var addContent1 = document.createElement("div");
+	// 	addContent1.style = "width:70%;float:left;";
+	// 	if (tempVarName2 == "") {
+	// 		addContent1.innerHTML = "if [" + stageConditionSubSet[i].varName + "] ["
+	// 			+ stageConditionSubSet[i].condition + "] [" + stageConditionSubSet[i].value + "] && ...";
+	// 	} else {
+	// 		addContent1.innerHTML = "if [" + stageConditionSubSet[i].varName + "] ["
+	// 			+ stageConditionSubSet[i].condition + "] [" + stageConditionSubSet[i].varName2 + "] && ...";
+	// 	}
+	// 	addContentType.appendChild(addContent1);
+	// 	var addContent2 = document.createElement("button");
+	// 	addContent2.name = i;
+	// 	addContent2.onclick = function () {
+	// 		RemoveEndConditionFromSubList(this.name);
+	// 	};
+	// 	addContent2.style = "float:right;";
+	// 	var addContent3 = document.createTextNode("X");
+	// 	addContent2.appendChild(addContent3);
+	// 	addContentType.appendChild(addContent2);
+
+	// 	subpanel.appendChild(addContentType);
+	// }
+	stageConditionV1 = "";
+	stageConditionV2 = "";
+	stageConditionV3 = "";
+	stageConditionV3a = "";
+	stageConditionV3b = "";
+	$('#endCondition1, #endCondition2, #endCondition3').text('')
+	// document.getElementsByName("TextEndConditionsPickValue2")[0].value = "";
+	// document.getElementById("divEndConditionStatement").innerHTML
+	// 	= "If [" + stageConditionV1 + "] [" + stageConditionV2 + "] [" + stageConditionV3 + "] AND ...";
+}
+
+/*	CloseEndConditions()
+	- Close prompt to configure end conditions for simulator on canvas.
+*/
+function CloseEndConditions() {
+	DisplayOrClosePrompt("modalEndConditions", "none");
+}
+
+/*	DisableCertainObjectButtons()
+	- Disable certain buttons on the canvas, based on what simulators/messages are on the canvas.
+*/
+function DisableCertainObjectButtons() {
+	var subpanel1btns = document.getElementById("objectsubpanel1").children;
+	var subpanel2btns = document.getElementById("objectsubpanel2").children;
+
+	let i = 0;
+	let j = 0;
+	for (j = 0; j < subpanel1btns.length; j++) {
+		subpanel1btns[j].disabled = false;
+	}
+	for (j = 0; j < subpanel2btns.length; j++) {
+		subpanel2btns[j].disabled = false;
+	}
+	//check simulator buttons to disable
+	for (i = 0; i < simulatorObjects.length; i++) {
+		if (simulatorObjects[i].stage == stage && selectState == 0) {
+			console.log("disable this button = " + simulatorObjects[i].name);
+			for (j = 0; j < subpanel1btns.length; j++) {
+				if (subpanel1btns[j].innerText == simulatorObjects[i].name) {
+					subpanel1btns[j].disabled = true;
+				}
+			}
+		}
+	}
+	//check message buttons to disable
+	for (i = 0; i < messageObjects.length; i++) {
+		if (selectState == 0) {
+			console.log("disable this button message = " + messageObjects[i].name);
 			for (j = 0; j < subpanel2btns.length; j++) {
 				if (subpanel2btns[j].innerText == messageObjects[i].name) {
 					subpanel2btns[j].disabled = true;
@@ -3278,2525 +3907,2191 @@ function UpdateHostName() {
 			} else {
 				//... is there a real way to get local host's IP address? Otherwise, need other way to display IP for user to connect other simulators.
 				hostName = "123.456.78.9";
-=
-
-				dropdown.parent().dropdown({
-					action: 'activate',
-					onChange: function (value, text, $item) {
-						if (value) {
-							$('#' + $(this).attr('for')).text(value)
-							$(`.dropdown[for="${$(this).attr('for')}"]`).not('#' + $(this).attr('id')).dropdown('clear')
-							$(`input[for="${$(this).attr('for')}"]`).val('').blur()
-							if ($(this).attr('for').endsWith('3')) {
-								stageConditionV3b = value
-								stageConditionV3a = ""
-							}
-
-						}
-					}
-				}).dropdown('clear')
-			})
-
-			let dropdown = $('#dropdownEndConditionCondition1 .menu')
-			dropdown.empty()
-
-			let item
-			for (variable of ["==", "!=", ">", "<", ">=", "<="]) {
-				item = $('<div>').addClass('item').text(variable)
-				item.attr(variable)
-				dropdown.append(item)
 			}
-
-			dropdown.parent().dropdown({
-				action: 'activate',
-				onChange: function (value, text, $item) {
-					if (value) {
-						$('#' + $(this).attr('for')).html(value)
-					}
-				}
-			}).dropdown('clear')
-
-			let input = $('input[name="TextEndConditionsPickValue2"]')
-			input.keyup(function () {
-				if ($(this).val()) {
-					$('#' + $(this).attr('for')).text($(this).val())
-					$(`.dropdown[for="${$(this).attr('for')}"]`).dropdown('clear')
-					stageConditionV3a = $(this).val()
-					stageConditionV3b = ""
-				}
-			}
-			)
-			input.val('').blur()
-
-			// var dropdown = document.getElementById("dropdownEndConditionPickVar1");
-			// while (dropdown.firstChild) {
-			// 	dropdown.removeChild(dropdown.firstChild);
-			// }
-			// let i = 0;
-			// for (i = 0; i < simulatorObjects[editExistingObject].original.variables.length; i++) {
-			// 	var addContentType = document.createElement("a");
-			// 	addContentType.href = "#";
-			// 	addContentType.innerHTML = simulatorObjects[editExistingObject].original.variables[i].name +
-			// 		" (" + simulatorObjects[editExistingObject].original.variables[i].valueType + ")";
-			// 	addContentType.name = simulatorObjects[editExistingObject].original.variables[i].name;
-			// 	addContentType.onclick = function () {
-			// 		console.log("Clicked that: " + this.innerHTML);
-			// 		stageConditionV1 = this.name;
-
-			// 		document.getElementById("divEndConditionStatement").innerHTML
-			// 			= "If [" + stageConditionV1 + "] [" + stageConditionV2 + "] [" + stageConditionV3 + "] AND ...";
-			// 	};
-			// 	dropdown.appendChild(addContentType);
-			// }
-
-			// dropdown = document.getElementById("dropdownEndConditionPickRTIVar1");
-			// while (dropdown.firstChild) {
-			// 	dropdown.removeChild(dropdown.firstChild);
-			// }
-			// for (i = 0; i < 4; i++) {
-			// 	var addContentType = document.createElement("a");
-			// 	addContentType.href = "#";
-			// 	if (i == 0) {
-			// 		addContentType.innerHTML = "RTI_vTimestep";
-			// 	} else if (i == 1) {
-			// 		addContentType.innerHTML = "RTI_stage";
-			// 	} else if (i == 2) {
-			// 		addContentType.innerHTML = "RTI_stageVTimestepMul";
-			// 	} else if (i == 3) {
-			// 		addContentType.innerHTML = "RTI_stageVTimestep";
-			// 	}
-			// 	addContentType.name = addContentType.innerHTML;
-			// 	addContentType.onclick = function () {
-			// 		console.log("Clicked this: " + this.innerHTML);
-			// 		stageConditionV1 = this.name;
-			// 		document.getElementById("divEndConditionStatement").innerHTML
-			// 			= "If [" + stageConditionV1 + "] [" + stageConditionV2 + "] [" + stageConditionV3 + "] AND ...";
-			// 	};
-			// 	dropdown.appendChild(addContentType);
-			// }
-
-			// dropdown = document.getElementById("dropdownEndConditionCondition1");
-			// while (dropdown.firstChild) {
-			// 	dropdown.removeChild(dropdown.firstChild);
-			// }
-			// for (i = 0; i < 6; i++) {
-			// 	var addContentType = document.createElement("a");
-			// 	addContentType.href = "#";
-			// 	if (i == 0) {
-			// 		addContentType.innerHTML = "=";
-			// 	} else if (i == 1) {
-			// 		addContentType.innerHTML = ">";
-			// 	} else if (i == 2) {
-			// 		addContentType.innerHTML = "<";
-			// 	} else if (i == 3) {
-			// 		addContentType.innerHTML = ">=";
-			// 	} else if (i == 4) {
-			// 		addContentType.innerHTML = "<=";
-			// 	} else if (i == 5) {
-			// 		addContentType.innerHTML = "!=";
-			// 	}
-			// 	addContentType.name = addContentType.innerHTML;
-			// 	addContentType.onclick = function () {
-			// 		console.log("Clicked that: " + unescape(this.innerHTML));
-			// 		if (this.name == "&gt;") {
-			// 			stageConditionV2 = ">";
-			// 		} else if (this.name == "&lt;") {
-			// 			stageConditionV2 = "<";
-			// 		} else if (this.name == "&gt;=") {
-			// 			stageConditionV2 = ">=";
-			// 		} else if (this.name == "&lt;=") {
-			// 			stageConditionV2 = "<=";
-			// 		} else {
-			// 			stageConditionV2 = unescape(this.name);
-			// 		}
-			// 		//stageConditionV2 = this.innerHTML;
-			// 		document.getElementById("divEndConditionStatement").innerHTML
-			// 			= "If [" + stageConditionV1 + "] [" + stageConditionV2 + "] [" + stageConditionV3 + "] AND ...";
-			// 	};
-			// 	dropdown.appendChild(addContentType);
-			// }
-
-			// dropdown = document.getElementById("dropdownEndConditionPickVar2");
-			// while (dropdown.firstChild) {
-			// 	dropdown.removeChild(dropdown.firstChild);
-			// }
-			// for (i = 0; i < simulatorObjects[editExistingObject].original.variables.length; i++) {
-			// 	var addContentType = document.createElement("a");
-			// 	addContentType.href = "#";
-			// 	addContentType.innerHTML = simulatorObjects[editExistingObject].original.variables[i].name +
-			// 		" (" + simulatorObjects[editExistingObject].original.variables[i].valueType + ")";
-			// 	addContentType.name = simulatorObjects[editExistingObject].original.variables[i].name;
-			// 	addContentType.onclick = function () {
-			// 		console.log("Clicked that: " + this.innerHTML);
-			// 		stageConditionV3 = this.name;
-			// 		stageConditionV3b = this.name;
-			// 		stageConditionV3a = "";
-			// 		document.getElementById("divEndConditionStatement").innerHTML
-			// 			= "If [" + stageConditionV1 + "] [" + stageConditionV2 + "] [" + stageConditionV3 + "] AND ...";
-			// 	};
-			// 	dropdown.appendChild(addContentType);
-			// }
-
-			// dropdown = document.getElementById("dropdownEndConditionPickRTIVar2");
-			// while (dropdown.firstChild) {
-			// 	dropdown.removeChild(dropdown.firstChild);
-			// }
-			// for (i = 0; i < 4; i++) {
-			// 	var addContentType = document.createElement("a");
-			// 	addContentType.href = "#";
-			// 	if (i == 0) {
-			// 		addContentType.innerHTML = "RTI_vTimestep";
-			// 	} else if (i == 1) {
-			// 		addContentType.innerHTML = "RTI_stage";
-			// 	} else if (i == 2) {
-			// 		addContentType.innerHTML = "RTI_stageVTimestepMul";
-			// 	} else if (i == 3) {
-			// 		addContentType.innerHTML = "RTI_stageVTimestep";
-			// 	}
-			// 	addContentType.name = addContentType.innerHTML;
-			// 	addContentType.onclick = function () {
-			// 		console.log("Clicked that: " + this.innerHTML);
-			// 		stageConditionV3 = this.name;
-			// 		stageConditionV3b = this.name;
-			// 		stageConditionV3a = "";
-			// 		document.getElementById("divEndConditionStatement").innerHTML
-			// 			= "If [" + stageConditionV1 + "] [" + stageConditionV2 + "] [" + stageConditionV3 + "] AND ...";
-			// 	};
-			// 	dropdown.appendChild(addContentType);
-			// }
-
-			// var panel = document.getElementById("modalEndConditionsPanel");
-			// while (panel.firstChild) {
-			// 	panel.removeChild(panel.firstChild);
-			// }
-			// for (i = 0; i < simulatorObjects[editExistingObject].endConditions.length; i++) {
-			// 	var addContentType = document.createElement("div");
-			// 	addContentType.className = "div-list-item";
-			// 	var addContent1 = document.createElement("div");
-			// 	addContent1.style = "width:80%;float:left;";
-			// 	var sentence = "in stage = " + simulatorObjects[editExistingObject].endConditions[i].oldStage + ", ";
-			// 	let j = 0;
-			// 	for (j = 0; j < simulatorObjects[editExistingObject].endConditions[i].conditions.length; j++) {
-			// 		var tempVarName2 = simulatorObjects[editExistingObject].endConditions[i].conditions[j].varName2;
-			// 		if (tempVarName2 == "") {
-			// 			sentence = sentence + "if [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].varName
-			// 				+ "] [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].condition
-			// 				+ "] [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].value + "] ";
-			// 		} else {
-			// 			sentence = sentence + "if [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].varName
-			// 				+ "] [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].condition
-			// 				+ "] [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].varName2 + "] ";
-			// 		}
-			// 		if (j < simulatorObjects[editExistingObject].endConditions[i].conditions.length - 1) {
-			// 			sentence = sentence + "AND ";
-			// 		}
-			// 	}
-			// 	sentence = sentence + "then end simulation system.";
-			// 	addContent1.innerHTML = sentence;
-			// 	addContentType.appendChild(addContent1);
-			// 	var addContent2 = document.createElement("button");
-			// 	addContent2.name = i;
-			// 	addContent2.onclick = function () {
-			// 		//RemoveEndConditionFromSubList(this.name);
-			// 		RemoveEndConditionFromList(this.name);
-			// 	};
-			// 	addContent2.style = "float:right;";
-			// 	var addContent3 = document.createTextNode("X");
-			// 	addContent2.appendChild(addContent3);
-			// 	addContentType.appendChild(addContent2);
-
-			// 	panel.appendChild(addContentType);
-			// }
-
-			// stageConditionSubSet = [];
-
-			// var subpanel = document.getElementById("modalEndConditionsSubPanel");
-			// while (subpanel.firstChild) {
-			// 	subpanel.removeChild(subpanel.firstChild);
-			// }
-			// for (i = 0; i < stageConditionSubSet.length; i++) {
-			// 	var addContentType = document.createElement("div");
-			// 	addContentType.className = "div-list-item";
-			// 	var tempVarName2 = stageConditionSubSet[i].varName2;
-			// 	var addContent1 = document.createElement("div");
-			// 	addContent1.style = "width:70%;float:left;";
-			// 	if (tempVarName2 == "") {
-			// 		addContent1.innerHTML = "if [" + stageConditionSubSet[i].varName + "] ["
-			// 			+ stageConditionSubSet[i].condition + "] [" + stageConditionSubSet[i].value + "] && ...";
-			// 	} else {
-			// 		addContent1.innerHTML = "if [" + stageConditionSubSet[i].varName + "] ["
-			// 			+ stageConditionSubSet[i].condition + "] [" + stageConditionSubSet[i].varName2 + "] && ...";
-			// 	}
-			// 	addContentType.appendChild(addContent1);
-			// 	var addContent2 = document.createElement("button");
-			// 	addContent2.name = i;
-			// 	addContent2.onclick = function () {
-			// 		RemoveEndConditionFromSubList(this.name);
-			// 	};
-			// 	addContent2.style = "float:right;";
-			// 	var addContent3 = document.createTextNode("X");
-			// 	addContent2.appendChild(addContent3);
-			// 	addContentType.appendChild(addContent2);
-
-			// 	subpanel.appendChild(addContentType);
-			// }
-			stageConditionV1 = "";
-			stageConditionV2 = "";
-			stageConditionV3 = "";
-			stageConditionV3a = "";
-			stageConditionV3b = "";
-			$('#endCondition1, #endCondition2, #endCondition3').text('')
-			// document.getElementsByName("TextEndConditionsPickValue2")[0].value = "";
-			// document.getElementById("divEndConditionStatement").innerHTML
-			// 	= "If [" + stageConditionV1 + "] [" + stageConditionV2 + "] [" + stageConditionV3 + "] AND ...";
+			break;
 		}
+	}
+	var divNumber = document.getElementsByName("divHostName")[0];
+	divNumber.innerHTML = "Host Name: " + hostName;
+}
 
-		/*	CloseEndConditions()
-			- Close prompt to configure end conditions for simulator on canvas.
-		*/
-		function CloseEndConditions() {
-			DisplayOrClosePrompt("modalEndConditions", "none");
+/*	UpdatePortNumber()
+	- Change port number (from prompt).
+*/
+function UpdatePortNumber() {
+	var newNumber = document.getElementsByName("PortNumberObject")[0].value;
+	var divNumber = document.getElementsByName("divPortNumber")[0];
+	divNumber.innerHTML = "Port Number: " + newNumber;
+	portNumber = newNumber;
+}
+
+function SaveSimLocalTime() {
+	simulatorObjects[editExistingObject].timeDelta = parseInt($('input[name="newTimeDelta"]').val())
+	simulatorObjects[editExistingObject].timeScale = parseInt($('input[name="newTimeScale"]').val())
+	simulatorObjects[editExistingObject].timeVarDelta = $('#dropdownVar').dropdown('get value')
+
+	CloseEditSimLocalTime()
+}
+
+/*	UpdateTimeDelta()
+	- Change time delta (from prompt).
+*/
+// function UpdateTimeDelta() {
+// 	var newNumber = document.getElementsByName("NewTimeDelta")[0].value;
+// 	var divNumber = document.getElementsByName("divTimeDelta")[0];
+// 	divNumber.innerHTML = "Current Time Delta: " + newNumber;
+// 	simulatorObjects[editExistingObject].timeDelta = parseInt(newNumber);
+// }
+
+/*	UpdateTimeScale()
+	- Change time scale (from prompt).
+*/
+// function UpdateTimeScale() {
+// 	var newNumber = document.getElementsByName("NewTimeScale")[0].value;
+// 	var divNumber = document.getElementsByName("divTimeScale")[0];
+// 	divNumber.innerHTML = "Current Time Multiplier: " + newNumber;
+// 	simulatorObjects[editExistingObject].timeScale = parseInt(newNumber);
+// }
+
+/*	UpdateTimeVarDelta()
+	- Change time delta variable reference from simulator (from prompt).
+*/
+// function UpdateTimeVarDelta(index) {
+// 	document.getElementsByName("divTimeVarScale")[0].innerHTML
+// 		= "Current Time Variable Multiplier: "
+// 		+ simulatorObjects[editExistingObject].original.variables[index].name
+// 		+ " (" + simulatorObjects[editExistingObject].original.variables[index].valueType + ")";
+// 	simulatorObjects[editExistingObject].timeVarDelta
+// 		= simulatorObjects[editExistingObject].original.variables[index].name;
+// }
+
+/*	UpdateInitializeFunction()
+	- Change 'initialize' function to call for sim in specific stage (from prompt).
+*/
+function UpdateInitializeFunction(index) {
+	document.getElementsByName("divInitializeFunction")[0].innerHTML
+		= "Initialize Function: " + simulatorObjects[editExistingObject].original.functions[index].name;
+	simulatorObjects[editExistingObject].initialize
+		= simulatorObjects[editExistingObject].original.functions[index].name;
+}
+
+/*	UpdateSimulateFunction()
+	- Change 'simulate' function to call for sim in specific stage (from prompt).
+*/
+function UpdateSimulateFunction(index) {
+	document.getElementsByName("divSimulateFunction")[0].innerHTML
+		= "Simulate Function: " + simulatorObjects[editExistingObject].original.functions[index].name;
+	simulatorObjects[editExistingObject].simulate
+		= simulatorObjects[editExistingObject].original.functions[index].name;
+}
+
+
+
+/*	DropdownFunction()
+	- For dropdown menu in certain prompt windows.
+*/
+function DropdownFunction() {
+	document.getElementById("dropdownVar").classList.toggle("show");
+}
+
+function DropdownInitializeFunction() {
+	document.getElementById("dropdownInitializeFunction").classList.toggle("show");
+}
+
+function DropdownSimulateFunction() {
+	document.getElementById("dropdownSimulateFunction").classList.toggle("show");
+}
+
+/*	DropdownStageConditionPickVar1()
+	- Disable other dropdown menus when another one is selected (otherwise, can have several open at once).
+*/
+function DropdownStageConditionPickVar1() {
+	document.getElementById("dropdownStageConditionPickVar1").classList.toggle("show");
+	//document.getElementById("dropdownStageConditionPickVar1").classList.toggle("show", false);
+	document.getElementById("dropdownStageConditionPickRTIVar1").classList.toggle("show", false);
+	document.getElementById("dropdownStageConditionCondition1").classList.toggle("show", false);
+	document.getElementById("dropdownStageConditionPickVar2").classList.toggle("show", false);
+	document.getElementById("dropdownStageConditionPickRTIVar2").classList.toggle("show", false);
+}
+
+function DropdownStageConditionPickRTIVar1() {
+	document.getElementById("dropdownStageConditionPickRTIVar1").classList.toggle("show");
+	document.getElementById("dropdownStageConditionPickVar1").classList.toggle("show", false);
+	//document.getElementById("dropdownStageConditionPickRTIVar1").classList.toggle("show", false);
+	document.getElementById("dropdownStageConditionCondition1").classList.toggle("show", false);
+	document.getElementById("dropdownStageConditionPickVar2").classList.toggle("show", false);
+	document.getElementById("dropdownStageConditionPickRTIVar2").classList.toggle("show", false);
+}
+
+function DropdownStageConditionCondition1() {
+	document.getElementById("dropdownStageConditionCondition1").classList.toggle("show");
+	document.getElementById("dropdownStageConditionPickVar1").classList.toggle("show", false);
+	document.getElementById("dropdownStageConditionPickRTIVar1").classList.toggle("show", false);
+	//document.getElementById("dropdownStageConditionCondition1").classList.toggle("show", false);
+	document.getElementById("dropdownStageConditionPickVar2").classList.toggle("show", false);
+	document.getElementById("dropdownStageConditionPickRTIVar2").classList.toggle("show", false);
+}
+
+function DropdownStageConditionPickVar2() {
+	document.getElementById("dropdownStageConditionPickVar2").classList.toggle("show");
+	document.getElementById("dropdownStageConditionPickVar1").classList.toggle("show", false);
+	document.getElementById("dropdownStageConditionPickRTIVar1").classList.toggle("show", false);
+	document.getElementById("dropdownStageConditionCondition1").classList.toggle("show", false);
+	//document.getElementById("dropdownStageConditionPickVar2").classList.toggle("show", false);
+	document.getElementById("dropdownStageConditionPickRTIVar2").classList.toggle("show", false);
+}
+
+function DropdownStageConditionPickRTIVar2() {
+	document.getElementById("dropdownStageConditionPickRTIVar2").classList.toggle("show");
+	document.getElementById("dropdownStageConditionPickVar1").classList.toggle("show", false);
+	document.getElementById("dropdownStageConditionPickRTIVar1").classList.toggle("show", false);
+	document.getElementById("dropdownStageConditionCondition1").classList.toggle("show", false);
+	document.getElementById("dropdownStageConditionPickVar2").classList.toggle("show", false);
+	//document.getElementById("dropdownStageConditionPickRTIVar2").classList.toggle("show", false);
+}
+
+/*	UpdateStageConditionCompareValue()
+	- In configuration prompt for stage condition, update after selection for compare value.
+*/
+function UpdateStageConditionCompareValue() {
+	console.log("clicked update");
+	var newValue = document.getElementsByName("TextStageConditionsPickValue2")[0].value;
+	console.log("new value = " + newValue);
+	stageConditionV3 = newValue;
+	stageConditionV3a = newValue;
+	stageConditionV3b = "";
+	document.getElementById("divStageConditionStatement").innerHTML
+		= "If [" + stageConditionV1 + "] [" + stageConditionV2 + "] [" + stageConditionV3 + "] AND ...";
+}
+
+function DropdownEndConditionPickVar1() {
+	document.getElementById("dropdownEndConditionPickVar1").classList.toggle("show");
+	//document.getElementById("dropdownStageConditionPickVar1").classList.toggle("show", false);
+	document.getElementById("dropdownEndConditionPickRTIVar1").classList.toggle("show", false);
+	document.getElementById("dropdownEndConditionCondition1").classList.toggle("show", false);
+	document.getElementById("dropdownEndConditionPickVar2").classList.toggle("show", false);
+	document.getElementById("dropdownEndConditionPickRTIVar2").classList.toggle("show", false);
+}
+
+function DropdownEndConditionPickRTIVar1() {
+	document.getElementById("dropdownEndConditionPickRTIVar1").classList.toggle("show");
+	document.getElementById("dropdownEndConditionPickVar1").classList.toggle("show", false);
+	//document.getElementById("dropdownStageConditionPickRTIVar1").classList.toggle("show", false);
+	document.getElementById("dropdownEndConditionCondition1").classList.toggle("show", false);
+	document.getElementById("dropdownEndConditionPickVar2").classList.toggle("show", false);
+	document.getElementById("dropdownEndConditionPickRTIVar2").classList.toggle("show", false);
+}
+
+function DropdownEndConditionCondition1() {
+	document.getElementById("dropdownEndConditionCondition1").classList.toggle("show");
+	document.getElementById("dropdownEndConditionPickVar1").classList.toggle("show", false);
+	document.getElementById("dropdownEndConditionPickRTIVar1").classList.toggle("show", false);
+	//document.getElementById("dropdownStageConditionCondition1").classList.toggle("show", false);
+	document.getElementById("dropdownEndConditionPickVar2").classList.toggle("show", false);
+	document.getElementById("dropdownEndConditionPickRTIVar2").classList.toggle("show", false);
+}
+
+function DropdownEndConditionPickVar2() {
+	document.getElementById("dropdownEndConditionPickVar2").classList.toggle("show");
+	document.getElementById("dropdownEndConditionPickVar1").classList.toggle("show", false);
+	document.getElementById("dropdownEndConditionPickRTIVar1").classList.toggle("show", false);
+	document.getElementById("dropdownEndConditionCondition1").classList.toggle("show", false);
+	//document.getElementById("dropdownStageConditionPickVar2").classList.toggle("show", false);
+	document.getElementById("dropdownEndConditionPickRTIVar2").classList.toggle("show", false);
+}
+
+function DropdownEndConditionPickRTIVar2() {
+	document.getElementById("dropdownEndConditionPickRTIVar2").classList.toggle("show");
+	document.getElementById("dropdownEndConditionPickVar1").classList.toggle("show", false);
+	document.getElementById("dropdownEndConditionPickRTIVar1").classList.toggle("show", false);
+	document.getElementById("dropdownEndConditionCondition1").classList.toggle("show", false);
+	document.getElementById("dropdownEndConditionPickVar2").classList.toggle("show", false);
+	//document.getElementById("dropdownStageConditionPickRTIVar2").classList.toggle("show", false);
+}
+
+function UpdateEndConditionCompareValue() {
+	console.log("clicked update");
+	var newValue = document.getElementsByName("TextEndConditionsPickValue2")[0].value;
+	console.log("new value = " + newValue);
+	stageConditionV3 = newValue;
+	stageConditionV3a = newValue;
+	stageConditionV3b = "";
+	document.getElementById("divEndConditionStatement").innerHTML
+		= "If [" + stageConditionV1 + "] [" + stageConditionV2 + "] [" + stageConditionV3 + "] AND ...";
+}
+
+/*	AddStageConditionToSubList()
+	- In prompt, add 'completed' stage condition to list (where multiple AND conditions can be added before final submission).
+*/
+function AddStageConditionToSubList() {
+	stageConditionSubSet.push({
+		varName: $('#stageCondition1').text(),
+		condition: unescape($('#stageCondition2').text()),
+		value: stageConditionV3a,
+		varName2: stageConditionV3b
+	});
+
+	// var subpanel = document.getElementById("modalStageConditionsSubPanel");
+	// while (subpanel.firstChild) {
+	// 	subpanel.removeChild(subpanel.firstChild);
+	// }
+	// let i = 0;
+	// for (i = 0; i < stageConditionSubSet.length; i++) {
+	// 	var addContentType = document.createElement("div");
+	// 	addContentType.className = "div-list-item";
+	// 	var tempVarName2 = stageConditionSubSet[i].varName2;
+	// 	var addContent1 = document.createElement("div");
+	// 	addContent1.style = "width:70%;float:left;";
+	// 	if (tempVarName2 == "") {
+	// 		addContent1.innerHTML = "if [" + stageConditionSubSet[i].varName + "] ["
+	// 			+ stageConditionSubSet[i].condition + "] [" + stageConditionSubSet[i].value + "] AND ...";
+	// 	} else {
+	// 		addContent1.innerHTML = "if [" + stageConditionSubSet[i].varName + "] ["
+	// 			+ stageConditionSubSet[i].condition + "] [" + stageConditionSubSet[i].varName2 + "] AND ...";
+	// 	}
+	// 	addContentType.appendChild(addContent1);
+	// 	var addContent2 = document.createElement("button");
+	// 	addContent2.name = i;
+	// 	addContent2.onclick = function () {
+	// 		RemoveStageConditionFromSubList(this.name);
+	// 	};
+	// 	addContent2.style = "float:right;";
+	// 	var addContent3 = document.createTextNode("X");
+	// 	addContent2.appendChild(addContent3);
+	// 	addContentType.appendChild(addContent2);
+
+	// 	subpanel.appendChild(addContentType);
+	// }
+
+	ResetStageConditionSubList()
+
+	// stageConditionV1 = "";
+	// stageConditionV2 = "";
+	// stageConditionV3 = "";
+	// stageConditionV3a = "";
+	// stageConditionV3b = "";
+	// document.getElementsByName("TextStageConditionsPickValue2")[0].value = "";
+	// document.getElementById("divStageConditionStatement").innerHTML
+	// 	= "If [" + stageConditionV1 + "] [" + stageConditionV2 + "] [" + stageConditionV3 + "] AND ...";
+}
+
+/*	RemoveStageConditionFromSubList()
+	- In prompt, remove stage condition to list (where multiple AND conditions can be added before final submission).
+*/
+function RemoveStageConditionFromSubList(btn_id) {
+	stageConditionSubSet.splice(btn_id, 1);
+
+	ResetStageConditionSubList()
+
+	// var subpanel = document.getElementById("modalStageConditionsSubPanel");
+	// while (subpanel.firstChild) {
+	// 	subpanel.removeChild(subpanel.firstChild);
+	// }
+	// let i = 0;
+	// for (i = 0; i < stageConditionSubSet.length; i++) {
+	// 	var addContentType = document.createElement("div");
+	// 	addContentType.className = "div-list-item";
+	// 	var tempVarName2 = stageConditionSubSet[i].varName2;
+	// 	var addContent1 = document.createElement("div");
+	// 	addContent1.style = "width:70%;float:left;";
+	// 	if (tempVarName2 == "") {
+	// 		addContent1.innerHTML = "if [" + stageConditionSubSet[i].varName + "] ["
+	// 			+ stageConditionSubSet[i].condition + "] [" + stageConditionSubSet[i].value + "] AND ...";
+	// 	} else {
+	// 		addContent1.innerHTML = "if [" + stageConditionSubSet[i].varName + "] ["
+	// 			+ stageConditionSubSet[i].condition + "] [" + stageConditionSubSet[i].varName2 + "] AND ...";
+	// 	}
+	// 	addContentType.appendChild(addContent1);
+	// 	var addContent2 = document.createElement("button");
+	// 	addContent2.name = i;
+	// 	addContent2.onclick = function () {
+	// 		RemoveStageConditionFromSubList(this.name);
+	// 	};
+	// 	addContent2.style = "float:right;";
+	// 	var addContent3 = document.createTextNode("X");
+	// 	addContent2.appendChild(addContent3);
+	// 	addContentType.appendChild(addContent2);
+	// 	subpanel.appendChild(addContentType);
+	// }
+}
+
+function ResetStageConditionSubList() {
+
+	let subpanel = $("#modalStageConditionsSubPanel");
+	subpanel.empty()
+
+	let i = 0, item, label, text, tempVarName2, button, icon;
+	for (i = 0; i < stageConditionSubSet.length; i++) {
+		item = $('<div>').addClass('div-list-item')
+		label = $('<div>').addClass('ui grey expanding middle aligned label')
+		if (tempVarName2 == "") {
+			text = "if [" + stageConditionSubSet[i].varName + "] ["
+				+ stageConditionSubSet[i].condition + "] [" + stageConditionSubSet[i].value + "] AND ..."
+		} else {
+			text = "if [" + stageConditionSubSet[i].varName + "] ["
+				+ stageConditionSubSet[i].condition + "] [" + stageConditionSubSet[i].varName2 + "] AND ..."
 		}
-
-		/*	DisableCertainObjectButtons()
-			- Disable certain buttons on the canvas, based on what simulators/messages are on the canvas.
-		*/
-		function DisableCertainObjectButtons() {
-			var subpanel1btns = document.getElementById("objectsubpanel1").children;
-			var subpanel2btns = document.getElementById("objectsubpanel2").children;
-
-			let i = 0;
-			let j = 0;
-			for (j = 0; j < subpanel1btns.length; j++) {
-				subpanel1btns[j].disabled = false;
-			}
-			for (j = 0; j < subpanel2btns.length; j++) {
-				subpanel2btns[j].disabled = false;
-			}
-			//check simulator buttons to disable
-			for (i = 0; i < simulatorObjects.length; i++) {
-				if (simulatorObjects[i].stage == stage && selectState == 0) {
-					console.log("disable this button = " + simulatorObjects[i].name);
-					for (j = 0; j < subpanel1btns.length; j++) {
-						if (subpanel1btns[j].innerText == simulatorObjects[i].name) {
-							subpanel1btns[j].disabled = true;
-						}
-					}
-					break;
-				}
-			}
-			//check message buttons to disable
-			for (i = 0; i < messageObjects.length; i++) {
-				if (selectState == 0) {
-					console.log("disable this button message = " + messageObjects[i].name);
-					for (j = 0; j < subpanel2btns.length; j++) {
-						if (subpanel2btns[j].innerText == messageObjects[i].name) {
-							subpanel2btns[j].disabled = true;
-						}
-					}
-				}
-			}
-
+		label.append($('<label>').text(text).css('max-width', '95%'))
+		button = $('<a>').addClass('ui opaque right floated')
+		icon = $('<i>').addClass('inverted  delete icon').click(function () {
+			RemoveStageConditionFromSubList(this.name);
 		}
+		)
 
-		/*	UpdateHostName()
-			- Change host name (from prompt).
-		*/
-		function UpdateHostName() {
-			var hostNameObjects = document.getElementsByName("HostNameObject");
-			let i = 0;
-			for (i = 0; i < hostNameObjects.length; i++) {
-				if (hostNameObjects[i].checked) {
-					if (hostNameObjects[i].value == "localhost") {
-						hostName = "localhost";
-					} else {
-						//... is there a real way to get local host's IP address? Otherwise, need other way to display IP for user to connect other simulators.
-						hostName = "123.456.78.9";
-					}
-					break;
-				}
+		button.append(icon)
+		label.append(button)
+		item.append(label)
+		subpanel.append(item)
+	}
+}
+
+/*	AddStageConditionToList()
+	- In prompt, add 'completed' stage condition set to final list.
+*/
+function AddStageConditionToList() {
+	newStage = document.getElementsByName("TextStageConditionsNewStage")[0].value;
+	simulatorObjects[editExistingObject].stageConditions.push({
+		oldStage: stage,
+		conditions: stageConditionSubSet,
+		newStage: newStage
+	});
+
+	ResetStageConditionList()
+
+
+	// var panel = document.getElementById("modalStageConditionsPanel");
+	// while (panel.firstChild) {
+	// 	panel.removeChild(panel.firstChild);
+	// }
+	// let i = 0;
+	// for (i = 0; i < simulatorObjects[editExistingObject].stageConditions.length; i++) {
+	// 	var addContentType = document.createElement("div");
+	// 	addContentType.className = "div-list-item";
+	// 	var addContent1 = document.createElement("div");
+	// 	addContent1.style = "width:80%;float:left;";
+	// 	var sentence = "in stage = " + simulatorObjects[editExistingObject].stageConditions[i].oldStage + ", ";
+	// 	let j = 0;
+	// 	for (j = 0; j < simulatorObjects[editExistingObject].stageConditions[i].conditions.length; j++) {
+	// 		var tempVarName2 = simulatorObjects[editExistingObject].stageConditions[i].conditions[j].varName2;
+	// 		if (tempVarName2 == "") {
+	// 			sentence = sentence + "if [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].varName
+	// 				+ "] [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].condition
+	// 				+ "] [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].value + "] ";
+	// 		} else {
+	// 			sentence = sentence + "if [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].varName
+	// 				+ "] [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].condition
+	// 				+ "] [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].varName2 + "] ";
+	// 		}
+	// 		if (j < simulatorObjects[editExistingObject].stageConditions[i].conditions.length - 1) {
+	// 			sentence = sentence + "AND ";
+	// 		}
+	// 	}
+	// 	sentence = sentence + "go to stage = " + simulatorObjects[editExistingObject].stageConditions[i].newStage;
+	// 	addContent1.innerHTML = sentence;
+	// 	addContentType.appendChild(addContent1);
+	// 	var addContent2 = document.createElement("button");
+	// 	addContent2.name = i;
+	// 	addContent2.onclick = function () {
+	// 		RemoveStageConditionFromList(this.name);
+	// 	};
+	// 	addContent2.style = "float:right;";
+	// 	var addContent3 = document.createTextNode("X");
+	// 	addContent2.appendChild(addContent3);
+	// 	addContentType.appendChild(addContent2);
+
+	// 	panel.appendChild(addContentType);
+	// }
+
+	stageConditionSubSet = [];
+	ResetStageConditionSubList()
+
+	// var subpanel = document.getElementById("modalStageConditionsSubPanel");
+	// while (subpanel.firstChild) {
+	// 	subpanel.removeChild(subpanel.firstChild);
+	// }
+	// for (i = 0; i < stageConditionSubSet.length; i++) {
+	// 	var addContentType = document.createElement("div");
+	// 	addContentType.className = "div-list-item";
+	// 	var tempVarName2 = stageConditionSubSet[i].varName2;
+	// 	var addContent1 = document.createElement("div");
+	// 	addContent1.style = "width:70%;float:left;";
+	// 	if (tempVarName2 == "") {
+	// 		addContent1.innerHTML = "if [" + stageConditionSubSet[i].varName + "] ["
+	// 			+ stageConditionSubSet[i].condition + "] [" + stageConditionSubSet[i].value + "] && ...";
+	// 	} else {
+	// 		addContent1.innerHTML = "if [" + stageConditionSubSet[i].varName + "] ["
+	// 			+ stageConditionSubSet[i].condition + "] [" + stageConditionSubSet[i].varName2 + "] && ...";
+	// 	}
+	// 	addContentType.appendChild(addContent1);
+	// 	var addContent2 = document.createElement("button");
+	// 	addContent2.name = i;
+	// 	addContent2.onclick = function () {
+	// 		RemoveStageConditionFromSubList(this.name);
+	// 	};
+	// 	addContent2.style = "float:right;";
+	// 	var addContent3 = document.createTextNode("X");
+	// 	addContent2.appendChild(addContent3);
+	// 	addContentType.appendChild(addContent2);
+	// 	subpanel.appendChild(addContentType);
+	// }
+}
+
+/*	RemoveStageConditionToList()
+	- In prompt, remove stage condition set from final list.
+*/
+function RemoveStageConditionFromList(btn_name) {
+	simulatorObjects[editExistingObject].stageConditions.splice(btn_name, 1);
+
+	ResetStageConditionList()
+
+	// var panel = document.getElementById("modalStageConditionsPanel");
+	// while (panel.firstChild) {
+	// 	panel.removeChild(panel.firstChild);
+	// }
+	// let i = 0;
+	// for (i = 0; i < simulatorObjects[editExistingObject].stageConditions.length; i++) {
+	// 	var addContentType = document.createElement("div");
+	// 	addContentType.className = "div-list-item";
+	// 	var addContent1 = document.createElement("div");
+	// 	addContent1.style = "width:80%;float:left;";
+	// 	var sentence = "in stage = " + simulatorObjects[editExistingObject].stageConditions[i].oldStage + ", ";
+	// 	let j = 0;
+	// 	for (j = 0; j < simulatorObjects[editExistingObject].stageConditions[i].conditions.length; j++) {
+	// 		var tempVarName2 = simulatorObjects[editExistingObject].stageConditions[i].conditions[j].varName2;
+	// 		if (tempVarName2 == "") {
+	// 			sentence = sentence + "if [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].varName
+	// 				+ "] [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].condition
+	// 				+ "] [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].value + "] ";
+	// 		} else {
+	// 			sentence = sentence + "if [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].varName
+	// 				+ "] [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].condition
+	// 				+ "] [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].varName2 + "] ";
+	// 		}
+	// 		if (j < simulatorObjects[editExistingObject].stageConditions[i].conditions.length - 1) {
+	// 			sentence = sentence + "AND ";
+	// 		}
+	// 	}
+	// 	sentence = sentence + "go to stage = " + simulatorObjects[editExistingObject].stageConditions[i].newStage;
+	// 	addContent1.innerHTML = sentence;
+	// 	addContentType.appendChild(addContent1);
+	// 	//addContentType.appendChild(addContent1);
+	// 	var addContent2 = document.createElement("button");
+	// 	addContent2.name = i;
+	// 	addContent2.onclick = function () {
+	// 		RemoveStageConditionFromList(this.name);
+	// 	};
+	// 	addContent2.style = "float:right;";
+	// 	var addContent3 = document.createTextNode("X");
+	// 	addContent2.appendChild(addContent3);
+	// 	addContentType.appendChild(addContent2);
+
+	// 	panel.appendChild(addContentType);
+	// }
+}
+
+function ResetStageConditionList() {
+
+	let panel = $('#modalStageConditionsPanel')
+	panel.empty()
+	let i = 0, item, label, sentence, button, icon
+	for (i = 0; i < simulatorObjects[editExistingObject].stageConditions.length; i++) {
+		item = $('<div>').addClass('div-list-item')
+		label = $('<div>').addClass('ui grey expanding label')
+		sentence = "in stage " + simulatorObjects[editExistingObject].stageConditions[i].oldStage + ", ";
+		let j = 0;
+		for (j = 0; j < simulatorObjects[editExistingObject].stageConditions[i].conditions.length; j++) {
+			var tempVarName2 = simulatorObjects[editExistingObject].stageConditions[i].conditions[j].varName2;
+			if (tempVarName2 == "") {
+				sentence = sentence + "if [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].varName
+					+ "] [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].condition
+					+ "] [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].value + "] ";
+			} else {
+				sentence = sentence + "if [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].varName
+					+ "] [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].condition
+					+ "] [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].varName2 + "] ";
 			}
-			var divNumber = document.getElementsByName("divHostName")[0];
-			divNumber.innerHTML = "Host Name: " + hostName;
+			if (j < simulatorObjects[editExistingObject].stageConditions[i].conditions.length - 1) {
+				sentence = sentence + "AND ";
+			}
 		}
+		sentence = sentence + "go to stage " + simulatorObjects[editExistingObject].stageConditions[i].newStage;
+		label.append($('<label>').text(sentence).css('max-width', '95%'))
 
-		/*	UpdatePortNumber()
-			- Change port number (from prompt).
-		*/
-		function UpdatePortNumber() {
-			var newNumber = document.getElementsByName("PortNumberObject")[0].value;
-			var divNumber = document.getElementsByName("divPortNumber")[0];
-			divNumber.innerHTML = "Port Number: " + newNumber;
-			portNumber = newNumber;
+		button = $('<a>').addClass('ui opaque right floated')
+		icon = $('<i>').addClass('inverted  delete icon').click(function () {
+			RemoveStageConditionFromList(this.name);
 		}
+		)
 
-		function SaveSimLocalTime() {
-			simulatorObjects[editExistingObject].timeDelta = parseInt($('input[name="newTimeDelta"]').val())
-			simulatorObjects[editExistingObject].timeScale = parseInt($('input[name="newTimeScale"]').val())
-			simulatorObjects[editExistingObject].timeVarDelta = $('#dropdownVar').dropdown('get value')
+		button.append(icon)
+		label.append(button)
+		item.append(label)
+		panel.append(item)
+	}
 
-			CloseEditSimLocalTime()
+}
+
+/*	AddEndConditionToSubList()
+	- In prompt, add end condition to sublist (where AND conditions are collected).
+*/
+function AddEndConditionToSubList() {
+	stageConditionSubSet.push({
+		varName: $('#endCondition1').text(),
+		condition: unescape($('#endCondition2').text()),
+		value: stageConditionV3a,
+		varName2: stageConditionV3b
+	});
+
+	ResetEndConditionSubList()
+
+	// var subpanel = document.getElementById("modalEndConditionsSubPanel");
+	// while (subpanel.firstChild) {
+	// 	subpanel.removeChild(subpanel.firstChild);
+	// }
+	// let i = 0;
+	// for (i = 0; i < stageConditionSubSet.length; i++) {
+	// 	var addContentType = document.createElement("div");
+	// 	addContentType.className = "div-list-item";
+	// 	var tempVarName2 = stageConditionSubSet[i].varName2;
+	// 	var addContent1 = document.createElement("div");
+	// 	addContent1.style = "width:70%;float:left;";
+	// 	if (tempVarName2 == "") {
+	// 		addContent1.innerHTML = "if [" + stageConditionSubSet[i].varName + "] ["
+	// 			+ stageConditionSubSet[i].condition + "] ["
+	// 			+ stageConditionSubSet[i].value + "] AND ...";
+	// 	} else {
+	// 		addContent1.innerHTML = "if [" + stageConditionSubSet[i].varName + "] ["
+	// 			+ stageConditionSubSet[i].condition + "] ["
+	// 			+ stageConditionSubSet[i].varName2 + "] AND ...";
+	// 	}
+	// 	addContentType.appendChild(addContent1);
+	// 	var addContent2 = document.createElement("button");
+	// 	addContent2.name = i;
+	// 	addContent2.onclick = function () {
+	// 		RemoveEndConditionFromSubList(this.name);
+	// 	};
+	// 	addContent2.style = "float:right;";
+	// 	var addContent3 = document.createTextNode("X");
+	// 	addContent2.appendChild(addContent3);
+	// 	addContentType.appendChild(addContent2);
+
+	// 	subpanel.appendChild(addContentType);
+	// }
+
+	// stageConditionV1 = "";
+	// stageConditionV2 = "";
+	// stageConditionV3 = "";
+	// stageConditionV3a = "";
+	// stageConditionV3b = "";
+	// document.getElementsByName("TextEndConditionsPickValue2")[0].value = "";
+	// document.getElementById("divEndConditionStatement").innerHTML
+	// 	= "If [" + stageConditionV1 + "] [" + stageConditionV2
+	// 	+ "] [" + stageConditionV3 + "] AND ...";
+
+}
+
+/*	RemoveEndConditionFromSubList()
+	- In prompt, remove end condition from sublist (where AND conditions are collected).
+*/
+function RemoveEndConditionFromSubList(btn_id) {
+	stageConditionSubSet.splice(btn_id, 1);
+
+	ResetEndConditionSubList()
+
+	// var subpanel = document.getElementById("modalEndConditionsSubPanel");
+	// while (subpanel.firstChild) {
+	// 	subpanel.removeChild(subpanel.firstChild);
+	// }
+	// let i = 0;
+	// for (i = 0; i < stageConditionSubSet.length; i++) {
+	// 	var addContentType = document.createElement("div");
+	// 	addContentType.className = "div-list-item";
+	// 	var tempVarName2 = stageConditionSubSet[i].varName2;
+	// 	var addContent1 = document.createElement("div");
+	// 	addContent1.style = "width:70%;float:left;";
+	// 	if (tempVarName2 == "") {
+	// 		addContent1.innerHTML = "if [" + stageConditionSubSet[i].varName + "] ["
+	// 			+ stageConditionSubSet[i].condition + "] ["
+	// 			+ stageConditionSubSet[i].value + "] AND ...";
+	// 	} else {
+	// 		addContent1.innerHTML = "if [" + stageConditionSubSet[i].varName + "] ["
+	// 			+ stageConditionSubSet[i].condition
+	// 			+ "] [" + stageConditionSubSet[i].varName2 + "] AND ...";
+	// 	}
+	// 	addContentType.appendChild(addContent1);
+	// 	var addContent2 = document.createElement("button");
+	// 	addContent2.name = i;
+	// 	addContent2.onclick = function () {
+	// 		RemoveEndConditionFromSubList(this.name);
+	// 	};
+	// 	addContent2.style = "float:right;";
+	// 	var addContent3 = document.createTextNode("X");
+	// 	addContent2.appendChild(addContent3);
+	// 	addContentType.appendChild(addContent2);
+
+	// 	subpanel.appendChild(addContentType);
+	// }
+}
+
+function ResetEndConditionSubList() {
+	let subpanel = $("#modalEndConditionsSubPanel");
+	subpanel.empty()
+
+	let i = 0, item, label, text, tempVarName2, button, icon;
+	for (i = 0; i < stageConditionSubSet.length; i++) {
+		item = $('<div>').addClass('div-list-item')
+		label = $('<div>').addClass('ui grey expanding middle aligned label')
+		if (tempVarName2 == "") {
+			text = "if [" + stageConditionSubSet[i].varName + "] ["
+				+ stageConditionSubSet[i].condition + "] [" + stageConditionSubSet[i].value + "] AND ..."
+		} else {
+			text = "if [" + stageConditionSubSet[i].varName + "] ["
+				+ stageConditionSubSet[i].condition + "] [" + stageConditionSubSet[i].varName2 + "] AND ..."
 		}
+		label.append($('<label>').text(text).css('max-width', '95%'))
+		button = $('<a>').addClass('ui opaque right floated')
+		icon = $('<i>').addClass('inverted  delete icon').click(function () {
+			RemoveStageConditionFromSubList(this.name);
+		}
+		)
 
-		/*	UpdateTimeDelta()
-			- Change time delta (from prompt).
-		*/
-		// function UpdateTimeDelta() {
-		// 	var newNumber = document.getElementsByName("NewTimeDelta")[0].value;
-		// 	var divNumber = document.getElementsByName("divTimeDelta")[0];
-		// 	divNumber.innerHTML = "Current Time Delta: " + newNumber;
-		// 	simulatorObjects[editExistingObject].timeDelta = parseInt(newNumber);
+		button.append(icon)
+		label.append(button)
+		item.append(label)
+		subpanel.append(item)
+	}
+}
+
+/*	AddEndConditionToSubList()
+	- In prompt, add end condition to list.
+*/
+function AddEndConditionToList() {
+	simulatorObjects[editExistingObject].endConditions.push({
+		oldStage: stage,
+		conditions: stageConditionSubSet
+	});
+
+	ResetEndConditionList()
+
+	// var panel = document.getElementById("modalEndConditionsPanel");
+	// while (panel.firstChild) {
+	// 	panel.removeChild(panel.firstChild);
+	// }
+	// let i = 0;
+	// for (i = 0; i < simulatorObjects[editExistingObject].endConditions.length; i++) {
+	// 	var addContentType = document.createElement("div");
+	// 	addContentType.className = "div-list-item";
+	// 	var addContent1 = document.createElement("div");
+	// 	addContent1.style = "width:80%;float:left;";
+	// 	var sentence = "in stage = " + simulatorObjects[editExistingObject].endConditions[i].oldStage + ", ";
+	// 	let j = 0;
+	// 	for (j = 0; j < simulatorObjects[editExistingObject].endConditions[i].conditions.length; j++) {
+	// 		var tempVarName2 = simulatorObjects[editExistingObject].endConditions[i].conditions[j].varName2;
+	// 		if (tempVarName2 == "") {
+	// 			sentence = sentence + "if [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].varName
+	// 				+ "] [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].condition
+	// 				+ "] [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].value + "] ";
+	// 		} else {
+	// 			sentence = sentence + "if [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].varName
+	// 				+ "] [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].condition
+	// 				+ "] [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].varName2 + "] ";
+	// 		}
+	// 		if (j < simulatorObjects[editExistingObject].endConditions[i].conditions.length - 1) {
+	// 			sentence = sentence + "AND ";
+	// 		}
+	// 	}
+	// 	sentence = sentence + "then end simulation system.";
+	// 	addContent1.innerHTML = sentence;
+	// 	addContentType.appendChild(addContent1);
+	// 	var addContent2 = document.createElement("button");
+	// 	addContent2.name = i;
+	// 	addContent2.onclick = function () {
+	// 		RemoveEndConditionFromList(this.name);
+	// 	};
+	// 	addContent2.style = "float:right;";
+	// 	var addContent3 = document.createTextNode("X");
+	// 	addContent2.appendChild(addContent3);
+	// 	addContentType.appendChild(addContent2);
+
+	// 	panel.appendChild(addContentType);
+	// }
+
+	stageConditionSubSet = [];
+	ResetEndConditionSubList()
+
+	// var subpanel = document.getElementById("modalEndConditionsSubPanel");
+	// while (subpanel.firstChild) {
+	// 	subpanel.removeChild(subpanel.firstChild);
+	// }
+	// for (i = 0; i < stageConditionSubSet.length; i++) {
+	// 	var addContentType = document.createElement("div");
+	// 	addContentType.className = "div-list-item";
+	// 	var tempVarName2 = stageConditionSubSet[i].varName2;
+	// 	var addContent1 = document.createElement("div");
+	// 	addContent1.style = "width:70%;float:left;";
+	// 	if (tempVarName2 == "") {
+	// 		addContent1.innerHTML = "if [" + stageConditionSubSet[i].varName + "] ["
+	// 			+ stageConditionSubSet[i].condition + "] ["
+	// 			+ stageConditionSubSet[i].value + "] && ...";
+	// 	} else {
+	// 		addContent1.innerHTML = "if [" + stageConditionSubSet[i].varName + "] ["
+	// 			+ stageConditionSubSet[i].condition + "] ["
+	// 			+ stageConditionSubSet[i].varName2 + "] && ...";
+	// 	}
+	// 	addContentType.appendChild(addContent1);
+	// 	var addContent2 = document.createElement("button");
+	// 	addContent2.name = i;
+	// 	addContent2.onclick = function () {
+	// 		RemoveEndConditionFromSubList(this.name);
+	// 	};
+	// 	addContent2.style = "float:right;";
+	// 	var addContent3 = document.createTextNode("X");
+	// 	addContent2.appendChild(addContent3);
+	// 	addContentType.appendChild(addContent2);
+	// 	subpanel.appendChild(addContentType);
+	// }
+}
+
+/*	RemoveEndConditionFromList()
+	- In prompt, remove end condition from list.
+*/
+function RemoveEndConditionFromList(btn_name) {
+	simulatorObjects[editExistingObject].endConditions.splice(btn_name, 1);
+
+	ResetEndConditionList()
+
+	// var panel = document.getElementById("modalEndConditionsPanel");
+	// while (panel.firstChild) {
+	// 	panel.removeChild(panel.firstChild);
+	// }
+	// let i = 0;
+	// for (i = 0; i < simulatorObjects[editExistingObject].endConditions.length; i++) {
+	// 	var addContentType = document.createElement("div");
+	// 	addContentType.className = "div-list-item";
+	// 	var addContent1 = document.createElement("div");
+	// 	addContent1.style = "width:80%;float:left;";
+	// 	var sentence = "in stage = " + simulatorObjects[editExistingObject].endConditions[i].oldStage + ", ";
+	// 	let j = 0;
+	// 	for (j = 0; j < simulatorObjects[editExistingObject].endConditions[i].conditions.length; j++) {
+	// 		var tempVarName2 = simulatorObjects[editExistingObject].endConditions[i].conditions[j].varName2;
+	// 		if (tempVarName2 == "") {
+	// 			sentence = sentence + "if [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].varName
+	// 				+ "] [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].condition
+	// 				+ "] [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].value + "] ";
+	// 		} else {
+	// 			sentence = sentence + "if [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].varName
+	// 				+ "] [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].condition
+	// 				+ "] [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].varName2 + "] ";
+	// 		}
+	// 		if (j < simulatorObjects[editExistingObject].endConditions[i].conditions.length - 1) {
+	// 			sentence = sentence + "AND ";
+	// 		}
+	// 	}
+	// 	sentence = sentence + "then end simulation system.";
+	// 	addContent1.innerHTML = sentence;
+	// 	addContentType.appendChild(addContent1);
+	// 	var addContent2 = document.createElement("button");
+	// 	addContent2.name = i;
+	// 	addContent2.onclick = function () {
+	// 		RemoveEndConditionFromList(this.name);
+	// 	};
+	// 	addContent2.style = "float:right;";
+	// 	var addContent3 = document.createTextNode("X");
+	// 	addContent2.appendChild(addContent3);
+	// 	addContentType.appendChild(addContent2);
+
+	// 	panel.appendChild(addContentType);
+	// }
+}
+
+function ResetEndConditionList() {
+	let panel = $('#modalEndConditionsPanel')
+	panel.empty()
+	let i = 0, item, label, sentence, button, icon
+	for (i = 0; i < simulatorObjects[editExistingObject].endConditions.length; i++) {
+		item = $('<div>').addClass('div-list-item')
+		label = $('<div>').addClass('ui grey expanding label')
+		sentence = "in stage " + simulatorObjects[editExistingObject].endConditions[i].oldStage + ", ";
+		let j = 0;
+		for (j = 0; j < simulatorObjects[editExistingObject].endConditions[i].conditions.length; j++) {
+			var tempVarName2 = simulatorObjects[editExistingObject].endConditions[i].conditions[j].varName2;
+			if (tempVarName2 == "") {
+				sentence = sentence + "if [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].varName
+					+ "] [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].condition
+					+ "] [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].value + "] ";
+			} else {
+				sentence = sentence + "if [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].varName
+					+ "] [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].condition
+					+ "] [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].varName2 + "] ";
+			}
+			if (j < simulatorObjects[editExistingObject].endConditions[i].conditions.length - 1) {
+				sentence = sentence + "AND ";
+			}
+		}
+		sentence = sentence + "then end simulation system.";
+		label.append($('<label>').text(sentence).css('max-width', '95%'))
+
+		button = $('<a>').addClass('ui opaque right floated')
+		icon = $('<i>').addClass('inverted  delete icon').click(function () {
+			RemoveStageConditionFromList(this.name);
+		}
+		)
+
+		button.append(icon)
+		label.append(button)
+		item.append(label)
+		panel.append(item)
+	}
+}
+
+/*	ConfigureItemFromCanvas()
+	- Click on item on canvas to configure (show options in inspector window on right).
+*/
+function ConfigureItemFromCanvas(e) {
+	// include simulators, messages, AND the RTI Server itself
+
+	ConfigureClearInspectorPanel();
+
+	let panel = $('#inspectorpanel')
+	let clickedOnItem = -1;
+	let i = 0;
+	for (i = 0; i < simulatorObjects.length; i++) {
+		if (e.target === simulatorObjects[i].objectRef) {
+			clickedOnItem = i;
+			break;
+		}
+	}
+
+	if (clickedOnItem > -1) {
+		let header = $('<div>').addClass('ui compact segment')
+		let label = $('<label>').addClass('ui green large label').text(simulatorObjects[i].name)
+		header.append($('<h3>').text('Simulator in Project'))
+		header.append(label)
+
+		let content = $('<div>').addClass('ui compact segment')
+		let buttons = $('<div>').addClass('ui vertical buttons')
+
+		let button0 = $('<button>').addClass('ui green basic button').text('Change Local Time')
+		button0.click(() => {
+			editExistingObject = clickedOnItem;
+			EditSimLocalTime();
+		})
+		let button1 = $('<button>').addClass('ui green basic button').text('Set Initialize and Simulate Functions')
+		button1.click(() => {
+			editExistingObject = clickedOnItem;
+			EditSimulateFunctions();
+		})
+		let button2 = $('<button>').addClass('ui green basic button').text('Change Stage Transition Conditions')
+		button2.click(() => {
+			editExistingObject = clickedOnItem;
+			EditStageConditions();
+		})
+		let button3 = $('<button>').addClass('ui green basic button').text('Change End System Conditions')
+		button3.click(() => {
+			editExistingObject = clickedOnItem;
+			EditEndConditions();
+		})
+
+		buttons.append(button0)
+		buttons.append(button1)
+		buttons.append(button2)
+		buttons.append(button3)
+
+		content.append(buttons)
+
+		panel.append(header)
+		panel.append(content)
+
+		// var addContentType = document.createElement("div");
+		// addContentType.style = "width: 100%; height: 40px; padding: 8px;";
+		// addContentType.innerHTML = "<b>Simulator on Canvas:</b>";
+		// panel.appendChild(addContentType);
+
+		// addContentType = document.createElement("div");
+		// addContentType.style = "width: 100%; height: 42px; padding: 8px;";
+		// var addContent = document.createTextNode("Name : " + simulatorObjects[i].name);
+		// addContentType.appendChild(addContent);
+		// panel.appendChild(addContentType);
+
+		// (use for-loop to create 4 similar buttons)
+		// for (i = 0; i < 4; i++) {
+		// 	addContentType = document.createElement("button");
+		// 	addContentType.style = "width: 100%; height: 40px;";
+		// 	var addContent;
+		// 	if (i == 0) {
+		// 		addContentType.onclick = function () {
+		// 			editExistingObject = clickedOnItem;
+		// 			EditSimLocalTime();
+		// 		};
+		// 		addContent = document.createTextNode("Change Local Time");
+		// 	} else if (i == 1) {
+		// 		addContentType.onclick = function () {
+		// 			editExistingObject = clickedOnItem;
+		// 			EditSimulateFunctions();
+		// 		};
+		// 		addContent = document.createTextNode("Set Initialize and Simulate Functions");
+		// 	} else if (i == 2) {
+		// 		addContentType.onclick = function () {
+		// 			editExistingObject = clickedOnItem;
+		// 			EditStageConditions();
+		// 		};
+		// 		addContent = document.createTextNode("Change Stage Transition Conditions");
+		// 	} else if (i == 3) {
+		// 		addContentType.onclick = function () {
+		// 			editExistingObject = clickedOnItem;
+		// 			EditEndConditions();
+		// 		};
+		// 		addContent = document.createTextNode("Change End System Conditions");
+		// 	}
+		// 	addContentType.appendChild(addContent);
+		// 	panel.appendChild(addContentType);
 		// }
+		return;
+	}
 
-		/*	UpdateTimeScale()
-			- Change time scale (from prompt).
-		*/
-		// function UpdateTimeScale() {
-		// 	var newNumber = document.getElementsByName("NewTimeScale")[0].value;
-		// 	var divNumber = document.getElementsByName("divTimeScale")[0];
-		// 	divNumber.innerHTML = "Current Time Multiplier: " + newNumber;
-		// 	simulatorObjects[editExistingObject].timeScale = parseInt(newNumber);
-		// }
+	panel = document.getElementById("inspectorpanel")
 
-		/*	UpdateTimeVarDelta()
-			- Change time delta variable reference from simulator (from prompt).
-		*/
-		// function UpdateTimeVarDelta(index) {
-		// 	document.getElementsByName("divTimeVarScale")[0].innerHTML
-		// 		= "Current Time Variable Multiplier: "
-		// 		+ simulatorObjects[editExistingObject].original.variables[index].name
-		// 		+ " (" + simulatorObjects[editExistingObject].original.variables[index].valueType + ")";
-		// 	simulatorObjects[editExistingObject].timeVarDelta
-		// 		= simulatorObjects[editExistingObject].original.variables[index].name;
-		// }
-
-		/*	UpdateInitializeFunction()
-			- Change 'initialize' function to call for sim in specific stage (from prompt).
-		*/
-		function UpdateInitializeFunction(index) {
-			document.getElementsByName("divInitializeFunction")[0].innerHTML
-				= "Initialize Function: " + simulatorObjects[editExistingObject].original.functions[index].name;
-			simulatorObjects[editExistingObject].initialize
-				= simulatorObjects[editExistingObject].original.functions[index].name;
+	clickedOnItem = -1;
+	var listOfMessageVars = document.getElementsByClassName("div-canvas-message");
+	for (i = 0; i < listOfMessageVars.length; i++) {
+		if (e.target === listOfMessageVars[i]) {
+			clickedOnItem = i;
+			break;
 		}
+	}
+	if (clickedOnItem > -1) {
 
-		/*	UpdateSimulateFunction()
-			- Change 'simulate' function to call for sim in specific stage (from prompt).
-		*/
-		function UpdateSimulateFunction(index) {
-			document.getElementsByName("divSimulateFunction")[0].innerHTML
-				= "Simulate Function: " + simulatorObjects[editExistingObject].original.functions[index].name;
-			simulatorObjects[editExistingObject].simulate
-				= simulatorObjects[editExistingObject].original.functions[index].name;
+		let messageName = messageObjects[clickedOnItem].name
+
+		let panel = $('#inspectorpanel')
+		let header = $('<div>').addClass('ui compact segment')
+		let message = $('<label>').addClass('ui blue large label').text(messageName)
+		header.append($('<h3>').text('Message on Canvas'))
+		header.append(message)
+
+
+		panel.append(header)
+
+		// var addContentType = document.createElement("div");
+		// addContentType.style = "width: 100%; height: 40px; padding: 8px;";
+		// addContentType.innerHTML = "<b>Message on Canvas:</b>";
+		// panel.appendChild(addContentType);
+		// var addContentType = document.createElement("div");
+		// addContentType.style = "width: 100%; height: 42px; padding: 8px;";
+		// var addContent = document.createTextNode("Name : " + messageObjects[clickedOnItem].name);
+		// addContentType.appendChild(addContent);
+		// panel.appendChild(addContentType);
+		return;
+	}
+
+	clickedOnItem = -1;
+	var listOfSimPub = document.getElementsByClassName("div-canvas-pub");
+	for (i = 0; i < listOfSimPub.length; i++) {
+		if (e.target === listOfSimPub[i]) {
+			clickedOnItem = i;
+			break;
 		}
+	}
+	if (clickedOnItem > -1) {
+		ConfigureClearInspectorPanel();
+		let simName = simulatorObjects[listOfSimPub[clickedOnItem].nameParent].name;
+		let messageName = messageObjects[simulatorObjects[listOfSimPub[clickedOnItem].nameParent].publishedMessages[listOfSimPub[clickedOnItem].name]].name;
 
+		let panel = $('#inspectorpanel')
+		let header = $('<div>').addClass('ui compact segment')
+		let sim = $('<label>').addClass('ui green large label').text(simName)
+		let arrow = $('<i>').addClass('arrow right icon')
+		let message = $('<label>').addClass('ui blue large label').text(messageName)
+		header.append($('<h3>').text('Publish-Definition on Canvas'))
+		header.append(sim)
+		header.append(arrow)
+		header.append(message)
 
+		let content = $('<div>').addClass('ui compact segment')
+		let button = $('<button>').addClass('ui red basic button').text('Change Publish Parameters')
+		button.click(() => {
+			editExistingObject = listOfSimPub[clickedOnItem].nameParent;		//index in 'simulatorObjects' of sim
+			editExistingObject2 = listOfSimPub[clickedOnItem].name;				//index in 'simulatorObjects[i].publishedMessages'
+			EditPublishConnectionPrompt();
+		})
+		content.append(button)
 
-		/*	DropdownFunction()
-			- For dropdown menu in certain prompt windows.
-		*/
-		function DropdownFunction() {
-			document.getElementById("dropdownVar").classList.toggle("show");
+		panel.append(header)
+		panel.append(content)
+
+		// var addContentType = document.createElement("div");
+		// addContentType.style = "width: 100%; height: 40px; padding: 8px;";
+		// addContentType.innerHTML = "<b>Publish-Definition on Canvas:</b>";
+		// panel.appendChild(addContentType);
+		// var simName = simulatorObjects[listOfSimPub[clickedOnItem].nameParent].name;
+		// var messageName = messageObjects[simulatorObjects[listOfSimPub[clickedOnItem].nameParent].publishedMessages[listOfSimPub[clickedOnItem].name]].name;
+		// var addContentType = document.createElement("div");
+		// addContentType.style = "width: 100%; height: 42px; padding: 8px;";
+		// var addContent = document.createTextNode("Source -> Dest. : " + simName + " -> " + messageName);
+		// addContentType.appendChild(addContent);
+		// panel.appendChild(addContentType);
+		// addContentType = document.createElement("button");
+		// addContentType.style = "width: 100%; height: 40px;";
+		// addContentType.onclick = function () {
+		// 	editExistingObject = listOfSimPub[clickedOnItem].nameParent;		//index in 'simulatorObjects' of sim
+		// 	editExistingObject2 = listOfSimPub[clickedOnItem].name;				//index in 'simulatorObjects[i].publishedMessages'
+		// 	EditPublishConnectionPrompt();
+		// };
+		// var addContent = document.createTextNode("Change Publish Parameters");
+		// addContentType.appendChild(addContent);
+		// panel.appendChild(addContentType);
+		// console.log("clicked on Publish item, name = " + listOfSimPub[clickedOnItem].name
+		// 	+ " , nameParent = " + listOfSimPub[clickedOnItem].nameParent);
+		return;
+	}
+
+	clickedOnItem = -1;
+	var listOfSimSub = document.getElementsByClassName("div-canvas-sub");
+	for (i = 0; i < listOfSimSub.length; i++) {
+		if (e.target === listOfSimSub[i]) {
+			clickedOnItem = i;
+			break;
 		}
-
-		function DropdownInitializeFunction() {
-			document.getElementById("dropdownInitializeFunction").classList.toggle("show");
-		}
-
-		function DropdownSimulateFunction() {
-			document.getElementById("dropdownSimulateFunction").classList.toggle("show");
-		}
-
-		/*	DropdownStageConditionPickVar1()
-			- Disable other dropdown menus when another one is selected (otherwise, can have several open at once).
-		*/
-		function DropdownStageConditionPickVar1() {
-			document.getElementById("dropdownStageConditionPickVar1").classList.toggle("show");
-			//document.getElementById("dropdownStageConditionPickVar1").classList.toggle("show", false);
-			document.getElementById("dropdownStageConditionPickRTIVar1").classList.toggle("show", false);
-			document.getElementById("dropdownStageConditionCondition1").classList.toggle("show", false);
-			document.getElementById("dropdownStageConditionPickVar2").classList.toggle("show", false);
-			document.getElementById("dropdownStageConditionPickRTIVar2").classList.toggle("show", false);
-		}
-
-		function DropdownStageConditionPickRTIVar1() {
-			document.getElementById("dropdownStageConditionPickRTIVar1").classList.toggle("show");
-			document.getElementById("dropdownStageConditionPickVar1").classList.toggle("show", false);
-			//document.getElementById("dropdownStageConditionPickRTIVar1").classList.toggle("show", false);
-			document.getElementById("dropdownStageConditionCondition1").classList.toggle("show", false);
-			document.getElementById("dropdownStageConditionPickVar2").classList.toggle("show", false);
-			document.getElementById("dropdownStageConditionPickRTIVar2").classList.toggle("show", false);
-		}
-
-		function DropdownStageConditionCondition1() {
-			document.getElementById("dropdownStageConditionCondition1").classList.toggle("show");
-			document.getElementById("dropdownStageConditionPickVar1").classList.toggle("show", false);
-			document.getElementById("dropdownStageConditionPickRTIVar1").classList.toggle("show", false);
-			//document.getElementById("dropdownStageConditionCondition1").classList.toggle("show", false);
-			document.getElementById("dropdownStageConditionPickVar2").classList.toggle("show", false);
-			document.getElementById("dropdownStageConditionPickRTIVar2").classList.toggle("show", false);
-		}
-
-		function DropdownStageConditionPickVar2() {
-			document.getElementById("dropdownStageConditionPickVar2").classList.toggle("show");
-			document.getElementById("dropdownStageConditionPickVar1").classList.toggle("show", false);
-			document.getElementById("dropdownStageConditionPickRTIVar1").classList.toggle("show", false);
-			document.getElementById("dropdownStageConditionCondition1").classList.toggle("show", false);
-			//document.getElementById("dropdownStageConditionPickVar2").classList.toggle("show", false);
-			document.getElementById("dropdownStageConditionPickRTIVar2").classList.toggle("show", false);
-		}
-
-		function DropdownStageConditionPickRTIVar2() {
-			document.getElementById("dropdownStageConditionPickRTIVar2").classList.toggle("show");
-			document.getElementById("dropdownStageConditionPickVar1").classList.toggle("show", false);
-			document.getElementById("dropdownStageConditionPickRTIVar1").classList.toggle("show", false);
-			document.getElementById("dropdownStageConditionCondition1").classList.toggle("show", false);
-			document.getElementById("dropdownStageConditionPickVar2").classList.toggle("show", false);
-			//document.getElementById("dropdownStageConditionPickRTIVar2").classList.toggle("show", false);
-		}
-
-		/*	UpdateStageConditionCompareValue()
-			- In configuration prompt for stage condition, update after selection for compare value.
-		*/
-		function UpdateStageConditionCompareValue() {
-			console.log("clicked update");
-			var newValue = document.getElementsByName("TextStageConditionsPickValue2")[0].value;
-			console.log("new value = " + newValue);
-			stageConditionV3 = newValue;
-			stageConditionV3a = newValue;
-			stageConditionV3b = "";
-			document.getElementById("divStageConditionStatement").innerHTML
-				= "If [" + stageConditionV1 + "] [" + stageConditionV2 + "] [" + stageConditionV3 + "] AND ...";
-		}
-
-		function DropdownEndConditionPickVar1() {
-			document.getElementById("dropdownEndConditionPickVar1").classList.toggle("show");
-			//document.getElementById("dropdownStageConditionPickVar1").classList.toggle("show", false);
-			document.getElementById("dropdownEndConditionPickRTIVar1").classList.toggle("show", false);
-			document.getElementById("dropdownEndConditionCondition1").classList.toggle("show", false);
-			document.getElementById("dropdownEndConditionPickVar2").classList.toggle("show", false);
-			document.getElementById("dropdownEndConditionPickRTIVar2").classList.toggle("show", false);
-		}
-
-		function DropdownEndConditionPickRTIVar1() {
-			document.getElementById("dropdownEndConditionPickRTIVar1").classList.toggle("show");
-			document.getElementById("dropdownEndConditionPickVar1").classList.toggle("show", false);
-			//document.getElementById("dropdownStageConditionPickRTIVar1").classList.toggle("show", false);
-			document.getElementById("dropdownEndConditionCondition1").classList.toggle("show", false);
-			document.getElementById("dropdownEndConditionPickVar2").classList.toggle("show", false);
-			document.getElementById("dropdownEndConditionPickRTIVar2").classList.toggle("show", false);
-		}
-
-		function DropdownEndConditionCondition1() {
-			document.getElementById("dropdownEndConditionCondition1").classList.toggle("show");
-			document.getElementById("dropdownEndConditionPickVar1").classList.toggle("show", false);
-			document.getElementById("dropdownEndConditionPickRTIVar1").classList.toggle("show", false);
-			//document.getElementById("dropdownStageConditionCondition1").classList.toggle("show", false);
-			document.getElementById("dropdownEndConditionPickVar2").classList.toggle("show", false);
-			document.getElementById("dropdownEndConditionPickRTIVar2").classList.toggle("show", false);
-		}
-
-		function DropdownEndConditionPickVar2() {
-			document.getElementById("dropdownEndConditionPickVar2").classList.toggle("show");
-			document.getElementById("dropdownEndConditionPickVar1").classList.toggle("show", false);
-			document.getElementById("dropdownEndConditionPickRTIVar1").classList.toggle("show", false);
-			document.getElementById("dropdownEndConditionCondition1").classList.toggle("show", false);
-			//document.getElementById("dropdownStageConditionPickVar2").classList.toggle("show", false);
-			document.getElementById("dropdownEndConditionPickRTIVar2").classList.toggle("show", false);
-		}
-
-		function DropdownEndConditionPickRTIVar2() {
-			document.getElementById("dropdownEndConditionPickRTIVar2").classList.toggle("show");
-			document.getElementById("dropdownEndConditionPickVar1").classList.toggle("show", false);
-			document.getElementById("dropdownEndConditionPickRTIVar1").classList.toggle("show", false);
-			document.getElementById("dropdownEndConditionCondition1").classList.toggle("show", false);
-			document.getElementById("dropdownEndConditionPickVar2").classList.toggle("show", false);
-			//document.getElementById("dropdownStageConditionPickRTIVar2").classList.toggle("show", false);
-		}
-
-		function UpdateEndConditionCompareValue() {
-			console.log("clicked update");
-			var newValue = document.getElementsByName("TextEndConditionsPickValue2")[0].value;
-			console.log("new value = " + newValue);
-			stageConditionV3 = newValue;
-			stageConditionV3a = newValue;
-			stageConditionV3b = "";
-			document.getElementById("divEndConditionStatement").innerHTML
-				= "If [" + stageConditionV1 + "] [" + stageConditionV2 + "] [" + stageConditionV3 + "] AND ...";
-		}
-
-		/*	AddStageConditionToSubList()
-			- In prompt, add 'completed' stage condition to list (where multiple AND conditions can be added before final submission).
-		*/
-		function AddStageConditionToSubList() {
-			stageConditionSubSet.push({
-				varName: $('#stageCondition1').text(),
-				condition: unescape($('#stageCondition2').text()),
-				value: stageConditionV3a,
-				varName2: stageConditionV3b
-			});
-
-			// var subpanel = document.getElementById("modalStageConditionsSubPanel");
-			// while (subpanel.firstChild) {
-			// 	subpanel.removeChild(subpanel.firstChild);
-			// }
-			// let i = 0;
-			// for (i = 0; i < stageConditionSubSet.length; i++) {
-			// 	var addContentType = document.createElement("div");
-			// 	addContentType.className = "div-list-item";
-			// 	var tempVarName2 = stageConditionSubSet[i].varName2;
-			// 	var addContent1 = document.createElement("div");
-			// 	addContent1.style = "width:70%;float:left;";
-			// 	if (tempVarName2 == "") {
-			// 		addContent1.innerHTML = "if [" + stageConditionSubSet[i].varName + "] ["
-			// 			+ stageConditionSubSet[i].condition + "] [" + stageConditionSubSet[i].value + "] AND ...";
-			// 	} else {
-			// 		addContent1.innerHTML = "if [" + stageConditionSubSet[i].varName + "] ["
-			// 			+ stageConditionSubSet[i].condition + "] [" + stageConditionSubSet[i].varName2 + "] AND ...";
-			// 	}
-			// 	addContentType.appendChild(addContent1);
-			// 	var addContent2 = document.createElement("button");
-			// 	addContent2.name = i;
-			// 	addContent2.onclick = function () {
-			// 		RemoveStageConditionFromSubList(this.name);
-			// 	};
-			// 	addContent2.style = "float:right;";
-			// 	var addContent3 = document.createTextNode("X");
-			// 	addContent2.appendChild(addContent3);
-			// 	addContentType.appendChild(addContent2);
-
-			// 	subpanel.appendChild(addContentType);
-			// }
-
-			ResetStageConditionSubList()
-
-			// stageConditionV1 = "";
-			// stageConditionV2 = "";
-			// stageConditionV3 = "";
-			// stageConditionV3a = "";
-			// stageConditionV3b = "";
-			// document.getElementsByName("TextStageConditionsPickValue2")[0].value = "";
-			// document.getElementById("divStageConditionStatement").innerHTML
-			// 	= "If [" + stageConditionV1 + "] [" + stageConditionV2 + "] [" + stageConditionV3 + "] AND ...";
-		}
-
-		/*	RemoveStageConditionFromSubList()
-			- In prompt, remove stage condition to list (where multiple AND conditions can be added before final submission).
-		*/
-		function RemoveStageConditionFromSubList(btn_id) {
-			stageConditionSubSet.splice(btn_id, 1);
-
-			ResetStageConditionSubList()
-
-			// var subpanel = document.getElementById("modalStageConditionsSubPanel");
-			// while (subpanel.firstChild) {
-			// 	subpanel.removeChild(subpanel.firstChild);
-			// }
-			// let i = 0;
-			// for (i = 0; i < stageConditionSubSet.length; i++) {
-			// 	var addContentType = document.createElement("div");
-			// 	addContentType.className = "div-list-item";
-			// 	var tempVarName2 = stageConditionSubSet[i].varName2;
-			// 	var addContent1 = document.createElement("div");
-			// 	addContent1.style = "width:70%;float:left;";
-			// 	if (tempVarName2 == "") {
-			// 		addContent1.innerHTML = "if [" + stageConditionSubSet[i].varName + "] ["
-			// 			+ stageConditionSubSet[i].condition + "] [" + stageConditionSubSet[i].value + "] AND ...";
-			// 	} else {
-			// 		addContent1.innerHTML = "if [" + stageConditionSubSet[i].varName + "] ["
-			// 			+ stageConditionSubSet[i].condition + "] [" + stageConditionSubSet[i].varName2 + "] AND ...";
-			// 	}
-			// 	addContentType.appendChild(addContent1);
-			// 	var addContent2 = document.createElement("button");
-			// 	addContent2.name = i;
-			// 	addContent2.onclick = function () {
-			// 		RemoveStageConditionFromSubList(this.name);
-			// 	};
-			// 	addContent2.style = "float:right;";
-			// 	var addContent3 = document.createTextNode("X");
-			// 	addContent2.appendChild(addContent3);
-			// 	addContentType.appendChild(addContent2);
-			// 	subpanel.appendChild(addContentType);
-			// }
-		}
-
-		function ResetStageConditionSubList() {
-
-			let subpanel = $("#modalStageConditionsSubPanel");
-			subpanel.empty()
-
-			let i = 0, item, label, text, tempVarName2, button, icon;
-			for (i = 0; i < stageConditionSubSet.length; i++) {
-				item = $('<div>').addClass('div-list-item')
-				label = $('<div>').addClass('ui grey expanding middle aligned label')
-				if (tempVarName2 == "") {
-					text = "if [" + stageConditionSubSet[i].varName + "] ["
-						+ stageConditionSubSet[i].condition + "] [" + stageConditionSubSet[i].value + "] AND ..."
-				} else {
-					text = "if [" + stageConditionSubSet[i].varName + "] ["
-						+ stageConditionSubSet[i].condition + "] [" + stageConditionSubSet[i].varName2 + "] AND ..."
-				}
-				label.append($('<label>').text(text).css('max-width', '95%'))
-				button = $('<a>').addClass('ui opaque right floated')
-				icon = $('<i>').addClass('inverted  delete icon').click(function () {
-					RemoveStageConditionFromSubList(this.name);
-				}
-				)
-
-				button.append(icon)
-				label.append(button)
-				item.append(label)
-				subpanel.append(item)
-			}
-		}
-
-		/*	AddStageConditionToList()
-			- In prompt, add 'completed' stage condition set to final list.
-		*/
-		function AddStageConditionToList() {
-			newStage = document.getElementsByName("TextStageConditionsNewStage")[0].value;
-			simulatorObjects[editExistingObject].stageConditions.push({
-				oldStage: stage,
-				conditions: stageConditionSubSet,
-				newStage: newStage
-			});
-
-			ResetStageConditionList()
-
-
-			// var panel = document.getElementById("modalStageConditionsPanel");
-			// while (panel.firstChild) {
-			// 	panel.removeChild(panel.firstChild);
-			// }
-			// let i = 0;
-			// for (i = 0; i < simulatorObjects[editExistingObject].stageConditions.length; i++) {
-			// 	var addContentType = document.createElement("div");
-			// 	addContentType.className = "div-list-item";
-			// 	var addContent1 = document.createElement("div");
-			// 	addContent1.style = "width:80%;float:left;";
-			// 	var sentence = "in stage = " + simulatorObjects[editExistingObject].stageConditions[i].oldStage + ", ";
-			// 	let j = 0;
-			// 	for (j = 0; j < simulatorObjects[editExistingObject].stageConditions[i].conditions.length; j++) {
-			// 		var tempVarName2 = simulatorObjects[editExistingObject].stageConditions[i].conditions[j].varName2;
-			// 		if (tempVarName2 == "") {
-			// 			sentence = sentence + "if [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].varName
-			// 				+ "] [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].condition
-			// 				+ "] [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].value + "] ";
-			// 		} else {
-			// 			sentence = sentence + "if [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].varName
-			// 				+ "] [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].condition
-			// 				+ "] [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].varName2 + "] ";
-			// 		}
-			// 		if (j < simulatorObjects[editExistingObject].stageConditions[i].conditions.length - 1) {
-			// 			sentence = sentence + "AND ";
-			// 		}
-			// 	}
-			// 	sentence = sentence + "go to stage = " + simulatorObjects[editExistingObject].stageConditions[i].newStage;
-			// 	addContent1.innerHTML = sentence;
-			// 	addContentType.appendChild(addContent1);
-			// 	var addContent2 = document.createElement("button");
-			// 	addContent2.name = i;
-			// 	addContent2.onclick = function () {
-			// 		RemoveStageConditionFromList(this.name);
-			// 	};
-			// 	addContent2.style = "float:right;";
-			// 	var addContent3 = document.createTextNode("X");
-			// 	addContent2.appendChild(addContent3);
-			// 	addContentType.appendChild(addContent2);
-
-			// 	panel.appendChild(addContentType);
-			// }
-
-			stageConditionSubSet = [];
-			ResetStageConditionSubList()
-
-			// var subpanel = document.getElementById("modalStageConditionsSubPanel");
-			// while (subpanel.firstChild) {
-			// 	subpanel.removeChild(subpanel.firstChild);
-			// }
-			// for (i = 0; i < stageConditionSubSet.length; i++) {
-			// 	var addContentType = document.createElement("div");
-			// 	addContentType.className = "div-list-item";
-			// 	var tempVarName2 = stageConditionSubSet[i].varName2;
-			// 	var addContent1 = document.createElement("div");
-			// 	addContent1.style = "width:70%;float:left;";
-			// 	if (tempVarName2 == "") {
-			// 		addContent1.innerHTML = "if [" + stageConditionSubSet[i].varName + "] ["
-			// 			+ stageConditionSubSet[i].condition + "] [" + stageConditionSubSet[i].value + "] && ...";
-			// 	} else {
-			// 		addContent1.innerHTML = "if [" + stageConditionSubSet[i].varName + "] ["
-			// 			+ stageConditionSubSet[i].condition + "] [" + stageConditionSubSet[i].varName2 + "] && ...";
-			// 	}
-			// 	addContentType.appendChild(addContent1);
-			// 	var addContent2 = document.createElement("button");
-			// 	addContent2.name = i;
-			// 	addContent2.onclick = function () {
-			// 		RemoveStageConditionFromSubList(this.name);
-			// 	};
-			// 	addContent2.style = "float:right;";
-			// 	var addContent3 = document.createTextNode("X");
-			// 	addContent2.appendChild(addContent3);
-			// 	addContentType.appendChild(addContent2);
-			// 	subpanel.appendChild(addContentType);
-			// }
-		}
-
-		/*	RemoveStageConditionToList()
-			- In prompt, remove stage condition set from final list.
-		*/
-		function RemoveStageConditionFromList(btn_name) {
-			simulatorObjects[editExistingObject].stageConditions.splice(btn_name, 1);
-
-			ResetStageConditionList()
-
-			// var panel = document.getElementById("modalStageConditionsPanel");
-			// while (panel.firstChild) {
-			// 	panel.removeChild(panel.firstChild);
-			// }
-			// let i = 0;
-			// for (i = 0; i < simulatorObjects[editExistingObject].stageConditions.length; i++) {
-			// 	var addContentType = document.createElement("div");
-			// 	addContentType.className = "div-list-item";
-			// 	var addContent1 = document.createElement("div");
-			// 	addContent1.style = "width:80%;float:left;";
-			// 	var sentence = "in stage = " + simulatorObjects[editExistingObject].stageConditions[i].oldStage + ", ";
-			// 	let j = 0;
-			// 	for (j = 0; j < simulatorObjects[editExistingObject].stageConditions[i].conditions.length; j++) {
-			// 		var tempVarName2 = simulatorObjects[editExistingObject].stageConditions[i].conditions[j].varName2;
-			// 		if (tempVarName2 == "") {
-			// 			sentence = sentence + "if [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].varName
-			// 				+ "] [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].condition
-			// 				+ "] [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].value + "] ";
-			// 		} else {
-			// 			sentence = sentence + "if [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].varName
-			// 				+ "] [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].condition
-			// 				+ "] [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].varName2 + "] ";
-			// 		}
-			// 		if (j < simulatorObjects[editExistingObject].stageConditions[i].conditions.length - 1) {
-			// 			sentence = sentence + "AND ";
-			// 		}
-			// 	}
-			// 	sentence = sentence + "go to stage = " + simulatorObjects[editExistingObject].stageConditions[i].newStage;
-			// 	addContent1.innerHTML = sentence;
-			// 	addContentType.appendChild(addContent1);
-			// 	//addContentType.appendChild(addContent1);
-			// 	var addContent2 = document.createElement("button");
-			// 	addContent2.name = i;
-			// 	addContent2.onclick = function () {
-			// 		RemoveStageConditionFromList(this.name);
-			// 	};
-			// 	addContent2.style = "float:right;";
-			// 	var addContent3 = document.createTextNode("X");
-			// 	addContent2.appendChild(addContent3);
-			// 	addContentType.appendChild(addContent2);
-
-			// 	panel.appendChild(addContentType);
-			// }
-		}
-
-		function ResetStageConditionList() {
-
-			let panel = $('#modalStageConditionsPanel')
-			panel.empty()
-			let i = 0, item, label, sentence, button, icon
-			for (i = 0; i < simulatorObjects[editExistingObject].stageConditions.length; i++) {
-				item = $('<div>').addClass('div-list-item')
-				label = $('<div>').addClass('ui grey expanding label')
-				sentence = "in stage " + simulatorObjects[editExistingObject].stageConditions[i].oldStage + ", ";
-				let j = 0;
-				for (j = 0; j < simulatorObjects[editExistingObject].stageConditions[i].conditions.length; j++) {
-					var tempVarName2 = simulatorObjects[editExistingObject].stageConditions[i].conditions[j].varName2;
-					if (tempVarName2 == "") {
-						sentence = sentence + "if [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].varName
-							+ "] [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].condition
-							+ "] [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].value + "] ";
-					} else {
-						sentence = sentence + "if [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].varName
-							+ "] [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].condition
-							+ "] [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].varName2 + "] ";
-					}
-					if (j < simulatorObjects[editExistingObject].stageConditions[i].conditions.length - 1) {
-						sentence = sentence + "AND ";
-					}
-				}
-				sentence = sentence + "go to stage " + simulatorObjects[editExistingObject].stageConditions[i].newStage;
-				label.append($('<label>').text(sentence).css('max-width', '95%'))
-
-				button = $('<a>').addClass('ui opaque right floated')
-				icon = $('<i>').addClass('inverted  delete icon').click(function () {
-					RemoveStageConditionFromList(this.name);
-				}
-				)
-
-				button.append(icon)
-				label.append(button)
-				item.append(label)
-				panel.append(item)
-			}
-
-		}
-
-		/*	AddEndConditionToSubList()
-			- In prompt, add end condition to sublist (where AND conditions are collected).
-		*/
-		function AddEndConditionToSubList() {
-			stageConditionSubSet.push({
-				varName: $('#endCondition1').text(),
-				condition: unescape($('#endCondition2').text()),
-				value: stageConditionV3a,
-				varName2: stageConditionV3b
-			});
-
-			ResetEndConditionSubList()
-
-			// var subpanel = document.getElementById("modalEndConditionsSubPanel");
-			// while (subpanel.firstChild) {
-			// 	subpanel.removeChild(subpanel.firstChild);
-			// }
-			// let i = 0;
-			// for (i = 0; i < stageConditionSubSet.length; i++) {
-			// 	var addContentType = document.createElement("div");
-			// 	addContentType.className = "div-list-item";
-			// 	var tempVarName2 = stageConditionSubSet[i].varName2;
-			// 	var addContent1 = document.createElement("div");
-			// 	addContent1.style = "width:70%;float:left;";
-			// 	if (tempVarName2 == "") {
-			// 		addContent1.innerHTML = "if [" + stageConditionSubSet[i].varName + "] ["
-			// 			+ stageConditionSubSet[i].condition + "] ["
-			// 			+ stageConditionSubSet[i].value + "] AND ...";
-			// 	} else {
-			// 		addContent1.innerHTML = "if [" + stageConditionSubSet[i].varName + "] ["
-			// 			+ stageConditionSubSet[i].condition + "] ["
-			// 			+ stageConditionSubSet[i].varName2 + "] AND ...";
-			// 	}
-			// 	addContentType.appendChild(addContent1);
-			// 	var addContent2 = document.createElement("button");
-			// 	addContent2.name = i;
-			// 	addContent2.onclick = function () {
-			// 		RemoveEndConditionFromSubList(this.name);
-			// 	};
-			// 	addContent2.style = "float:right;";
-			// 	var addContent3 = document.createTextNode("X");
-			// 	addContent2.appendChild(addContent3);
-			// 	addContentType.appendChild(addContent2);
-
-			// 	subpanel.appendChild(addContentType);
-			// }
-
-			// stageConditionV1 = "";
-			// stageConditionV2 = "";
-			// stageConditionV3 = "";
-			// stageConditionV3a = "";
-			// stageConditionV3b = "";
-			// document.getElementsByName("TextEndConditionsPickValue2")[0].value = "";
-			// document.getElementById("divEndConditionStatement").innerHTML
-			// 	= "If [" + stageConditionV1 + "] [" + stageConditionV2
-			// 	+ "] [" + stageConditionV3 + "] AND ...";
-
-		}
-
-		/*	RemoveEndConditionFromSubList()
-			- In prompt, remove end condition from sublist (where AND conditions are collected).
-		*/
-		function RemoveEndConditionFromSubList(btn_id) {
-			stageConditionSubSet.splice(btn_id, 1);
-
-			ResetEndConditionSubList()
-
-			// var subpanel = document.getElementById("modalEndConditionsSubPanel");
-			// while (subpanel.firstChild) {
-			// 	subpanel.removeChild(subpanel.firstChild);
-			// }
-			// let i = 0;
-			// for (i = 0; i < stageConditionSubSet.length; i++) {
-			// 	var addContentType = document.createElement("div");
-			// 	addContentType.className = "div-list-item";
-			// 	var tempVarName2 = stageConditionSubSet[i].varName2;
-			// 	var addContent1 = document.createElement("div");
-			// 	addContent1.style = "width:70%;float:left;";
-			// 	if (tempVarName2 == "") {
-			// 		addContent1.innerHTML = "if [" + stageConditionSubSet[i].varName + "] ["
-			// 			+ stageConditionSubSet[i].condition + "] ["
-			// 			+ stageConditionSubSet[i].value + "] AND ...";
-			// 	} else {
-			// 		addContent1.innerHTML = "if [" + stageConditionSubSet[i].varName + "] ["
-			// 			+ stageConditionSubSet[i].condition
-			// 			+ "] [" + stageConditionSubSet[i].varName2 + "] AND ...";
-			// 	}
-			// 	addContentType.appendChild(addContent1);
-			// 	var addContent2 = document.createElement("button");
-			// 	addContent2.name = i;
-			// 	addContent2.onclick = function () {
-			// 		RemoveEndConditionFromSubList(this.name);
-			// 	};
-			// 	addContent2.style = "float:right;";
-			// 	var addContent3 = document.createTextNode("X");
-			// 	addContent2.appendChild(addContent3);
-			// 	addContentType.appendChild(addContent2);
-
-			// 	subpanel.appendChild(addContentType);
-			// }
-		}
-
-		function ResetEndConditionSubList() {
-			let subpanel = $("#modalEndConditionsSubPanel");
-			subpanel.empty()
-
-			let i = 0, item, label, text, tempVarName2, button, icon;
-			for (i = 0; i < stageConditionSubSet.length; i++) {
-				item = $('<div>').addClass('div-list-item')
-				label = $('<div>').addClass('ui grey expanding middle aligned label')
-				if (tempVarName2 == "") {
-					text = "if [" + stageConditionSubSet[i].varName + "] ["
-						+ stageConditionSubSet[i].condition + "] [" + stageConditionSubSet[i].value + "] AND ..."
-				} else {
-					text = "if [" + stageConditionSubSet[i].varName + "] ["
-						+ stageConditionSubSet[i].condition + "] [" + stageConditionSubSet[i].varName2 + "] AND ..."
-				}
-				label.append($('<label>').text(text).css('max-width', '95%'))
-				button = $('<a>').addClass('ui opaque right floated')
-				icon = $('<i>').addClass('inverted  delete icon').click(function () {
-					RemoveStageConditionFromSubList(this.name);
-				}
-				)
-
-				button.append(icon)
-				label.append(button)
-				item.append(label)
-				subpanel.append(item)
-			}
-		}
-
-		/*	AddEndConditionToSubList()
-			- In prompt, add end condition to list.
-		*/
-		function AddEndConditionToList() {
-			simulatorObjects[editExistingObject].endConditions.push({
-				oldStage: stage,
-				conditions: stageConditionSubSet
-			});
-
-			ResetEndConditionList()
-
-			// var panel = document.getElementById("modalEndConditionsPanel");
-			// while (panel.firstChild) {
-			// 	panel.removeChild(panel.firstChild);
-			// }
-			// let i = 0;
-			// for (i = 0; i < simulatorObjects[editExistingObject].endConditions.length; i++) {
-			// 	var addContentType = document.createElement("div");
-			// 	addContentType.className = "div-list-item";
-			// 	var addContent1 = document.createElement("div");
-			// 	addContent1.style = "width:80%;float:left;";
-			// 	var sentence = "in stage = " + simulatorObjects[editExistingObject].endConditions[i].oldStage + ", ";
-			// 	let j = 0;
-			// 	for (j = 0; j < simulatorObjects[editExistingObject].endConditions[i].conditions.length; j++) {
-			// 		var tempVarName2 = simulatorObjects[editExistingObject].endConditions[i].conditions[j].varName2;
-			// 		if (tempVarName2 == "") {
-			// 			sentence = sentence + "if [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].varName
-			// 				+ "] [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].condition
-			// 				+ "] [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].value + "] ";
-			// 		} else {
-			// 			sentence = sentence + "if [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].varName
-			// 				+ "] [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].condition
-			// 				+ "] [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].varName2 + "] ";
-			// 		}
-			// 		if (j < simulatorObjects[editExistingObject].endConditions[i].conditions.length - 1) {
-			// 			sentence = sentence + "AND ";
-			// 		}
-			// 	}
-			// 	sentence = sentence + "then end simulation system.";
-			// 	addContent1.innerHTML = sentence;
-			// 	addContentType.appendChild(addContent1);
-			// 	var addContent2 = document.createElement("button");
-			// 	addContent2.name = i;
-			// 	addContent2.onclick = function () {
-			// 		RemoveEndConditionFromList(this.name);
-			// 	};
-			// 	addContent2.style = "float:right;";
-			// 	var addContent3 = document.createTextNode("X");
-			// 	addContent2.appendChild(addContent3);
-			// 	addContentType.appendChild(addContent2);
-
-			// 	panel.appendChild(addContentType);
-			// }
-
-			stageConditionSubSet = [];
-			ResetEndConditionSubList()
-
-			// var subpanel = document.getElementById("modalEndConditionsSubPanel");
-			// while (subpanel.firstChild) {
-			// 	subpanel.removeChild(subpanel.firstChild);
-			// }
-			// for (i = 0; i < stageConditionSubSet.length; i++) {
-			// 	var addContentType = document.createElement("div");
-			// 	addContentType.className = "div-list-item";
-			// 	var tempVarName2 = stageConditionSubSet[i].varName2;
-			// 	var addContent1 = document.createElement("div");
-			// 	addContent1.style = "width:70%;float:left;";
-			// 	if (tempVarName2 == "") {
-			// 		addContent1.innerHTML = "if [" + stageConditionSubSet[i].varName + "] ["
-			// 			+ stageConditionSubSet[i].condition + "] ["
-			// 			+ stageConditionSubSet[i].value + "] && ...";
-			// 	} else {
-			// 		addContent1.innerHTML = "if [" + stageConditionSubSet[i].varName + "] ["
-			// 			+ stageConditionSubSet[i].condition + "] ["
-			// 			+ stageConditionSubSet[i].varName2 + "] && ...";
-			// 	}
-			// 	addContentType.appendChild(addContent1);
-			// 	var addContent2 = document.createElement("button");
-			// 	addContent2.name = i;
-			// 	addContent2.onclick = function () {
-			// 		RemoveEndConditionFromSubList(this.name);
-			// 	};
-			// 	addContent2.style = "float:right;";
-			// 	var addContent3 = document.createTextNode("X");
-			// 	addContent2.appendChild(addContent3);
-			// 	addContentType.appendChild(addContent2);
-			// 	subpanel.appendChild(addContentType);
-			// }
-		}
-
-		/*	RemoveEndConditionFromList()
-			- In prompt, remove end condition from list.
-		*/
-		function RemoveEndConditionFromList(btn_name) {
-			simulatorObjects[editExistingObject].endConditions.splice(btn_name, 1);
-
-			ResetEndConditionList()
-
-			// var panel = document.getElementById("modalEndConditionsPanel");
-			// while (panel.firstChild) {
-			// 	panel.removeChild(panel.firstChild);
-			// }
-			// let i = 0;
-			// for (i = 0; i < simulatorObjects[editExistingObject].endConditions.length; i++) {
-			// 	var addContentType = document.createElement("div");
-			// 	addContentType.className = "div-list-item";
-			// 	var addContent1 = document.createElement("div");
-			// 	addContent1.style = "width:80%;float:left;";
-			// 	var sentence = "in stage = " + simulatorObjects[editExistingObject].endConditions[i].oldStage + ", ";
-			// 	let j = 0;
-			// 	for (j = 0; j < simulatorObjects[editExistingObject].endConditions[i].conditions.length; j++) {
-			// 		var tempVarName2 = simulatorObjects[editExistingObject].endConditions[i].conditions[j].varName2;
-			// 		if (tempVarName2 == "") {
-			// 			sentence = sentence + "if [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].varName
-			// 				+ "] [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].condition
-			// 				+ "] [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].value + "] ";
-			// 		} else {
-			// 			sentence = sentence + "if [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].varName
-			// 				+ "] [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].condition
-			// 				+ "] [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].varName2 + "] ";
-			// 		}
-			// 		if (j < simulatorObjects[editExistingObject].endConditions[i].conditions.length - 1) {
-			// 			sentence = sentence + "AND ";
-			// 		}
-			// 	}
-			// 	sentence = sentence + "then end simulation system.";
-			// 	addContent1.innerHTML = sentence;
-			// 	addContentType.appendChild(addContent1);
-			// 	var addContent2 = document.createElement("button");
-			// 	addContent2.name = i;
-			// 	addContent2.onclick = function () {
-			// 		RemoveEndConditionFromList(this.name);
-			// 	};
-			// 	addContent2.style = "float:right;";
-			// 	var addContent3 = document.createTextNode("X");
-			// 	addContent2.appendChild(addContent3);
-			// 	addContentType.appendChild(addContent2);
-
-			// 	panel.appendChild(addContentType);
-			// }
-		}
-
-		function ResetEndConditionList() {
-			let panel = $('#modalEndConditionsPanel')
-			panel.empty()
-			let i = 0, item, label, sentence, button, icon
-			for (i = 0; i < simulatorObjects[editExistingObject].endConditions.length; i++) {
-				item = $('<div>').addClass('div-list-item')
-				label = $('<div>').addClass('ui grey expanding label')
-				sentence = "in stage " + simulatorObjects[editExistingObject].endConditions[i].oldStage + ", ";
-				let j = 0;
-				for (j = 0; j < simulatorObjects[editExistingObject].endConditions[i].conditions.length; j++) {
-					var tempVarName2 = simulatorObjects[editExistingObject].endConditions[i].conditions[j].varName2;
-					if (tempVarName2 == "") {
-						sentence = sentence + "if [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].varName
-							+ "] [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].condition
-							+ "] [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].value + "] ";
-					} else {
-						sentence = sentence + "if [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].varName
-							+ "] [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].condition
-							+ "] [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].varName2 + "] ";
-					}
-					if (j < simulatorObjects[editExistingObject].endConditions[i].conditions.length - 1) {
-						sentence = sentence + "AND ";
-					}
-				}
-				sentence = sentence + "go to stage " + simulatorObjects[editExistingObject].endConditions[i].newStage;
-				label.append($('<label>').text(sentence).css('max-width', '95%'))
-
-				button = $('<a>').addClass('ui opaque right floated')
-				icon = $('<i>').addClass('inverted  delete icon').click(function () {
-					RemoveStageConditionFromList(this.name);
-				}
-				)
-
-				button.append(icon)
-				label.append(button)
-				item.append(label)
-				panel.append(item)
-			}
-		}
-
-		/*	ConfigureItemFromCanvas()
-			- Click on item on canvas to configure (show options in inspector window on right).
-		*/
-		function ConfigureItemFromCanvas(e) {
-			// include simulators, messages, AND the RTI Server itself
-
-			ConfigureClearInspectorPanel();
-
-			let panel = $('#inspectorpanel')
-			let clickedOnItem = -1;
-			let i = 0;
-			for (i = 0; i < simulatorObjects.length; i++) {
-				if (e.target === simulatorObjects[i].objectRef) {
-					clickedOnItem = i;
-					break;
-				}
-			}
-
-			if (clickedOnItem > -1) {
-				let header = $('<div>').addClass('ui compact segment')
-				let label = $('<label>').addClass('ui color-simulator large label').text(simulatorObjects[i].name)
-				header.append($('<h3>').text('Simulator in Project'))
-				header.append(label)
-
-				let content = $('<div>').addClass('ui compact segment')
-				let buttons = $('<div>').addClass('ui vertical buttons')
-
-				let button0 = $('<button>').addClass('ui color-simulator basic button').text('Change Local Time')
-				button0.click(() => {
-					editExistingObject = clickedOnItem;
-					EditSimLocalTime();
-				})
-				let button1 = $('<button>').addClass('ui color-simulator basic button').text('Set Initialize and Simulate Functions')
-				button1.click(() => {
-					editExistingObject = clickedOnItem;
-					EditSimulateFunctions();
-				})
-				let button2 = $('<button>').addClass('ui color-simulator basic button').text('Change Stage Transition Conditions')
-				button2.click(() => {
-					editExistingObject = clickedOnItem;
-					EditStageConditions();
-				})
-				let button3 = $('<button>').addClass('ui color-simulator basic button').text('Change End System Conditions')
-				button3.click(() => {
-					editExistingObject = clickedOnItem;
-					EditEndConditions();
-				})
-
-				buttons.append(button0)
-				buttons.append(button1)
-				buttons.append(button2)
-				buttons.append(button3)
-
-				content.append(buttons)
-
-				panel.append(header)
-				panel.append(content)
-
-				// var addContentType = document.createElement("div");
-				// addContentType.style = "width: 100%; height: 40px; padding: 8px;";
-				// addContentType.innerHTML = "<b>Simulator on Canvas:</b>";
-				// panel.appendChild(addContentType);
-
-				// addContentType = document.createElement("div");
-				// addContentType.style = "width: 100%; height: 42px; padding: 8px;";
-				// var addContent = document.createTextNode("Name : " + simulatorObjects[i].name);
-				// addContentType.appendChild(addContent);
-				// panel.appendChild(addContentType);
-
-				// (use for-loop to create 4 similar buttons)
-				// for (i = 0; i < 4; i++) {
-				// 	addContentType = document.createElement("button");
-				// 	addContentType.style = "width: 100%; height: 40px;";
-				// 	var addContent;
-				// 	if (i == 0) {
-				// 		addContentType.onclick = function () {
-				// 			editExistingObject = clickedOnItem;
-				// 			EditSimLocalTime();
-				// 		};
-				// 		addContent = document.createTextNode("Change Local Time");
-				// 	} else if (i == 1) {
-				// 		addContentType.onclick = function () {
-				// 			editExistingObject = clickedOnItem;
-				// 			EditSimulateFunctions();
-				// 		};
-				// 		addContent = document.createTextNode("Set Initialize and Simulate Functions");
-				// 	} else if (i == 2) {
-				// 		addContentType.onclick = function () {
-				// 			editExistingObject = clickedOnItem;
-				// 			EditStageConditions();
-				// 		};
-				// 		addContent = document.createTextNode("Change Stage Transition Conditions");
-				// 	} else if (i == 3) {
-				// 		addContentType.onclick = function () {
-				// 			editExistingObject = clickedOnItem;
-				// 			EditEndConditions();
-				// 		};
-				// 		addContent = document.createTextNode("Change End System Conditions");
-				// 	}
-				// 	addContentType.appendChild(addContent);
-				// 	panel.appendChild(addContentType);
-				// }
-				return;
-			}
-
-			panel = document.getElementById("inspectorpanel")
-
-			clickedOnItem = -1;
-			var listOfMessageVars = document.getElementsByClassName("div-canvas-message");
-			for (i = 0; i < listOfMessageVars.length; i++) {
-				if (e.target === listOfMessageVars[i]) {
-					clickedOnItem = i;
-					break;
-				}
-			}
-			if (clickedOnItem > -1) {
-
-				let messageName = messageObjects[clickedOnItem].name
-
-				let panel = $('#inspectorpanel')
-				let header = $('<div>').addClass('ui compact segment')
-				let message = $('<label>').addClass('ui color-message large label').text(messageName)
-				header.append($('<h3>').text('Message on Canvas'))
-				header.append(message)
-
-
-				panel.append(header)
-
-				// var addContentType = document.createElement("div");
-				// addContentType.style = "width: 100%; height: 40px; padding: 8px;";
-				// addContentType.innerHTML = "<b>Message on Canvas:</b>";
-				// panel.appendChild(addContentType);
-				// var addContentType = document.createElement("div");
-				// addContentType.style = "width: 100%; height: 42px; padding: 8px;";
-				// var addContent = document.createTextNode("Name : " + messageObjects[clickedOnItem].name);
-				// addContentType.appendChild(addContent);
-				// panel.appendChild(addContentType);
-				return;
-			}
-
-			clickedOnItem = -1;
-			var listOfSimPub = document.getElementsByClassName("div-canvas-pub");
-			for (i = 0; i < listOfSimPub.length; i++) {
-				if (e.target === listOfSimPub[i]) {
-					clickedOnItem = i;
-					break;
-				}
-			}
-			if (clickedOnItem > -1) {
-				ConfigureClearInspectorPanel();
-				let simName = simulatorObjects[listOfSimPub[clickedOnItem].nameParent].name;
-				let messageName = messageObjects[simulatorObjects[listOfSimPub[clickedOnItem].nameParent].publishedMessages[listOfSimPub[clickedOnItem].name]].name;
-
-				let panel = $('#inspectorpanel')
-				let header = $('<div>').addClass('ui compact segment')
-				let sim = $('<label>').addClass('ui color-simulator large label').text(simName)
-				let arrow = $('<i>').addClass('arrow right icon')
-				let message = $('<label>').addClass('ui color-message large label').text(messageName)
-				header.append($('<h3>').text('Publish-Definition on Canvas'))
-				header.append(sim)
-				header.append(arrow)
-				header.append(message)
-
-				let content = $('<div>').addClass('ui compact segment')
-				let button = $('<button>').addClass('ui red basic button').text('Change Publish Parameters')
-				button.click(() => {
-					editExistingObject = listOfSimPub[clickedOnItem].nameParent;		//index in 'simulatorObjects' of sim
-					editExistingObject2 = listOfSimPub[clickedOnItem].name;				//index in 'simulatorObjects[i].publishedMessages'
-					EditPublishConnectionPrompt();
-				})
-				content.append(button)
-
-				panel.append(header)
-				panel.append(content)
-
-				// var addContentType = document.createElement("div");
-				// addContentType.style = "width: 100%; height: 40px; padding: 8px;";
-				// addContentType.innerHTML = "<b>Publish-Definition on Canvas:</b>";
-				// panel.appendChild(addContentType);
-				// var simName = simulatorObjects[listOfSimPub[clickedOnItem].nameParent].name;
-				// var messageName = messageObjects[simulatorObjects[listOfSimPub[clickedOnItem].nameParent].publishedMessages[listOfSimPub[clickedOnItem].name]].name;
-				// var addContentType = document.createElement("div");
-				// addContentType.style = "width: 100%; height: 42px; padding: 8px;";
-				// var addContent = document.createTextNode("Source -> Dest. : " + simName + " -> " + messageName);
-				// addContentType.appendChild(addContent);
-				// panel.appendChild(addContentType);
-				// addContentType = document.createElement("button");
-				// addContentType.style = "width: 100%; height: 40px;";
-				// addContentType.onclick = function () {
-				// 	editExistingObject = listOfSimPub[clickedOnItem].nameParent;		//index in 'simulatorObjects' of sim
-				// 	editExistingObject2 = listOfSimPub[clickedOnItem].name;				//index in 'simulatorObjects[i].publishedMessages'
-				// 	EditPublishConnectionPrompt();
-				// };
-				// var addContent = document.createTextNode("Change Publish Parameters");
-				// addContentType.appendChild(addContent);
-				// panel.appendChild(addContentType);
-				// console.log("clicked on Publish item, name = " + listOfSimPub[clickedOnItem].name
-				// 	+ " , nameParent = " + listOfSimPub[clickedOnItem].nameParent);
-				return;
-			}
-
-			clickedOnItem = -1;
-			var listOfSimSub = document.getElementsByClassName("div-canvas-sub");
-			for (i = 0; i < listOfSimSub.length; i++) {
-				if (e.target === listOfSimSub[i]) {
-					clickedOnItem = i;
-					break;
-				}
-			}
-			if (clickedOnItem > -1) {
-				ConfigureClearInspectorPanel();
-				let simName = simulatorObjects[listOfSimSub[clickedOnItem].nameParent].name;
-				let messageName = messageObjects[simulatorObjects[listOfSimSub[clickedOnItem].nameParent].subscribedMessages[listOfSimSub[clickedOnItem].name]].name;
-				let panel = $('#inspectorpanel')
-				let header = $('<div>').addClass('ui compact segment')
-				let message = $('<label>').addClass('ui color-message large label').text(messageName)
-				let arrow = $('<i>').addClass('arrow right icon')
-				let sim = $('<label>').addClass('ui color-simulator large label').text(simName)
-				header.append($('<h3>').text('Subscribe-Definition on Canvas'))
-				header.append(message)
-				header.append(arrow)
-				header.append(sim)
-
-				let content = $('<div>').addClass('ui compact segment')
-				let button = $('<button>').addClass('ui red basic button').text('Change Subscribe Parameters')
-				button.click(() => {
-					editExistingObject = listOfSimSub[clickedOnItem].nameParent;
-					editExistingObject2 = listOfSimSub[clickedOnItem].name;
-					EditSubscribeConnectionPrompt();
-				})
-				content.append(button)
-
-				panel.append(header)
-				panel.append(content)
-
-				// var addContentType = document.createElement("div");
-				// addContentType.style = "width: 100%; height: 40px; padding: 8px;";
-				// addContentType.innerHTML = "<b>Subscribe-Definition on Canvas:</b>";
-				// panel.appendChild(addContentType);
-				// var simName = simulatorObjects[listOfSimSub[clickedOnItem].nameParent].name;
-				// var messageName = messageObjects[simulatorObjects[listOfSimSub[clickedOnItem].nameParent].subscribedMessages[listOfSimSub[clickedOnItem].name]].name;
-				// var addContentType = document.createElement("div");
-				// addContentType.style = "width: 100%; height: 42px; padding: 8px;";
-				// var addContent = document.createTextNode("Source -> Dest. : " + messageName + " -> " + simName);
-				// addContentType.appendChild(addContent);
-				// panel.appendChild(addContentType);
-				// addContentType = document.createElement("button");
-				// addContentType.style = "width: 100%; height: 40px;";
-				// addContentType.onclick = function () {
-				// 	editExistingObject = listOfSimSub[clickedOnItem].nameParent;
-				// 	editExistingObject2 = listOfSimSub[clickedOnItem].name;
-				// 	EditSubscribeConnectionPrompt();
-				// };
-				// var addContent = document.createTextNode("Change Subscribe Parameters");
-				// addContentType.appendChild(addContent);
-				// panel.appendChild(addContentType);
-				// console.log("clicked on Subscribe item, name = " + listOfSimSub[clickedOnItem].name
-				// 	+ " , nameParent = " + listOfSimSub[clickedOnItem].nameParent);
-				return;
-			}
-
-			clickedOnItem = -1;
-			var serverGUI = document.getElementsByClassName("div-canvas-server");
-			if (e.target === serverGUI[0]) {
-				clickedOnItem = 0;
-			}
-			if (clickedOnItem > -1) {
-				let panel = $('#inspectorpanel')
-				let header = $('<div>').addClass('ui compact segment')
-				header.append($('<h3>').text('RTI Server'))
-
-				let content = $('<div>').addClass('ui compact segment')
-				let button = $('<button>').addClass('ui color-message basic button').text('Change Launch Parameters')
-				button.click(() => {
-					EditServer();
-				})
-				content.append($('<p>').text("Host Name: " + hostName))
-				content.append($('<p>').text("Port Number: " + portNumber))
-				content.append(button)
-
-				panel.append(header)
-				panel.append(content)
-
-				// var addContentType = document.createElement("div");
-				// addContentType.style = "width: 100%; height: 40px; padding: 8px;";
-				// addContentType.innerHTML = "<b>RTI Server:</b>";
-				// panel.appendChild(addContentType);
-				// addContentType = document.createElement("hr");
-				// panel.appendChild(addContentType);
-				// addContentType = document.createElement("div");
-				// addContentType.style = "width: 100%; height: 40px; padding: 8px;";
-				// addContentType.innerHTML = "Host Name: " + hostName;
-				// panel.appendChild(addContentType);
-				// addContentType = document.createElement("div");
-				// addContentType.style = "width: 100%; height: 40px; padding: 8px;";
-				// addContentType.innerHTML = "Port Number: " + portNumber;
-				// panel.appendChild(addContentType);
-				// addContentType = document.createElement("hr");
-				// panel.appendChild(addContentType);
-				// addContentType = document.createElement("button");
-				// addContentType.style = "width: 100%; height: 40px;";
-				// addContentType.onclick = function () {
-				// 	EditServer();
-				// };
-				// var addContent = document.createTextNode("Change Launch Parameters");
-				// addContentType.appendChild(addContent);
-				// panel.appendChild(addContentType);
-				return;
-			}
-		}
-
-		/*	ConfigureSimulatorFromList()
-			- Show options in inspector (on right) to configure a selected simulator (in project, not canvas).
-		*/
-		function ConfigureSimulatorFromList(btn_id) {
-			ConfigureClearInspectorPanel();
-
-			let panel = $('#inspectorpanel')
-			let selectedObject = listOfSimulators[btn_id]
-			let header = $('<div>').addClass('ui compact segment')
-			let label = $('<label>').addClass('ui color-simulator large label').text(selectedObject.name)
-			header.append($('<h3>').text('Simulator in Project'))
-			header.append(label)
-
-			let content = $('<div>').addClass('ui compact segment')
-			let warning = $('<div>').addClass('ui warning').text('WARNING: Editing properties of this Simulator after it has been added to the project canvas may cause unforeseen effects. Please check the properties of this Simulator on the canvas after any updates.')
-			let divider = $('<div>').addClass('ui hidden divider')
-			let button = $('<button>').addClass('ui color-simulator basic button').text('Change Properties')
-			button.click(() => {
-				editExistingObject = btn_id;
-				NewSimulatorObjectPrompt();
-			})
-			content.append(warning)
-			content.append(divider)
-			content.append(button)
-
-			panel.append(header)
-			panel.append(content)
-
-			// var panel = document.getElementById("inspectorpanel");
-			// var selectedObject = listOfSimulators[btn_id];
-			// var addContentType = document.createElement("div");
-			// addContentType.style = "width: 100%; height: 40px; padding: 8px;";
-			// addContentType.innerHTML = "<b>Simulator in Project:</b>";
-			// panel.appendChild(addContentType);
-
-			// addContentType = document.createElement("div");
-			// addContentType.style = "width: 100%; height: 42px; padding: 8px;";
-			// var addContent = document.createTextNode("Name : " + selectedObject.name);
-			// addContentType.appendChild(addContent);
-			// panel.appendChild(addContentType);
-
-			// addContentType = document.createElement("hr");
-			// panel.appendChild(addContentType);
-			// addContentType = document.createElement("div");
-			// addContentType.style = "margin-bottom: 32px; padding: 8px;";
-			// var addContent = document.createTextNode("WARNING: Editing properties of this Simulator after it has been added to the project canvas may cause unforeseen effects. Please check the properties of this Simulator on the canvas after any updates.");
-			// addContentType.appendChild(addContent);
-			// panel.appendChild(addContentType);
-			// /*
-			// 	Inspector should allow changing:
-			// 		- name, variables, function names
-			// 			- changing should delete all sub/pub connections?
-			// */
-
-			// addContentType = document.createElement("button");
-			// addContentType.style = "width: 100%; height: 40px;";
-			// addContentType.onclick = function () {
-			// 	editExistingObject = btn_id;
-			// 	NewSimulatorObjectPrompt();
-			// };
-			// var addContent = document.createTextNode("Change Properties");
-			// addContentType.appendChild(addContent);
-			// panel.appendChild(addContentType);
-		}
-
-		/*	ConfigureMessageFromList()
-			- Show options in inspector (on right) to configure a selected message (in project, not canvas).
-		*/
-		function ConfigureMessageFromList(btn_id) {
-			ConfigureClearInspectorPanel();
-
-			let panel = $('#inspectorpanel')
-			let selectedObject = listOfMessages[btn_id]
-			let header = $('<div>').addClass('ui compact segment')
-			let label = $('<label>').addClass('ui color-message large label').text(selectedObject.name)
-			header.append($('<h3>').text('Message in Project'))
-			header.append(label)
-
-			let content = $('<div>').addClass('ui compact segment')
-			let warning = $('<div>').addClass('ui warning').text('WARNING: Editing properties of this Message after it has been added to the project canvas may cause unforeseen effects. Please check the properties of this Message on the canvas after any updates.')
-			let divider = $('<div>').addClass('ui hidden divider')
-			let button = $('<button>').addClass('ui color-message basic button').text('Change Properties')
-			button.click(() => {
-				editExistingObject = btn_id;
-				NewMessageObjectPrompt();
-			})
-			content.append(warning)
-			content.append(divider)
-			content.append(button)
-
-			panel.append(header)
-			panel.append(content)
-
-			// var panel = document.getElementById("inspectorpanel");
-			// var selectedObject = listOfMessages[btn_id];
-			// var addContentType = document.createElement("div");
-			// addContentType.style = "width: 100%; height: 40px; padding: 8px;";
-			// addContentType.innerHTML = "<b>Message in Project:</b>";
-			// panel.appendChild(addContentType);
-
-			// addContentType = document.createElement("div");
-			// addContentType.style = "width: 100%; height: 42px; padding: 8px;";
-			// var addContent = document.createTextNode("Name : " + selectedObject.name);
-			// addContentType.appendChild(addContent);
-			// panel.appendChild(addContentType);
-
-			// addContentType = document.createElement("hr");
-			// panel.appendChild(addContentType);
-			// addContentType = document.createElement("div");
-			// addContentType.style = "margin-bottom: 32px; padding: 8px;";
-			// var addContent = document.createTextNode("WARNING: Editing properties of this Message after it has been added to the project canvas may cause unforeseen effects. Please check the properties of this Message on the canvas after any updates.");
-			// addContentType.appendChild(addContent);
-			// panel.appendChild(addContentType);
-			/*
-				Inspector should allow changing:
-					- variables
-						- changing should delete all sub/pub connections?
-			*/
-
-			// addContentType = document.createElement("button");
-			// addContentType.style = "width: 100%; height: 40px;";
-			// addContentType.onclick = function () {
-			// 	editExistingObject = btn_id;
-			// 	NewMessageObjectPrompt();
-			// };
-			// var addContent = document.createTextNode("Change Properties");
-			// addContentType.appendChild(addContent);
-			// panel.appendChild(addContentType);
-		}
-
-		/*	ConfigureClearInspectorPanel()
-			- Clear items in inspector panel.
-		*/
-		function ConfigureClearInspectorPanel() {
-			// var inspectorPanel = document.getElementById("inspectorpanel");
-			// while (inspectorPanel.firstChild) {
-			// 	inspectorPanel.removeChild(inspectorPanel.firstChild);
-			// }
-
-			let inspectorPanel = $('#inspectorpanel')
-			inspectorPanel.empty()
-		}
-
-		/*	NewProject()
-			- Create new project (and clear previous project).
-		*/
-		function NewProject() {
-			savepath = "";
-			savename = "";
-			ClearProject();
-			AddProprietaryRTIMessage();
-		}
-
-		/*	ClearProject()
-			- Clear memory of current project, and delete objects on canvas.
-		*/
-		function ClearProject() {
-			let i = 0;
-			var iLength = simulatorObjects.length;
-			for (i = iLength - 1; i >= 0; i--) {
-				simulatorObjects[i].objectRef.parentNode.removeChild(simulatorObjects[i].objectRef);
-				simulatorObjects.splice(i, 1);
-				// because all objects are relative, deleting one object makes other objects (that were added after i) move up one space. Need to reset everyone.
-				MoveObjectsOnCanvasUpOne(i);
-				UpdateDrawArrowsAfterDelete(i, -1);
-			}
-			var listOfMessageVars = document.getElementsByClassName("div-canvas-message");
-			iLength = listOfMessageVars.length;
-			for (i = iLength - 1; i >= 0; i--) {
-				listOfMessageVars[i].parentNode.removeChild(listOfMessageVars[i]);
-				messageObjects.splice(i, 1);
-			}
-
-			listOfSimulators = [];
-			listOfMessages = [];
-			simulatorObjects = [];
-			messageObjects = [];
-			numOfStages = 1;
-			serverPath = __dirname + '\\..\\extraResources\\srti_server\\';
-			serverFileName = 'SRTI_v2_20_02.jar';
-			hostName = "localhost";
-			portNumber = "42012";
-			stage = 1;
-
-			UpdateCanvasGrid();
-			DrawAllArrowsOnCanvas();
-			ClearObjectSubPanel1();
-			ResetObjectSubPanel2();
-			UpdateSelectedStage(0);
-		}
-
-		/*	SaveProject()
-			- Save current project to a file to reopen later.
-		*/
-		function SaveProject() {
-			var content = "Hello world! \na simple test.";
-			// 'fs' is for filesystem, comes with Electron (or, as included within it, Node.js)
-			var fs = require('fs');
-
-			// need to let user choose the path of the project's save file.
-			if (savepath == "") {
-				// need to first have user define where they want to save this project.
-				OpenSaveAsProject();
-				return;
-			}
-			try {
-				content = CreateProjectText();
-				fs.writeFileSync(savepath + savename + ".project", content, 'utf-8');
-				// also save representation for each individual simulator, to make it easy to import to new projects later.
-				let i = 0;
-				for (i = 0; i < listOfSimulators.length; i++) {
-					var simdef = {
-						simdef: listOfSimulators[i]
-					};
-					fs.writeFileSync(savepath + listOfSimulators[i].name + "_def.simdef", JSON.stringify(simdef, null, 4), 'utf-8');
-				}
-				for (i = 0; i < listOfMessages.length; i++) {
-					var mesdef = {
-						mesdef: listOfMessages[i]
-					};
-					fs.writeFileSync(savepath + listOfMessages[i].name + "_def.mesdef", JSON.stringify(mesdef, null, 4), 'utf-8');
-				}
-			} catch (e) {
-				console.log("failed to save file: " + e);
-				alert('failed to save file!');
-
-			}
-		}
-
-		/*	CreateProjectText()
-			- Create the string content that represents the project, to write to a save file.
-		*/
-		function CreateProjectText() {
-			var content = "";
-			// JavaScript supports "JavaScript Object Notation" by default.
-			var obj = {
-				listOfSimulators: listOfSimulators,
-				listOfMessages: listOfMessages,
-				simulatorObjects: simulatorObjects,
-				messageObjects: messageObjects,
-				numOfStages: numOfStages,
-				serverPath: serverPath,
-				serverFileName: serverFileName,
-				hostName: hostName,
-				portNumber: portNumber
+	}
+	if (clickedOnItem > -1) {
+		ConfigureClearInspectorPanel();
+		let simName = simulatorObjects[listOfSimSub[clickedOnItem].nameParent].name;
+		let messageName = messageObjects[simulatorObjects[listOfSimSub[clickedOnItem].nameParent].subscribedMessages[listOfSimSub[clickedOnItem].name]].name;
+		let panel = $('#inspectorpanel')
+		let header = $('<div>').addClass('ui compact segment')
+		let message = $('<label>').addClass('ui blue large label').text(messageName)
+		let arrow = $('<i>').addClass('arrow right icon')
+		let sim = $('<label>').addClass('ui green large label').text(simName)
+		header.append($('<h3>').text('Subscribe-Definition on Canvas'))
+		header.append(message)
+		header.append(arrow)
+		header.append(sim)
+
+		let content = $('<div>').addClass('ui compact segment')
+		let button = $('<button>').addClass('ui red basic button').text('Change Subscribe Parameters')
+		button.click(() => {
+			editExistingObject = listOfSimSub[clickedOnItem].nameParent;
+			editExistingObject2 = listOfSimSub[clickedOnItem].name;
+			EditSubscribeConnectionPrompt();
+		})
+		content.append(button)
+
+		panel.append(header)
+		panel.append(content)
+
+		// var addContentType = document.createElement("div");
+		// addContentType.style = "width: 100%; height: 40px; padding: 8px;";
+		// addContentType.innerHTML = "<b>Subscribe-Definition on Canvas:</b>";
+		// panel.appendChild(addContentType);
+		// var simName = simulatorObjects[listOfSimSub[clickedOnItem].nameParent].name;
+		// var messageName = messageObjects[simulatorObjects[listOfSimSub[clickedOnItem].nameParent].subscribedMessages[listOfSimSub[clickedOnItem].name]].name;
+		// var addContentType = document.createElement("div");
+		// addContentType.style = "width: 100%; height: 42px; padding: 8px;";
+		// var addContent = document.createTextNode("Source -> Dest. : " + messageName + " -> " + simName);
+		// addContentType.appendChild(addContent);
+		// panel.appendChild(addContentType);
+		// addContentType = document.createElement("button");
+		// addContentType.style = "width: 100%; height: 40px;";
+		// addContentType.onclick = function () {
+		// 	editExistingObject = listOfSimSub[clickedOnItem].nameParent;
+		// 	editExistingObject2 = listOfSimSub[clickedOnItem].name;
+		// 	EditSubscribeConnectionPrompt();
+		// };
+		// var addContent = document.createTextNode("Change Subscribe Parameters");
+		// addContentType.appendChild(addContent);
+		// panel.appendChild(addContentType);
+		// console.log("clicked on Subscribe item, name = " + listOfSimSub[clickedOnItem].name
+		// 	+ " , nameParent = " + listOfSimSub[clickedOnItem].nameParent);
+		return;
+	}
+
+	clickedOnItem = -1;
+	var serverGUI = document.getElementsByClassName("div-canvas-server");
+	if (e.target === serverGUI[0]) {
+		clickedOnItem = 0;
+	}
+	if (clickedOnItem > -1) {
+		let panel = $('#inspectorpanel')
+		let header = $('<div>').addClass('ui compact segment')
+		header.append($('<h3>').text('RTI Server'))
+
+		let content = $('<div>').addClass('ui compact segment')
+		let button = $('<button>').addClass('ui blue basic button').text('Change Launch Parameters')
+		button.click(() => {
+			EditServer();
+		})
+		content.append($('<p>').text("Host Name: " + hostName))
+		content.append($('<p>').text("Port Number: " + portNumber))
+		content.append(button)
+
+		panel.append(header)
+		panel.append(content)
+
+		// var addContentType = document.createElement("div");
+		// addContentType.style = "width: 100%; height: 40px; padding: 8px;";
+		// addContentType.innerHTML = "<b>RTI Server:</b>";
+		// panel.appendChild(addContentType);
+		// addContentType = document.createElement("hr");
+		// panel.appendChild(addContentType);
+		// addContentType = document.createElement("div");
+		// addContentType.style = "width: 100%; height: 40px; padding: 8px;";
+		// addContentType.innerHTML = "Host Name: " + hostName;
+		// panel.appendChild(addContentType);
+		// addContentType = document.createElement("div");
+		// addContentType.style = "width: 100%; height: 40px; padding: 8px;";
+		// addContentType.innerHTML = "Port Number: " + portNumber;
+		// panel.appendChild(addContentType);
+		// addContentType = document.createElement("hr");
+		// panel.appendChild(addContentType);
+		// addContentType = document.createElement("button");
+		// addContentType.style = "width: 100%; height: 40px;";
+		// addContentType.onclick = function () {
+		// 	EditServer();
+		// };
+		// var addContent = document.createTextNode("Change Launch Parameters");
+		// addContentType.appendChild(addContent);
+		// panel.appendChild(addContentType);
+		return;
+	}
+}
+
+/*	ConfigureSimulatorFromList()
+	- Show options in inspector (on right) to configure a selected simulator (in project, not canvas).
+*/
+function ConfigureSimulatorFromList(btn_id) {
+	ConfigureClearInspectorPanel();
+
+	let panel = $('#inspectorpanel')
+	let selectedObject = listOfSimulators[btn_id]
+	let header = $('<div>').addClass('ui compact segment')
+	let label = $('<label>').addClass('ui green large label').text(selectedObject.name)
+	header.append($('<h3>').text('Simulator in Project'))
+	header.append(label)
+
+	let content = $('<div>').addClass('ui compact segment')
+	let warning = $('<div>').addClass('ui warning').text('WARNING: Editing properties of this Simulator after it has been added to the project canvas may cause unforeseen effects. Please check the properties of this Simulator on the canvas after any updates.')
+	let divider = $('<div>').addClass('ui hidden divider')
+	let button = $('<button>').addClass('ui green basic button').text('Change Properties')
+	button.click(() => {
+		editExistingObject = btn_id;
+		NewSimulatorObjectPrompt();
+	})
+	content.append(warning)
+	content.append(divider)
+	content.append(button)
+
+	panel.append(header)
+	panel.append(content)
+
+	// var panel = document.getElementById("inspectorpanel");
+	// var selectedObject = listOfSimulators[btn_id];
+	// var addContentType = document.createElement("div");
+	// addContentType.style = "width: 100%; height: 40px; padding: 8px;";
+	// addContentType.innerHTML = "<b>Simulator in Project:</b>";
+	// panel.appendChild(addContentType);
+
+	// addContentType = document.createElement("div");
+	// addContentType.style = "width: 100%; height: 42px; padding: 8px;";
+	// var addContent = document.createTextNode("Name : " + selectedObject.name);
+	// addContentType.appendChild(addContent);
+	// panel.appendChild(addContentType);
+
+	// addContentType = document.createElement("hr");
+	// panel.appendChild(addContentType);
+	// addContentType = document.createElement("div");
+	// addContentType.style = "margin-bottom: 32px; padding: 8px;";
+	// var addContent = document.createTextNode("WARNING: Editing properties of this Simulator after it has been added to the project canvas may cause unforeseen effects. Please check the properties of this Simulator on the canvas after any updates.");
+	// addContentType.appendChild(addContent);
+	// panel.appendChild(addContentType);
+	// /*
+	// 	Inspector should allow changing:
+	// 		- name, variables, function names
+	// 			- changing should delete all sub/pub connections?
+	// */
+
+	// addContentType = document.createElement("button");
+	// addContentType.style = "width: 100%; height: 40px;";
+	// addContentType.onclick = function () {
+	// 	editExistingObject = btn_id;
+	// 	NewSimulatorObjectPrompt();
+	// };
+	// var addContent = document.createTextNode("Change Properties");
+	// addContentType.appendChild(addContent);
+	// panel.appendChild(addContentType);
+}
+
+/*	ConfigureMessageFromList()
+	- Show options in inspector (on right) to configure a selected message (in project, not canvas).
+*/
+function ConfigureMessageFromList(btn_id) {
+	ConfigureClearInspectorPanel();
+
+	let panel = $('#inspectorpanel')
+	let selectedObject = listOfMessages[btn_id]
+	let header = $('<div>').addClass('ui compact segment')
+	let label = $('<label>').addClass('ui blue large label').text(selectedObject.name)
+	header.append($('<h3>').text('Message in Project'))
+	header.append(label)
+
+	let content = $('<div>').addClass('ui compact segment')
+	let warning = $('<div>').addClass('ui warning').text('WARNING: Editing properties of this Message after it has been added to the project canvas may cause unforeseen effects. Please check the properties of this Message on the canvas after any updates.')
+	let divider = $('<div>').addClass('ui hidden divider')
+	let button = $('<button>').addClass('ui blue basic button').text('Change Properties')
+	button.click(() => {
+		editExistingObject = btn_id;
+		NewMessageObjectPrompt();
+	})
+	content.append(warning)
+	content.append(divider)
+	content.append(button)
+
+	panel.append(header)
+	panel.append(content)
+
+	// var panel = document.getElementById("inspectorpanel");
+	// var selectedObject = listOfMessages[btn_id];
+	// var addContentType = document.createElement("div");
+	// addContentType.style = "width: 100%; height: 40px; padding: 8px;";
+	// addContentType.innerHTML = "<b>Message in Project:</b>";
+	// panel.appendChild(addContentType);
+
+	// addContentType = document.createElement("div");
+	// addContentType.style = "width: 100%; height: 42px; padding: 8px;";
+	// var addContent = document.createTextNode("Name : " + selectedObject.name);
+	// addContentType.appendChild(addContent);
+	// panel.appendChild(addContentType);
+
+	// addContentType = document.createElement("hr");
+	// panel.appendChild(addContentType);
+	// addContentType = document.createElement("div");
+	// addContentType.style = "margin-bottom: 32px; padding: 8px;";
+	// var addContent = document.createTextNode("WARNING: Editing properties of this Message after it has been added to the project canvas may cause unforeseen effects. Please check the properties of this Message on the canvas after any updates.");
+	// addContentType.appendChild(addContent);
+	// panel.appendChild(addContentType);
+	/*
+		Inspector should allow changing:
+			- variables
+				- changing should delete all sub/pub connections?
+	*/
+
+	// addContentType = document.createElement("button");
+	// addContentType.style = "width: 100%; height: 40px;";
+	// addContentType.onclick = function () {
+	// 	editExistingObject = btn_id;
+	// 	NewMessageObjectPrompt();
+	// };
+	// var addContent = document.createTextNode("Change Properties");
+	// addContentType.appendChild(addContent);
+	// panel.appendChild(addContentType);
+}
+
+/*	ConfigureClearInspectorPanel()
+	- Clear items in inspector panel.
+*/
+function ConfigureClearInspectorPanel() {
+	// var inspectorPanel = document.getElementById("inspectorpanel");
+	// while (inspectorPanel.firstChild) {
+	// 	inspectorPanel.removeChild(inspectorPanel.firstChild);
+	// }
+
+	let inspectorPanel = $('#inspectorpanel')
+	inspectorPanel.empty()
+}
+
+/*	NewProject()
+	- Create new project (and clear previous project).
+*/
+function NewProject() {
+	savepath = "";
+	savename = "";
+	ClearProject();
+	AddProprietaryRTIMessage();
+}
+
+/*	ClearProject()
+	- Clear memory of current project, and delete objects on canvas.
+*/
+function ClearProject() {
+	let i = 0;
+	var iLength = simulatorObjects.length;
+	for (i = iLength - 1; i >= 0; i--) {
+		simulatorObjects[i].objectRef.parentNode.removeChild(simulatorObjects[i].objectRef);
+		simulatorObjects.splice(i, 1);
+		// because all objects are relative, deleting one object makes other objects (that were added after i) move up one space. Need to reset everyone.
+		MoveObjectsOnCanvasUpOne(i);
+		UpdateDrawArrowsAfterDelete(i, -1);
+	}
+	var listOfMessageVars = document.getElementsByClassName("div-canvas-message");
+	iLength = listOfMessageVars.length;
+	for (i = iLength - 1; i >= 0; i--) {
+		listOfMessageVars[i].parentNode.removeChild(listOfMessageVars[i]);
+		messageObjects.splice(i, 1);
+	}
+
+	listOfSimulators = [];
+	listOfMessages = [];
+	simulatorObjects = [];
+	messageObjects = [];
+	numOfStages = 1;
+	serverPath = __dirname + '\\..\\extraResources\\srti_server\\';
+	serverFileName = 'SRTI_v2_20_02.jar';
+	hostName = "localhost";
+	portNumber = "42012";
+	stage = 1;
+
+	UpdateCanvasGrid();
+	DrawAllArrowsOnCanvas();
+	ClearObjectSubPanel1();
+	ResetObjectSubPanel2();
+	UpdateSelectedStage(0);
+}
+
+/*	SaveProject()
+	- Save current project to a file to reopen later.
+*/
+function SaveProject() {
+	var content = "Hello world! \na simple test.";
+	// 'fs' is for filesystem, comes with Electron (or, as included within it, Node.js)
+	var fs = require('fs');
+
+	// need to let user choose the path of the project's save file.
+	if (savepath == "") {
+		// need to first have user define where they want to save this project.
+		OpenSaveAsProject();
+		return;
+	}
+	try {
+		content = CreateProjectText();
+		fs.writeFileSync(savepath + savename + ".project", content, 'utf-8');
+		// also save representation for each individual simulator, to make it easy to import to new projects later.
+		let i = 0;
+		for (i = 0; i < listOfSimulators.length; i++) {
+			var simdef = {
+				simdef: listOfSimulators[i]
 			};
-			content = JSON.stringify(obj, null, 4);
-			return content;
+			fs.writeFileSync(savepath + listOfSimulators[i].name + "_def.simdef", JSON.stringify(simdef, null, 4), 'utf-8');
 		}
-
-		/*	OpenSaveAsProject()
-			- Prompt that asks to set save location and name of current project. 
-		*/
-		function OpenSaveAsProject() {
-			DisplayOrClosePrompt("modalSaveAs", "block");
+		for (i = 0; i < listOfMessages.length; i++) {
+			var mesdef = {
+				mesdef: listOfMessages[i]
+			};
+			fs.writeFileSync(savepath + listOfMessages[i].name + "_def.mesdef", JSON.stringify(mesdef, null, 4), 'utf-8');
 		}
+	} catch (e) {
+		console.log("failed to save file: " + e);
+		alert('failed to save file!');
 
-		/*	CloseSaveAsProject()
-			- Close prompt to "save as".
-		*/
-		function CloseSaveAsProject() {
-			DisplayOrClosePrompt("modalSaveAs", "none");
-		}
+	}
+}
 
-		/*	OpenOpenProject()
-			- Prompt that asks to open project.
-		*/
-		function OpenOpenProject() {
-			DisplayOrClosePrompt("modalOpenProject", "block");
-		}
+/*	CreateProjectText()
+	- Create the string content that represents the project, to write to a save file.
+*/
+function CreateProjectText() {
+	var content = "";
+	// JavaScript supports "JavaScript Object Notation" by default.
+	var obj = {
+		listOfSimulators: listOfSimulators,
+		listOfMessages: listOfMessages,
+		simulatorObjects: simulatorObjects,
+		messageObjects: messageObjects,
+		numOfStages: numOfStages,
+		serverPath: serverPath,
+		serverFileName: serverFileName,
+		hostName: hostName,
+		portNumber: portNumber
+	};
+	content = JSON.stringify(obj, null, 4);
+	return content;
+}
 
-		/*	CloseOpenProject()
-			 - Close prompt to "open project."
-		*/
-		function CloseOpenProject() {
-			DisplayOrClosePrompt("modalOpenProject", "none");
-		}
+/*	OpenSaveAsProject()
+	- Prompt that asks to set save location and name of current project. 
+*/
+function OpenSaveAsProject() {
+	DisplayOrClosePrompt("modalSaveAs", "block");
+}
 
-		/*	SaveSaveAsProject()
-			- Save project to new location.
-		*/
-		function SaveSaveAsProject() {
-			var newSavePath = "";
-			var saveAsFolder = document.getElementsByName("saveAsFileDir")[0];
-			console.log("Printint out folders.");
-			let i = 0;
-			for (i = 0; i < saveAsFolder.files.length; i++) {
-				//!!!!
-				console.log("Folder: " + saveAsFolder.files[i].path);
-			}
-			newSavePath = saveAsFolder.files[0].path + "\\";
-			savepath = newSavePath;
-			savename = document.getElementsByName("TextSaveAsFileName")[0].value;
-			CloseSaveAsProject();
-			SaveProject();
-		}
+/*	CloseSaveAsProject()
+	- Close prompt to "save as".
+*/
+function CloseSaveAsProject() {
+	DisplayOrClosePrompt("modalSaveAs", "none");
+}
 
-		/*	OpenProjectFile()
-			 - Prompt file input to open existing file.
-		*/
-		function OpenProjectFile() {
-			console.log("Open project");
-			document.getElementsByName("openProjectFileDir")[0].click();
-			console.log("Open project file select.");
-		}
+/*	OpenOpenProject()
+	- Prompt that asks to open project.
+*/
+function OpenOpenProject() {
+	DisplayOrClosePrompt("modalOpenProject", "block");
+}
 
-		/*	OpenExistingProject()
-			- Open and load existing project from file.
-		*/
-		function OpenExistingProject(filepath, filename) {
-			console.log("Need to update project now with new open file.");
+/*	CloseOpenProject()
+	 - Close prompt to "open project."
+*/
+function CloseOpenProject() {
+	DisplayOrClosePrompt("modalOpenProject", "none");
+}
 
-			var content = "Hello world! \na simple test.";
-			// 'fs' is for filesystem, comes with Electron (or, as included within it, Node.js)
-			var fs = require('fs');
-			try {
-				content = fs.readFileSync(filepath + filename + ".project", 'utf-8');
-			} catch (e) {
-				alert('failed to open project file!');
-				return;
-			}
-			savepath = filepath;
-			savename = filename;
-			ResetCanvasWithNewProject(content);
-		}
+/*	SaveSaveAsProject()
+	- Save project to new location.
+*/
+function SaveSaveAsProject() {
+	var newSavePath = "";
+	var saveAsFolder = document.getElementsByName("saveAsFileDir")[0];
+	console.log("Printint out folders.");
+	let i = 0;
+	for (i = 0; i < saveAsFolder.files.length; i++) {
+		//!!!!
+		console.log("Folder: " + saveAsFolder.files[i].path);
+	}
+	newSavePath = saveAsFolder.files[0].path + "\\";
+	savepath = newSavePath;
+	savename = document.getElementsByName("TextSaveAsFileName")[0].value;
+	CloseSaveAsProject();
+	SaveProject();
+}
 
-		/*	ResetCanvasWithNewProject()
-			- Clear existing project, load new project data.
-		*/
-		function ResetCanvasWithNewProject(projectText) {
-			console.log("Reseting canvas with new project.");
-			ClearProject();
+/*	OpenProjectFile()
+	 - Prompt file input to open existing file.
+*/
+function OpenProjectFile() {
+	console.log("Open project");
+	document.getElementsByName("openProjectFileDir")[0].click();
+	console.log("Open project file select.");
+}
 
-			var obj = JSON.parse(projectText);
-			listOfSimulators = obj.listOfSimulators;
-			listOfMessages = obj.listOfMessages;
-			simulatorObjects = obj.simulatorObjects;
-			messageObjects = obj.messageObjects;
-			numOfStages = obj.numOfStages;
-			serverPath = obj.serverPath;
-			serverFileName = obj.serverFileName;
-			hostName = obj.hostName;
-			portNumber = obj.portNumber;
-			let i = 0;
-			for (i = 0; i < simulatorObjects.length; i++) {
-				CreateExistingSimulatorOnCanvas(i);
-			}
-			for (i = 0; i < messageObjects.length; i++) {
-				CreateExistingMessageOnCanvas(i);
-			}
+/*	OpenExistingProject()
+	- Open and load existing project from file.
+*/
+function OpenExistingProject(filepath, filename) {
+	console.log("Need to update project now with new open file.");
 
-			UpdateCanvasGrid();
-			DrawAllArrowsOnCanvas();
-			ResetObjectSubPanel1();
-			ResetObjectSubPanel2();
-			UpdateSelectedStage(0);
-		}
+	var content = "Hello world! \na simple test.";
+	// 'fs' is for filesystem, comes with Electron (or, as included within it, Node.js)
+	var fs = require('fs');
+	try {
+		content = fs.readFileSync(filepath + filename + ".project", 'utf-8');
+	} catch (e) {
+		alert('failed to open project file!');
+		return;
+	}
+	savepath = filepath;
+	savename = filename;
+	ResetCanvasWithNewProject(content);
+}
 
-		/*	ExportExecuteFiles()
-			- Export practical files to use in real SRTI outside of this GUI system.
-		*/
-		function ExportExecuteFiles() {
-			WriteWrapperConfigFiles();
-			WriteCommandsToFile();
-			WriteServerConfigFile();
+/*	ResetCanvasWithNewProject()
+	- Clear existing project, load new project data.
+*/
+function ResetCanvasWithNewProject(projectText) {
+	console.log("Reseting canvas with new project.");
+	ClearProject();
 
-			var d = new Date();
-			var textConsoleLastAction = document.getElementById("TextConsoleLastAction");
-			textConsoleLastAction.innerHTML = "Configuration files (Wrapper, Server) exported! " + d.getTime();
-		}
+	var obj = JSON.parse(projectText);
+	listOfSimulators = obj.listOfSimulators;
+	listOfMessages = obj.listOfMessages;
+	simulatorObjects = obj.simulatorObjects;
+	messageObjects = obj.messageObjects;
+	numOfStages = obj.numOfStages;
+	serverPath = obj.serverPath;
+	serverFileName = obj.serverFileName;
+	hostName = obj.hostName;
+	portNumber = obj.portNumber;
+	let i = 0;
+	for (i = 0; i < simulatorObjects.length; i++) {
+		CreateExistingSimulatorOnCanvas(i);
+	}
+	for (i = 0; i < messageObjects.length; i++) {
+		CreateExistingMessageOnCanvas(i);
+	}
 
-		function WriteWrapperConfigFiles() {
-			// for each simulator, create SimName_Config.json, and a JSON object that makes up the content of that file.
-			let i = 0;
-			var errorLocation = 0;
-			try {
-				for (i = 0; i < listOfSimulators.length; i++) {
-					//errorLocation = 0;
-					var savePathLocal = listOfSimulators[i].filePath + "\\";
-					var saveNameLocal = listOfSimulators[i].name + "_config";
-					var content = "";
-					var stageChannels = [];
-					var initializeChannels = [];
-					var simulateChannels = [];
-					var subscribedChannels = [];
-					var publishedChannels = [];
-					var endConditions = [];
-					var stageConditions = [];
+	UpdateCanvasGrid();
+	DrawAllArrowsOnCanvas();
+	ResetObjectSubPanel1();
+	ResetObjectSubPanel2();
+	UpdateSelectedStage(0);
+}
 
-					//errorLocation = 1;
+/*	ExportExecuteFiles()
+	- Export practical files to use in real SRTI outside of this GUI system.
+*/
+function ExportExecuteFiles() {
+	WriteWrapperConfigFiles();
+	WriteCommandsToFile();
+	WriteServerConfigFile();
 
-					let j = 0;
-					for (j = 0; j < simulatorObjects.length; j++) {
-						errorLocation = 0;
-						if (simulatorObjects[j].name == listOfSimulators[i].name) {
-							errorLocation = 1;
-							stageChannels.push(
-								{
-									stage: parseInt(simulatorObjects[j].stage),
-									order: parseInt(simulatorObjects[j].order),
-									timestepDelta: parseInt(simulatorObjects[j].timeDelta),
-									timestepMul: parseInt(simulatorObjects[j].timeScale),
-									timestepVarDelta: simulatorObjects[j].timeVarDelta
-								});
-							initializeChannels.push(
-								{
-									functionName: simulatorObjects[j].initialize,
-									stage: parseInt(simulatorObjects[j].stage)
-								});
-							simulateChannels.push(
-								{
-									functionName: simulatorObjects[j].simulate,
-									timestepDelta: parseInt(simulatorObjects[j].simulateTimeDelta),
-									stage: parseInt(simulatorObjects[j].stage)
-								});
-							errorLocation = 2;
-							console.log("preparing for sim " + j + ", has name " + simulatorObjects[j].name);
-							let k = 0;
-							for (k = 0; k < simulatorObjects[j].subscribedMessages.length; k++) {
-								var varChannel = [];
-								let m = 0;
-								for (m = 0; m < simulatorObjects[j].subscribedDetails[k].length; m++) {
-									errorLocation = simulatorObjects[j].name + " s " + simulatorObjects[j].subscribedMessages[k] + " " + simulatorObjects[j].subscribedDetails[k][m][0] + " " + simulatorObjects[j].subscribedDetails[k][m][1];
-									var varNameIndex = simulatorObjects[j].subscribedDetails[k][m][0];
-									var varNameIndex2 = simulatorObjects[j].subscribedDetails[k][m][1];
-									if (varNameIndex != -1 && varNameIndex2 != -1) {
-										varChannel.push(
-											{
-												valueName: messageObjects[simulatorObjects[j].subscribedMessages[k]].original.variables[simulatorObjects[j].subscribedDetails[k][m][1]].name,//listOfMessages[simulatorObjects[j].subscribedMessages[k]].variables[simulatorObjects[j].subscribedDetails[k][m][1]].name,
-												varName: listOfSimulators[i].variables[simulatorObjects[j].subscribedDetails[k][m][0]].name
-											});
-									}
-								}
-								subscribedChannels.push(
+	var d = new Date();
+	var textConsoleLastAction = document.getElementById("TextConsoleLastAction");
+	textConsoleLastAction.innerHTML = "Configuration files (Wrapper, Server) exported! " + d.getTime();
+}
+
+function WriteWrapperConfigFiles() {
+	// for each simulator, create SimName_Config.json, and a JSON object that makes up the content of that file.
+	let i = 0;
+	var errorLocation = 0;
+	try {
+		for (i = 0; i < listOfSimulators.length; i++) {
+			//errorLocation = 0;
+			var savePathLocal = listOfSimulators[i].filePath + "\\";
+			var saveNameLocal = listOfSimulators[i].name + "_config";
+			var content = "";
+			var stageChannels = [];
+			var initializeChannels = [];
+			var simulateChannels = [];
+			var subscribedChannels = [];
+			var publishedChannels = [];
+			var endConditions = [];
+			var stageConditions = [];
+
+			//errorLocation = 1;
+
+			let j = 0;
+			for (j = 0; j < simulatorObjects.length; j++) {
+				errorLocation = 0;
+				if (simulatorObjects[j].name == listOfSimulators[i].name) {
+					errorLocation = 1;
+					stageChannels.push(
+						{
+							stage: parseInt(simulatorObjects[j].stage),
+							order: parseInt(simulatorObjects[j].order),
+							timestepDelta: parseInt(simulatorObjects[j].timeDelta),
+							timestepMul: parseInt(simulatorObjects[j].timeScale),
+							timestepVarDelta: simulatorObjects[j].timeVarDelta
+						});
+					initializeChannels.push(
+						{
+							functionName: simulatorObjects[j].initialize,
+							stage: parseInt(simulatorObjects[j].stage)
+						});
+					simulateChannels.push(
+						{
+							functionName: simulatorObjects[j].simulate,
+							timestepDelta: parseInt(simulatorObjects[j].simulateTimeDelta),
+							stage: parseInt(simulatorObjects[j].stage)
+						});
+					errorLocation = 2;
+					console.log("preparing for sim " + j + ", has name " + simulatorObjects[j].name);
+					let k = 0;
+					for (k = 0; k < simulatorObjects[j].subscribedMessages.length; k++) {
+						var varChannel = [];
+						let m = 0;
+						for (m = 0; m < simulatorObjects[j].subscribedDetails[k].length; m++) {
+							errorLocation = simulatorObjects[j].name + " s " + simulatorObjects[j].subscribedMessages[k] + " " + simulatorObjects[j].subscribedDetails[k][m][0] + " " + simulatorObjects[j].subscribedDetails[k][m][1];
+							var varNameIndex = simulatorObjects[j].subscribedDetails[k][m][0];
+							var varNameIndex2 = simulatorObjects[j].subscribedDetails[k][m][1];
+							if (varNameIndex != -1 && varNameIndex2 != -1) {
+								varChannel.push(
 									{
-										messageName: messageObjects[simulatorObjects[j].subscribedMessages[k]].original.name,//listOfMessages[simulatorObjects[j].subscribedMessages[k]].name,
-										oneTime: (simulatorObjects[j].subscribedInitial[k] == "true"),
-										mandatory: true,
-										relativeOrder: parseInt(simulatorObjects[j].subscribedRelative[k]),
-										maxTimestep: parseInt(simulatorObjects[j].subscribedTimestep[k]),
-										timestepDelta: parseInt(simulatorObjects[j].subscribedTimeDelta[k]),
-										stage: parseInt(simulatorObjects[j].stage),
-										varChannel: varChannel
+										valueName: messageObjects[simulatorObjects[j].subscribedMessages[k]].original.variables[simulatorObjects[j].subscribedDetails[k][m][1]].name,//listOfMessages[simulatorObjects[j].subscribedMessages[k]].variables[simulatorObjects[j].subscribedDetails[k][m][1]].name,
+										varName: listOfSimulators[i].variables[simulatorObjects[j].subscribedDetails[k][m][0]].name
 									});
-							}
-							errorLocation = 3;
-							for (k = 0; k < simulatorObjects[j].publishedMessages.length; k++) {
-								var varChannel = [];
-								let m = 0;
-								for (m = 0; m < simulatorObjects[j].publishedDetails[k].length; m++) {
-									errorLocation = simulatorObjects[j].name + " p " + simulatorObjects[j].publishedMessages[k] + " " + simulatorObjects[j].publishedDetails[k][m][0] + " " + simulatorObjects[j].publishedDetails[k][m][1];
-									var varNameIndex = simulatorObjects[j].publishedDetails[k][m][0];
-									var varNameIndex2 = simulatorObjects[j].publishedDetails[k][m][1];
-									if (varNameIndex != -1 && varNameIndex2 != -1) {
-										varChannel.push(
-											{
-												valueName: messageObjects[simulatorObjects[j].publishedMessages[k]].original.variables[simulatorObjects[j].publishedDetails[k][m][0]].name,//listOfMessages[simulatorObjects[j].publishedMessages[k]].variables[simulatorObjects[j].publishedDetails[k][m][0]].name,
-												varName: listOfSimulators[i].variables[simulatorObjects[j].publishedDetails[k][m][1]].name
-											});
-									}
-								}
-								publishedChannels.push(
-									{
-										messageName: messageObjects[simulatorObjects[j].publishedMessages[k]].original.name,//listOfMessages[simulatorObjects[j].publishedMessages[k]].name,
-										initial: (simulatorObjects[j].publishedInitial[k] == "true"),
-										timestepDelta: parseInt(simulatorObjects[j].publishedTimeDelta[k]),
-										stage: parseInt(simulatorObjects[j].stage),
-										varChannel: varChannel
-									});
-							}
-							errorLocation = 4;
-							for (k = 0; k < simulatorObjects[j].endConditions.length; k++) {
-								var newCondition = [];
-								let m = 0;
-								for (m = 0; m < simulatorObjects[j].endConditions[k].conditions.length; m++) {
-									// (extra parse to a number instead of a string necessary for Wrapper to properly check if condition is met)
-									var tempValue = simulatorObjects[j].endConditions[k].conditions[m].value;
-									if (isNaN(tempValue) == false) {
-										tempValue = parseFloat(tempValue);
-									}
-									newCondition.push(
-										{
-											varName: simulatorObjects[j].endConditions[k].conditions[m].varName,
-											condition: simulatorObjects[j].endConditions[k].conditions[m].condition,
-											value: tempValue,
-											varName2: simulatorObjects[j].endConditions[k].conditions[m].varName2
-										});
-								}
-								endConditions.push(newCondition);
-							}
-							errorLocation = 5;
-							for (k = 0; k < simulatorObjects[j].stageConditions.length; k++) {
-								var newCondition = [];
-								let m = 0;
-								for (m = 0; m < simulatorObjects[j].stageConditions[k].conditions.length; m++) {
-									var tempValue = simulatorObjects[j].stageConditions[k].conditions[m].value;
-									if (isNaN(tempValue) == false) {
-										tempValue = parseFloat(tempValue);
-									}
-									newCondition.push(
-										{
-											oldStage: parseInt(simulatorObjects[j].stageConditions[k].oldStage),
-											newStage: parseInt(simulatorObjects[j].stageConditions[k].newStage),
-											varName: simulatorObjects[j].stageConditions[k].conditions[m].varName,
-											condition: simulatorObjects[j].stageConditions[k].conditions[m].condition,
-											value: tempValue,
-											varName2: simulatorObjects[j].stageConditions[k].conditions[m].varName2
-										});
-								}
-								stageConditions.push(newCondition);
 							}
 						}
+						subscribedChannels.push(
+							{
+								messageName: messageObjects[simulatorObjects[j].subscribedMessages[k]].original.name,//listOfMessages[simulatorObjects[j].subscribedMessages[k]].name,
+								oneTime: (simulatorObjects[j].subscribedInitial[k] == "true"),
+								mandatory: true,
+								relativeOrder: parseInt(simulatorObjects[j].subscribedRelative[k]),
+								maxTimestep: parseInt(simulatorObjects[j].subscribedTimestep[k]),
+								timestepDelta: parseInt(simulatorObjects[j].subscribedTimeDelta[k]),
+								stage: parseInt(simulatorObjects[j].stage),
+								varChannel: varChannel
+							});
 					}
-
-					//errorLocation = 2;
-					var obj = {
-						hostName: hostName,
-						portNumber: portNumber,
-						simulatorName: listOfSimulators[i].name,
-						simulatorRef: listOfSimulators[i].refName,
-						debugConsole: false,
-						debugFile: false,
-						dataOutFile: false,
-						stageChannels: stageChannels,
-						initializeChannels: initializeChannels,
-						simulateChannels: simulateChannels,
-						subscribedChannels: subscribedChannels,
-						publishedChannels: publishedChannels,
-						endConditions: endConditions,
-						stageConditions: stageConditions
-					};
-
-					//errorLocation = 3;
-					content = JSON.stringify(obj, null, 4);
-					try {
-						var fs = require('fs');
-						fs.writeFileSync(savePathLocal + saveNameLocal + ".json", content, 'utf-8');
-						fs.writeFileSync(savePathLocal + "Global.json", "{}", 'utf-8');
-						fs.writeFileSync(savePathLocal + "Settings.json", "{\"global\": \"Global.json\", \"configuration\": \"" + saveNameLocal + ".json\"}", 'utf-8');
-
-					} catch (e) {
-						alert('failed to save export file for ' + listOfSimulators[i].name + ' ... error = ' + e);
+					errorLocation = 3;
+					for (k = 0; k < simulatorObjects[j].publishedMessages.length; k++) {
+						var varChannel = [];
+						let m = 0;
+						for (m = 0; m < simulatorObjects[j].publishedDetails[k].length; m++) {
+							errorLocation = simulatorObjects[j].name + " p " + simulatorObjects[j].publishedMessages[k] + " " + simulatorObjects[j].publishedDetails[k][m][0] + " " + simulatorObjects[j].publishedDetails[k][m][1];
+							var varNameIndex = simulatorObjects[j].publishedDetails[k][m][0];
+							var varNameIndex2 = simulatorObjects[j].publishedDetails[k][m][1];
+							if (varNameIndex != -1 && varNameIndex2 != -1) {
+								varChannel.push(
+									{
+										valueName: messageObjects[simulatorObjects[j].publishedMessages[k]].original.variables[simulatorObjects[j].publishedDetails[k][m][0]].name,//listOfMessages[simulatorObjects[j].publishedMessages[k]].variables[simulatorObjects[j].publishedDetails[k][m][0]].name,
+										varName: listOfSimulators[i].variables[simulatorObjects[j].publishedDetails[k][m][1]].name
+									});
+							}
+						}
+						publishedChannels.push(
+							{
+								messageName: messageObjects[simulatorObjects[j].publishedMessages[k]].original.name,//listOfMessages[simulatorObjects[j].publishedMessages[k]].name,
+								initial: (simulatorObjects[j].publishedInitial[k] == "true"),
+								timestepDelta: parseInt(simulatorObjects[j].publishedTimeDelta[k]),
+								stage: parseInt(simulatorObjects[j].stage),
+								varChannel: varChannel
+							});
+					}
+					errorLocation = 4;
+					for (k = 0; k < simulatorObjects[j].endConditions.length; k++) {
+						var newCondition = [];
+						let m = 0;
+						for (m = 0; m < simulatorObjects[j].endConditions[k].conditions.length; m++) {
+							// (extra parse to a number instead of a string necessary for Wrapper to properly check if condition is met)
+							var tempValue = simulatorObjects[j].endConditions[k].conditions[m].value;
+							if (isNaN(tempValue) == false) {
+								tempValue = parseFloat(tempValue);
+							}
+							newCondition.push(
+								{
+									varName: simulatorObjects[j].endConditions[k].conditions[m].varName,
+									condition: simulatorObjects[j].endConditions[k].conditions[m].condition,
+									value: tempValue,
+									varName2: simulatorObjects[j].endConditions[k].conditions[m].varName2
+								});
+						}
+						endConditions.push(newCondition);
+					}
+					errorLocation = 5;
+					for (k = 0; k < simulatorObjects[j].stageConditions.length; k++) {
+						var newCondition = [];
+						let m = 0;
+						for (m = 0; m < simulatorObjects[j].stageConditions[k].conditions.length; m++) {
+							var tempValue = simulatorObjects[j].stageConditions[k].conditions[m].value;
+							if (isNaN(tempValue) == false) {
+								tempValue = parseFloat(tempValue);
+							}
+							newCondition.push(
+								{
+									oldStage: parseInt(simulatorObjects[j].stageConditions[k].oldStage),
+									newStage: parseInt(simulatorObjects[j].stageConditions[k].newStage),
+									varName: simulatorObjects[j].stageConditions[k].conditions[m].varName,
+									condition: simulatorObjects[j].stageConditions[k].conditions[m].condition,
+									value: tempValue,
+									varName2: simulatorObjects[j].stageConditions[k].conditions[m].varName2
+								});
+						}
+						stageConditions.push(newCondition);
 					}
 				}
-			} catch (e) {
-				alert('failed to export config files... i = ' + i
-					+ ' errorLocation = ' + errorLocation + ' error = ' + e);
 			}
-		}
 
-		function WriteCommandsToFile() {
+			//errorLocation = 2;
+			var obj = {
+				hostName: hostName,
+				portNumber: portNumber,
+				simulatorName: listOfSimulators[i].name,
+				simulatorRef: listOfSimulators[i].refName,
+				debugConsole: false,
+				debugFile: false,
+				dataOutFile: false,
+				stageChannels: stageChannels,
+				initializeChannels: initializeChannels,
+				simulateChannels: simulateChannels,
+				subscribedChannels: subscribedChannels,
+				publishedChannels: publishedChannels,
+				endConditions: endConditions,
+				stageConditions: stageConditions
+			};
+
+			//errorLocation = 3;
+			content = JSON.stringify(obj, null, 4);
 			try {
 				var fs = require('fs');
-				var fsContent = "";
-				fsContent += "\\\\ lines that start with \\\\ will not run.\n";
-				fsContent += "\\\\ This is the Windows version of the commands that need to execute to run this project. \n";
-				fsContent += "cd (RTIServerLocation)\n";
-				fsContent += "java -jar SRTI_v2_16_02.jar\n";
-				let i = 0;
-				for (i = 0; i < listOfSimulators.length; i++) {
-					fsContent += "cd " + listOfSimulators[i].filePath + "\n";
-					fsContent += "" + listOfSimulators[i].executeCommand + "\n";
-				}
-				fs.writeFileSync(savepath + "executeCommands" + ".txt", fsContent, 'utf-8');
+				fs.writeFileSync(savePathLocal + saveNameLocal + ".json", content, 'utf-8');
+				fs.writeFileSync(savePathLocal + "Global.json", "{}", 'utf-8');
+				fs.writeFileSync(savePathLocal + "Settings.json", "{\"global\": \"Global.json\", \"configuration\": \"" + saveNameLocal + ".json\"}", 'utf-8');
+
 			} catch (e) {
-				alert('failed to save export file of execution commands ' + ' ... error = ' + e);
+				alert('failed to save export file for ' + listOfSimulators[i].name + ' ... error = ' + e);
 			}
 		}
+	} catch (e) {
+		alert('failed to export config files... i = ' + i
+			+ ' errorLocation = ' + errorLocation + ' error = ' + e);
+	}
+}
 
-		function WriteServerConfigFile() {
-			//!!!!
-			var content = "Hello world! \na simple test.";
-			// 'fs' is for filesystem, comes with Electron (or, as included within it, Node.js)
-			var fs = require('fs');
-			try {
-				content = fs.readFileSync(serverPath + "settings.txt", 'utf-8');
-			} catch (e) {
-				alert('failed to open project file!');
-				return;
-			}
-
-			contentJSON = JSON.parse(content);
-			contentJSON.portNumber = parseInt(portNumber);
-			content = JSON.stringify(contentJSON, null, 4);
-
-			fs.writeFileSync(serverPath + "settings.txt", content, "utf-8");
+function WriteCommandsToFile() {
+	try {
+		var fs = require('fs');
+		var fsContent = "";
+		fsContent += "\\\\ lines that start with \\\\ will not run.\n";
+		fsContent += "\\\\ This is the Windows version of the commands that need to execute to run this project. \n";
+		fsContent += "cd (RTIServerLocation)\n";
+		fsContent += "java -jar SRTI_v2_16_02.jar\n";
+		let i = 0;
+		for (i = 0; i < listOfSimulators.length; i++) {
+			fsContent += "cd " + listOfSimulators[i].filePath + "\n";
+			fsContent += "" + listOfSimulators[i].executeCommand + "\n";
 		}
+		fs.writeFileSync(savepath + "executeCommands" + ".txt", fsContent, 'utf-8');
+	} catch (e) {
+		alert('failed to save export file of execution commands ' + ' ... error = ' + e);
+	}
+}
 
-		/*	Below functions handle managing "undo" and "redo" functionality.
-			
-		*/
-		function ClearUndoRedoBuffer() {
-			// clear Undo and Redo stack.
-			// ... should occur... when?
+function WriteServerConfigFile() {
+	//!!!!
+	var content = "Hello world! \na simple test.";
+	// 'fs' is for filesystem, comes with Electron (or, as included within it, Node.js)
+	var fs = require('fs');
+	try {
+		content = fs.readFileSync(serverPath + "settings.txt", 'utf-8');
+	} catch (e) {
+		alert('failed to open project file!');
+		return;
+	}
+
+	contentJSON = JSON.parse(content);
+	contentJSON.portNumber = parseInt(portNumber);
+	content = JSON.stringify(contentJSON, null, 4);
+
+	fs.writeFileSync(serverPath + "settings.txt", content, "utf-8");
+}
+
+/*	Below functions handle managing "undo" and "redo" functionality.
+	
+*/
+function ClearUndoRedoBuffer() {
+	// clear Undo and Redo stack.
+	// ... should occur... when?
+}
+
+function AddToUndoBuffer(description) {
+	// add 1 to Undo stack, clear Redo stack
+	// occurs when an action occurs to add to "Undo" stack
+	undoStack.push({
+		description: description,
+		listOfSimulators: JSON.stringify(listOfSimulators),
+		listOfMessages: JSON.stringify(listOfMessages),
+		simulatorObjects: JSON.stringify(simulatorObjects),
+		messageObjects: JSON.stringify(messageObjects),
+		numOfStages: numOfStages
+	});
+	let i = 0;
+	var offsetYText = "";
+	for (i = 0; i < undoStack.length; i++) {
+		offsetYText = offsetYText + " " + JSON.parse(undoStack[i].simulatorObjects)[0].offsetY;
+	}
+	if (undoStack.length > 30) {
+		undoStack.splice(0, 1);
+	}
+	redoStack = [];
+}
+
+function Undo() {
+	// remove 1 from Undo stack, add 1 to Redo stack
+	// occurs when clicking "Edit -> Undo"
+	if (undoStack.length == 0) {
+		var textConsoleLastAction = document.getElementById("TextConsoleLastAction");
+		textConsoleLastAction.innerHTML = "(UNDO FAILED: no more undo actions to do!)";
+	} else {
+		var obj = undoStack[undoStack.length - 1];
+		undoStack.splice(undoStack.length - 1, 1);
+		redoStack.push({
+			description: obj.description,
+			listOfSimulators: JSON.stringify(listOfSimulators),
+			listOfMessages: JSON.stringify(listOfMessages),
+			simulatorObjects: JSON.stringify(simulatorObjects),
+			messageObjects: JSON.stringify(messageObjects),
+			numOfStages: numOfStages
+		});
+		ClearProject();
+		listOfSimulators = JSON.parse(obj.listOfSimulators);
+		listOfMessages = JSON.parse(obj.listOfMessages);
+		simulatorObjects = JSON.parse(obj.simulatorObjects);
+		messageObjects = JSON.parse(obj.messageObjects);
+		numOfStages = obj.numOfStages;
+		let i = 0;
+		for (i = 0; i < simulatorObjects.length; i++) {
+			CreateExistingSimulatorOnCanvas(i);
 		}
-
-		function AddToUndoBuffer(description) {
-			// add 1 to Undo stack, clear Redo stack
-			// occurs when an action occurs to add to "Undo" stack
-			undoStack.push({
-				description: description,
-				listOfSimulators: JSON.stringify(listOfSimulators),
-				listOfMessages: JSON.stringify(listOfMessages),
-				simulatorObjects: JSON.stringify(simulatorObjects),
-				messageObjects: JSON.stringify(messageObjects),
-				numOfStages: numOfStages
-			});
-			let i = 0;
-			var offsetYText = "";
-			for (i = 0; i < undoStack.length; i++) {
-				offsetYText = offsetYText + " " + JSON.parse(undoStack[i].simulatorObjects)[0].offsetY;
-			}
-			if (undoStack.length > 30) {
-				undoStack.splice(0, 1);
-			}
-			redoStack = [];
+		for (i = 0; i < messageObjects.length; i++) {
+			CreateExistingMessageOnCanvas(i);
 		}
+		UpdateCanvasGrid();
+		DrawAllArrowsOnCanvas();
+		ResetObjectSubPanel1();
+		ResetObjectSubPanel2();
+		UpdateSelectedStage(0);
+		var textConsoleLastAction = document.getElementById("TextConsoleLastAction");
+		textConsoleLastAction.innerHTML = "UNDO: " + obj.description + " (" + undoStack.length + " actions left)";
+	}
+}
 
-		function Undo() {
-			// remove 1 from Undo stack, add 1 to Redo stack
-			// occurs when clicking "Edit -> Undo"
-			if (undoStack.length == 0) {
-				var textConsoleLastAction = document.getElementById("TextConsoleLastAction");
-				textConsoleLastAction.innerHTML = "(UNDO FAILED: no more undo actions to do!)";
-			} else {
-				var obj = undoStack[undoStack.length - 1];
-				undoStack.splice(undoStack.length - 1, 1);
-				redoStack.push({
-					description: obj.description,
-					listOfSimulators: JSON.stringify(listOfSimulators),
-					listOfMessages: JSON.stringify(listOfMessages),
-					simulatorObjects: JSON.stringify(simulatorObjects),
-					messageObjects: JSON.stringify(messageObjects),
-					numOfStages: numOfStages
-				});
-				ClearProject();
-				listOfSimulators = JSON.parse(obj.listOfSimulators);
-				listOfMessages = JSON.parse(obj.listOfMessages);
-				simulatorObjects = JSON.parse(obj.simulatorObjects);
-				messageObjects = JSON.parse(obj.messageObjects);
-				numOfStages = obj.numOfStages;
-				let i = 0;
-				for (i = 0; i < simulatorObjects.length; i++) {
-					CreateExistingSimulatorOnCanvas(i);
-				}
-				for (i = 0; i < messageObjects.length; i++) {
-					CreateExistingMessageOnCanvas(i);
-				}
-				UpdateCanvasGrid();
-				DrawAllArrowsOnCanvas();
-				ResetObjectSubPanel1();
-				ResetObjectSubPanel2();
-				UpdateSelectedStage(0);
-				var textConsoleLastAction = document.getElementById("TextConsoleLastAction");
-				textConsoleLastAction.innerHTML = "UNDO: " + obj.description + " (" + undoStack.length + " actions left)";
-			}
+function Redo() {
+	// add 1 to Undo stack, remove 1 from Redo stack
+	// occurs when clicking "Edit - > Redo"
+	if (redoStack.length == 0) {
+		var textConsoleLastAction = document.getElementById("TextConsoleLastAction");
+		textConsoleLastAction.innerHTML = "(REDO FAILED: no more redo actions to do!)";
+	} else {
+		var obj = redoStack[redoStack.length - 1];
+		redoStack.splice(redoStack.length - 1, 1);
+		undoStack.push({
+			description: obj.description,
+			listOfSimulators: JSON.stringify(listOfSimulators),
+			listOfMessages: JSON.stringify(listOfMessages),
+			simulatorObjects: JSON.stringify(simulatorObjects),
+			messageObjects: JSON.stringify(messageObjects),
+			numOfStages: numOfStages
+		});
+		ClearProject();
+		listOfSimulators = JSON.parse(obj.listOfSimulators);
+		listOfMessages = JSON.parse(obj.listOfMessages);
+		simulatorObjects = JSON.parse(obj.simulatorObjects);
+		messageObjects = JSON.parse(obj.messageObjects);
+		numOfStages = obj.numOfStages;
+		let i = 0;
+		for (i = 0; i < simulatorObjects.length; i++) {
+			CreateExistingSimulatorOnCanvas(i);
 		}
-
-		function Redo() {
-			// add 1 to Undo stack, remove 1 from Redo stack
-			// occurs when clicking "Edit - > Redo"
-			if (redoStack.length == 0) {
-				var textConsoleLastAction = document.getElementById("TextConsoleLastAction");
-				textConsoleLastAction.innerHTML = "(REDO FAILED: no more redo actions to do!)";
-			} else {
-				var obj = redoStack[redoStack.length - 1];
-				redoStack.splice(redoStack.length - 1, 1);
-				undoStack.push({
-					description: obj.description,
-					listOfSimulators: JSON.stringify(listOfSimulators),
-					listOfMessages: JSON.stringify(listOfMessages),
-					simulatorObjects: JSON.stringify(simulatorObjects),
-					messageObjects: JSON.stringify(messageObjects),
-					numOfStages: numOfStages
-				});
-				ClearProject();
-				listOfSimulators = JSON.parse(obj.listOfSimulators);
-				listOfMessages = JSON.parse(obj.listOfMessages);
-				simulatorObjects = JSON.parse(obj.simulatorObjects);
-				messageObjects = JSON.parse(obj.messageObjects);
-				numOfStages = obj.numOfStages;
-				let i = 0;
-				for (i = 0; i < simulatorObjects.length; i++) {
-					CreateExistingSimulatorOnCanvas(i);
-				}
-				for (i = 0; i < messageObjects.length; i++) {
-					CreateExistingMessageOnCanvas(i);
-				}
-				UpdateCanvasGrid();
-				DrawAllArrowsOnCanvas();
-				ResetObjectSubPanel1();
-				ResetObjectSubPanel2();
-				UpdateSelectedStage(0);
-				var textConsoleLastAction = document.getElementById("TextConsoleLastAction");
-				textConsoleLastAction.innerHTML = "REDO: " + obj.description + " (" + redoStack.length + " actions left)";
-			}
+		for (i = 0; i < messageObjects.length; i++) {
+			CreateExistingMessageOnCanvas(i);
 		}
+		UpdateCanvasGrid();
+		DrawAllArrowsOnCanvas();
+		ResetObjectSubPanel1();
+		ResetObjectSubPanel2();
+		UpdateSelectedStage(0);
+		var textConsoleLastAction = document.getElementById("TextConsoleLastAction");
+		textConsoleLastAction.innerHTML = "REDO: " + obj.description + " (" + redoStack.length + " actions left)";
+	}
+}
 
-		/*	AddProprietaryRTIMessage()
-			- Add the default "RTI_" message to subscribe to onto the canvas, for all new messages.
-		*/
-		function AddProprietaryRTIMessage() {
-			var rtiMessage = "{\"mesdef\":{\"name\":\"RTI_\","
-				+ "\"variables\":[{\"name\":\"vTimestep\",\"valueType\":\"integer\"},"
-				+ "{\"name\":\"stage\",\"valueType\":\"integer\"},"
-				+ " {\"name\":\"stageVTimestepMul\",\"valueType\":\"integer\"},"
-				+ "{\"name\":\"stageVTimestep\",\"valueType\":\"integer\"}]}}";
-			var obj = JSON.parse(rtiMessage);
-			listOfMessages.push(obj.mesdef);
-			ResetObjectSubPanel2();
-		}
+/*	AddProprietaryRTIMessage()
+	- Add the default "RTI_" message to subscribe to onto the canvas, for all new messages.
+*/
+function AddProprietaryRTIMessage() {
+	var rtiMessage = "{\"mesdef\":{\"name\":\"RTI_\","
+		+ "\"variables\":[{\"name\":\"vTimestep\",\"valueType\":\"integer\"},"
+		+ "{\"name\":\"stage\",\"valueType\":\"integer\"},"
+		+ " {\"name\":\"stageVTimestepMul\",\"valueType\":\"integer\"},"
+		+ "{\"name\":\"stageVTimestep\",\"valueType\":\"integer\"}]}}";
+	var obj = JSON.parse(rtiMessage);
+	listOfMessages.push(obj.mesdef);
+	ResetObjectSubPanel2();
+}
 
-		var child_process;
-		var execServer;
-		//var execServer2;
-		var serverActive = false;
-		function StartSimulationSystem() {
-			console.log("Can we open RTI Server?");
-			if (serverActive == false) {
-				hasStartedRunningSystem = false;
-				serverActive = true;
-				document.getElementById("btn-start").disabled = true;
-				document.getElementById("btn-stop").disabled = false;
-				document.getElementById("btn-pause").disabled = true;
-				try {
-					child_process = require('child_process');
-					// if running command directly (without opening separate cmd), then we can close it successfully using standard process.
-					// otherwise, we need to figure out new way to close it.
-					//execServer = child_process.exec('cd /d D:\\Work\\Acer\\DSK\\UMich\\ICoR\\Reading-Materials\\201908\\srti_gui_test\\server && java -jar SRTI_v2_12_02.jar\',
-					// ... conclusion: no easy way to do this. Strongly recommend users prepare simulators with basic GUI.
-					//execServer = child_process.exec('start cmd /k \"cd /d D:\\Work\\Acer\\DSK\\UMich\\ICoR\\Reading-Materials\\201908\\srti_gui_test\\server && java -jar SRTI_v2_12_02.jar\"',
-					//execServer = child_process.exec('cd /d D:\\Work\\Acer\\DSK\\UMich\\ICoR\\Reading-Materials\\201908\\srti_gui_test\\server && java -jar SRTI_v2_16_02.jar',
+var child_process;
+var execServer;
+//var execServer2;
+var serverActive = false;
+function StartSimulationSystem() {
+	console.log("Can we open RTI Server?");
+	if (serverActive == false) {
+		hasStartedRunningSystem = false;
+		serverActive = true;
+		document.getElementById("btn-start").disabled = true;
+		document.getElementById("btn-stop").disabled = false;
+		document.getElementById("btn-pause").disabled = true;
+		try {
+			child_process = require('child_process');
+			// if running command directly (without opening separate cmd), then we can close it successfully using standard process.
+			// otherwise, we need to figure out new way to close it.
+			//execServer = child_process.exec('cd /d D:\\Work\\Acer\\DSK\\UMich\\ICoR\\Reading-Materials\\201908\\srti_gui_test\\server && java -jar SRTI_v2_12_02.jar\',
+			// ... conclusion: no easy way to do this. Strongly recommend users prepare simulators with basic GUI.
+			//execServer = child_process.exec('start cmd /k \"cd /d D:\\Work\\Acer\\DSK\\UMich\\ICoR\\Reading-Materials\\201908\\srti_gui_test\\server && java -jar SRTI_v2_12_02.jar\"',
+			//execServer = child_process.exec('cd /d D:\\Work\\Acer\\DSK\\UMich\\ICoR\\Reading-Materials\\201908\\srti_gui_test\\server && java -jar SRTI_v2_16_02.jar',
 
-					// 'var tempPath' is correct for compiled versions of the app, but not for 'npm start .' for debugging purposes...
-					//var tempPath = __dirname + '\\..\\extraResources\\srti_server\\';
-					//tempPath = __dirname + "\\extraResources\\srti_server\\";
-					//alert(tempPath.substring(tempPath.length-64,tempPath.length-1));
-					execServer = child_process.exec('cd /d ' + serverPath + ' && java -jar ' + serverFileName,
-						(error, stdout, stderror) => {
-							if (error) {
-								alert("error when running command: " + error);
-							} else {
-								alert("command worked!");
-							}
-						});
-
-					// start all other simulators (all that exist anywhere on the canvas).
-				} catch (e) {
-					alert('Error when trying to open RTI Server. ' + e);
-					return;
-				}
-				var textConsoleLastAction = document.getElementById("TextConsoleLastAction");
-				textConsoleLastAction.innerHTML = "Try to open Server: " + execServer.pid + " and enable 'play' button in 10 seconds.";
-
-
-				// try to create a socket to connect to RTI Server.
-				setTimeout(function () {
-					var textConsoleLastAction = document.getElementById("TextConsoleLastAction");
-					textConsoleLastAction.innerHTML = "Trying to connect this GUI to the RTI Server...";
-					ConnectToRTIServer();
-					LaunchSimulators();
-				}, 5000);
-
-				// if socket successfully connects, enable 'Play' button
-				setTimeout(function () {
-					if (serverActive == true) {
-						document.getElementById("btn-play").disabled = false;
-						var textConsoleLastAction = document.getElementById("TextConsoleLastAction");
-						textConsoleLastAction.innerHTML = "Ready to begin sim system!";
+			// 'var tempPath' is correct for compiled versions of the app, but not for 'npm start .' for debugging purposes...
+			//var tempPath = __dirname + '\\..\\extraResources\\srti_server\\';
+			//tempPath = __dirname + "\\extraResources\\srti_server\\";
+			//alert(tempPath.substring(tempPath.length-64,tempPath.length-1));
+			execServer = child_process.exec('cd /d ' + serverPath + ' && java -jar ' + serverFileName,
+				(error, stdout, stderror) => {
+					if (error) {
+						alert("error when running command: " + error);
+					} else {
+						alert("command worked!");
 					}
-				}, 10000);
-			}
+				});
+
+			// start all other simulators (all that exist anywhere on the canvas).
+		} catch (e) {
+			alert('Error when trying to open RTI Server. ' + e);
+			return;
 		}
+		var textConsoleLastAction = document.getElementById("TextConsoleLastAction");
+		textConsoleLastAction.innerHTML = "Try to open Server: " + execServer.pid + " and enable 'play' button in 10 seconds.";
 
-		var hasStartedRunningSystem = false;
-		function PlaySimulationSystem() {
-			// send message to "Start" system to Server.
 
-			if (hasStartedRunningSystem == false) {
-				hasStartedRunningSystem = true;
-				var outputString = "{\"name\":\"RTI_StartSim\",\"content\":\"{}\",\"timestamp\":\"1234567890123\",\"vTimestamp\":0,\"source\":\"RTI-v2-GUI\",\"tcp\":\"false\"}\n";
-				document.getElementById("btn-play").disabled = true;
-				document.getElementById("btn-pause").disabled = false;
-				guiDedicatedClient.write(outputString);
-			} else {
-				var outputString = "{\"name\":\"RTI_ResumeSystem\",\"content\":\"{}\",\"timestamp\":\"1234567890123\",\"vTimestamp\":0,\"source\":\"RTI-v2-GUI\",\"tcp\":\"false\"}\n";
-				document.getElementById("btn-play").disabled = true;
-				document.getElementById("btn-pause").disabled = false;
-				guiDedicatedClient.write(outputString);
+		// try to create a socket to connect to RTI Server.
+		setTimeout(function () {
+			var textConsoleLastAction = document.getElementById("TextConsoleLastAction");
+			textConsoleLastAction.innerHTML = "Trying to connect this GUI to the RTI Server...";
+			ConnectToRTIServer();
+			LaunchSimulators();
+		}, 5000);
 
-			}
-		}
-
-		function PauseSimulationSystem() {
-			console.log("Can we send message to RTI Server to pause system?");
-			// send message to "Pause" system to Server.
-
-			var outputString = "{\"name\":\"RTI_PauseSystem\",\"content\":\"{}\",\"timestamp\":\"1234567890123\",\"vTimestamp\":0,\"source\":\"RTI-v2-GUI\",\"tcp\":\"false\"}\n";
-			document.getElementById("btn-play").disabled = false;
-			document.getElementById("btn-pause").disabled = true;
-
-			guiDedicatedClient.write(outputString);
-		}
-
-		function StopSimulationSystem() {
-			console.log("Can we close RTI Server?");
+		// if socket successfully connects, enable 'Play' button
+		setTimeout(function () {
 			if (serverActive == true) {
+				document.getElementById("btn-play").disabled = false;
 				var textConsoleLastAction = document.getElementById("TextConsoleLastAction");
-				textConsoleLastAction.innerHTML = "Try to close Server. " + execServer.pid;
-				serverActive = false;
-				try {
-					var kill = require('tree-kill');
-					kill(execServer.pid);
-				} catch (e) {
-					alert('Error when trying to end RTI Server. ' + e);
-				}
-				// need to try to close other simulators too.
-
+				textConsoleLastAction.innerHTML = "Ready to begin sim system!";
 			}
+		}, 10000);
+	}
+}
 
-			let i = 0;
-			for (i = 0; i < execSims.length; i++) {
-				try {
-					var kill = require('tree-kill');
-					kill(execSims[i].pid);
-				} catch (e) {
-					alert('Error when trying to end sim. ' + e);
-				}
-			}
+var hasStartedRunningSystem = false;
+function PlaySimulationSystem() {
+	// send message to "Start" system to Server.
 
-			document.getElementById("btn-start").disabled = false;
-			document.getElementById("btn-stop").disabled = true;
-			document.getElementById("btn-pause").disabled = true;
-			document.getElementById("btn-play").disabled = true;
+	if (hasStartedRunningSystem == false) {
+		hasStartedRunningSystem = true;
+		var outputString = "{\"name\":\"RTI_StartSim\",\"content\":\"{}\",\"timestamp\":\"1234567890123\",\"vTimestamp\":0,\"source\":\"RTI-v2-GUI\",\"tcp\":\"false\"}\n";
+		document.getElementById("btn-play").disabled = true;
+		document.getElementById("btn-pause").disabled = false;
+		guiDedicatedClient.write(outputString);
+	} else {
+		var outputString = "{\"name\":\"RTI_ResumeSystem\",\"content\":\"{}\",\"timestamp\":\"1234567890123\",\"vTimestamp\":0,\"source\":\"RTI-v2-GUI\",\"tcp\":\"false\"}\n";
+		document.getElementById("btn-play").disabled = true;
+		document.getElementById("btn-pause").disabled = false;
+		guiDedicatedClient.write(outputString);
 
-			//guiClient.close();
-			//guiServer.close();
-			guiFirstClient.destroy();
-			guiDedicatedClient.destroy();
+	}
+}
+
+function PauseSimulationSystem() {
+	console.log("Can we send message to RTI Server to pause system?");
+	// send message to "Pause" system to Server.
+
+	var outputString = "{\"name\":\"RTI_PauseSystem\",\"content\":\"{}\",\"timestamp\":\"1234567890123\",\"vTimestamp\":0,\"source\":\"RTI-v2-GUI\",\"tcp\":\"false\"}\n";
+	document.getElementById("btn-play").disabled = false;
+	document.getElementById("btn-pause").disabled = true;
+
+	guiDedicatedClient.write(outputString);
+}
+
+function StopSimulationSystem() {
+	console.log("Can we close RTI Server?");
+	if (serverActive == true) {
+		var textConsoleLastAction = document.getElementById("TextConsoleLastAction");
+		textConsoleLastAction.innerHTML = "Try to close Server. " + execServer.pid;
+		serverActive = false;
+		try {
+			var kill = require('tree-kill');
+			kill(execServer.pid);
+		} catch (e) {
+			alert('Error when trying to end RTI Server. ' + e);
 		}
+		// need to try to close other simulators too.
 
-		var guiFirstClient;
-		//var guiServer;
-		var guiDedicatedClient;
-		function ConnectToRTIServer() {
+	}
 
-			var dedicatedServerPort = 4200;
+	let i = 0;
+	for (i = 0; i < execSims.length; i++) {
+		try {
+			var kill = require('tree-kill');
+			kill(execSims[i].pid);
+		} catch (e) {
+			alert('Error when trying to end sim. ' + e);
+		}
+	}
 
-			var net = require('net');
-			guiFirstClient = new net.Socket();
-			try {
-				guiFirstClient.connect(portNumber, hostName, function () {
-					console.log("Successfully connected GUI to RTI Server!");
-					var textConsoleLastAction = document.getElementById("TextConsoleLastAction");
-					textConsoleLastAction.innerHTML = "First step complete to connect GUI to RTI Server...";
+	document.getElementById("btn-start").disabled = false;
+	document.getElementById("btn-stop").disabled = true;
+	document.getElementById("btn-pause").disabled = true;
+	document.getElementById("btn-play").disabled = true;
 
-					/*var rl = require('readline');
-					var readInterface = rl.createInterface(
-					
-					guiServer = net.createServer(function(socket){
-						dedicatedServerPort = socket;
-					});
-					guiServer.listen(0, 'localhost');*/
+	//guiClient.close();
+	//guiServer.close();
+	guiFirstClient.destroy();
+	guiDedicatedClient.destroy();
+}
 
-				});
-				guiFirstClient.on('data', function (data) {
-					var textConsoleLastAction = document.getElementById("TextConsoleLastAction");
-					textConsoleLastAction.innerHTML = "Data received by RTI Server: " + data.toString();
+var guiFirstClient;
+//var guiServer;
+var guiDedicatedClient;
+function ConnectToRTIServer() {
 
-					var dataReceived = data.toString().split("\n");
-					textConsoleLastAction.innerHTML = "Separated data received by RTI Server: (" + dataReceived[1] + ")";
-					var dedicatedClientPort = parseInt(dataReceived[1]);
-					var dedicatedServerPort = 0;
+	var dedicatedServerPort = 4200;
 
-					guiDedicatedClient = new net.Socket();
-					guiDedicatedClient.connect(dedicatedClientPort, function () {
-						var textConsoleLastAction = document.getElementById("TextConsoleLastAction");
-						textConsoleLastAction.innerHTML = "Finished successfully connecting to RTI Server!";
+	var net = require('net');
+	guiFirstClient = new net.Socket();
+	try {
+		guiFirstClient.connect(portNumber, hostName, function () {
+			console.log("Successfully connected GUI to RTI Server!");
+			var textConsoleLastAction = document.getElementById("TextConsoleLastAction");
+			textConsoleLastAction.innerHTML = "First step complete to connect GUI to RTI Server...";
 
-						var outputString = "{\"name\":\"RTI_InitializeSim\",\"content\":\"{\\\"simName\\\":\\\"RTI-v2-GUI\\\"}\",\"timestamp\":\"1234567890123\",\"vTimestamp\":0,\"source\":\"RTI-v2-GUI\",\"tcp\":\"false\"}\n";
-						guiDedicatedClient.write(outputString);
+			/*var rl = require('readline');
+			var readInterface = rl.createInterface(
+			
+			guiServer = net.createServer(function(socket){
+				dedicatedServerPort = socket;
+			});
+			guiServer.listen(0, 'localhost');*/
 
-						outputString = "{\"name\":\"RTI_SubscribeToAllPlusHistory\",\"content\":\"\",\"timestamp\":\"1234567890123\",\"vTimestamp\":0,\"source\":\"RTI-v2-GUI\",\"tcp\":\"false\"}\n";
-						guiDedicatedClient.write(outputString);
-					});
+		});
+		guiFirstClient.on('data', function (data) {
+			var textConsoleLastAction = document.getElementById("TextConsoleLastAction");
+			textConsoleLastAction.innerHTML = "Data received by RTI Server: " + data.toString();
 
-					guiDedicatedClient.on('data', function (data) {
-						HandleRTIInputData(data);
-					});
+			var dataReceived = data.toString().split("\n");
+			textConsoleLastAction.innerHTML = "Separated data received by RTI Server: (" + dataReceived[1] + ")";
+			var dedicatedClientPort = parseInt(dataReceived[1]);
+			var dedicatedServerPort = 0;
 
-				});
-			} catch (e) {
+			guiDedicatedClient = new net.Socket();
+			guiDedicatedClient.connect(dedicatedClientPort, function () {
 				var textConsoleLastAction = document.getElementById("TextConsoleLastAction");
-				textConsoleLastAction.innerHTML = "Error occurred when trying to connect GUI to RTI Server! :(";
-			}
+				textConsoleLastAction.innerHTML = "Finished successfully connecting to RTI Server!";
 
-			// issue: I have to effectively recreate a major part of "RTILib" in JavaScript to properly subscribe/publish messages.
+				var outputString = "{\"name\":\"RTI_InitializeSim\",\"content\":\"{\\\"simName\\\":\\\"RTI-v2-GUI\\\"}\",\"timestamp\":\"1234567890123\",\"vTimestamp\":0,\"source\":\"RTI-v2-GUI\",\"tcp\":\"false\"}\n";
+				guiDedicatedClient.write(outputString);
+
+				outputString = "{\"name\":\"RTI_SubscribeToAllPlusHistory\",\"content\":\"\",\"timestamp\":\"1234567890123\",\"vTimestamp\":0,\"source\":\"RTI-v2-GUI\",\"tcp\":\"false\"}\n";
+				guiDedicatedClient.write(outputString);
+			});
+
+			guiDedicatedClient.on('data', function (data) {
+				HandleRTIInputData(data);
+			});
+
+		});
+	} catch (e) {
+		var textConsoleLastAction = document.getElementById("TextConsoleLastAction");
+		textConsoleLastAction.innerHTML = "Error occurred when trying to connect GUI to RTI Server! :(";
+	}
+
+	// issue: I have to effectively recreate a major part of "RTILib" in JavaScript to properly subscribe/publish messages.
+}
+
+function HandleRTIInputData(data) {
+	// How should we display system-wide messages to the user?
+
+	// example test to get a specific part of the message:
+	var obj = JSON.parse(data);
+	var step = obj.vTimestamp;
+	var textConsoleLastAction = document.getElementById("TextConsoleLastAction");
+	textConsoleLastAction.innerHTML = "Step = " + step + " . Full RTI Message: " + data;
+
+	// reminder: 'stage' can be found in 'RTI_StartStep' -> 'content' -> 'stage'.
+	var stage = -1;
+	if (obj.name == "RTI_StartStep") {
+		var content = JSON.parse(obj.content);
+		stage = content.stage;
+	}
+
+
+	UpdateStepAndStage(step, stage);
+
+	UpdateInspectorPanelMessage(data);
+
+	UpdateSimExecutionColor(data);
+
+}
+
+function UpdateStepAndStage(step, stage) {
+	if (stage == -1) {
+		// don't update global stage locally, don't change display for stage
+		// only update 'div' for 'step'
+	} else {
+		// update 'div' for both 'step' and 'stage'
+	}
+}
+
+var receivedMessageBuffer = [];
+var receivedMessageBufferLength = 6;
+function UpdateInspectorPanelMessage(data) {
+	// keep track of most recent 6 messages received
+
+	if (receivedMessageBuffer.length < receivedMessageBufferLength) {
+		receivedMessageBuffer = [];
+		let i = 0;
+		for (i = 0; i < receivedMessageBufferLength; i++) {
+			receivedMessageBuffer.push({ name: "N/A", message: "N/A" });
 		}
+	}
 
-		function HandleRTIInputData(data) {
-			// How should we display system-wide messages to the user?
+	receivedMessageBuffer.splice(0, 1);
 
-			// example test to get a specific part of the message:
-			var obj = JSON.parse(data);
-			var step = obj.vTimestamp;
-			var textConsoleLastAction = document.getElementById("TextConsoleLastAction");
-			textConsoleLastAction.innerHTML = "Step = " + step + " . Full RTI Message: " + data;
+	var obj = JSON.parse(data);
+	var objName = obj.name;
 
-			// reminder: 'stage' can be found in 'RTI_StartStep' -> 'content' -> 'stage'.
-			var stage = -1;
-			if (obj.name == "RTI_StartStep") {
-				var content = JSON.parse(obj.content);
-				stage = content.stage;
-			}
+	receivedMessageBuffer.push({ name: objName, message: data });
 
+	UpdateInspectorPanelMessageObjects("(message content here)");
+}
 
-			UpdateStepAndStage(step, stage);
+function UpdateInspectorPanelMessageObjects(message) {
+	var inspectorPanel = document.getElementById("inspectorpanel");
+	while (inspectorPanel.firstChild) {
+		inspectorPanel.removeChild(inspectorPanel.firstChild);
+	}
 
-			UpdateInspectorPanelMessage(data);
+	var inspectorPanelString = "";
+	for (i = 0; i < receivedMessageBufferLength; i++) {
+		inspectorPanelString = inspectorPanelString + receivedMessageBuffer[i].name + ", " + "<br>";
 
-			UpdateSimExecutionColor(data);
+		var addContentType = document.createElement("button");
+		addContentType.style = "width: 100%; height: 40px; padding: 8px;";
+		addContentType.innerHTML = receivedMessageBuffer[i].name;
+		addContentType.name = receivedMessageBuffer[i].message;
+		addContentType.onclick = function () {
+			UpdateInspectorPanelMessageContent(this.name);
+		};
+		inspectorPanel.appendChild(addContentType);
+	}
+	var addContentType = document.createElement("div");
+	// unable to give 'div' a name? Makes it much harder to reference/update later...
+	addContentType.style = "width: 100%; height: 40px; padding: 4px;";
+	addContentType.innerHTML = message;
+	inspectorPanel.appendChild(addContentType);
+}
 
-		}
+function UpdateInspectorPanelMessageContent(message) {
+	var message2 = JSON.stringify(JSON.parse(message), null, 4);
+	var message3 = message2;//message2.replace(/\n/g, "<br>");
+	UpdateInspectorPanelMessageObjects(message3);
+}
 
-		function UpdateStepAndStage(step, stage) {
-			if (stage == -1) {
-				// don't update global stage locally, don't change display for stage
-				// only update 'div' for 'step'
-			} else {
-				// update 'div' for both 'step' and 'stage'
-			}
-		}
+function UpdateSimExecutionColor(message) {
+	var obj = JSON.parse(data);
+	if (obj.name == "RTI_StartStep") {
 
-		var receivedMessageBuffer = [];
-		var receivedMessageBufferLength = 6;
-		function UpdateInspectorPanelMessage(data) {
-			// keep track of most recent 6 messages received
+	} else if (obj.name == "RTI_FinishStep") {
 
-			if (receivedMessageBuffer.length < receivedMessageBufferLength) {
-				receivedMessageBuffer = [];
-				let i = 0;
-				for (i = 0; i < receivedMessageBufferLength; i++) {
-					receivedMessageBuffer.push({ name: "N/A", message: "N/A" });
+	}
+}
+
+var execSims;
+function LaunchSimulators() {
+	try {
+		execSims = [];
+		child_process = require('child_process');
+		/*execServer = child_process.exec('cd /d D:\\Work\\Acer\\DSK\\UMich\\ICoR\\Reading-Materials\\201908\\srti_gui_test\\server && java -jar SRTI_v2_12_02.jar',
+			(error, stdout, stderror) => {
+				if (error){
+					alert("error when running command: " + error);
+				} else {
+					alert("command worked!");
 				}
-			}
+		});*/
 
-			receivedMessageBuffer.splice(0, 1);
+		// FIRST, must export Wrapper config files (automatically save when running, or else prompt user before running)
 
-			var obj = JSON.parse(data);
-			var objName = obj.name;
-
-			receivedMessageBuffer.push({ name: objName, message: data });
-
-			UpdateInspectorPanelMessageObjects("(message content here)");
+		// start all other simulators (all that exist anywhere on the canvas).
+		let i = 0;
+		for (i = 0; i < listOfSimulators.length; i++) {
+			var execCommand = "cd /d " + listOfSimulators[i].filePath
+				+ " && " + listOfSimulators[i].executeCommand;
+			var execSim = child_process.exec(execCommand,
+				(error, stdout, stderror) => {
+					if (error) {
+						alert("error when running command to open sim: " + error);
+					} else {
+						alert("executing sim was successful!");
+					}
+				});
+			execSims.push(execSim);
 		}
 
-		function UpdateInspectorPanelMessageObjects(message) {
-			var inspectorPanel = document.getElementById("inspectorpanel");
-			while (inspectorPanel.firstChild) {
-				inspectorPanel.removeChild(inspectorPanel.firstChild);
-			}
+	} catch (e) {
+		alert('Error when trying to open RTI Server. ' + e);
+		return;
+	}
+	var textConsoleLastAction = document.getElementById("TextConsoleLastAction");
+	textConsoleLastAction.innerHTML = "Try to open sims: " + execSims.pid + "...";
 
-			var inspectorPanelString = "";
-			for (i = 0; i < receivedMessageBufferLength; i++) {
-				inspectorPanelString = inspectorPanelString + receivedMessageBuffer[i].name + ", " + "<br>";
-
-				var addContentType = document.createElement("button");
-				addContentType.style = "width: 100%; height: 40px; padding: 8px;";
-				addContentType.innerHTML = receivedMessageBuffer[i].name;
-				addContentType.name = receivedMessageBuffer[i].message;
-				addContentType.onclick = function () {
-					UpdateInspectorPanelMessageContent(this.name);
-				};
-				inspectorPanel.appendChild(addContentType);
-			}
-			var addContentType = document.createElement("div");
-			// unable to give 'div' a name? Makes it much harder to reference/update later...
-			addContentType.style = "width: 100%; height: 40px; padding: 4px;";
-			addContentType.innerHTML = message;
-			inspectorPanel.appendChild(addContentType);
-		}
-
-		function UpdateInspectorPanelMessageContent(message) {
-			var message2 = JSON.stringify(JSON.parse(message), null, 4);
-			var message3 = message2;//message2.replace(/\n/g, "<br>");
-			UpdateInspectorPanelMessageObjects(message3);
-		}
-
-		function UpdateSimExecutionColor(message) {
-			var obj = JSON.parse(data);
-			if (obj.name == "RTI_StartStep") {
-
-			} else if (obj.name == "RTI_FinishStep") {
-
-			}
-		}
-
-		var execSims;
-		function LaunchSimulators() {
-			try {
-				execSims = [];
-				child_process = require('child_process');
-				/*execServer = child_process.exec('cd /d D:\\Work\\Acer\\DSK\\UMich\\ICoR\\Reading-Materials\\201908\\srti_gui_test\\server && java -jar SRTI_v2_12_02.jar',
-					(error, stdout, stderror) => {
-						if (error){
-							alert("error when running command: " + error);
-						} else {
-							alert("command worked!");
-						}
-				});*/
-
-				// FIRST, must export Wrapper config files (automatically save when running, or else prompt user before running)
-
-				// start all other simulators (all that exist anywhere on the canvas).
-				let i = 0;
-				for (i = 0; i < listOfSimulators.length; i++) {
-					var execCommand = "cd /d " + listOfSimulators[i].filePath
-						+ " && " + listOfSimulators[i].executeCommand;
-					var execSim = child_process.exec(execCommand,
-						(error, stdout, stderror) => {
-							if (error) {
-								alert("error when running command to open sim: " + error);
-							} else {
-								alert("executing sim was successful!");
-							}
-						});
-					execSims.push(execSim);
-				}
-
-			} catch (e) {
-				alert('Error when trying to open RTI Server. ' + e);
-				return;
-			}
-			var textConsoleLastAction = document.getElementById("TextConsoleLastAction");
-			textConsoleLastAction.innerHTML = "Try to open sims: " + execSims.pid + "...";
-
-		}
+}
 
 
 

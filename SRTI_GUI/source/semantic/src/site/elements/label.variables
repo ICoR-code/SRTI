@@ -1,7 +1,6 @@
 /*******************************
     User Variable Overrides
 *******************************/
-<<<<<<< HEAD
 
 
 @blue: #3c64c3;
@@ -28,5 +27,3 @@
 @lightGreenFocus: @greenFocus;
 @lightGreenDown: @greenDown;
 @lightGreenActive: @greenActive;
-=======
->>>>>>> master
