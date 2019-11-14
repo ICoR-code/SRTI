@@ -49,6 +49,8 @@ var savename = "";
 // variables to launch RTI Server, and to connect sims to the Server.
 var hostName = "localhost";
 var portNumber = "42012";
+var serverPath = __dirname + '\\..\\extraResources\\srti_server\\';
+var serverFileName = 'SRTI_v2_20_02.jar';
 // Total number of stages (different states in simulation system) in this project.
 var numOfStages = 1;
 // Current stage in canvas view (1st is at index 0).
@@ -129,6 +131,16 @@ importObjectFolder.onchange = function () {
 		importObjectText.innerHTML = "... object type not recognized.";
 		importObjectPath = "";
 	}
+}
+var newServerFile = document.getElementsByName("NewServer")[0];
+newServerFile.onchange = function (){	
+	var files = newServerFile.files;
+	var filename = files[0].path.replace(/^.*[\\\/]/, '');
+	//filename = filename.replace(".jar", '');
+	var path = files[0].path.replace(filename, '');
+	
+	serverPath = path;
+	serverFileName = filename;
 }
 
 // counting simulators and objects
@@ -3022,6 +3034,8 @@ function SaveEditServer() {
 	}
 	portNumber = $('input[name="PortNumberObject"]').val()
 
+	
+
 	CloseEditServer()
 }
 
@@ -3030,6 +3044,24 @@ function SaveEditServer() {
 */
 function CloseEditServer() {
 	DisplayOrClosePrompt("modalServer", "none");
+	
+	ConfigureClearInspectorPanel();
+	
+	let panel = $('#inspectorpanel')
+	let header = $('<div>').addClass('ui compact segment')
+	header.append($('<h3>').text('RTI Server'))
+
+	let content = $('<div>').addClass('ui compact segment')
+	let button = $('<button>').addClass('ui color-message basic button').text('Change Launch Parameters')
+	button.click(() => {
+		EditServer();
+	})
+	content.append($('<p>').text("Host Name: " + hostName))
+	content.append($('<p>').text("Port Number: " + portNumber))
+	content.append(button)
+	
+	panel.append(header)
+	panel.append(content)
 }
 
 /*	EditSimulateFunctions()
@@ -5189,6 +5221,10 @@ function ClearProject() {
 	simulatorObjects = [];
 	messageObjects = [];
 	numOfStages = 1;
+	serverPath = __dirname + '\\..\\extraResources\\srti_server\\';
+	serverFileName = 'SRTI_v2_20_02.jar';
+	hostName = "localhost";
+	portNumber = "42012";
 	stage = 1;
 
 	UpdateCanvasGrid();
@@ -5247,7 +5283,11 @@ function CreateProjectText() {
 		listOfMessages: listOfMessages,
 		simulatorObjects: simulatorObjects,
 		messageObjects: messageObjects,
-		numOfStages: numOfStages
+		numOfStages: numOfStages,
+		serverPath: serverPath,
+		serverFileName: serverFileName,
+		hostName: hostName,
+		portNumber: portNumber
 	};
 	content = JSON.stringify(obj, null, 4);
 	return content;
@@ -5342,6 +5382,10 @@ function ResetCanvasWithNewProject(projectText) {
 	simulatorObjects = obj.simulatorObjects;
 	messageObjects = obj.messageObjects;
 	numOfStages = obj.numOfStages;
+	serverPath = obj.serverPath;
+	serverFileName = obj.serverFileName;
+	hostName = obj.hostName;
+	portNumber = obj.portNumber;
 	let i = 0;
 	for (i = 0; i < simulatorObjects.length; i++) {
 		CreateExistingSimulatorOnCanvas(i);
@@ -5363,6 +5407,11 @@ function ResetCanvasWithNewProject(projectText) {
 function ExportExecuteFiles() {
 	WriteWrapperConfigFiles();
 	WriteCommandsToFile();
+	WriteServerConfigFile();
+	
+	var d = new Date();
+	var textConsoleLastAction = document.getElementById("TextConsoleLastAction");
+	textConsoleLastAction.innerHTML = "Configuration files (Wrapper, Server) exported! " + d.getTime();
 }
 
 function WriteWrapperConfigFiles() {
@@ -5416,7 +5465,7 @@ function WriteWrapperConfigFiles() {
 						var varChannel = [];
 						let m = 0;
 						for (m = 0; m < simulatorObjects[j].subscribedDetails[k].length; m++) {
-							errorLocation = "s " + simulatorObjects[j].subscribedMessages[k] + " " + simulatorObjects[j].subscribedDetails[k][m][0] + " " + simulatorObjects[j].subscribedDetails[k][m][1];
+							errorLocation = simulatorObjects[j].name + " s " + simulatorObjects[j].subscribedMessages[k] + " " + simulatorObjects[j].subscribedDetails[k][m][0] + " " + simulatorObjects[j].subscribedDetails[k][m][1];
 							var varNameIndex = simulatorObjects[j].subscribedDetails[k][m][0];
 							var varNameIndex2 = simulatorObjects[j].subscribedDetails[k][m][1];
 							if (varNameIndex != -1 && varNameIndex2 != -1) {
@@ -5444,7 +5493,7 @@ function WriteWrapperConfigFiles() {
 						var varChannel = [];
 						let m = 0;
 						for (m = 0; m < simulatorObjects[j].publishedDetails[k].length; m++) {
-							errorLocation = "p " + simulatorObjects[j].publishedMessages[k] + " " + simulatorObjects[j].publishedDetails[k][m][0] + " " + simulatorObjects[j].publishedDetails[k][m][1];
+							errorLocation = simulatorObjects[j].name + " p " + simulatorObjects[j].publishedMessages[k] + " " + simulatorObjects[j].publishedDetails[k][m][0] + " " + simulatorObjects[j].publishedDetails[k][m][1];
 							var varNameIndex = simulatorObjects[j].publishedDetails[k][m][0];
 							var varNameIndex2 = simulatorObjects[j].publishedDetails[k][m][1];
 							if (varNameIndex != -1 && varNameIndex2 != -1) {
@@ -5561,6 +5610,25 @@ function WriteCommandsToFile() {
 	} catch (e) {
 		alert('failed to save export file of execution commands ' + ' ... error = ' + e);
 	}
+}
+
+function WriteServerConfigFile(){
+	//!!!!
+	var content = "Hello world! \na simple test.";
+	// 'fs' is for filesystem, comes with Electron (or, as included within it, Node.js)
+	var fs = require('fs');
+	try {
+		content = fs.readFileSync(serverPath + "settings.txt", 'utf-8');
+	} catch (e) {
+		alert('failed to open project file!');
+		return;
+	}
+	
+	contentJSON = JSON.parse(content);
+	contentJSON.portNumber = parseInt(portNumber);
+	content = JSON.stringify(contentJSON, null, 4);
+	
+	fs.writeFileSync(serverPath + "settings.txt", content, "utf-8");
 }
 
 /*	Below functions handle managing "undo" and "redo" functionality.
@@ -5709,10 +5777,10 @@ function StartSimulationSystem() {
 			//execServer = child_process.exec('cd /d D:\\Work\\Acer\\DSK\\UMich\\ICoR\\Reading-Materials\\201908\\srti_gui_test\\server && java -jar SRTI_v2_16_02.jar',
 
 			// 'var tempPath' is correct for compiled versions of the app, but not for 'npm start .' for debugging purposes...
-			var tempPath = __dirname + '\\..\\extraResources\\srti_server\\';
+			//var tempPath = __dirname + '\\..\\extraResources\\srti_server\\';
 			//tempPath = __dirname + "\\extraResources\\srti_server\\";
 			//alert(tempPath.substring(tempPath.length-64,tempPath.length-1));
-			execServer = child_process.exec('cd /d ' + tempPath + ' && java -jar SRTI_v2_20_02.jar',
+			execServer = child_process.exec('cd /d ' + serverPath + ' && java -jar ' + serverFileName,
 				(error, stdout, stderror) => {
 					if (error) {
 						alert("error when running command: " + error);
@@ -5895,6 +5963,8 @@ function HandleRTIInputData(data) {
 
 	UpdateInspectorPanelMessage(data);
 
+	UpdateSimExecutionColor(data);
+
 }
 
 function UpdateStepAndStage(step, stage) {
@@ -5959,6 +6029,15 @@ function UpdateInspectorPanelMessageContent(message) {
 	var message2 = JSON.stringify(JSON.parse(message), null, 4);
 	var message3 = message2;//message2.replace(/\n/g, "<br>");
 	UpdateInspectorPanelMessageObjects(message3);
+}
+
+function UpdateSimExecutionColor(message){
+	var obj = JSON.parse(data);
+	if (obj.name == "RTI_StartStep"){
+		
+	} else if (obj.name == "RTI_FinishStep"){
+		
+	}
 }
 
 var execSims;
