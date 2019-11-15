@@ -3528,6 +3528,8 @@ function EditStageConditions() {
 	// document.getElementsByName("TextStageConditionsPickValue2")[0].value = "";
 	// document.getElementById("divStageConditionStatement").innerHTML
 	// 	= "If [" + stageConditionV1 + "] [" + stageConditionV2 + "] [" + stageConditionV3 + "] AND ...";
+	
+	ResetStageConditionList()
 
 }
 
@@ -3851,6 +3853,8 @@ function EditEndConditions() {
 	stageConditionV3a = "";
 	stageConditionV3b = "";
 	$('#endCondition1, #endCondition2, #endCondition3').text('')
+	
+	ResetEndConditionList();
 	// document.getElementsByName("TextEndConditionsPickValue2")[0].value = "";
 	// document.getElementById("divEndConditionStatement").innerHTML
 	// 	= "If [" + stageConditionV1 + "] [" + stageConditionV2 + "] [" + stageConditionV3 + "] AND ...";
@@ -4350,7 +4354,21 @@ function AddStageConditionToList() {
 */
 function RemoveStageConditionFromList(btn_name) {
 	console.log('deleting' + btn_name)
-	simulatorObjects[editExistingObject].stageConditions.splice(btn_name, 1);
+	
+	var indexCount = 0;
+	var simulatorObjectName = simulatorObjects[editExistingObject].name;
+	let k = 0;
+	for (k = 0; k < simulatorObjects.length; k++){
+		if (simulatorObjects[k].name == simulatorObjectName){
+			let i = 0;
+			for (i = 0; i < simulatorObjects[k].stageConditions.length; i++) {
+				if (indexCount == btn_name){
+					simulatorObjects[k].stageConditions.splice(i, 1);
+				}
+				indexCount++;
+			}
+		}
+	}
 
 	ResetStageConditionList()
 
@@ -4403,42 +4421,49 @@ function ResetStageConditionList() {
 
 	let panel = $('#modalStageConditionsPanel')
 	panel.empty()
-	let i = 0, item, label, sentence, button, icon
-	for (i = 0; i < simulatorObjects[editExistingObject].stageConditions.length; i++) {
-		item = $('<div>').addClass('div-list-item')
-		label = $('<div>').addClass('ui grey expanding label')
-		sentence = "in stage " + simulatorObjects[editExistingObject].stageConditions[i].oldStage + ", ";
-		let j = 0;
-		for (j = 0; j < simulatorObjects[editExistingObject].stageConditions[i].conditions.length; j++) {
-			var tempVarName2 = simulatorObjects[editExistingObject].stageConditions[i].conditions[j].varName2;
-			if (tempVarName2 == "") {
-				sentence = sentence + "if [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].varName
-					+ "] [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].condition
-					+ "] [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].value + "] ";
-			} else {
-				sentence = sentence + "if [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].varName
-					+ "] [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].condition
-					+ "] [" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].varName2 + "] ";
-			}
-			if (j < simulatorObjects[editExistingObject].stageConditions[i].conditions.length - 1) {
-				sentence = sentence + "AND ";
+	let indexCount = 0, item, label, sentence, button, icon
+	var simulatorObjectName = simulatorObjects[editExistingObject].name;
+	let k = 0;
+	for (k = 0; k < simulatorObjects.length; k++){
+		if (simulatorObjects[k].name == simulatorObjectName){
+			for (i = 0; i < simulatorObjects[k].stageConditions.length; i++) {
+				item = $('<div>').addClass('div-list-item')
+				label = $('<div>').addClass('ui grey expanding label')
+				sentence = "in stage " + simulatorObjects[k].stageConditions[i].oldStage + ", ";
+				let j = 0;
+				for (j = 0; j < simulatorObjects[k].stageConditions[i].conditions.length; j++) {
+					var tempVarName2 = simulatorObjects[k].stageConditions[i].conditions[j].varName2;
+					if (tempVarName2 == "") {
+						sentence = sentence + "if [" + simulatorObjects[k].stageConditions[i].conditions[j].varName
+							+ "] [" + simulatorObjects[k].stageConditions[i].conditions[j].condition
+							+ "] [" + simulatorObjects[k].stageConditions[i].conditions[j].value + "] ";
+					} else {
+						sentence = sentence + "if [" + simulatorObjects[k].stageConditions[i].conditions[j].varName
+							+ "] [" + simulatorObjects[k].stageConditions[i].conditions[j].condition
+							+ "] [" + simulatorObjects[k].stageConditions[i].conditions[j].varName2 + "] ";
+					}
+					if (j < simulatorObjects[k].stageConditions[i].conditions.length - 1) {
+						sentence = sentence + "AND ";
+					}
+				}
+				sentence = sentence + "go to stage " + simulatorObjects[k].stageConditions[i].newStage;
+				label.append($('<label>').text(sentence).css('max-width', '95%'))
+
+				button = $('<a>').addClass('ui opaque right floated')
+				icon = $('<i>').addClass('inverted delete icon').attr('name', indexCount).click(function () {
+					RemoveStageConditionFromList($(this).attr('name'));
+				}
+				)
+
+				button.append(icon)
+				label.append(button)
+				item.append(label)
+				panel.append(item)
+				
+				indexCount++;
 			}
 		}
-		sentence = sentence + "go to stage " + simulatorObjects[editExistingObject].stageConditions[i].newStage;
-		label.append($('<label>').text(sentence).css('max-width', '95%'))
-
-		button = $('<a>').addClass('ui opaque right floated')
-		icon = $('<i>').addClass('inverted delete icon').attr('name', i).click(function () {
-			RemoveStageConditionFromList($(this).attr('name'));
-		}
-		)
-
-		button.append(icon)
-		label.append(button)
-		item.append(label)
-		panel.append(item)
 	}
-
 }
 
 /*	AddEndConditionToSubList()
@@ -4666,7 +4691,22 @@ function AddEndConditionToList() {
 	- In prompt, remove end condition from list.
 */
 function RemoveEndConditionFromList(btn_name) {
-	simulatorObjects[editExistingObject].endConditions.splice(btn_name, 1);
+	console.log("Removing end condition : " + btn_name);
+	
+	var indexCount = 0;
+	var simulatorObjectName = simulatorObjects[editExistingObject].name;
+	let k = 0;
+	for (k = 0; k < simulatorObjects.length; k++){
+		if (simulatorObjects[k].name == simulatorObjectName){
+			let i = 0;
+			for (i = 0; i < simulatorObjects[k].endConditions.length; i++) {
+				if (indexCount == btn_name){
+					simulatorObjects[k].endConditions.splice(i, 1);
+				}
+				indexCount++;
+			}
+		}
+	}
 
 	ResetEndConditionList()
 
@@ -4717,40 +4757,49 @@ function RemoveEndConditionFromList(btn_name) {
 function ResetEndConditionList() {
 	let panel = $('#modalEndConditionsPanel')
 	panel.empty()
-	let i = 0, item, label, sentence, button, icon
-	for (i = 0; i < simulatorObjects[editExistingObject].endConditions.length; i++) {
-		item = $('<div>').addClass('div-list-item')
-		label = $('<div>').addClass('ui grey expanding label')
-		sentence = "in stage " + simulatorObjects[editExistingObject].endConditions[i].oldStage + ", ";
-		let j = 0;
-		for (j = 0; j < simulatorObjects[editExistingObject].endConditions[i].conditions.length; j++) {
-			var tempVarName2 = simulatorObjects[editExistingObject].endConditions[i].conditions[j].varName2;
-			if (tempVarName2 == "") {
-				sentence = sentence + "if [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].varName
-					+ "] [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].condition
-					+ "] [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].value + "] ";
-			} else {
-				sentence = sentence + "if [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].varName
-					+ "] [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].condition
-					+ "] [" + simulatorObjects[editExistingObject].endConditions[i].conditions[j].varName2 + "] ";
-			}
-			if (j < simulatorObjects[editExistingObject].endConditions[i].conditions.length - 1) {
-				sentence = sentence + "AND ";
+	let indexCount = 0, item, label, sentence, button, icon
+	var simulatorObjectName = simulatorObjects[editExistingObject].name;
+	let k = 0;
+	for (k = 0; k < simulatorObjects.length; k++){
+		if (simulatorObjects[k].name == simulatorObjectName){
+			let i = 0;
+			for (i = 0; i < simulatorObjects[k].endConditions.length; i++) {
+				item = $('<div>').addClass('div-list-item')
+				label = $('<div>').addClass('ui grey expanding label')
+				sentence = "End system , ";
+				let j = 0;
+				for (j = 0; j < simulatorObjects[k].endConditions[i].conditions.length; j++) {
+					var tempVarName2 = simulatorObjects[k].endConditions[i].conditions[j].varName2;
+					if (tempVarName2 == "") {
+						sentence = sentence + "if [" + simulatorObjects[k].endConditions[i].conditions[j].varName
+							+ "] [" + simulatorObjects[k].endConditions[i].conditions[j].condition
+							+ "] [" + simulatorObjects[k].endConditions[i].conditions[j].value + "] ";
+					} else {
+						sentence = sentence + "if [" + simulatorObjects[k].endConditions[i].conditions[j].varName
+							+ "] [" + simulatorObjects[k].endConditions[i].conditions[j].condition
+							+ "] [" + simulatorObjects[k].endConditions[i].conditions[j].varName2 + "] ";
+					}
+					if (j < simulatorObjects[k].endConditions[i].conditions.length - 1) {
+						sentence = sentence + "AND ";
+					}
+				}
+				sentence = sentence + "then end simulation system.";
+				label.append($('<label>').text(sentence).css('max-width', '95%'))
+
+				button = $('<a>').addClass('ui opaque right floated')
+				icon = $('<i>').addClass('inverted  delete icon').attr('name', indexCount).click(function () {
+					RemoveEndConditionFromList($(this).attr('name'));
+				}
+				)
+
+				button.append(icon)
+				label.append(button)
+				item.append(label)
+				panel.append(item)
+				
+				indexCount++;
 			}
 		}
-		sentence = sentence + "then end simulation system.";
-		label.append($('<label>').text(sentence).css('max-width', '95%'))
-
-		button = $('<a>').addClass('ui opaque right floated')
-		icon = $('<i>').addClass('inverted  delete icon').attr('name', i).click(function () {
-			RemoveEndConditionFromList($(this).attr('name'));
-		}
-		)
-
-		button.append(icon)
-		label.append(button)
-		item.append(label)
-		panel.append(item)
 	}
 }
 
@@ -5469,17 +5518,23 @@ function WriteWrapperConfigFiles() {
 							timestepMul: parseInt(simulatorObjects[j].timeScale),
 							timestepVarDelta: simulatorObjects[j].timeVarDelta
 						});
-					initializeChannels.push(
+					if (simulatorObjects[j].initialize != "" && simulatorObjects[j].initialize != '""' 
+						&& simulatorObjects[j].initialize != "''"){
+						initializeChannels.push(
 						{
 							functionName: simulatorObjects[j].initialize,
 							stage: parseInt(simulatorObjects[j].stage)
 						});
-					simulateChannels.push(
+					}
+					if (simulatorObjects[j].simulate != "" && simulatorObjects[j].simulate != '""'
+						&& simulatorObjects[j].simulate != "''"){
+						simulateChannels.push(
 						{
 							functionName: simulatorObjects[j].simulate,
 							timestepDelta: parseInt(simulatorObjects[j].simulateTimeDelta),
 							stage: parseInt(simulatorObjects[j].stage)
 						});
+					}
 					errorLocation = 2;
 					console.log("preparing for sim " + j + ", has name " + simulatorObjects[j].name);
 					let k = 0;
