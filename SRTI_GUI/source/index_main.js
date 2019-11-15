@@ -379,7 +379,10 @@ function UpdateSelectedStage(btn_id) {
 	for (i = 0; i < numOfStages; i++) {
 		button = $('<a>').addClass('ui item').attr('name', i).text(i)
 		button.click(function () {
+			//TODO: check all this.attr
+			// console.log(this)
 			stage = parseInt(this.name)
+			// console.log('stage' + stage)
 			UpdateSelectedStage(stage)
 		})
 
@@ -445,10 +448,10 @@ function SetItemsVisibleInStage() {
 
 	let i = 0;
 	for (i = 0; i < simulatorObjects.length; i++) {
-		console.log("SetItemsVisibleInStage(), i = " + i
-			+ " simulatorObjects.name = " + simulatorObjects[i].name
-			+ " objectRef = " + simulatorObjects[i].objectRef
-			+ " objectRef.style = " + simulatorObjects[i].objectRef.style);
+		// console.log("SetItemsVisibleInStage(), i = " + i
+		// 	+ " simulatorObjects.name = " + simulatorObjects[i].name
+		// 	+ " objectRef = " + simulatorObjects[i].objectRef
+		// 	+ " objectRef.style = " + simulatorObjects[i].objectRef.style);
 		if (simulatorObjects[i].stage == stage) {
 			simulatorObjects[i].objectRef.style.visibility = 'visible';
 		} else {
@@ -608,6 +611,8 @@ function DeleteItemFromCanvas(e) {
 		messageObjects.splice(clickedOnItem, 1);
 		MoveMessagesOnCanvasUpOne(clickedOnItem);
 		UpdateDrawArrowsAfterDelete(-1, clickedOnItem);
+		console.log(34 + (42 * $('.div-canvas-message').length))
+		$('.div-canvas-server').height(Math.max(160, -8 + (42 * $('.div-canvas-message').length)))
 		return;
 	}
 
@@ -2886,6 +2891,7 @@ function CreateNewMessageOnCanvas(btn_id) {
 	var addContent1 = document.createTextNode(listOfMessages[btn_id].name);
 	addContentType.appendChild(addContent1);
 	addContentType.style = "position: absolute; overflow-y:hidden;" + "left:100px; top:" + (10 + (42 * listOfCurrentItems.length)) + "px;";
+	$('.div-canvas-server').height(Math.max(160, 34 + (42 * listOfCurrentItems.length)))
 	panel.appendChild(addContentType);
 	messageObjects.push({ name: listOfMessages[btn_id].name, original: listOfMessages[btn_id], objectRef: addContentType });
 	DisableCertainObjectButtons();
@@ -2906,6 +2912,7 @@ function CreateExistingMessageOnCanvas(message_id) {
 	addContentType.appendChild(addContent1);
 	addContentType.style = "position: absolute; overflow-y:hidden;" + "left:100px; top:"
 		+ (10 + (42 * listOfCurrentItems.length)) + "px;";
+		$('.div-canvas-server').height(Math.max(160, 34 + (42 * listOfCurrentItems.length)))
 	panel.appendChild(addContentType);
 	messageObjects[i].objectRef = addContentType;
 }
@@ -3081,6 +3088,8 @@ function CloseEditServer() {
 function EditSimulateFunctions() {
 	DisplayOrClosePrompt("modalSimulateFunctions", "block");
 
+	console.log('index ' + editExistingObject)
+
 	let dropdown = $('#dropdownInitializeFunction .menu')
 	dropdown.empty()
 
@@ -3096,7 +3105,7 @@ function EditSimulateFunctions() {
 	item.attr('data-value', "''")
 
 	dropdown.append(item)
-	$('#dropdownSimulateFunction').dropdown('set selected', simulatorObjects[editExistingObject].initialize)
+	$('#dropdownInitializeFunction').dropdown().dropdown('set selected', simulatorObjects[editExistingObject].initialize)
 
 
 
@@ -3132,7 +3141,7 @@ function EditSimulateFunctions() {
 	item.attr('data-value', "''")
 	dropdown.append(item)
 
-	$('#dropdownSimulateFunction').dropdown('set selected', simulatorObjects[editExistingObject].simulate)
+	$('#dropdownSimulateFunction').dropdown().dropdown('set selected', simulatorObjects[editExistingObject].simulate)
 
 	$('input[name="SimulateFunctionTimestepDelta"]').val(simulatorObjects[editExistingObject].simulateTimeDelta)
 
@@ -4233,8 +4242,8 @@ function ResetStageConditionSubList() {
 		}
 		label.append($('<label>').text(text).css('max-width', '95%'))
 		button = $('<a>').addClass('ui opaque right floated')
-		icon = $('<i>').addClass('inverted  delete icon').click(function () {
-			RemoveStageConditionFromSubList(this.name);
+		icon = $('<i>').addClass('inverted delete icon').attr('name', i).click(function () {
+			RemoveStageConditionFromSubList($(this).attr('name'));
 		}
 		)
 
@@ -4340,6 +4349,7 @@ function AddStageConditionToList() {
 	- In prompt, remove stage condition set from final list.
 */
 function RemoveStageConditionFromList(btn_name) {
+	console.log('deleting' + btn_name)
 	simulatorObjects[editExistingObject].stageConditions.splice(btn_name, 1);
 
 	ResetStageConditionList()
@@ -4418,8 +4428,8 @@ function ResetStageConditionList() {
 		label.append($('<label>').text(sentence).css('max-width', '95%'))
 
 		button = $('<a>').addClass('ui opaque right floated')
-		icon = $('<i>').addClass('inverted  delete icon').click(function () {
-			RemoveStageConditionFromList(this.name);
+		icon = $('<i>').addClass('inverted delete icon').attr('name', i).click(function () {
+			RemoveStageConditionFromList($(this).attr('name'));
 		}
 		)
 
@@ -4550,8 +4560,8 @@ function ResetEndConditionSubList() {
 		}
 		label.append($('<label>').text(text).css('max-width', '95%'))
 		button = $('<a>').addClass('ui opaque right floated')
-		icon = $('<i>').addClass('inverted  delete icon').click(function () {
-			RemoveStageConditionFromSubList(this.name);
+		icon = $('<i>').addClass('inverted  delete icon').attr('name', i).click(function () {
+			RemoveEndConditionFromSubList($(this).attr('name'));
 		}
 		)
 
@@ -4732,8 +4742,8 @@ function ResetEndConditionList() {
 		label.append($('<label>').text(sentence).css('max-width', '95%'))
 
 		button = $('<a>').addClass('ui opaque right floated')
-		icon = $('<i>').addClass('inverted  delete icon').click(function () {
-			RemoveStageConditionFromList(this.name);
+		icon = $('<i>').addClass('inverted  delete icon').attr('name', i).click(function () {
+			RemoveEndConditionFromList($(this).attr('name'));
 		}
 		)
 
@@ -5459,23 +5469,17 @@ function WriteWrapperConfigFiles() {
 							timestepMul: parseInt(simulatorObjects[j].timeScale),
 							timestepVarDelta: simulatorObjects[j].timeVarDelta
 						});
-					if (simulatorObjects[j].initialize != "" && simulatorObjects[j].initialize != '""' 
-						&& simulatorObjects[j].initialize != "''"){
-						initializeChannels.push(
-							{
-								functionName: simulatorObjects[j].initialize,
-								stage: parseInt(simulatorObjects[j].stage)
-							});
-					}
-					if (simulatorObjects[j].simulate != "" && simulatorObjects[j].simulate != '""'
-						&& simulatorObjects[j].simulate != "''"){
-						simulateChannels.push(
-							{
-								functionName: simulatorObjects[j].simulate,
-								timestepDelta: parseInt(simulatorObjects[j].simulateTimeDelta),
-								stage: parseInt(simulatorObjects[j].stage)
-							});
-					}
+					initializeChannels.push(
+						{
+							functionName: simulatorObjects[j].initialize,
+							stage: parseInt(simulatorObjects[j].stage)
+						});
+					simulateChannels.push(
+						{
+							functionName: simulatorObjects[j].simulate,
+							timestepDelta: parseInt(simulatorObjects[j].simulateTimeDelta),
+							stage: parseInt(simulatorObjects[j].stage)
+						});
 					errorLocation = 2;
 					console.log("preparing for sim " + j + ", has name " + simulatorObjects[j].name);
 					let k = 0;
@@ -5964,7 +5968,12 @@ function HandleRTIInputData(data) {
 	// How should we display system-wide messages to the user?
 
 	// example test to get a specific part of the message:
-	var obj = JSON.parse(data);
+	var obj
+	try {
+		obj = JSON.parse(data)
+	} catch (err) {
+		console.log(data)
+	}
 	var step = obj.vTimestamp;
 	var textConsoleLastAction = document.getElementById("TextConsoleLastAction");
 	textConsoleLastAction.innerHTML = "Step = " + step + " . Full RTI Message: " + data;
@@ -5979,7 +5988,7 @@ function HandleRTIInputData(data) {
 
 	UpdateStepAndStage(step, stage);
 
-	UpdateInspectorPanelMessage(data);
+	UpdateInspectorPanelMessage(data, step, stage);
 
 	UpdateSimExecutionColor(data);
 
@@ -5996,9 +6005,10 @@ function UpdateStepAndStage(step, stage) {
 
 var receivedMessageBuffer = [];
 var receivedMessageBufferLength = 6;
-function UpdateInspectorPanelMessage(data) {
+function UpdateInspectorPanelMessage(data, step, stage) {
 	// keep track of most recent 6 messages received
 
+	//TODO: why
 	if (receivedMessageBuffer.length < receivedMessageBufferLength) {
 		receivedMessageBuffer = [];
 		let i = 0;
@@ -6014,33 +6024,133 @@ function UpdateInspectorPanelMessage(data) {
 
 	receivedMessageBuffer.push({ name: objName, message: data });
 
-	UpdateInspectorPanelMessageObjects("(message content here)");
+	//TODO optimize logic
+
+	UpdateInspectorPanelMessageObjects("(message content here)", step, stage);
 }
 
-function UpdateInspectorPanelMessageObjects(message) {
-	var inspectorPanel = document.getElementById("inspectorpanel");
-	while (inspectorPanel.firstChild) {
-		inspectorPanel.removeChild(inspectorPanel.firstChild);
-	}
+function UpdateInspectorPanelMessageObjects(message, step, stage) {
+	let panel = $('#inspectorpanel')
+	panel.empty()
 
-	var inspectorPanelString = "";
-	for (i = 0; i < receivedMessageBufferLength; i++) {
+	let header = $('<div>').addClass('ui compact segment')
+	header.append($('<h3>').text('Simulation in Execution'))
+
+	let div = $('<div>').addClass('ui tiny horizontal statistics')
+	let statistic = $('<div>').addClass('ui horizontal statistic')
+	statistic.append($('<div>').addClass('label').html('Stage&nbsp;&nbsp;'))
+	statistic.append($('<div>').addClass('value').text(stage))
+
+	div.append(statistic)
+
+	statistic = $('<div>').addClass('ui horizontal statistic')
+	statistic.append($('<div>').addClass('label').html('Step&nbsp;&nbsp;'))
+	statistic.append($('<div>').addClass('value').text(step))
+	div.append(statistic)
+
+	header.append(div)
+
+
+	let content = $('<div>').addClass('ui compact segment')
+
+	let menu = $('<div>').addClass('ui two item top attached menu')
+	let item = $('<a>').addClass('active item').text('Feed').attr('data-tab', 'feed')
+	// item.prepend($('<i>').addClass('calendar alternative outline icon'))
+	menu.append(item)
+	item = $('<a>').addClass('item').text('History').attr('data-tab', 'history')
+	// item.prepend($('<i>').addClass('archive icon'))
+	menu.append(item)
+
+
+
+	let treebox = $('<div>').addClass('ui active tab bottom attached treemenu boxed').attr('data-tab', 'feed')
+	let accordion = $('<div>').addClass('ui styled fluid accordion')
+
+
+	var inspectorPanelString = ""; //TODO: what is this for
+	let i = 0, title, messageContent, contentAccordion, subtitle, subcontent
+	for (; i < receivedMessageBufferLength; i++) {
 		inspectorPanelString = inspectorPanelString + receivedMessageBuffer[i].name + ", " + "<br>";
 
-		var addContentType = document.createElement("button");
-		addContentType.style = "width: 100%; height: 40px; padding: 8px;";
-		addContentType.innerHTML = receivedMessageBuffer[i].name;
-		addContentType.name = receivedMessageBuffer[i].message;
-		addContentType.onclick = function () {
-			UpdateInspectorPanelMessageContent(this.name);
-		};
-		inspectorPanel.appendChild(addContentType);
+		title = $('<div>').addClass('break-word title').text(receivedMessageBuffer[i].name)
+		messageContent = $('<div>').addClass('content')
+		//TODO: parsing errors
+		if (receivedMessageBuffer[i].message == 'N/A') {
+			messageContent.append($('<p>').addClass('break-word').text('N/A'))
+		} else {
+			parsedMessage = JSON.parse(receivedMessageBuffer[i].message)
+			console.log(parsedMessage)
+			contentAccordion = $('<div>').addClass('accordion')
+			for (entry in parsedMessage) {
+				subtitle = $('<div>').addClass('break-word title').text(entry)
+				subtitle.prepend($('<i>').addClass('dropdown icon'))
+				subcontent = $('<div>').addClass('content')
+				subcontent.append($('<p>').addClass('break-word').text(parsedMessage[entry]))
+
+				contentAccordion.append(subtitle)
+				contentAccordion.append(subcontent)
+			}
+
+			messageContent.append(contentAccordion)
+
+		}
+
+		accordion.append(title)
+		accordion.append(messageContent)
+
+
 	}
-	var addContentType = document.createElement("div");
-	// unable to give 'div' a name? Makes it much harder to reference/update later...
-	addContentType.style = "width: 100%; height: 40px; padding: 4px;";
-	addContentType.innerHTML = message;
-	inspectorPanel.appendChild(addContentType);
+
+	treebox.append(accordion)
+
+	let history = $('<div>').addClass('ui tab bottom attached segment').attr('data-tab', 'history')
+	let placeholder = $('<div>').addClass('ui placeholder')
+	let imageHeader = $('<div>').addClass('image header')
+	imageHeader.append($('<div>').addClass('line'))
+	imageHeader.append($('<div>').addClass('line'))
+	let paragraph = $('<div>').addClass('paragraph')
+	paragraph.append($('<div>').addClass('medium line'))
+	paragraph.append($('<div>').addClass('short line'))
+	placeholder.append(imageHeader)
+	placeholder.append(paragraph)
+	history.append(placeholder)
+
+	content.append(menu)
+	content.append(treebox)
+	content.append(history)
+
+
+	panel.append(header)
+	panel.append(content)
+
+	accordion.accordion({ exclusive: false })
+	menu.find('.item').tab()
+
+
+
+	// var inspectorPanel = document.getElementById("inspectorpanel");
+	// while (inspectorPanel.firstChild) {
+	// 	inspectorPanel.removeChild(inspectorPanel.firstChild);
+	// }
+
+	// var inspectorPanelString = "";
+	// for (i = 0; i < receivedMessageBufferLength; i++) {
+	// 	inspectorPanelString = inspectorPanelString + receivedMessageBuffer[i].name + ", " + "<br>";
+
+	// 	var addContentType = document.createElement("button");
+	// 	addContentType.style = "width: 100%; height: 40px; padding: 8px;";
+	// 	addContentType.innerHTML = receivedMessageBuffer[i].name;
+	// 	addContentType.name = receivedMessageBuffer[i].message;
+	// 	addContentType.onclick = function () {
+	// 		UpdateInspectorPanelMessageContent(this.name);
+	// 	};
+	// 	inspectorPanel.appendChild(addContentType);
+	// }
+	// var addContentType = document.createElement("div");
+	// // unable to give 'div' a name? Makes it much harder to reference/update later...
+	// addContentType.style = "width: 100%; height: 40px; padding: 4px;";
+	// addContentType.innerHTML = message;
+	// inspectorPanel.appendChild(addContentType);
 }
 
 function UpdateInspectorPanelMessageContent(message) {
@@ -6050,7 +6160,7 @@ function UpdateInspectorPanelMessageContent(message) {
 }
 
 function UpdateSimExecutionColor(message) {
-	var obj = JSON.parse(data);
+	var obj = JSON.parse(message);
 	if (obj.name == "RTI_StartStep") {
 
 	} else if (obj.name == "RTI_FinishStep") {
