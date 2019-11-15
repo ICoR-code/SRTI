@@ -5459,17 +5459,23 @@ function WriteWrapperConfigFiles() {
 							timestepMul: parseInt(simulatorObjects[j].timeScale),
 							timestepVarDelta: simulatorObjects[j].timeVarDelta
 						});
-					initializeChannels.push(
-						{
-							functionName: simulatorObjects[j].initialize,
-							stage: parseInt(simulatorObjects[j].stage)
-						});
-					simulateChannels.push(
-						{
-							functionName: simulatorObjects[j].simulate,
-							timestepDelta: parseInt(simulatorObjects[j].simulateTimeDelta),
-							stage: parseInt(simulatorObjects[j].stage)
-						});
+					if (simulatorObjects[j].initialize != "" && simulatorObjects[j].initialize != '""' 
+						&& simulatorObjects[j].initialize != "''"){
+						initializeChannels.push(
+							{
+								functionName: simulatorObjects[j].initialize,
+								stage: parseInt(simulatorObjects[j].stage)
+							});
+					}
+					if (simulatorObjects[j].simulate != "" && simulatorObjects[j].simulate != '""'
+						&& simulatorObjects[j].simulate != "''"){
+						simulateChannels.push(
+							{
+								functionName: simulatorObjects[j].simulate,
+								timestepDelta: parseInt(simulatorObjects[j].simulateTimeDelta),
+								stage: parseInt(simulatorObjects[j].stage)
+							});
+					}
 					errorLocation = 2;
 					console.log("preparing for sim " + j + ", has name " + simulatorObjects[j].name);
 					let k = 0;
