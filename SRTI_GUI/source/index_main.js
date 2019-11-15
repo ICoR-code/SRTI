@@ -379,7 +379,10 @@ function UpdateSelectedStage(btn_id) {
 	for (i = 0; i < numOfStages; i++) {
 		button = $('<a>').addClass('ui item').attr('name', i).text(i)
 		button.click(function () {
+			//TODO: check all this.attr
+			// console.log(this)
 			stage = parseInt(this.name)
+			// console.log('stage' + stage)
 			UpdateSelectedStage(stage)
 		})
 
@@ -445,10 +448,10 @@ function SetItemsVisibleInStage() {
 
 	let i = 0;
 	for (i = 0; i < simulatorObjects.length; i++) {
-		console.log("SetItemsVisibleInStage(), i = " + i
-			+ " simulatorObjects.name = " + simulatorObjects[i].name
-			+ " objectRef = " + simulatorObjects[i].objectRef
-			+ " objectRef.style = " + simulatorObjects[i].objectRef.style);
+		// console.log("SetItemsVisibleInStage(), i = " + i
+		// 	+ " simulatorObjects.name = " + simulatorObjects[i].name
+		// 	+ " objectRef = " + simulatorObjects[i].objectRef
+		// 	+ " objectRef.style = " + simulatorObjects[i].objectRef.style);
 		if (simulatorObjects[i].stage == stage) {
 			simulatorObjects[i].objectRef.style.visibility = 'visible';
 		} else {
@@ -3096,7 +3099,7 @@ function EditSimulateFunctions() {
 	item.attr('data-value', "''")
 
 	dropdown.append(item)
-	$('#dropdownSimulateFunction').dropdown('set selected', simulatorObjects[editExistingObject].initialize)
+	$('#dropdownInitializeFunction').dropdown('set selected', simulatorObjects[editExistingObject].initialize)
 
 
 
@@ -4233,8 +4236,8 @@ function ResetStageConditionSubList() {
 		}
 		label.append($('<label>').text(text).css('max-width', '95%'))
 		button = $('<a>').addClass('ui opaque right floated')
-		icon = $('<i>').addClass('inverted  delete icon').click(function () {
-			RemoveStageConditionFromSubList(this.name);
+		icon = $('<i>').addClass('inverted  delete icon').attr('name', i).click(function () {
+			RemoveStageConditionFromSubList($(this).attr('name'));
 		}
 		)
 
@@ -4340,6 +4343,7 @@ function AddStageConditionToList() {
 	- In prompt, remove stage condition set from final list.
 */
 function RemoveStageConditionFromList(btn_name) {
+	console.log('deleting' + btn_name)
 	simulatorObjects[editExistingObject].stageConditions.splice(btn_name, 1);
 
 	ResetStageConditionList()
@@ -4418,8 +4422,8 @@ function ResetStageConditionList() {
 		label.append($('<label>').text(sentence).css('max-width', '95%'))
 
 		button = $('<a>').addClass('ui opaque right floated')
-		icon = $('<i>').addClass('inverted  delete icon').click(function () {
-			RemoveStageConditionFromList(this.name);
+		icon = $('<i>').addClass('inverted delete icon').attr('name', i).click(function () {
+			RemoveStageConditionFromList($(this).attr('name'));
 		}
 		)
 
@@ -4550,8 +4554,8 @@ function ResetEndConditionSubList() {
 		}
 		label.append($('<label>').text(text).css('max-width', '95%'))
 		button = $('<a>').addClass('ui opaque right floated')
-		icon = $('<i>').addClass('inverted  delete icon').click(function () {
-			RemoveStageConditionFromSubList(this.name);
+		icon = $('<i>').addClass('inverted  delete icon').attr('name', i).click(function () {
+			RemoveEndConditionFromSubList($(this).attr('name'));
 		}
 		)
 
@@ -4732,8 +4736,8 @@ function ResetEndConditionList() {
 		label.append($('<label>').text(sentence).css('max-width', '95%'))
 
 		button = $('<a>').addClass('ui opaque right floated')
-		icon = $('<i>').addClass('inverted  delete icon').click(function () {
-			RemoveStageConditionFromList(this.name);
+		icon = $('<i>').addClass('inverted  delete icon').attr('name', i).click(function () {
+			RemoveEndConditionFromList($(this).attr('name'));
 		}
 		)
 
@@ -5973,7 +5977,7 @@ function HandleRTIInputData(data) {
 
 	UpdateStepAndStage(step, stage);
 
-	UpdateInspectorPanelMessage(data);
+	UpdateInspectorPanelMessage(data, step, stage);
 
 	UpdateSimExecutionColor(data);
 
@@ -5990,9 +5994,10 @@ function UpdateStepAndStage(step, stage) {
 
 var receivedMessageBuffer = [];
 var receivedMessageBufferLength = 6;
-function UpdateInspectorPanelMessage(data) {
+function UpdateInspectorPanelMessage(data, step, stage) {
 	// keep track of most recent 6 messages received
 
+	//TODO: why
 	if (receivedMessageBuffer.length < receivedMessageBufferLength) {
 		receivedMessageBuffer = [];
 		let i = 0;
@@ -6008,33 +6013,106 @@ function UpdateInspectorPanelMessage(data) {
 
 	receivedMessageBuffer.push({ name: objName, message: data });
 
-	UpdateInspectorPanelMessageObjects("(message content here)");
+	//TODO optimize logic
+
+	UpdateInspectorPanelMessageObjects("(message content here)", step, stage);
 }
 
-function UpdateInspectorPanelMessageObjects(message) {
-	var inspectorPanel = document.getElementById("inspectorpanel");
-	while (inspectorPanel.firstChild) {
-		inspectorPanel.removeChild(inspectorPanel.firstChild);
-	}
+function UpdateInspectorPanelMessageObjects(message, step, stage) {
+	let panel = $('#inspectorpanel')
+	panel.empty()
 
-	var inspectorPanelString = "";
-	for (i = 0; i < receivedMessageBufferLength; i++) {
+	let header = $('<div>').addClass('ui compact segment')
+	header.append($('<h3>').text('Simulation in Execution'))
+
+	let div = $('<div>').addClass('ui tiny horizontal statistics')
+	let statistic = $('<div>').addClass('ui horizontal statistic')
+	statistic.append($('<div>').addClass('label').html('Stage&nbsp;&nbsp;'))
+	statistic.append($('<div>').addClass('value').text(stage))
+
+	div.append(statistic)
+
+	statistic = $('<div>').addClass('ui horizontal statistic')
+	statistic.append($('<div>').addClass('label').html('Step&nbsp;&nbsp;'))
+	statistic.append($('<div>').addClass('value').text(step))
+	div.append(statistic)
+
+	header.append(div)
+
+
+	let content = $('<div>').addClass('ui compact segment')
+	let treebox = $('<div>').addClass('treemenu boxed')
+	let accordion = $('<div>').addClass('ui styled fluid accordion')
+
+
+	var inspectorPanelString = ""; //TODO: what is this for
+	let i = 0, title, messageContent, contentAccordion, subtitle, subcontent
+	for (; i < receivedMessageBufferLength; i++) {
 		inspectorPanelString = inspectorPanelString + receivedMessageBuffer[i].name + ", " + "<br>";
 
-		var addContentType = document.createElement("button");
-		addContentType.style = "width: 100%; height: 40px; padding: 8px;";
-		addContentType.innerHTML = receivedMessageBuffer[i].name;
-		addContentType.name = receivedMessageBuffer[i].message;
-		addContentType.onclick = function () {
-			UpdateInspectorPanelMessageContent(this.name);
-		};
-		inspectorPanel.appendChild(addContentType);
+		title = $('<div>').addClass('break-word title').text(receivedMessageBuffer[i].name)
+		messageContent = $('<div>').addClass('content')
+		//TODO: parsing errors
+		if (receivedMessageBuffer[i].message == 'N/A') {
+			messageContent.append($('<p>').addClass('break-word').text('N/A'))
+		} else {
+			parsedMessage = JSON.parse(receivedMessageBuffer[i].message)
+			console.log(parsedMessage)
+			contentAccordion = $('<div>').addClass('accordion')
+			for (entry in parsedMessage) {
+				subtitle = $('<div>').addClass('break-word title').text(entry)
+				subtitle.prepend($('<i>').addClass('dropdown icon'))
+				subcontent = $('<div>').addClass('content')
+				subcontent.append($('<p>').addClass('break-word').text(parsedMessage[entry]))
+
+				contentAccordion.append(subtitle)
+				contentAccordion.append(subcontent)
+			}
+
+			messageContent.append(contentAccordion)
+
+		}
+
+		accordion.append(title)
+		accordion.append(messageContent)
+
+
 	}
-	var addContentType = document.createElement("div");
-	// unable to give 'div' a name? Makes it much harder to reference/update later...
-	addContentType.style = "width: 100%; height: 40px; padding: 4px;";
-	addContentType.innerHTML = message;
-	inspectorPanel.appendChild(addContentType);
+
+	treebox.append(accordion)
+
+	content.append(treebox)
+
+	panel.append(header)
+	panel.append(content)
+
+	accordion.accordion({ exclusive: false })
+
+
+
+	// var inspectorPanel = document.getElementById("inspectorpanel");
+	// while (inspectorPanel.firstChild) {
+	// 	inspectorPanel.removeChild(inspectorPanel.firstChild);
+	// }
+
+	// var inspectorPanelString = "";
+	// for (i = 0; i < receivedMessageBufferLength; i++) {
+	// 	inspectorPanelString = inspectorPanelString + receivedMessageBuffer[i].name + ", " + "<br>";
+
+	// 	var addContentType = document.createElement("button");
+	// 	addContentType.style = "width: 100%; height: 40px; padding: 8px;";
+	// 	addContentType.innerHTML = receivedMessageBuffer[i].name;
+	// 	addContentType.name = receivedMessageBuffer[i].message;
+	// 	addContentType.onclick = function () {
+	// 		UpdateInspectorPanelMessageContent(this.name);
+	// 	};
+	// 	inspectorPanel.appendChild(addContentType);
+	// }
+	// var addContentType = document.createElement("div");
+	// // unable to give 'div' a name? Makes it much harder to reference/update later...
+	// addContentType.style = "width: 100%; height: 40px; padding: 4px;";
+	// addContentType.innerHTML = message;
+	// inspectorPanel.appendChild(addContentType);
 }
 
 function UpdateInspectorPanelMessageContent(message) {
@@ -6044,7 +6122,7 @@ function UpdateInspectorPanelMessageContent(message) {
 }
 
 function UpdateSimExecutionColor(message) {
-	var obj = JSON.parse(data);
+	var obj = JSON.parse(message);
 	if (obj.name == "RTI_StartStep") {
 
 	} else if (obj.name == "RTI_FinishStep") {
