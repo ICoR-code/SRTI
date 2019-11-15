@@ -604,3 +604,14 @@ label.padded {
 .ui.styled.accordion .accordion .content .subtitle.hide, .ui.styled.accordion .accordion .accordion .content .subtitle.hide, .ui.styled.accordion .content .subtitle.hide, .ui.styled.accordion .accordion .content .subtitle.hide {
     display: none;
 }
+
+.flipped {
+    direction: rtl;
+    transform: rotate(180deg);
+}
+
+.flipped .content {
+    direction: ltr;
+    transform: rotate(-180deg);
+    display: inline-block;
+}

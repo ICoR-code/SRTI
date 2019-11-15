@@ -611,6 +611,8 @@ function DeleteItemFromCanvas(e) {
 		messageObjects.splice(clickedOnItem, 1);
 		MoveMessagesOnCanvasUpOne(clickedOnItem);
 		UpdateDrawArrowsAfterDelete(-1, clickedOnItem);
+		console.log(34 + (42 * $('.div-canvas-message').length))
+		$('.div-canvas-server').height(Math.max(160, -8 + (42 * $('.div-canvas-message').length)))
 		return;
 	}
 
@@ -2889,6 +2891,7 @@ function CreateNewMessageOnCanvas(btn_id) {
 	var addContent1 = document.createTextNode(listOfMessages[btn_id].name);
 	addContentType.appendChild(addContent1);
 	addContentType.style = "position: absolute; overflow-y:hidden;" + "left:100px; top:" + (10 + (42 * listOfCurrentItems.length)) + "px;";
+	$('.div-canvas-server').height(Math.max(160, 34 + (42 * listOfCurrentItems.length)))
 	panel.appendChild(addContentType);
 	messageObjects.push({ name: listOfMessages[btn_id].name, original: listOfMessages[btn_id], objectRef: addContentType });
 	DisableCertainObjectButtons();
@@ -2909,6 +2912,7 @@ function CreateExistingMessageOnCanvas(message_id) {
 	addContentType.appendChild(addContent1);
 	addContentType.style = "position: absolute; overflow-y:hidden;" + "left:100px; top:"
 		+ (10 + (42 * listOfCurrentItems.length)) + "px;";
+		$('.div-canvas-server').height(Math.max(160, 34 + (42 * listOfCurrentItems.length)))
 	panel.appendChild(addContentType);
 	messageObjects[i].objectRef = addContentType;
 }
@@ -3084,6 +3088,8 @@ function CloseEditServer() {
 function EditSimulateFunctions() {
 	DisplayOrClosePrompt("modalSimulateFunctions", "block");
 
+	console.log('index ' + editExistingObject)
+
 	let dropdown = $('#dropdownInitializeFunction .menu')
 	dropdown.empty()
 
@@ -3099,7 +3105,7 @@ function EditSimulateFunctions() {
 	item.attr('data-value', "''")
 
 	dropdown.append(item)
-	$('#dropdownInitializeFunction').dropdown('set selected', simulatorObjects[editExistingObject].initialize)
+	$('#dropdownInitializeFunction').dropdown().dropdown('set selected', simulatorObjects[editExistingObject].initialize)
 
 
 
@@ -3135,7 +3141,7 @@ function EditSimulateFunctions() {
 	item.attr('data-value', "''")
 	dropdown.append(item)
 
-	$('#dropdownSimulateFunction').dropdown('set selected', simulatorObjects[editExistingObject].simulate)
+	$('#dropdownSimulateFunction').dropdown().dropdown('set selected', simulatorObjects[editExistingObject].simulate)
 
 	$('input[name="SimulateFunctionTimestepDelta"]').val(simulatorObjects[editExistingObject].simulateTimeDelta)
 
@@ -4236,7 +4242,7 @@ function ResetStageConditionSubList() {
 		}
 		label.append($('<label>').text(text).css('max-width', '95%'))
 		button = $('<a>').addClass('ui opaque right floated')
-		icon = $('<i>').addClass('inverted  delete icon').attr('name', i).click(function () {
+		icon = $('<i>').addClass('inverted delete icon').attr('name', i).click(function () {
 			RemoveStageConditionFromSubList($(this).attr('name'));
 		}
 		)
@@ -5962,7 +5968,12 @@ function HandleRTIInputData(data) {
 	// How should we display system-wide messages to the user?
 
 	// example test to get a specific part of the message:
-	var obj = JSON.parse(data);
+	var obj
+	try {
+		obj = JSON.parse(data)
+	} catch (err) {
+		console.log(data)
+	}
 	var step = obj.vTimestamp;
 	var textConsoleLastAction = document.getElementById("TextConsoleLastAction");
 	textConsoleLastAction.innerHTML = "Step = " + step + " . Full RTI Message: " + data;
@@ -6041,7 +6052,18 @@ function UpdateInspectorPanelMessageObjects(message, step, stage) {
 
 
 	let content = $('<div>').addClass('ui compact segment')
-	let treebox = $('<div>').addClass('treemenu boxed')
+
+	let menu = $('<div>').addClass('ui two item top attached menu')
+	let item = $('<a>').addClass('active item').text('Feed').attr('data-tab', 'feed')
+	// item.prepend($('<i>').addClass('calendar alternative outline icon'))
+	menu.append(item)
+	item = $('<a>').addClass('item').text('History').attr('data-tab', 'history')
+	// item.prepend($('<i>').addClass('archive icon'))
+	menu.append(item)
+
+
+
+	let treebox = $('<div>').addClass('ui active tab bottom attached treemenu boxed').attr('data-tab', 'feed')
 	let accordion = $('<div>').addClass('ui styled fluid accordion')
 
 
@@ -6081,12 +6103,28 @@ function UpdateInspectorPanelMessageObjects(message, step, stage) {
 
 	treebox.append(accordion)
 
+	let history = $('<div>').addClass('ui tab bottom attached segment').attr('data-tab', 'history')
+	let placeholder = $('<div>').addClass('ui placeholder')
+	let imageHeader = $('<div>').addClass('image header')
+	imageHeader.append($('<div>').addClass('line'))
+	imageHeader.append($('<div>').addClass('line'))
+	let paragraph = $('<div>').addClass('paragraph')
+	paragraph.append($('<div>').addClass('medium line'))
+	paragraph.append($('<div>').addClass('short line'))
+	placeholder.append(imageHeader)
+	placeholder.append(paragraph)
+	history.append(placeholder)
+
+	content.append(menu)
 	content.append(treebox)
+	content.append(history)
+
 
 	panel.append(header)
 	panel.append(content)
 
 	accordion.accordion({ exclusive: false })
+	menu.find('.item').tab()
 
 
 
