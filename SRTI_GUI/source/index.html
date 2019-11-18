@@ -41,7 +41,7 @@
 		Refer to https://www.kirupa.com/html5/drag.htm -->
 
 	<div class="container">
-		<div class="container">
+		<div class="splitter">
 			<div id="executepanel">
 				<div class="ui icon buttons">
 					<button class="ui grey button" name="select-state-buttons" id="btn-pointer"
@@ -54,8 +54,8 @@
 					<button class="ui button" name="select-state-buttons" id="btn-delete"
 						onclick="UpdateSelectedStateButtons(3)"><i class="times icon"></i></button>
 				</div>
-				&nbsp;&nbsp;
-				<div class="ui icon buttons">
+
+				<div class="ui icon buttons" id="buttons-simulation">
 					<button class="ui button" id="btn-start" onclick="StartSimulationSystem()"><i
 							class="power off icon"></i></button></button>
 					<button class="ui button" id="btn-play" onclick="PlaySimulationSystem()"><i
@@ -207,7 +207,7 @@
 				<div class="ten wide middle aligned column"><label>Simulator Name</label></div>
 				<div class="six wide column"><input type="text" name="NewSimName"></div>
 				<div class="ten wide middle aligned column"><label>Reference Name (inside code)</label></div>
-				<div class="six wide column"><input type="text" name="NewSimRef"></div>
+				<div class="six wide column"><input class="code" type="text" name="NewSimRef"></div>
 				<div class="ten wide middle aligned column"><label>Wrapper File Location</label></div>
 				<div class="six wide column"><button class="ui button"
 						onclick="document.getElementsByName('wrapperFileDir')[0].click()">Choose File
@@ -220,7 +220,7 @@
 				</div>
 				<div class="ten wide middle aligned column"><label>Execute Command (to launch Wrapper with Sim)</label>
 				</div>
-				<div class="six wide column"><input type="text" name="NewSimExecute"></div>
+				<div class="sixteen wide column"><input class="code" type="text" name="NewSimExecute"></div>
 			</div>
 		</div>
 		<div class="actions">
@@ -243,7 +243,7 @@
 							<div class="ui form">
 								<div class="field">
 									<label>Simulator Variable Name</label>
-									<input type="text" name="NewSimulatorObjectName"
+									<input class="code" type="text" name="NewSimulatorObjectName"
 										onkeyup="CheckEnableObjectToSimulatorDef()">
 								</div>
 								<div class="grouped fields">
@@ -340,7 +340,7 @@
 							<div class="ui form">
 								<div class="field">
 									<label>Simulator Function Name</label>
-									<input type="text" name="NewSimulatorFunctionName"
+									<input class="code" type="text" name="NewSimulatorFunctionName"
 										onkeyup="CheckEnableFunctionToSimulatorDef()">
 								</div>
 
@@ -544,7 +544,7 @@
 							<div class="ui form">
 								<div class="field">
 									<label>Message Object Name</label>
-									<input type="text" name="NewMessageObjectName"
+									<input class="code" type="text" name="NewMessageObjectName"
 										onkeyup="CheckEnableObjectToMessageDef()">
 								</div>
 								<div class="grouped fields">
@@ -666,7 +666,7 @@
 					<label class="padded" name="divTimeVarScale">Time Variable Multiplier</label></div>
 				<div class="six wide column">
 					<div class="ui selection dropdown" id="dropdownVar">
-						<input type="hidden" name="divTimeVarScale">
+						<input class="code" type="hidden" name="divTimeVarScale">
 						<i class="dropdown icon"></i>
 						<div class="default text">Pick Var</div>
 						<div class="menu">
