@@ -381,7 +381,7 @@ public class RTILib {
 					.add("name", name)
 					.add("content", content)
 					.add("timestamp", "" + timestamp)
-					.add("vTimestamp", vTimestamp)
+					.add("vTimestamp", "" + vTimestamp)
 					.add("source", simName)
 					.add("tcp", "" + tcpOn)
 					.build();

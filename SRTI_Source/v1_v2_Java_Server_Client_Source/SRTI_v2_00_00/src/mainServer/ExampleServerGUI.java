@@ -602,19 +602,19 @@ public class ExampleServerGUI extends JFrame implements RTISim{
 				//printLine(" Received message of name " + messageName + ", I'll use it!");
 				listApps_items.clear();
 				
-				updateNumConnected(rtiLib.getJsonArray(content).length);
-				for (int i = 0; i < rtiLib.getJsonArray(content).length; i++) {
+				updateNumConnected(rtiLib.getJsonArray(rtiLib.getJsonObject("subcontent",content)).length);
+				for (int i = 0; i < rtiLib.getJsonArray(rtiLib.getJsonObject("subcontent",content)).length; i++) {
 					ConnectedSim newSim = new ConnectedSim();
-					newSim.name = rtiLib.getStringNoQuotes(rtiLib.getJsonObject("name",rtiLib.getJsonArray(content)[i]));
+					newSim.name = rtiLib.getStringNoQuotes(rtiLib.getJsonObject("name",rtiLib.getJsonArray(rtiLib.getJsonObject("subcontent",content))[i]));
 					newSim.publishTo = new ArrayList<String>();
-					String publishToJson = rtiLib.getJsonObject("publishTo", rtiLib.getJsonArray(content)[i]).toString();
+					String publishToJson = rtiLib.getJsonObject("publishTo", rtiLib.getJsonArray(rtiLib.getJsonObject("subcontent",content))[i]).toString();
 					//printLine("PUBLISHTO : " + publishToJson);
 					for (int j = 0; j < rtiLib.getJsonArray(publishToJson).length; j++) {
 						newSim.publishTo.add(rtiLib.getStringNoQuotes(rtiLib.getJsonArray(publishToJson)[j]));
 					}
 					newSim.subscribeTo = new ArrayList<String>();
 
-					String subscribeToJson = rtiLib.getJsonObject("subscribeTo", rtiLib.getJsonArray(content)[i]).toString();
+					String subscribeToJson = rtiLib.getJsonObject("subscribeTo", rtiLib.getJsonArray(rtiLib.getJsonObject("subcontent",content))[i]).toString();
 					//printLine("SUBSCRIBETO : " + subscribeToJson);
 					for (int j = 0; j <  rtiLib.getJsonArray(subscribeToJson).length; j++) {
 						newSim.subscribeTo.add(rtiLib.getStringNoQuotes(rtiLib.getJsonArray(subscribeToJson)[j]));

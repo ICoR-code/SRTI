@@ -292,6 +292,7 @@ public class ExampleServer {
 			JsonReader reader = Json.createReader(new StringReader(message));
 			JsonObject json = reader.readObject();
 			reader.close();
+			JsonArrayBuilder destinationArray = Json.createArrayBuilder();
 			
 			String name = json.getString("name", "");
 			String content = json.getString("content", "");
@@ -510,7 +511,10 @@ public class ExampleServer {
 				case "RTI_StartSim":
 					// send initial "RTI_BeginStep" to all sims	
 					globalTimestep = 0;
-					String rtiStartStepString = buildRTIStartStep();
+					for (int i = 0; i < threadList.size(); i++) {
+						destinationArray.add(threadList.get(i).getSimName());
+					}
+					String rtiStartStepString = buildRTIStartStep(destinationArray.build().toString());
 					for (int i = 0; i < threadList.size(); i++) {
 						threadList.get(i).update(rtiStartStepString);
 						threadList.get(i).setExpectingFinish(true);
@@ -529,6 +533,14 @@ public class ExampleServer {
 							threadList.get(i).setNextTimestep(nextStep);
 							threadList.get(i).setNextOrder(nextOrder);
 							threadList.get(i).setExpectingFinish(false);
+						}
+					}
+					
+					// SPECIAL CASE: We want the GUI to receive "RTI_FinishStep" FIRST, before any instance of "RTI_StartStep"
+					// 		In this case, destination doesn't matter (only "RTI_" and "GUI" would be receiving this message)
+					for (int i = 0; i < threadList.size(); i++) {
+						if (threadList.get(i).isSubscribedTo(name)) {
+							threadList.get(i).update(message);
 						}
 					}
 					
@@ -603,7 +615,14 @@ public class ExampleServer {
 									globalStage = nextGlobalStage;
 								}
 								globalTimestep = minNextStep;
-								rtiStartStepString = buildRTIStartStep();
+								for (int i = 0; i < threadList.size(); i++) {
+									if (threadList.get(i).getNextTimestep() == minNextStep && threadList.get(i).getNextOrder() == minNextOrder) {
+										destinationArray.add(threadList.get(i).getSimName());
+									} else if (threadList.get(i).getNextTimestep() == -1) {
+										destinationArray.add(threadList.get(i).getSimName());
+									}
+								}
+								rtiStartStepString = buildRTIStartStep(destinationArray.build().toString());
 								for (int i = 0; i < threadList.size(); i++) {
 									if (threadList.get(i).getNextTimestep() == minNextStep && threadList.get(i).getNextOrder() == minNextOrder) {
 										threadList.get(i).setNextTimestep(-1);
@@ -614,6 +633,7 @@ public class ExampleServer {
 											threadList.get(i).setShouldHaveFinished(true);
 										}
 									} else if (threadList.get(i).getNextTimestep() == -1) {
+										// ... is this only for "GUI," or for other sims that naturally function at every step?
 										threadList.get(i).setNextTimestep(-1);
 										threadList.get(i).setNextOrder(-1);
 										threadList.get(i).setExpectingFinish(true);
@@ -695,7 +715,14 @@ public class ExampleServer {
 								globalStage = nextGlobalStage;
 							}
 							globalTimestep = minNextStep;
-							rtiStartStepString = buildRTIStartStep();
+							for (int i = 0; i < threadList.size(); i++) {
+								if (threadList.get(i).getNextTimestep() == minNextStep && threadList.get(i).getNextOrder() == minNextOrder) {
+									destinationArray.add(threadList.get(i).getSimName());
+								} else if (threadList.get(i).getNextTimestep() == -1) {
+									destinationArray.add(threadList.get(i).getSimName());
+								}
+							}
+							rtiStartStepString = buildRTIStartStep(destinationArray.build().toString());
 							for (int i = 0; i < threadList.size(); i++) {
 								if (threadList.get(i).getNextTimestep() == minNextStep && threadList.get(i).getNextOrder() == minNextOrder) {
 									threadList.get(i).setNextTimestep(-1);
@@ -761,48 +788,65 @@ public class ExampleServer {
 			
 			
 			// Add message to history list.
-			String newJsonMessage =  Json.createObjectBuilder()
+			/*String newJsonMessage =  Json.createObjectBuilder()
 					.add("name", name)
 					.add("content", content)
 					.add("timestamp", timestamp)
 					.add("source", source)
 					.add("tcp", "" + tcp)
 					.add("vTimestamp", "" + globalTimestep)
-					.build().toString();
-			messageHistoryList.add(newJsonMessage);
-			messageHistoryListSize += newJsonMessage.length();
-			// what if messageHistoryList is too large? Write to a file to save it for later.
-			// example: 1 message of 100 characters = 100 bytes, so 100 messages = 10 KB, 1,000 messages = 100 KB (estimate)
-			if (oldMessageLimit > 0 && messageHistoryListSize > oldMessageLimit) {
-				try {
-					if (oldMessageArchive == true) {
-						FileWriter exportFile = new FileWriter("messageHistoryList_" + System.currentTimeMillis() + ".txt");
-						String outputString = "";
-						for (int i = 0; i < messageHistoryList.size(); i++) {
-							outputString += messageHistoryList.get(i) + "\n";
-						}
-						exportFile.write(outputString);
-						exportFile.flush();
-						exportFile.close();
+					.build().toString();*/
+			// Below code adds list of 'destination' sims to the message, for reference by SRTI GUI.
+			if (name.compareTo("RTI_StartStep") != 0 && name.compareTo("RTI_FinishStep") != 0) {
+				JsonObjectBuilder obBuilder = Json.createObjectBuilder()
+						.add("name", name)
+						.add("content", content)
+						.add("timestamp", timestamp)
+						.add("source", source)
+						.add("tcp", "" + tcp)
+						.add("vTimestamp", "" + globalTimestep);
+				for (int i = 0; i < threadList.size(); i++) {
+					if (threadList.get(i).isSubscribedTo(name)) {
+						destinationArray.add(threadList.get(i).getSimName());
 					}
-					messageHistoryList.clear();
-					messageHistoryListSize = 0;
-				} catch (Exception e) {
-					e.printStackTrace();
-					printLine("Error trying to save older messages to file. Will keep in memory.");
 				}
-			}
-			
-			
-			//Send message back out to all sims that are subscribed to it
-			int subscribedToTotal = 0;
-			for (int i = 0; i < threadList.size(); i++) {
-				if (threadList.get(i).isSubscribedTo(name)) {
-					subscribedToTotal ++;
-					threadList.get(i).update(newJsonMessage);
+				obBuilder.add("destination", destinationArray.build().toString());
+				String newJsonMessage = obBuilder.build().toString();
+				messageHistoryList.add(newJsonMessage);
+				messageHistoryListSize += newJsonMessage.length();
+				// what if messageHistoryList is too large? Write to a file to save it for later.
+				// example: 1 message of 100 characters = 100 bytes, so 100 messages = 10 KB, 1,000 messages = 100 KB (estimate)
+				if (oldMessageLimit > 0 && messageHistoryListSize > oldMessageLimit) {
+					try {
+						if (oldMessageArchive == true) {
+							FileWriter exportFile = new FileWriter("messageHistoryList_" + System.currentTimeMillis() + ".txt");
+							String outputString = "";
+							for (int i = 0; i < messageHistoryList.size(); i++) {
+								outputString += messageHistoryList.get(i) + "\n";
+							}
+							exportFile.write(outputString);
+							exportFile.flush();
+							exportFile.close();
+						}
+						messageHistoryList.clear();
+						messageHistoryListSize = 0;
+					} catch (Exception e) {
+						e.printStackTrace();
+						printLine("Error trying to save older messages to file. Will keep in memory.");
+					}
 				}
+				
+				
+				//Send message back out to all sims that are subscribed to it
+				int subscribedToTotal = 0;
+				for (int i = 0; i < threadList.size(); i++) {
+					if (threadList.get(i).isSubscribedTo(name)) {
+						subscribedToTotal ++;
+						threadList.get(i).update(newJsonMessage);
+					}
+				}
+				printLine("There should be " + subscribedToTotal + " subscribed to message " + name);
 			}
-			printLine("There should be " + subscribedToTotal + " subscribed to message " + name);
 		}
 		
 		
@@ -830,6 +874,7 @@ public class ExampleServer {
 		JsonObjectBuilder jsonMessageBuilder = Json.createObjectBuilder();
 		JsonArrayBuilder jsonSimBuilder = Json.createArrayBuilder();
 		JsonArray jsonSimArray;
+		JsonObjectBuilder jsonSimArrayObject = Json.createObjectBuilder();
 		JsonObject jsonMessageObject;
 		for (int i = 0; i < threadList.size(); i++) {
 			JsonObjectBuilder jsonSimObject = Json.createObjectBuilder();
@@ -859,9 +904,10 @@ public class ExampleServer {
 			jsonSimObject.add("subscribeTo", jsonSubscribeArray.build());
 			jsonSimBuilder.add(jsonSimObject.build());
 		}
+		// converting 'content' JSON array to object, to allow better universal handling in RTILib and GUI. 
 		jsonSimArray = jsonSimBuilder.build();
-		
-		jsonMessageBuilder.add("content", jsonSimArray.toString());
+		jsonSimArrayObject.add("subcontent", jsonSimArray.toString());
+		jsonMessageBuilder.add("content", jsonSimArrayObject.build().toString());
 		jsonMessageBuilder.add("name", "RTI_UpdateSim");
 		jsonMessageBuilder.add("source", "RTI");
 		jsonMessageBuilder.add("timestamp", "" + System.currentTimeMillis());
@@ -887,6 +933,25 @@ public class ExampleServer {
 				.add("timestamp", "" + System.currentTimeMillis())
 				.add("vTimestamp", "" + globalTimestep)
 				.add("tcp", "" + tcpOn);
+		returnString = jsonMessageBuilder.build().toString();
+		return returnString;
+	}
+	
+	private String buildRTIStartStep(String destinationArray) {
+		String returnString = "";
+		String content = "";
+		// content should include what "timestep" to start (whether or not this is fully necessary on "Wrapper" or "Sim" side is unknown.
+		JsonObjectBuilder jsonContent = 
+				Json.createObjectBuilder().add("timestep", "" + globalTimestep).add("stage", "" + globalStage);
+		content = jsonContent.build().toString();
+		JsonObjectBuilder jsonMessageBuilder = Json.createObjectBuilder()
+				.add("name", "RTI_StartStep")
+				.add("content", content)
+				.add("source", "RTI")
+				.add("timestamp", "" + System.currentTimeMillis())
+				.add("vTimestamp", "" + globalTimestep)
+				.add("tcp", "" + tcpOn)
+				.add("destination", destinationArray);
 		returnString = jsonMessageBuilder.build().toString();
 		return returnString;
 	}
