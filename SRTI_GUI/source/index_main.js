@@ -47,7 +47,7 @@ var savename = "";
 var hostName = "localhost";
 var portNumber = "42012";
 var serverPath = __dirname + '\\..\\extraResources\\srti_server\\';
-var serverFileName = 'SRTI_v2_20_02.jar';
+var serverFileName = 'SRTI_v2_22_02.jar';
 // Total number of stages (different states in simulation system) in this project.
 var numOfStages = 1;
 // Current stage in canvas view (1st is at index 0).
@@ -5293,7 +5293,7 @@ function ClearProject() {
 	messageObjects = [];
 	numOfStages = 1;
 	serverPath = __dirname + '\\..\\extraResources\\srti_server\\';
-	serverFileName = 'SRTI_v2_20_02.jar';
+	serverFileName = 'SRTI_v2_22_02.jar';
 	hostName = "localhost";
 	portNumber = "42012";
 	stage = 1;
@@ -5677,7 +5677,7 @@ function WriteCommandsToFile() {
 		fsContent += "\\\\ lines that start with \\\\ will not run.\n";
 		fsContent += "\\\\ This is the Windows version of the commands that need to execute to run this project. \n";
 		fsContent += "cd (RTIServerLocation)\n";
-		fsContent += "java -jar SRTI_v2_16_02.jar\n";
+		fsContent += "java -jar SRTI_v2_22_02.jar\n";
 		let i = 0;
 		for (i = 0; i < listOfSimulators.length; i++) {
 			fsContent += "cd " + listOfSimulators[i].filePath + "\n";
@@ -5954,6 +5954,7 @@ function StopSimulationSystem() {
 	document.getElementById("btn-stop").disabled = true;
 	document.getElementById("btn-pause").disabled = true;
 	document.getElementById("btn-play").disabled = true;
+	ResetSimExecutionColor();
 
 	//guiClient.close();
 	//guiServer.close();
@@ -6032,6 +6033,7 @@ function HandleRTIInputData(data) {
 	var step = obj.vTimestamp;
 	var textConsoleLastAction = document.getElementById("TextConsoleLastAction");
 	textConsoleLastAction.innerHTML = "Step = " + step + " . Full RTI Message: " + data;
+	console.log("FULL RTI MESSAGE: " + data);
 
 	// reminder: 'stage' can be found in 'RTI_StartStep' -> 'content' -> 'stage'.
 	var stage = -1;
@@ -6217,9 +6219,35 @@ function UpdateInspectorPanelMessageContent(message) {
 function UpdateSimExecutionColor(message) {
 	var obj = JSON.parse(message);
 	if (obj.name == "RTI_StartStep") {
-
+		// obj.destination = an JSON array of sim names requested to start
+		// obj.content.stage = current stage, as string
+		if (obj.hasOwnProperty('destination')){
+			var destination = JSON.parse(obj.destination);
+			var content = JSON.parse(obj.content);
+			let i = 0;
+			for (i = 0; i < simulatorObjects.length; i++){
+				if (destination.includes(simulatorObjects[i].name)){
+					if (simulatorObjects[i].stage == parseInt(content.stage)){
+						simulatorObjects[i].objectRef.style.backgroundColor = "red";
+					}
+				}
+			}
+		}
 	} else if (obj.name == "RTI_FinishStep") {
+		// obj.source = name of sim
+		let i = 0;
+		for (i = 0; i < simulatorObjects.length; i++){
+			if (obj.source == simulatorObjects[i].name){
+				simulatorObjects[i].objectRef.style.backgroundColor = "blue";
+			}
+		}
+	}
+}
 
+function ResetSimExecutionColor(){
+	let i = 0;
+	for (i = 0; i < simulatorObjects.length; i++){
+		simulatorObjects[i].objectRef.style.backgroundColor = "green";
 	}
 }
 
