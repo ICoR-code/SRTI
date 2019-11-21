@@ -14,6 +14,17 @@ html {
     src: local('Source Code Pro'), local('SourceCodePro'), url(fonts/SourceCodePro-Regular.ttf) format('truetype');
 }
 
+@font-face {
+    font-family: 'Fira Code';
+    font-style: normal;
+    font-weight: 400;
+    src: url(fonts/FiraCode-Regular.ttf) format('truetype');
+}
+
+input.code {
+    font-family: 'Fira Code'!important;
+}
+
 #containermenu {
     width: 22%;
     margin: 2% 0% 2% 2%;
@@ -174,6 +185,10 @@ html {
     display: flex;
 }
 
+.container {
+    margin: 0 5px;
+}
+
 .separator {
     cursor: col-resize;
     background: url(../srti_modules/images/icon_resizegrip.png) center center no-repeat #e1e2e3;
@@ -299,6 +314,11 @@ html {
     /* border: 1px solid black; */
 }
 
+#buttons-simulation {
+    position: absolute;
+    left: 228.54px;
+}
+
 .ui.icon.buttons .button {
     padding: 0;
     width: 40px;
@@ -388,13 +408,13 @@ html {
 
 /* Code */
 
-code, kbd {
-    font-family: 'Source Code Pro', monospace;
-    border-radius: 4px;
-    padding: 1px 4px;
-    white-space: nowrap;
-    color: hsl(0, 0%, 36%);
-    background-color: hsla(0, 0%, 60%, .15);
+code, kbd, label.code, .item.code {
+    font-family: 'Fira Code', 'Source Code Pro', monospace;
+    /* border-radius: 4px;
+    padding: 1px 4px; */
+    /* white-space: nowrap; */
+    /* color: hsl(0, 0%, 36%);
+    background-color: hsla(0, 0%, 60%, .15); */
 }
 
 pre, kbd {

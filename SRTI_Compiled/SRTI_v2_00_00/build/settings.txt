@@ -1,14 +1,14 @@
 {
-"portNumber":42012,
-"guiOn":true,
-"debugGuiOn":false,
-"tcpOn":false,
-"compressOn":false,
-"retryConnection":false,
-"oldMessageLimit":10000,
-"oldMessageArchive":false,
-"debugConsole":true,
-"debugFile":true,
-"concurrentProcessing":true,
-"oldMessageGUILimit":10
+    "portNumber": 42012,
+    "guiOn": true,
+    "debugGuiOn": false,
+    "tcpOn": false,
+    "compressOn": false,
+    "retryConnection": false,
+    "oldMessageLimit": 10000,
+    "oldMessageArchive": false,
+    "debugConsole": true,
+    "debugFile": true,
+    "concurrentProcessing": true,
+    "oldMessageGUILimit": 10
 }

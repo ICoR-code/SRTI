@@ -142,6 +142,9 @@ newServerFile.onchange = function () {
 var nSimulators = 0
 var nMessages = 0
 
+// simulation stages
+var simStage = 0
+
 $(document).ready(function () {
 	// Initialize certain buttons and objects.
 	document.getElementById("btn-start").disabled = false;
@@ -175,10 +178,12 @@ function resizePanel(element, direction, handler) {
 
 	var first = document.getElementById("objectpanel");
 	var second = document.getElementById("canvaspanel");
+	let flag = true
 	console.log("" + element.getAttribute("id"));
 	if (element.getAttribute("id") == "separator2") {
 		first = document.getElementById("canvaspanel");
 		second = document.getElementById("inspectorpanel");
+		flag = false
 	}
 
 	/* if present, the handler is where you move the DIV from
@@ -215,6 +220,9 @@ function resizePanel(element, direction, handler) {
 		drag.y = currentY;
 		first.style.width = firstWidth + "px";
 		second.style.width = secondWidth + "px";
+		if (flag) {
+			$('#buttons-simulation').css('left', Math.max(firstWidth + 15, 176.86))
+		}
 	}
 
 	console.log("A resizePanel ended");
@@ -453,7 +461,7 @@ function SetItemsVisibleInStage() {
 		// 	+ " objectRef = " + simulatorObjects[i].objectRef
 		// 	+ " objectRef.style = " + simulatorObjects[i].objectRef.style);
 		if (simulatorObjects[i].stage == stage) {
-			simulatorObjects[i].objectRef.style.visibility = 'visible';
+			simulatorObjects[i].objectRef.style.y = 'visible';
 		} else {
 			simulatorObjects[i].objectRef.style.visibility = 'hidden';
 		}
@@ -2473,7 +2481,7 @@ function AddObjectToMessageDef() {
 	}
 
 	let child = $('<div>').addClass('div-list-item ui compact segment')
-	child.append($('<label>').text(`${newMessageObjectName} (${newMessageObjectType})`).attr('style', 'vertical-align:sub;'))
+	child.append($('<label>').html(`<code>${newMessageObjectName}</code> (${newMessageObjectType})`).attr('style', 'vertical-align:sub;'))
 	var button = $('<button>', {
 		class: "ui compact icon button right floated", name: newMessageObjectName
 	}).data('pointer', child).click(
@@ -2504,7 +2512,7 @@ function AddObjectToSimulatorDef() {
 	}
 
 	let child = $('<div>').addClass('div-list-item ui compact segment')
-	child.append($('<label>').text(`${newMessageObjectName} (${newMessageObjectType})`).attr('style', 'vertical-align:sub;'))
+	child.append($('<label>').html(`<code>${newMessageObjectName}</code> (${newMessageObjectType})`).attr('style', 'vertical-align:sub;'))
 	var button = $('<button>', {
 		class: "ui compact icon button right floated", name: newMessageObjectName
 	}).data('pointer', child).click(
@@ -2528,7 +2536,7 @@ function UpdateObjectToSimulatorDef() {
 	for (i = 0; i < listOfMessageObjects.length; i++) {
 		var child = $('<div>').addClass('div-list-item ui compact segment')
 		name = listOfMessageObjects[i].name
-		child.append($('<label>').text(`${listOfMessageObjects[i].name} (${listOfMessageObjects[i].valueType})`).attr('style', 'vertical-align:sub;'))
+		child.append($('<label>').html(`<code>${listOfMessageObjects[i].name}</code> (${listOfMessageObjects[i].valueType})`).attr('style', 'vertical-align:sub;'))
 		var button = $('<button>').addClass('ui compact icon button right floated').attr('name', name).data('pointer', child).click(
 			function () {
 				RemoveObjectToSimulatorDef($(this).data('pointer'), $(this).attr('name'))
@@ -2556,7 +2564,7 @@ function UpdateObjectToMessageDef() {
 	let i = 0;
 	for (i = 0; i < listOfMessageObjects.length; i++) {
 		var child = $('<div>').addClass('div-list-item ui compact segment')
-		child.append($('<label>').text(`${listOfMessageObjects[i].name} (${listOfMessageObjects[i].valueType})`).attr('style', 'vertical-align:sub;'))
+		child.append($('<label>').html(`<code>${listOfMessageObjects[i].name}</code> (${listOfMessageObjects[i].valueType})`).attr('style', 'vertical-align:sub;'))
 		var button = $('<button>').addClass('ui compact icon button right floated').attr('name',
 			listOfMessageObjects[i].name).data('pointer', child).click(
 				function () {
@@ -2691,7 +2699,7 @@ function AddFunctionToSimulatorDef() {
 	}
 
 	let child = $('<div>').addClass('div-list-item ui compact segment')
-	child.append($('<label>').text(newMessageFunctionName).attr('style', 'vertical-align:sub;'))
+	child.append($('<label>').addClass('code').html(newMessageFunctionName).attr('style', 'vertical-align:sub;'))
 	var button = $('<button>', {
 		class: "ui compact icon button right floated", name: newMessageFunctionName
 	}).data('pointer', child).click(
@@ -2720,7 +2728,7 @@ function UpdateFunctionToSimulatorDef() {
 	let i = 0;
 	for (i = 0; i < listOfMessageFunctions.length; i++) {
 		var child = $('<div>').addClass('div-list-item ui compact segment')
-		child.append($('<label>').text(listOfMessageFunctions[i].name).attr('style', 'vertical-align:sub;'))
+		child.append($('<label>').addClass('code').text(listOfMessageFunctions[i].name).attr('style', 'vertical-align:sub;'))
 		var button = $('<button>').addClass('ui compact icon button right floated').attr('name',
 			listOfMessageFunctions[i].name).data('pointer', child).click(
 				function () {
@@ -2912,7 +2920,7 @@ function CreateExistingMessageOnCanvas(message_id) {
 	addContentType.appendChild(addContent1);
 	addContentType.style = "position: absolute; overflow-y:hidden;" + "left:100px; top:"
 		+ (10 + (42 * listOfCurrentItems.length)) + "px;";
-		$('.div-canvas-server').height(Math.max(160, 34 + (42 * listOfCurrentItems.length)))
+	$('.div-canvas-server').height(Math.max(160, 34 + (42 * listOfCurrentItems.length)))
 	panel.appendChild(addContentType);
 	messageObjects[i].objectRef = addContentType;
 }
@@ -2983,8 +2991,8 @@ function EditSimLocalTime() {
 	let item
 	let i
 	for (i = 0; i < simulatorObjects[editExistingObject].original.variables.length; i++) {
-		item = $('<div>').addClass('item').text(
-			`${simulatorObjects[editExistingObject].original.variables[i].name} (${simulatorObjects[editExistingObject].original.variables[i].valueType})`
+		item = $('<div>').addClass('item').html(
+			`<code>${simulatorObjects[editExistingObject].original.variables[i].name}</code> (${simulatorObjects[editExistingObject].original.variables[i].valueType})`
 		)
 		item.attr('data-value', simulatorObjects[editExistingObject].original.variables[i].name)
 		dropdown.append(item)
@@ -2994,7 +3002,12 @@ function EditSimLocalTime() {
 	item.attr('data-value', "''")
 
 	dropdown.append(item)
-	$('#dropdownVar').dropdown('set selected', simulatorObjects[editExistingObject].timeVarDelta)
+	if (simulatorObjects[editExistingObject].timeVarDelta == "") {
+		$('#dropdownVar').dropdown('set selected', "''")
+	} else {
+		$('#dropdownVar').dropdown('set selected', simulatorObjects[editExistingObject].timeVarDelta)
+	}
+
 
 	// var addContentType = document.createElement("a");
 	// addContentType.href = "#";
@@ -3096,7 +3109,7 @@ function EditSimulateFunctions() {
 	let item
 	let i
 	for (i = 0; i < simulatorObjects[editExistingObject].original.functions.length; i++) {
-		item = $('<div>').addClass('item').text(simulatorObjects[editExistingObject].original.functions[i].name)
+		item = $('<div>').addClass('item').append($('<code>').text(simulatorObjects[editExistingObject].original.functions[i].name))
 		item.attr('data-value', simulatorObjects[editExistingObject].original.functions[i].name)
 		dropdown.append(item)
 	}
@@ -3132,7 +3145,7 @@ function EditSimulateFunctions() {
 	dropdown = $('#dropdownSimulateFunction .menu')
 	dropdown.empty()
 	for (i = 0; i < simulatorObjects[editExistingObject].original.functions.length; i++) {
-		item = $('<div>').addClass('item').text(simulatorObjects[editExistingObject].original.functions[i].name)
+		item = $('<div>').addClass('item').append($('<code>').text(simulatorObjects[editExistingObject].original.functions[i].name))
 		item.attr('data-value', simulatorObjects[editExistingObject].original.functions[i].name)
 		dropdown.append(item)
 	}
@@ -3216,8 +3229,8 @@ function EditStageConditions() {
 		let item
 		let i
 		for (i = 0; i < simulatorObjects[editExistingObject].original.variables.length; i++) {
-			item = $('<div>').addClass('item').text(simulatorObjects[editExistingObject].original.variables[i].name +
-				" (" + simulatorObjects[editExistingObject].original.variables[i].valueType + ")")
+			item = $('<div>').addClass('item').html('<code>' + simulatorObjects[editExistingObject].original.variables[i].name +
+				"</code> (" + simulatorObjects[editExistingObject].original.variables[i].valueType + ")")
 			item.attr('data-value', simulatorObjects[editExistingObject].original.variables[i].name)
 			dropdown.append(item)
 		}
@@ -3226,7 +3239,7 @@ function EditStageConditions() {
 			action: 'activate',
 			onChange: function (value, text, $item) {
 				if (value) {
-					$('#' + $(this).attr('for')).text(value)
+					$('#' + $(this).attr('for')).html('<code>' + value + '</code>')
 					$(`.dropdown[for="${$(this).attr('for')}"]`).not('#' + $(this).attr('id')).dropdown('clear')
 					$(`input[for="${$(this).attr('for')}"]`).val('').blur()
 					if ($(this).attr('for').endsWith('3')) {
@@ -3245,7 +3258,7 @@ function EditStageConditions() {
 
 		let item
 		for (variable of ["RTI_vTimestep", "RTI_stage", "RTI_stageVTimestepMul", "RTI_stageVTimestep"]) {
-			item = $('<div>').addClass('item').text(variable)
+			item = $('<div>').addClass('item').append($('<code>').text(variable))
 			item.attr(variable)
 			dropdown.append(item)
 		}
@@ -3254,7 +3267,7 @@ function EditStageConditions() {
 			action: 'activate',
 			onChange: function (value, text, $item) {
 				if (value) {
-					$('#' + $(this).attr('for')).text(value)
+					$('#' + $(this).attr('for')).html('<code>' + value + '</code>')
 					$(`.dropdown[for="${$(this).attr('for')}"]`).not('#' + $(this).attr('id')).dropdown('clear')
 					$(`input[for="${$(this).attr('for')}"]`).val('').blur()
 					if ($(this).attr('for').endsWith('3')) {
@@ -3272,7 +3285,7 @@ function EditStageConditions() {
 
 	let item
 	for (variable of ["==", "!=", ">", "<", ">=", "<="]) {
-		item = $('<div>').addClass('item').text(variable)
+		item = $('<div>').addClass('item').append($('<code>').text(variable))
 		item.attr(variable)
 		dropdown.append(item)
 	}
@@ -3528,7 +3541,7 @@ function EditStageConditions() {
 	// document.getElementsByName("TextStageConditionsPickValue2")[0].value = "";
 	// document.getElementById("divStageConditionStatement").innerHTML
 	// 	= "If [" + stageConditionV1 + "] [" + stageConditionV2 + "] [" + stageConditionV3 + "] AND ...";
-	
+
 	ResetStageConditionList()
 
 }
@@ -3853,7 +3866,7 @@ function EditEndConditions() {
 	stageConditionV3a = "";
 	stageConditionV3b = "";
 	$('#endCondition1, #endCondition2, #endCondition3').text('')
-	
+
 	ResetEndConditionList();
 	// document.getElementsByName("TextEndConditionsPickValue2")[0].value = "";
 	// document.getElementById("divEndConditionStatement").innerHTML
@@ -4238,13 +4251,13 @@ function ResetStageConditionSubList() {
 		item = $('<div>').addClass('div-list-item')
 		label = $('<div>').addClass('ui grey expanding middle aligned label')
 		if (tempVarName2 == "") {
-			text = "if [" + stageConditionSubSet[i].varName + "] ["
-				+ stageConditionSubSet[i].condition + "] [" + stageConditionSubSet[i].value + "] AND ..."
+			text = "if [<code>" + stageConditionSubSet[i].varName + " "
+				+ stageConditionSubSet[i].condition + " " + stageConditionSubSet[i].value + "</code>] AND ..."
 		} else {
-			text = "if [" + stageConditionSubSet[i].varName + "] ["
-				+ stageConditionSubSet[i].condition + "] [" + stageConditionSubSet[i].varName2 + "] AND ..."
+			text = "if [<code>" + stageConditionSubSet[i].varName + " "
+				+ stageConditionSubSet[i].condition + " " + stageConditionSubSet[i].varName2 + "</code>] AND ..."
 		}
-		label.append($('<label>').text(text).css('max-width', '95%'))
+		label.append($('<label>').html(text).css('max-width', '95%'))
 		button = $('<a>').addClass('ui opaque right floated')
 		icon = $('<i>').addClass('inverted delete icon').attr('name', i).click(function () {
 			RemoveStageConditionFromSubList($(this).attr('name'));
@@ -4354,15 +4367,15 @@ function AddStageConditionToList() {
 */
 function RemoveStageConditionFromList(btn_name) {
 	console.log('deleting' + btn_name)
-	
+
 	var indexCount = 0;
 	var simulatorObjectName = simulatorObjects[editExistingObject].name;
 	let k = 0;
-	for (k = 0; k < simulatorObjects.length; k++){
-		if (simulatorObjects[k].name == simulatorObjectName){
+	for (k = 0; k < simulatorObjects.length; k++) {
+		if (simulatorObjects[k].name == simulatorObjectName) {
 			let i = 0;
 			for (i = 0; i < simulatorObjects[k].stageConditions.length; i++) {
-				if (indexCount == btn_name){
+				if (indexCount == btn_name) {
 					simulatorObjects[k].stageConditions.splice(i, 1);
 				}
 				indexCount++;
@@ -4424,8 +4437,8 @@ function ResetStageConditionList() {
 	let indexCount = 0, item, label, sentence, button, icon
 	var simulatorObjectName = simulatorObjects[editExistingObject].name;
 	let k = 0;
-	for (k = 0; k < simulatorObjects.length; k++){
-		if (simulatorObjects[k].name == simulatorObjectName){
+	for (k = 0; k < simulatorObjects.length; k++) {
+		if (simulatorObjects[k].name == simulatorObjectName) {
 			for (i = 0; i < simulatorObjects[k].stageConditions.length; i++) {
 				item = $('<div>').addClass('div-list-item')
 				label = $('<div>').addClass('ui grey expanding label')
@@ -4433,16 +4446,17 @@ function ResetStageConditionList() {
 				let j = 0;
 				for (j = 0; j < simulatorObjects[k].stageConditions[i].conditions.length; j++) {
 					var tempVarName2 = simulatorObjects[k].stageConditions[i].conditions[j].varName2;
+
 					if (tempVarName2 == "") {
-						sentence = sentence + "if [" + simulatorObjects[k].stageConditions[i].conditions[j].varName
-							+ "] [" + simulatorObjects[k].stageConditions[i].conditions[j].condition
-							+ "] [" + simulatorObjects[k].stageConditions[i].conditions[j].value + "] ";
+						sentence = sentence + "if [<code>" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].varName
+							+ " " + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].condition
+							+ " " + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].value + "</code>] ";
 					} else {
-						sentence = sentence + "if [" + simulatorObjects[k].stageConditions[i].conditions[j].varName
-							+ "] [" + simulatorObjects[k].stageConditions[i].conditions[j].condition
-							+ "] [" + simulatorObjects[k].stageConditions[i].conditions[j].varName2 + "] ";
+						sentence = sentence + "if [<code>" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].varName
+							+ " " + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].condition
+							+ " " + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].varName2 + "</code>] ";
 					}
-					if (j < simulatorObjects[k].stageConditions[i].conditions.length - 1) {
+					if (j < simulatorObjects[editExistingObject].stageConditions[i].conditions.length - 1) {
 						sentence = sentence + "AND ";
 					}
 				}
@@ -4459,7 +4473,7 @@ function ResetStageConditionList() {
 				label.append(button)
 				item.append(label)
 				panel.append(item)
-				
+
 				indexCount++;
 			}
 		}
@@ -4692,15 +4706,15 @@ function AddEndConditionToList() {
 */
 function RemoveEndConditionFromList(btn_name) {
 	console.log("Removing end condition : " + btn_name);
-	
+
 	var indexCount = 0;
 	var simulatorObjectName = simulatorObjects[editExistingObject].name;
 	let k = 0;
-	for (k = 0; k < simulatorObjects.length; k++){
-		if (simulatorObjects[k].name == simulatorObjectName){
+	for (k = 0; k < simulatorObjects.length; k++) {
+		if (simulatorObjects[k].name == simulatorObjectName) {
 			let i = 0;
 			for (i = 0; i < simulatorObjects[k].endConditions.length; i++) {
-				if (indexCount == btn_name){
+				if (indexCount == btn_name) {
 					simulatorObjects[k].endConditions.splice(i, 1);
 				}
 				indexCount++;
@@ -4760,8 +4774,8 @@ function ResetEndConditionList() {
 	let indexCount = 0, item, label, sentence, button, icon
 	var simulatorObjectName = simulatorObjects[editExistingObject].name;
 	let k = 0;
-	for (k = 0; k < simulatorObjects.length; k++){
-		if (simulatorObjects[k].name == simulatorObjectName){
+	for (k = 0; k < simulatorObjects.length; k++) {
+		if (simulatorObjects[k].name == simulatorObjectName) {
 			let i = 0;
 			for (i = 0; i < simulatorObjects[k].endConditions.length; i++) {
 				item = $('<div>').addClass('div-list-item')
@@ -4796,7 +4810,7 @@ function ResetEndConditionList() {
 				label.append(button)
 				item.append(label)
 				panel.append(item)
-				
+
 				indexCount++;
 			}
 		}
@@ -5518,22 +5532,22 @@ function WriteWrapperConfigFiles() {
 							timestepMul: parseInt(simulatorObjects[j].timeScale),
 							timestepVarDelta: simulatorObjects[j].timeVarDelta
 						});
-					if (simulatorObjects[j].initialize != "" && simulatorObjects[j].initialize != '""' 
-						&& simulatorObjects[j].initialize != "''"){
+					if (simulatorObjects[j].initialize != "" && simulatorObjects[j].initialize != '""'
+						&& simulatorObjects[j].initialize != "''") {
 						initializeChannels.push(
-						{
-							functionName: simulatorObjects[j].initialize,
-							stage: parseInt(simulatorObjects[j].stage)
-						});
+							{
+								functionName: simulatorObjects[j].initialize,
+								stage: parseInt(simulatorObjects[j].stage)
+							});
 					}
 					if (simulatorObjects[j].simulate != "" && simulatorObjects[j].simulate != '""'
-						&& simulatorObjects[j].simulate != "''"){
+						&& simulatorObjects[j].simulate != "''") {
 						simulateChannels.push(
-						{
-							functionName: simulatorObjects[j].simulate,
-							timestepDelta: parseInt(simulatorObjects[j].simulateTimeDelta),
-							stage: parseInt(simulatorObjects[j].stage)
-						});
+							{
+								functionName: simulatorObjects[j].simulate,
+								timestepDelta: parseInt(simulatorObjects[j].simulateTimeDelta),
+								stage: parseInt(simulatorObjects[j].stage)
+							});
 					}
 					errorLocation = 2;
 					console.log("preparing for sim " + j + ", has name " + simulatorObjects[j].name);
@@ -5839,6 +5853,7 @@ var serverActive = false;
 function StartSimulationSystem() {
 	console.log("Can we open RTI Server?");
 	if (serverActive == false) {
+		simStage = 0
 		hasStartedRunningSystem = false;
 		serverActive = true;
 		document.getElementById("btn-start").disabled = true;
@@ -6027,27 +6042,26 @@ function HandleRTIInputData(data) {
 	var obj
 	try {
 		obj = JSON.parse(data)
+		var step = obj.vTimestamp;
+		var textConsoleLastAction = document.getElementById("TextConsoleLastAction");
+		textConsoleLastAction.innerHTML = "Step = " + step + " . Full RTI Message: " + data;
+
+		// reminder: 'stage' can be found in 'RTI_StartStep' -> 'content' -> 'stage'.
+		if (obj.name == "RTI_StartStep") {
+			var content = JSON.parse(obj.content);
+			simStage = content.stage;
+		}
+
+
+		UpdateStepAndStage(step);
+
+		UpdateInspectorPanelMessage(data, step);
+
+		UpdateSimExecutionColor(data);
 	} catch (err) {
 		console.log(data)
 	}
-	var step = obj.vTimestamp;
-	var textConsoleLastAction = document.getElementById("TextConsoleLastAction");
-	textConsoleLastAction.innerHTML = "Step = " + step + " . Full RTI Message: " + data;
-	console.log("FULL RTI MESSAGE: " + data);
 
-	// reminder: 'stage' can be found in 'RTI_StartStep' -> 'content' -> 'stage'.
-	var stage = -1;
-	if (obj.name == "RTI_StartStep") {
-		var content = JSON.parse(obj.content);
-		stage = content.stage;
-	}
-
-
-	UpdateStepAndStage(step, stage);
-
-	UpdateInspectorPanelMessage(data, step, stage);
-
-	UpdateSimExecutionColor(data);
 
 }
 
@@ -6062,7 +6076,7 @@ function UpdateStepAndStage(step, stage) {
 
 var receivedMessageBuffer = [];
 var receivedMessageBufferLength = 6;
-function UpdateInspectorPanelMessage(data, step, stage) {
+function UpdateInspectorPanelMessage(data, step) {
 	// keep track of most recent 6 messages received
 
 	//TODO: why
@@ -6083,7 +6097,7 @@ function UpdateInspectorPanelMessage(data, step, stage) {
 
 	//TODO optimize logic
 
-	UpdateInspectorPanelMessageObjects("(message content here)", step, stage);
+	UpdateInspectorPanelMessageObjects("(message content here)", step, simStage);
 }
 
 function UpdateInspectorPanelMessageObjects(message, step, stage) {
@@ -6221,13 +6235,13 @@ function UpdateSimExecutionColor(message) {
 	if (obj.name == "RTI_StartStep") {
 		// obj.destination = an JSON array of sim names requested to start
 		// obj.content.stage = current stage, as string
-		if (obj.hasOwnProperty('destination')){
+		if (obj.hasOwnProperty('destination')) {
 			var destination = JSON.parse(obj.destination);
 			var content = JSON.parse(obj.content);
 			let i = 0;
-			for (i = 0; i < simulatorObjects.length; i++){
-				if (destination.includes(simulatorObjects[i].name)){
-					if (simulatorObjects[i].stage == parseInt(content.stage)){
+			for (i = 0; i < simulatorObjects.length; i++) {
+				if (destination.includes(simulatorObjects[i].name)) {
+					if (simulatorObjects[i].stage == parseInt(content.stage)) {
 						simulatorObjects[i].objectRef.style.backgroundColor = "red";
 					}
 				}
@@ -6236,17 +6250,17 @@ function UpdateSimExecutionColor(message) {
 	} else if (obj.name == "RTI_FinishStep") {
 		// obj.source = name of sim
 		let i = 0;
-		for (i = 0; i < simulatorObjects.length; i++){
-			if (obj.source == simulatorObjects[i].name){
+		for (i = 0; i < simulatorObjects.length; i++) {
+			if (obj.source == simulatorObjects[i].name) {
 				simulatorObjects[i].objectRef.style.backgroundColor = "blue";
 			}
 		}
 	}
 }
 
-function ResetSimExecutionColor(){
+function ResetSimExecutionColor() {
 	let i = 0;
-	for (i = 0; i < simulatorObjects.length; i++){
+	for (i = 0; i < simulatorObjects.length; i++) {
 		simulatorObjects[i].objectRef.style.backgroundColor = "green";
 	}
 }
