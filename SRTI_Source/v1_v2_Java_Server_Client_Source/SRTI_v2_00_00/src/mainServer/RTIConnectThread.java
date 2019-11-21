@@ -110,6 +110,10 @@ public class RTIConnectThread extends Thread {
 			}
 		} catch (Exception e) {
 			printLine("Exception during thread run >> " + e.toString());
+			for (int i = 0; i < e.getStackTrace().length; i++) {
+				printLine("Exception trace: " + i + " ___ " 
+						+ e.getStackTrace()[i].getClassName() + " " + e.getStackTrace()[i].getLineNumber());
+			}
 		}
 		printLine("done running thread.");
 		thisServer.disconnectThread(currentThreadID);
@@ -139,6 +143,36 @@ public class RTIConnectThread extends Thread {
 						.add("source", source)
 						.add("tcp", "" + tcpOn)
 						.add("vTimestamp", vTimestamp)
+						.build();
+				PrintWriter out;
+				out = new PrintWriter(thisSimSocket.getOutputStream(), true);
+				out.println(json);
+				out.flush();
+			}
+			printLine("Sent message " + name + " to " + simName);// + " with content " + content);
+			
+			if (name.compareTo("RTI_ReceivedMessage") != 0) {
+				handleTcpResponse(name, content, timestamp, source, json.toString());
+			}
+		} catch (Exception e) {
+			printLine("   IOExceoption error happened here...");
+			e.printStackTrace();
+		}
+		return 0;
+	}
+	
+	int send(String name, String content, String timestamp, String source, String vTimestamp, String destination) {
+		try {
+			JsonObject json = null;
+			synchronized(thisSimSocket){
+				json =  Json.createObjectBuilder()
+						.add("name", name)
+						.add("content", content)
+						.add("timestamp", timestamp)
+						.add("source", source)
+						.add("tcp", "" + tcpOn)
+						.add("vTimestamp", vTimestamp)
+						.add("destination", destination)
 						.build();
 				PrintWriter out;
 				out = new PrintWriter(thisSimSocket.getOutputStream(), true);
@@ -269,8 +303,13 @@ public class RTIConnectThread extends Thread {
 		String timestamp = Json.createReader(new StringReader(message)).readObject().getString("timestamp");
 		String source =  Json.createReader(new StringReader(message)).readObject().getString("source");
 		String vTimestamp = Json.createReader(new StringReader(message)).readObject().getString("vTimestamp");
+		String destination = Json.createReader(new StringReader(message)).readObject().getString("destination", "");
 		
-		send(name, content, timestamp, source, vTimestamp);
+		if (destination.compareTo("") == 0) {
+			send(name, content, timestamp, source, vTimestamp);
+		} else {
+			send(name, content, timestamp, source, vTimestamp, destination);
+		}
 	}
 	
 	public void update(String name, String content) {
