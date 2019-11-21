@@ -77,6 +77,50 @@ input.code {
     /* overflow-y: hidden; */
 }
 
+.ui.blue.button.div-canvas-sim {
+    box-sizing: border-box;
+    width: 100px;
+    height: 100px;
+    /* background-color: rgb(255, 167, 147); */
+    /* border: 10px solid rgba(136, 136, 136, .5); */
+    border: 5px solid #72a66c;
+    border-radius: 5%;
+    /* border-radius: 10%!important; */
+    /* color: white; */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px 0px;
+    margin: 0px;
+    touch-action: none;
+    user-select: none;
+    word-wrap: break-all;
+    position: relative;
+    /* overflow-y: hidden; */
+}
+
+.ui.red.button.div-canvas-sim {
+    box-sizing: border-box;
+    width: 100px;
+    height: 100px;
+    /* background-color: rgb(255, 167, 147); */
+    /* border: 10px solid rgba(136, 136, 136, .5); */
+    border: 5px solid #72a66c;
+    border-radius: 5%;
+    /* border-radius: 10%!important; */
+    /* color: white; */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px 0px;
+    margin: 0px;
+    touch-action: none;
+    user-select: none;
+    word-wrap: break-all;
+    position: relative;
+    /* overflow-y: hidden; */
+}
+
 .div-canvas-sim {
     box-sizing: border-box!important;
     width: 100px;

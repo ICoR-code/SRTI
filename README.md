@@ -1,6 +1,6 @@
 # SRTI
 
-## "Simple Real Time Interface," name inspired by similar data-transfer systems.
+## "Simple Run Time Infrastructure," name inspired by similar data-transfer systems.
 
 #### What is it?
 

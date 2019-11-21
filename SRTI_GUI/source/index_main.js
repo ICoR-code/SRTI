@@ -6242,7 +6242,8 @@ function UpdateSimExecutionColor(message) {
 			for (i = 0; i < simulatorObjects.length; i++) {
 				if (destination.includes(simulatorObjects[i].name)) {
 					if (simulatorObjects[i].stage == parseInt(content.stage)) {
-						simulatorObjects[i].objectRef.style.backgroundColor = "red";
+						//simulatorObjects[i].objectRef.style.backgroundColor = "red";
+						simulatorObjects[i].objectRef.className = "ui red button div-canvas-sim";
 					}
 				}
 			}
@@ -6252,7 +6253,8 @@ function UpdateSimExecutionColor(message) {
 		let i = 0;
 		for (i = 0; i < simulatorObjects.length; i++) {
 			if (obj.source == simulatorObjects[i].name) {
-				simulatorObjects[i].objectRef.style.backgroundColor = "blue";
+				//simulatorObjects[i].objectRef.style.backgroundColor = "blue";
+				simulatorObjects[i].objectRef.className = "ui blue button div-canvas-sim";
 			}
 		}
 	}
@@ -6261,7 +6263,8 @@ function UpdateSimExecutionColor(message) {
 function ResetSimExecutionColor() {
 	let i = 0;
 	for (i = 0; i < simulatorObjects.length; i++) {
-		simulatorObjects[i].objectRef.style.backgroundColor = "green";
+		//simulatorObjects[i].objectRef.style.backgroundColor = "green";
+		simulatorObjects[i].objectRef.className = "ui green button div-canvas-sim";
 	}
 }
 
