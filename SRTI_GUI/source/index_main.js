@@ -142,6 +142,10 @@ newServerFile.onchange = function () {
 var nSimulators = 0
 var nMessages = 0
 
+
+// simulation stages
+var simStage = 0
+
 $(document).ready(function () {
 	// Initialize certain buttons and objects.
 	document.getElementById("btn-start").disabled = false;
@@ -5794,6 +5798,7 @@ var serverActive = false;
 function StartSimulationSystem() {
 	console.log("Can we open RTI Server?");
 	if (serverActive == false) {
+		simStage = 0
 		hasStartedRunningSystem = false;
 		serverActive = true;
 		document.getElementById("btn-start").disabled = true;
@@ -5986,16 +5991,15 @@ function HandleRTIInputData(data) {
 		textConsoleLastAction.innerHTML = "Step = " + step + " . Full RTI Message: " + data;
 
 		// reminder: 'stage' can be found in 'RTI_StartStep' -> 'content' -> 'stage'.
-		var stage = -1;
 		if (obj.name == "RTI_StartStep") {
 			var content = JSON.parse(obj.content);
-			stage = content.stage;
+			simStage = content.stage;
 		}
 
 
-		UpdateStepAndStage(step, stage);
+		UpdateStepAndStage(step);
 
-		UpdateInspectorPanelMessage(data, step, stage);
+		UpdateInspectorPanelMessage(data, step);
 
 		UpdateSimExecutionColor(data);
 	} catch (err) {
@@ -6016,7 +6020,7 @@ function UpdateStepAndStage(step, stage) {
 
 var receivedMessageBuffer = [];
 var receivedMessageBufferLength = 6;
-function UpdateInspectorPanelMessage(data, step, stage) {
+function UpdateInspectorPanelMessage(data, step) {
 	// keep track of most recent 6 messages received
 
 	//TODO: why
@@ -6037,7 +6041,7 @@ function UpdateInspectorPanelMessage(data, step, stage) {
 
 	//TODO optimize logic
 
-	UpdateInspectorPanelMessageObjects("(message content here)", step, stage);
+	UpdateInspectorPanelMessageObjects("(message content here)", step, simStage);
 }
 
 function UpdateInspectorPanelMessageObjects(message, step, stage) {
