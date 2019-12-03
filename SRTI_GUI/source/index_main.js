@@ -461,7 +461,8 @@ function SetItemsVisibleInStage() {
 		// 	+ " objectRef = " + simulatorObjects[i].objectRef
 		// 	+ " objectRef.style = " + simulatorObjects[i].objectRef.style);
 		if (simulatorObjects[i].stage == stage) {
-			simulatorObjects[i].objectRef.style.y = 'visible';
+			//simulatorObjects[i].objectRef.style.y = 'visible';
+			simulatorObjects[i].objectRef.style.visibility = 'visible';
 		} else {
 			simulatorObjects[i].objectRef.style.visibility = 'hidden';
 		}
@@ -2810,7 +2811,7 @@ function CreateNewSimulatorOnCanvas(btn_id) {
 		subscribedInitial: [], publishedInitial: [],
 		subscribedTimeDelta: [], publishedTimeDelta: [],
 		subscribedRelative: [], subscribedTimestep: [],
-		initialize: "", simulate: "", simulateTimeDelta: 1,
+		initialize: "''", simulate: "''", simulateTimeDelta: 1,
 		stageConditions: [], endConditions: []
 	});
 	setTranslate(0, -newOffsetY, addContentType);
@@ -3155,6 +3156,8 @@ function EditSimulateFunctions() {
 	dropdown.append(item)
 
 	$('#dropdownSimulateFunction').dropdown().dropdown('set selected', simulatorObjects[editExistingObject].simulate)
+	console.log("Trying to reset Init and Sim functions to " 
+		+ simulatorObjects[editExistingObject].initialize + " " + simulatorObjects[editExistingObject].simulate);
 
 	$('input[name="SimulateFunctionTimestepDelta"]').val(simulatorObjects[editExistingObject].simulateTimeDelta)
 
@@ -6059,7 +6062,7 @@ function HandleRTIInputData(data) {
 
 		UpdateSimExecutionColor(data);
 	} catch (err) {
-		console.log(data)
+		console.log("ERROR: could not parse this JSON message: " + data)
 	}
 
 
