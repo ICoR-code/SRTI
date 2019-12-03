@@ -1598,7 +1598,8 @@ function SavePublishConnectionPrompt() {
 	// list of pairs: [index of message variable, index of simulator variable or -1 for default]
 	$('#modalPublishDetailsSegment .dropdown').each(function () {
 		let j = parseInt($(this).dropdown('get value'))
-		if (j != -1) {
+		// j should NEVER be NULL, and yet it is often NULL when saving project... 
+		if (j != -1 && j != null && !isNaN(j)) {
 			newDetails.push([parseInt($(this).attr('messageObjectId')), j]);
 		}
 	})
@@ -1701,7 +1702,7 @@ function NewSubscribeConnectionPrompt(message_id, simulator_id) {
 
 	dropdown.append($('<input>', { type: 'hidden' }))
 	dropdown.append($('<i>', { class: 'dropdown icon' }))
-	dropdown.append($('<div>', { class: 'default text', text: '(DEFAULT)' }))
+	dropdown.append($('<div>', { class: 'default text', text: '(DEFAULT)', 'data-value': -1, originalObjectId: message_id }))
 	dropdown.append(menu)
 
 	for (i = 0; i < simulatorObjects[simulator_id].original.variables.length; i++) {
@@ -1865,7 +1866,7 @@ function EditSubscribeConnectionPrompt() {
 
 	dropdown.append($('<input>', { type: 'hidden' }))
 	dropdown.append($('<i>', { class: 'dropdown icon' }))
-	dropdown.append($('<div>', { class: 'default text', text: '(DEFAULT)' }))
+	dropdown.append($('<div>', { class: 'default text', text: '(DEFAULT)', 'data-value': -1, originalObjectId: originalMessageId }))
 	dropdown.append(menu)
 
 	for (i = 0; i < simulatorObjects[editExistingObject].original.variables.length; i++) {
@@ -2081,7 +2082,8 @@ function SaveSubscribeConnectionPrompt() {
 	let newDetails = [];
 	$('#modalSubscribeDetailsSegment .dropdown').each(function () {
 		let j = parseInt($(this).dropdown('get value'))
-		if (j != -1) {
+		// j should NEVER be NULL, and yet it is often NULL when saving project... 
+		if (j != -1 && j != null && !isNaN(j)) {
 			newDetails.push([parseInt($(this).attr('simulatorObjectId')), j]);
 		}
 	})
@@ -2133,6 +2135,7 @@ function SaveSubscribeConnectionPrompt() {
 	// if (document.getElementsByName("textSubscribeTimestep")[0].value != "") {
 	// 	timestep = document.getElementsByName("textSubscribeTimestep")[0].value;
 	// }
+	console.log("New subscribedDetails should look like: " + newDetails);
 	if (editExistingObject == -1) {
 		dragItem.subscribedDetails.push(newDetails);
 		dragItem.subscribedInitial.push(initial);
