@@ -329,28 +329,14 @@ input.code {
     cursor: pointer;
 }
 
-#greyoverlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background-color: #002;
-    opacity: 0.5;
-    display: none;
-}
-
-.modal {
+/* .modal {
     position: fixed;
     top: 50vh;
     left: 50vw;
     transform: translate(-50%, -50%);
-    /* height: 300px;
-    width: 400px;
-    padding: 8px 8px 8px 8px; */
     background-color: white;
     display: none;
-}
+} */
 
 .ui.modal {
     width: 600px;
