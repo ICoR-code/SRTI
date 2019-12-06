@@ -61,7 +61,7 @@ var selectState = 0;
 //		'objects' = variables, 'functions' = functions in simulator.
 //		Referenced here for when in popup for new Message / Simulator, and defining 
 var listOfMessageObjects = [];
-var listOfMessageFunctions = [];
+var simulatorFunctions = new Map();
 
 var configureItemType = 0;	//0 = sim from list, 1 = message from list, 2 = sim from canvas, 3 = message from canvas, 4 = RTI Server
 var configureItemId = 0;	// reference to item being configured.
@@ -202,13 +202,13 @@ function SaveProject() {
 			var simdef = {
 				simdef: listOfSimulators[i]
 			};
-			fs.writeFileSync(savepath + listOfSimulators[i].name + "_def.simdef", JSON.stringify(simdef, null, 4), 'utf-8');
+			fs.writeFileSync(savepath + listOfSimulators[i].name + "_def.simdef", JSON.stringify(simdef, MapToList, 4), 'utf-8');
 		}
 		for (i = 0; i < listOfMessages.length; i++) {
 			var mesdef = {
 				mesdef: listOfMessages[i]
 			};
-			fs.writeFileSync(savepath + listOfMessages[i].name + "_def.mesdef", JSON.stringify(mesdef, null, 4), 'utf-8');
+			fs.writeFileSync(savepath + listOfMessages[i].name + "_def.mesdef", JSON.stringify(mesdef, MapToList, 4), 'utf-8');
 		}
 	} catch (e) {
 		console.log("failed to save file: " + e);
@@ -234,7 +234,7 @@ function CreateProjectText() {
 		hostName: hostName,
 		portNumber: portNumber
 	};
-	content = JSON.stringify(obj, null, 4);
+	content = JSON.stringify(obj, MapToList, 4);
 	return content;
 }
 
@@ -314,7 +314,7 @@ function ResetCanvasWithNewProject(projectText) {
 	ClearProject();
 
 	var obj = JSON.parse(projectText);
-	listOfSimulators = obj.listOfSimulators;
+	listOfSimulators = ConvertSimulators(obj.listOfSimulators);
 	listOfMessages = obj.listOfMessages;
 	simulatorObjects = obj.simulatorObjects;
 	messageObjects = obj.messageObjects;
@@ -519,7 +519,7 @@ function WriteWrapperConfigFiles() {
 			};
 
 			//errorLocation = 3;
-			content = JSON.stringify(obj, null, 4);
+			content = JSON.stringify(obj, MapToList, 4);
 			try {
 				var fs = require('fs');
 				fs.writeFileSync(savePathLocal + saveNameLocal + ".json", content, 'utf-8');
@@ -569,7 +569,7 @@ function WriteServerConfigFile() {
 
 	contentJSON = JSON.parse(content);
 	contentJSON.portNumber = parseInt(portNumber);
-	content = JSON.stringify(contentJSON, null, 4);
+	content = JSON.stringify(contentJSON, MapToList, 4);
 
 	fs.writeFileSync(serverPath + "settings.txt", content, "utf-8");
 }
@@ -587,10 +587,10 @@ function AddToUndoBuffer(description) {
 	// occurs when an action occurs to add to "Undo" stack
 	undoStack.push({
 		description: description,
-		listOfSimulators: JSON.stringify(listOfSimulators),
-		listOfMessages: JSON.stringify(listOfMessages),
-		simulatorObjects: JSON.stringify(simulatorObjects),
-		messageObjects: JSON.stringify(messageObjects),
+		listOfSimulators: JSON.stringify(listOfSimulators, MapToList),
+		listOfMessages: JSON.stringify(listOfMessages, MapToList),
+		simulatorObjects: JSON.stringify(simulatorObjects, MapToList),
+		messageObjects: JSON.stringify(messageObjects, MapToList),
 		numOfStages: numOfStages
 	});
 	let i = 0;
@@ -615,17 +615,17 @@ function Undo() {
 		undoStack.splice(undoStack.length - 1, 1);
 		redoStack.push({
 			description: obj.description,
-			listOfSimulators: JSON.stringify(listOfSimulators),
-			listOfMessages: JSON.stringify(listOfMessages),
-			simulatorObjects: JSON.stringify(simulatorObjects),
-			messageObjects: JSON.stringify(messageObjects),
+			listOfSimulators: JSON.stringify(listOfSimulators, MapToList),
+			listOfMessages: JSON.stringify(listOfMessages, MapToList),
+			simulatorObjects: JSON.stringify(simulatorObjects, MapToList),
+			messageObjects: JSON.stringify(messageObjects, MapToList),
 			numOfStages: numOfStages
 		});
 		ClearProject();
-		listOfSimulators = JSON.parse(obj.listOfSimulators);
-		listOfMessages = JSON.parse(obj.listOfMessages);
-		simulatorObjects = JSON.parse(obj.simulatorObjects);
-		messageObjects = JSON.parse(obj.messageObjects);
+		listOfSimulators = ConvertSimulators(JSON.parse(obj.listOfSimulators, MapToList));
+		listOfMessages = JSON.parse(obj.listOfMessages, MapToList);
+		simulatorObjects = JSON.parse(obj.simulatorObjects, MapToList);
+		messageObjects = JSON.parse(obj.messageObjects, MapToList);
 		numOfStages = obj.numOfStages;
 		let i = 0;
 		for (i = 0; i < simulatorObjects.length; i++) {
@@ -655,14 +655,14 @@ function Redo() {
 		redoStack.splice(redoStack.length - 1, 1);
 		undoStack.push({
 			description: obj.description,
-			listOfSimulators: JSON.stringify(listOfSimulators),
-			listOfMessages: JSON.stringify(listOfMessages),
-			simulatorObjects: JSON.stringify(simulatorObjects),
-			messageObjects: JSON.stringify(messageObjects),
+			listOfSimulators: JSON.stringify(listOfSimulators, MapToList),
+			listOfMessages: JSON.stringify(listOfMessages, MapToList),
+			simulatorObjects: JSON.stringify(simulatorObjects, MapToList),
+			messageObjects: JSON.stringify(messageObjects, MapToList),
 			numOfStages: numOfStages
 		});
 		ClearProject();
-		listOfSimulators = JSON.parse(obj.listOfSimulators);
+		listOfSimulators = ConvertSimulators(JSON.parse(obj.listOfSimulators));
 		listOfMessages = JSON.parse(obj.listOfMessages);
 		simulatorObjects = JSON.parse(obj.simulatorObjects);
 		messageObjects = JSON.parse(obj.messageObjects);
@@ -697,4 +697,32 @@ function AddProprietaryRTIMessage() {
 	var obj = JSON.parse(rtiMessage);
 	listOfMessages.push(obj.mesdef);
 	ResetObjectSubPanel2();
+}
+
+function NewFunction(name) {
+	return { 'name': name }
+}
+
+function ConvertSimulators(oldSimulators) {
+	for (let simulator of oldSimulators) {
+		if (Array.isArray(simulator['functions'])) {
+			let simulatorFunctions = new Map()
+			for (let fn of simulator['functions']) {
+				simulatorFunctions.set(fn['name'], fn)
+			}
+			simulator['functions'] = simulatorFunctions
+		}
+	}
+
+	return oldSimulators
+}
+
+
+function MapToList(key, value) {
+	const originalObject = this[key];
+	if (originalObject instanceof Map) {
+		return Array.from(originalObject.values())
+	} else {
+		return value;
+	}
 }

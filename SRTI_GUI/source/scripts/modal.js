@@ -63,7 +63,7 @@ function NewSimulatorObjectPrompt2() {
         $('#modalNewSimulatorPanel1').hide()
         $('#modalNewSimulatorPanel2').hide()
     } else {
-        listOfMessageFunctions = listOfSimulators[editExistingObject].functions;
+        simulatorFunctions = listOfSimulators[editExistingObject].functions;
         listOfMessageObjects = listOfSimulators[editExistingObject].variables;
         UpdateObjectToSimulatorDef();
         UpdateFunctionToSimulatorDef();
@@ -77,7 +77,7 @@ function CloseNewSimulatorObjectPrompt2() {
     DisplayOrClosePrompt("modalNewSim2", "none");
 
     listOfMessageObjects = [];
-    listOfMessageFunctions = [];
+    simulatorFunctions = new Map();
     $('#modalNewSimulatorPanel1').empty()
     $('#modalNewSimulatorPanel2').empty()
     editExistingObject = -1;
@@ -655,7 +655,7 @@ function AddNewObjectSimulator2() {
         listOfSimulators.push({
             name: newSimName,
             refName: newRefName, filePath: newFilePath, executeCommand: newExecute,
-            functions: listOfMessageFunctions, variables: listOfMessageObjects
+            functions: simulatorFunctions, variables: listOfMessageObjects
         });
     } else {
         var originalName = listOfSimulators[editExistingObject].name;
@@ -663,7 +663,7 @@ function AddNewObjectSimulator2() {
         listOfSimulators[editExistingObject].refName = newRefName;
         listOfSimulators[editExistingObject].filePath = newFilePath;
         listOfSimulators[editExistingObject].executeCommand = newExecute;
-        listOfSimulators[editExistingObject].functions = listOfMessageFunctions;
+        listOfSimulators[editExistingObject].functions = simulatorFunctions;
         listOfSimulators[editExistingObject].variables = listOfMessageObjects;
         let i = 0;
         for (i = 0; i < simulatorObjects.length; i++) {
@@ -937,29 +937,31 @@ function CheckEnableFunctionToSimulatorDef() {
 	- Add function to simulator definition, when describing new simulator for project.
 */
 function AddFunctionToSimulatorDef() {
-    var newMessageFunctionName = document.getElementsByName("NewSimulatorFunctionName")[0].value;
-    document.getElementsByName("NewSimulatorFunctionName")[0].value = "";
-    listOfMessageFunctions.push({ name: newMessageFunctionName });
+    let newMessageFunctionName = $('[name="NewSimulatorFunctionName"]').val()
+    $('[name="NewSimulatorFunctionName"]').val("")
+    if (!simulatorFunctions.has(newMessageFunctionName)) {
+        simulatorFunctions.set(newMessageFunctionName, NewFunction(newMessageFunctionName));
 
-    let panel = $('#modalNewSimulatorPanel2')
-    if (listOfMessageFunctions.length === 1) {
-        panel.show()
-    }
-
-    let child = $('<div>').addClass('div-list-item ui compact segment')
-    child.append($('<label>').addClass('code').html(newMessageFunctionName).attr('style', 'vertical-align:sub;'))
-    var button = $('<button>', {
-        class: "ui compact icon button right floated", name: newMessageFunctionName
-    }).data('pointer', child).click(
-        function () {
-            console.log("onclick at index = " + this.id);
-            RemoveFunctionToSimulatorDef($(this).data('pointer'), $(this).attr('name'))
+        let panel = $('#modalNewSimulatorPanel2')
+        if (simulatorFunctions.size === 1) {
+            panel.show()
         }
-    )
-    button.append($('<i>').addClass('times icon'))
-    child.append(button)
-    panel.append(child)
 
+        let child = $('<div>').addClass('div-list-item ui compact segment')
+        child.append($('<label>').addClass('code').html(newMessageFunctionName).attr('style', 'vertical-align:sub;'))
+        var button = $('<button>', {
+            class: "ui compact icon button right floated", name: newMessageFunctionName
+        }).data('pointer', child).click(
+            function () {
+                console.log("onclick at index = " + this.id);
+                RemoveFunctionToSimulatorDef($(this).data('pointer'), $(this).attr('name'))
+            }
+        )
+        button.append($('<i>').addClass('times icon'))
+        child.append(button)
+        panel.append(child)
+
+    }
     CheckEnableObjectToSimulatorDef();
 }
 
@@ -968,12 +970,12 @@ function AddFunctionToSimulatorDef() {
 */
 function UpdateFunctionToSimulatorDef() {
     let panel = $('#modalNewSimulatorPanel2')
-    let i = 0;
-    for (i = 0; i < listOfMessageFunctions.length; i++) {
+    let key, value
+    for ([key, value] of simulatorFunctions) {
         var child = $('<div>').addClass('div-list-item ui compact segment')
-        child.append($('<label>').addClass('code').text(listOfMessageFunctions[i].name).attr('style', 'vertical-align:sub;'))
+        child.append($('<label>').addClass('code').text(key).attr('style', 'vertical-align:sub;'))
         var button = $('<button>').addClass('ui compact icon button right floated').attr('name',
-            listOfMessageFunctions[i].name).data('pointer', child).click(
+            key).data('pointer', child).click(
                 function () {
                     console.log("onclick at index = " + this.name);
                     RemoveFunctionToSimulatorDef($(this).data('pointer'), $(this).attr('name'))
@@ -984,7 +986,7 @@ function UpdateFunctionToSimulatorDef() {
         panel.append(child)
     }
 
-    if (listOfMessageFunctions.length > 0) {
+    if (simulatorFunctions.size > 0) {
         panel.show()
     } else {
         panel.hide()
@@ -997,19 +999,11 @@ function UpdateFunctionToSimulatorDef() {
 	- Remove function from list on simulator definition prompt.
 */
 function RemoveFunctionToSimulatorDef(child, btn_id) {
-
-    console.log("Removing object from list.");
-    console.log(btn_id);
-    let i
-    for (i = 0; i < listOfMessageFunctions.length; ++i) {
-        if (listOfMessageFunctions[i].name == btn_id) {
-            listOfMessageFunctions.splice(i, 1);
-        }
-    }
+    simulatorFunctions.delete(btn_id)
 
     child.remove()
 
-    if (listOfMessageFunctions.length === 0) {
+    if (simulatorFunctions.size === 0) {
         $('#modalNewSimulatorPanel2').hide()
     }
 }
