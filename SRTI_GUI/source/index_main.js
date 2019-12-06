@@ -157,6 +157,8 @@ $(document).ready(function () {
 	resizePanel(document.getElementById("separator"), "H");
 	resizePanel(document.getElementById("separator2"), "H");
 
+	// $('#buttons-simulation').css('left', Math.max(document.getElementById("objectpanel").offsetWidth + 15, 176.86))
+
 	UpdateCanvasGrid();
 	UpdateSelectedStateButtons(selectState);
 	AddProprietaryRTIMessage();
@@ -5966,6 +5968,7 @@ function StopSimulationSystem() {
 		try {
 			var kill = require('tree-kill');
 			kill(execSims[i].pid);
+			console.log('killed' + execSims[i].pid)
 		} catch (e) {
 			alert('Error when trying to end sim. ' + e);
 		}
@@ -6013,6 +6016,7 @@ function ConnectToRTIServer() {
 
 			var dataReceived = data.toString().split("\n");
 			textConsoleLastAction.innerHTML = "Separated data received by RTI Server: (" + dataReceived[1] + ")";
+			console.log(dataReceived)
 			var dedicatedClientPort = parseInt(dataReceived[1]);
 			var dedicatedServerPort = 0;
 
@@ -6029,7 +6033,12 @@ function ConnectToRTIServer() {
 			});
 
 			guiDedicatedClient.on('data', function (data) {
-				HandleRTIInputData(data);
+				// TODO why we need to split
+				let messages = data.toString().split('\n')
+				for (const message of messages) {
+					HandleRTIInputData(message)
+				}
+
 			});
 
 		});
