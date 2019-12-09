@@ -407,9 +407,9 @@ function LaunchSimulators() {
 
         // start all other simulators (all that exist anywhere on the canvas).
         let i = 0;
-        for (i = 0; i < listOfSimulators.length; i++) {
-            var execCommand = "cd /d " + listOfSimulators[i].filePath
-                + " && " + listOfSimulators[i].executeCommand;
+        for (let [name, simulator] in simulators) {
+            var execCommand = "cd /d " + simulator.filePath
+                + " && " + simulator.executeCommand;
             var execSim = child_process.exec(execCommand,
                 (error, stdout, stderror) => {
                     if (error) {

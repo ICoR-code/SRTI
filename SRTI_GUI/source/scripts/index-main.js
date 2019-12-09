@@ -26,11 +26,11 @@ var yOffset = 0;
 //		("Simulator", "MessageDefinition", "Import").
 var newObjectSelection = "none";
 // References to simulators and messages available in the project 
-var listOfSimulators = [];
+var simulators = new Map();
 var listOfMessages = [];
 // references to objects on canvas, plus their sub-components 
-//		(custom versions that can't generally be specified in 'listOfSimulators' or 'listOfMessages').
-var simulatorObjects = [];
+//		(custom versions that can't generally be specified in 'simulators' or 'listOfMessages').
+var simulatorObjects = new Set()
 var messageObjects = [];
 
 // Array of entire project states to allow 'undo' and 'redo' 
@@ -60,7 +60,7 @@ var selectState = 0;
 // Sub-objects for Message / Simulator (used interchangably) definitions: 
 //		'objects' = variables, 'functions' = functions in simulator.
 //		Referenced here for when in popup for new Message / Simulator, and defining 
-var listOfMessageObjects = [];
+var variables = new Map();
 var simulatorFunctions = new Map();
 
 var configureItemType = 0;	//0 = sim from list, 1 = message from list, 2 = sim from canvas, 3 = message from canvas, 4 = RTI Server
@@ -161,7 +161,7 @@ function ClearProject() {
 		messageObjects.splice(i, 1);
 	}
 
-	listOfSimulators = [];
+	simulators = new Map();
 	listOfMessages = [];
 	simulatorObjects = [];
 	messageObjects = [];
@@ -198,11 +198,11 @@ function SaveProject() {
 		fs.writeFileSync(savepath + savename + ".project", content, 'utf-8');
 		// also save representation for each individual simulator, to make it easy to import to new projects later.
 		let i = 0;
-		for (i = 0; i < listOfSimulators.length; i++) {
+		for (let [name, simulator] of simulators) {
 			var simdef = {
-				simdef: listOfSimulators[i]
+				simdef: simulator
 			};
-			fs.writeFileSync(savepath + listOfSimulators[i].name + "_def.simdef", JSON.stringify(simdef, MapToList, 4), 'utf-8');
+			fs.writeFileSync(savepath + name + "_def.simdef", JSON.stringify(simdef, MapToList, 4), 'utf-8');
 		}
 		for (i = 0; i < listOfMessages.length; i++) {
 			var mesdef = {
@@ -223,8 +223,9 @@ function SaveProject() {
 function CreateProjectText() {
 	var content = "";
 	// JavaScript supports "JavaScript Object Notation" by default.
+	//TODO: change this logic
 	var obj = {
-		listOfSimulators: listOfSimulators,
+		simulators: simulators,
 		listOfMessages: listOfMessages,
 		simulatorObjects: simulatorObjects,
 		messageObjects: messageObjects,
@@ -314,10 +315,12 @@ function ResetCanvasWithNewProject(projectText) {
 	ClearProject();
 
 	var obj = JSON.parse(projectText);
-	listOfSimulators = ConvertSimulators(obj.listOfSimulators);
-	listOfMessages = obj.listOfMessages;
+	console.log(obj)
+	simulators = ConvertSimulators(typeof obj.simulators !== 'undefined' ? obj.simulators : obj.listOfSimulators);
+	listOfMessages = ConvertMessages(obj.listOfMessages);
 	simulatorObjects = obj.simulatorObjects;
 	messageObjects = obj.messageObjects;
+	LinkReferences(simulators, listOfMessages, simulatorObjects, messageObjects)
 	numOfStages = obj.numOfStages;
 	serverPath = obj.serverPath;
 	serverFileName = obj.serverFileName;
@@ -356,10 +359,10 @@ function WriteWrapperConfigFiles() {
 	let i = 0;
 	var errorLocation = 0;
 	try {
-		for (i = 0; i < listOfSimulators.length; i++) {
+		for (let [name, simulator] of simulators) {
 			//errorLocation = 0;
-			var savePathLocal = listOfSimulators[i].filePath + "\\";
-			var saveNameLocal = listOfSimulators[i].name + "_config";
+			var savePathLocal = simulator.filePath + "\\";
+			var saveNameLocal = name + "_config";
 			var content = "";
 			var stageChannels = [];
 			var initializeChannels = [];
@@ -374,7 +377,7 @@ function WriteWrapperConfigFiles() {
 			let j = 0;
 			for (j = 0; j < simulatorObjects.length; j++) {
 				errorLocation = 0;
-				if (simulatorObjects[j].name == listOfSimulators[i].name) {
+				if (simulatorObjects[j].name == name) {
 					errorLocation = 1;
 					stageChannels.push(
 						{
@@ -415,7 +418,7 @@ function WriteWrapperConfigFiles() {
 								varChannel.push(
 									{
 										valueName: messageObjects[simulatorObjects[j].subscribedMessages[k]].original.variables[simulatorObjects[j].subscribedDetails[k][m][1]].name,//listOfMessages[simulatorObjects[j].subscribedMessages[k]].variables[simulatorObjects[j].subscribedDetails[k][m][1]].name,
-										varName: listOfSimulators[i].variables[simulatorObjects[j].subscribedDetails[k][m][0]].name
+										varName: simulator.variables.get(simulatorObjects[j].subscribedDetails[k][m][0]).name
 									});
 							}
 						}
@@ -443,7 +446,7 @@ function WriteWrapperConfigFiles() {
 								varChannel.push(
 									{
 										valueName: messageObjects[simulatorObjects[j].publishedMessages[k]].original.variables[simulatorObjects[j].publishedDetails[k][m][0]].name,//listOfMessages[simulatorObjects[j].publishedMessages[k]].variables[simulatorObjects[j].publishedDetails[k][m][0]].name,
-										varName: listOfSimulators[i].variables[simulatorObjects[j].publishedDetails[k][m][1]].name
+										varName: simulator.variables.get(simulatorObjects[j].publishedDetails[k][m][1]).name
 									});
 							}
 						}
@@ -504,8 +507,8 @@ function WriteWrapperConfigFiles() {
 			var obj = {
 				hostName: hostName,
 				portNumber: portNumber,
-				simulatorName: listOfSimulators[i].name,
-				simulatorRef: listOfSimulators[i].refName,
+				simulatorName: name,
+				simulatorRef: simulator.refName,
 				debugConsole: false,
 				debugFile: false,
 				dataOutFile: false,
@@ -527,7 +530,7 @@ function WriteWrapperConfigFiles() {
 				fs.writeFileSync(savePathLocal + "Settings.json", "{\"global\": \"Global.json\", \"configuration\": \"" + saveNameLocal + ".json\"}", 'utf-8');
 
 			} catch (e) {
-				alert('failed to save export file for ' + listOfSimulators[i].name + ' ... error = ' + e);
+				alert('failed to save export file for ' + name + ' ... error = ' + e);
 			}
 		}
 	} catch (e) {
@@ -545,9 +548,9 @@ function WriteCommandsToFile() {
 		fsContent += "cd (RTIServerLocation)\n";
 		fsContent += "java -jar SRTI_v2_22_02.jar\n";
 		let i = 0;
-		for (i = 0; i < listOfSimulators.length; i++) {
-			fsContent += "cd " + listOfSimulators[i].filePath + "\n";
-			fsContent += "" + listOfSimulators[i].executeCommand + "\n";
+		for (let [name, simulator] of simulators) {
+			fsContent += "cd " + simulator.filePath + "\n";
+			fsContent += "" + simulator.executeCommand + "\n";
 		}
 		fs.writeFileSync(savepath + "executeCommands" + ".txt", fsContent, 'utf-8');
 	} catch (e) {
@@ -587,7 +590,7 @@ function AddToUndoBuffer(description) {
 	// occurs when an action occurs to add to "Undo" stack
 	undoStack.push({
 		description: description,
-		listOfSimulators: JSON.stringify(listOfSimulators, MapToList),
+		simulators: JSON.stringify(simulators, MapToList),
 		listOfMessages: JSON.stringify(listOfMessages, MapToList),
 		simulatorObjects: JSON.stringify(simulatorObjects, MapToList),
 		messageObjects: JSON.stringify(messageObjects, MapToList),
@@ -615,15 +618,16 @@ function Undo() {
 		undoStack.splice(undoStack.length - 1, 1);
 		redoStack.push({
 			description: obj.description,
-			listOfSimulators: JSON.stringify(listOfSimulators, MapToList),
+			simulators: JSON.stringify(simulators, MapToList),
 			listOfMessages: JSON.stringify(listOfMessages, MapToList),
 			simulatorObjects: JSON.stringify(simulatorObjects, MapToList),
 			messageObjects: JSON.stringify(messageObjects, MapToList),
 			numOfStages: numOfStages
 		});
 		ClearProject();
-		listOfSimulators = ConvertSimulators(JSON.parse(obj.listOfSimulators, MapToList));
-		listOfMessages = JSON.parse(obj.listOfMessages, MapToList);
+		//TODO: link
+		simulators = ConvertSimulators(JSON.parse(obj.simulators, MapToList));
+		listOfMessages = ConvertMessages(JSON.parse(obj.listOfMessages, MapToList));
 		simulatorObjects = JSON.parse(obj.simulatorObjects, MapToList);
 		messageObjects = JSON.parse(obj.messageObjects, MapToList);
 		numOfStages = obj.numOfStages;
@@ -655,15 +659,16 @@ function Redo() {
 		redoStack.splice(redoStack.length - 1, 1);
 		undoStack.push({
 			description: obj.description,
-			listOfSimulators: JSON.stringify(listOfSimulators, MapToList),
+			simulators: JSON.stringify(simulators, MapToList),
 			listOfMessages: JSON.stringify(listOfMessages, MapToList),
 			simulatorObjects: JSON.stringify(simulatorObjects, MapToList),
 			messageObjects: JSON.stringify(messageObjects, MapToList),
 			numOfStages: numOfStages
 		});
 		ClearProject();
-		listOfSimulators = ConvertSimulators(JSON.parse(obj.listOfSimulators));
-		listOfMessages = JSON.parse(obj.listOfMessages);
+		//TODO: link
+		simulators = ConvertSimulators(JSON.parse(obj.simulators));
+		listOfMessages = ConvertMessages(JSON.parse(obj.listOfMessages));
 		simulatorObjects = JSON.parse(obj.simulatorObjects);
 		messageObjects = JSON.parse(obj.messageObjects);
 		numOfStages = obj.numOfStages;
@@ -688,7 +693,7 @@ function Redo() {
 	- Add the default "RTI_" message to subscribe to onto the canvas, for all new messages.
 */
 function AddProprietaryRTIMessage() {
-	// TODO: eliminate this parsing 
+	// TODO: eliminate this parsing and apply new format
 	var rtiMessage = "{\"mesdef\":{\"name\":\"RTI_\","
 		+ "\"variables\":[{\"name\":\"vTimestep\",\"valueType\":\"integer\"},"
 		+ "{\"name\":\"stage\",\"valueType\":\"integer\"},"
@@ -703,18 +708,80 @@ function NewFunction(name) {
 	return { 'name': name }
 }
 
+function NewVariable(name, type) {
+	return { 'name': name, 'valueType': type }
+}
+
+function NewSimulator(newSimName, newRefName, newFilePath, newExecute,
+	simulatorFunctions, variables) {
+	return {
+		name: newSimName,
+		refName: newRefName,
+		filePath: newFilePath, executeCommand: newExecute,
+		functions: simulatorFunctions, 'variables': variables,
+		objects: new Set()
+	}
+}
+
+function ConvertSimulator(simulator) {
+	if (Array.isArray(simulator['functions'])) {
+		let simulatorFunctions = new Map()
+		for (let fn of simulator['functions']) {
+			simulatorFunctions.set(fn['name'], fn)
+		}
+		simulator['functions'] = simulatorFunctions
+	}
+
+	if (Array.isArray(simulator['variables'])) {
+		let variables = new Map()
+		for (let variable of simulator['variables']) {
+			variables.set(variable['name'], variable)
+		}
+		simulator['variables'] = variables
+	}
+
+	simulator['objects'] = new Set()
+}
+
 function ConvertSimulators(oldSimulators) {
+	console.log(oldSimulators)
+	newSimulators = new Map()
 	for (let simulator of oldSimulators) {
-		if (Array.isArray(simulator['functions'])) {
-			let simulatorFunctions = new Map()
-			for (let fn of simulator['functions']) {
-				simulatorFunctions.set(fn['name'], fn)
+		ConvertSimulator(simulator)
+		newSimulators.set(simulator.name, simulator)
+
+	}
+
+	return newSimulators
+}
+
+function ConvertMessages(oldMessages) {
+	for (let message of oldMessages) {
+		if (Array.isArray(message['variables'])) {
+			let variables = new Map()
+			for (let variable of message['variables']) {
+				variables.set(variable['name'], variable)
 			}
-			simulator['functions'] = simulatorFunctions
+			message['variables'] = variables
 		}
 	}
 
-	return oldSimulators
+	return oldMessages
+}
+
+function LinkReferences(simulators, listOfMessages, simulatorObjects, messageObjects) {
+	for (let simObj of simulatorObjects) {
+		simulators.get(simObj.name).objects.add(simObj)
+	}
+
+	for (let msgObj of messageObjects) {
+		for (let msg of listOfMessages) {
+			if (msg.name === msgObj.name) {
+				msgObj.original = msg
+				break
+			}
+		}
+	}
 }
 
 

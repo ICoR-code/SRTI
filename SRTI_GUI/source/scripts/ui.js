@@ -144,21 +144,22 @@ function ClearObjectSubPanel1() {
 /*	AppendObjectToSubPanel1()
 	- Append object to sub-panel (canvas) on the main screen.
 */
-function AppendObjectToSubPanel1(index = listOfSimulators.length - 1) {
-    console.log(index)
+function AppendObjectToSubPanel1(simulator) {
     let panel = $('#objectsubpanel1')
-    button = $('<button>').addClass('ui green button btn-list-item').text(listOfSimulators[index].name)
-    button.attr('id', index)
+    button = $('<button>').addClass('ui green button btn-list-item').text(simulator.name)
+    button.data('id', simulator.name)
+    button.data('ref', button)
     button.click(function () {
-        console.log("onclick at index = " + this.id);
+        elem = $(this)
+        console.log("onclick at index = " + elem.data('id'));
         if (selectState == 0) {
-            CreateNewSimulatorOnCanvas(this.id);
+            CreateNewSimulatorOnCanvas(elem.data('id'));
         } else if (selectState == 1) {
-            ConfigureSimulatorFromList(this.id);
+            ConfigureSimulatorFromList(elem.data('id'));
         } else if (selectState == 2) {
 
         } else if (selectState == 3) {
-            DeleteSimulatorFromList(this.id);
+            DeleteSimulatorFromList(elem.data('id'), elem.data('ref'));
         }
     })
     panel.append(button)
@@ -172,10 +173,11 @@ function ResetObjectSubPanel1() {
     let panel = $('#objectsubpanel1')
     panel.empty()
     let i = 0;
-    for (i = 0; i < listOfSimulators.length; i++) {
-        AppendObjectToSubPanel1(i)
+    for (let [name, simulator] of simulators) {
+        AppendObjectToSubPanel1(simulator)
     }
 }
+
 
 /*	AppendObjectToSubPanel2()
 	- Append object to sub-panel (canvas) on the main screen.
@@ -215,19 +217,16 @@ function ResetObjectSubPanel2() {
 /*	DeleteSimulatorFromList()
 	- Delete simulator from project, from list on the left and from the canvas.
 */
-function DeleteSimulatorFromList(btn_id) {
-    var deleteSimName = listOfSimulators[btn_id].name;
-    listOfSimulators.splice(btn_id, 1);
-    ResetObjectSubPanel1()
+function DeleteSimulatorFromList(btn_id, child) {
+    var deleteSimName = btn_id;
 
     console.log("Deleting sim from project, check if it's on the canvas = " + deleteSimName);
-    for (i = simulatorObjects.length - 1; i >= 0; i--) {
-        console.log("... " + simulatorObjects[i].name);
-        if (simulatorObjects[i].name == deleteSimName) {
-            console.log(" found one to remove!");
-            DeleteItemFromCanvasById(i);
-        }
+    for (let simObj of Array.from(simulators.get(btn_id).objects).reverse()) {
+        DeleteItemFromCanvasById(simObj);
     }
+
+    simulators.delete(btn_id)
+    child.remove()
     UpdateDrawArrowsAfterDelete(-1, -1);
 }
 
@@ -485,7 +484,7 @@ function ConfigureSimulatorFromList(btn_id) {
     ConfigureClearInspectorPanel();
 
     let panel = $('#inspectorpanel')
-    let selectedObject = listOfSimulators[btn_id]
+    let selectedObject = simulators.get(btn_id)
     let header = $('<div>').addClass('ui compact segment')
     let label = $('<label>').addClass('ui green large label').text(selectedObject.name)
     header.append($('<h3>').text('Simulator in Project'))

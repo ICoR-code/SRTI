@@ -39,10 +39,11 @@ function NewSimulatorObjectPrompt() {
         document.getElementsByName("wrapperFileDirText")[0].innerHTML = "";
         document.getElementsByName("NewSimExecute")[0].value = "";
     } else {
-        document.getElementsByName("NewSimName")[0].value = listOfSimulators[editExistingObject].name;
-        document.getElementsByName("NewSimRef")[0].value = listOfSimulators[editExistingObject].refName;
-        document.getElementsByName("wrapperFileDirText")[0].innerHTML = listOfSimulators[editExistingObject].filePath;
-        document.getElementsByName("NewSimExecute")[0].value = listOfSimulators[editExistingObject].executeCommand;
+        let simulator = simulators.get(editExistingObject)
+        document.getElementsByName("NewSimName")[0].value = simulator.name;
+        document.getElementsByName("NewSimRef")[0].value = simulator.refName;
+        document.getElementsByName("wrapperFileDirText")[0].innerHTML = simulator.filePath;
+        document.getElementsByName("NewSimExecute")[0].value = simulator.executeCommand;
     }
 }
 
@@ -63,8 +64,9 @@ function NewSimulatorObjectPrompt2() {
         $('#modalNewSimulatorPanel1').hide()
         $('#modalNewSimulatorPanel2').hide()
     } else {
-        simulatorFunctions = listOfSimulators[editExistingObject].functions;
-        listOfMessageObjects = listOfSimulators[editExistingObject].variables;
+        let simulator = simulators.get(editExistingObject)
+        simulatorFunctions = simulator.functions;
+        variables = simulator.variables;
         UpdateObjectToSimulatorDef();
         UpdateFunctionToSimulatorDef();
     }
@@ -76,7 +78,7 @@ function NewSimulatorObjectPrompt2() {
 function CloseNewSimulatorObjectPrompt2() {
     DisplayOrClosePrompt("modalNewSim2", "none");
 
-    listOfMessageObjects = [];
+    variables = new Map();
     simulatorFunctions = new Map();
     $('#modalNewSimulatorPanel1').empty()
     $('#modalNewSimulatorPanel2').empty()
@@ -91,7 +93,7 @@ function NewMessageObjectPrompt() {
     if (editExistingObject == -1) {
 
     } else {
-        listOfMessageObjects = listOfMessages[editExistingObject].variables;
+        variables = listOfMessages[editExistingObject].variables;
         document.getElementsByName("NewMessageName")[0].value = listOfMessages[editExistingObject].name;
         UpdateObjectToMessageDef();
     }
@@ -102,7 +104,7 @@ function NewMessageObjectPrompt() {
 */
 function CloseNewMessageObjectPrompt() {
     DisplayOrClosePrompt("modalNewMessage", "none");
-    listOfMessageObjects = [];
+    variables = new Map();
     document.getElementsByName("NewMessageName")[0].value = "";
     $('#modalNewMessagePanel1').empty()
     editExistingObject = -1;
@@ -147,13 +149,27 @@ function NewPublishConnectionPrompt(message_id, simulator_id) {
 
     menu.append(item)
 
+    let data_simulator = simulatorObjects[simulator_id].original
 
-    for (j = 0; j < simulatorObjects[simulator_id].original.variables.length; j++) {
+
+    // for (j = 0; j < simulatorObjects[simulator_id].original.variables.length; j++) {
+    //     item = $('<div>', {
+    //         class: 'item',
+    //         'data-value': j,
+    //         text: simulatorObjects[simulator_id].original.variables[j].name + " ("
+    //             + simulatorObjects[simulator_id].original.variables[j].valueType + ")",
+    //         originalObjectId: simulator_id,
+    //     })
+
+    //     menu.append(item)
+    // }
+
+    for (let [name, variable] of data_simulator.variables) {
         item = $('<div>', {
             class: 'item',
-            'data-value': j,
-            text: simulatorObjects[simulator_id].original.variables[j].name + " ("
-                + simulatorObjects[simulator_id].original.variables[j].valueType + ")",
+            'data-value': name,
+            text: name + " ("
+                + variable.valueType + ")",
             originalObjectId: simulator_id,
         })
 
@@ -165,11 +181,11 @@ function NewPublishConnectionPrompt(message_id, simulator_id) {
     dropdown.append($('<div>', { class: 'default text', text: '(DEFAULT)' }))
     dropdown.append(menu)
 
-    for (i = 0; i < messageObjects[message_id].original.variables.length; i++) {
-        console.log("add variable to list here... " + i);
+    for (let [name, variable] of messageObjects[message_id].original.variables) {
+        console.log("add variable to list here... " + name);
         messageVar = $('<div>').addClass('nine wide middle aligned continued column')
-        label = $('<label>').text(messageObjects[message_id].original.variables[i].name + " ("
-            + messageObjects[message_id].original.variables[i].valueType + ")")
+        label = $('<label>').text(name + " ("
+            + variable.valueType + ")")
 
         messageVar.append(label)
 
@@ -232,12 +248,12 @@ function EditPublishConnectionPrompt() {
     menu.append(item)
 
 
-    for (j = 0; j < simulatorObjects[editExistingObject].original.variables.length; j++) {
+    for (let [name, variable] of simulatorObjects[editExistingObject].original.variables) {
         item = $('<div>', {
             class: 'item',
-            'data-value': j,
-            text: simulatorObjects[editExistingObject].original.variables[j].name + " ("
-                + simulatorObjects[editExistingObject].original.variables[j].valueType + ")",
+            'data-value': name,
+            text: name + " ("
+                + variable.valueType + ")",
             originalObjectId: editExistingObject,
         })
 
@@ -249,11 +265,11 @@ function EditPublishConnectionPrompt() {
     dropdown.append($('<div>', { class: 'default text', text: '(DEFAULT)' }))
     dropdown.append(menu)
 
-    for (i = 0; i < messageObjects[originalMessageId].original.variables.length; i++) {
-        console.log("add variable to list here... " + i);
+    for (let [name, variable] of messageObjects[originalMessageId].original.variables) {
+        console.log("add variable to list here... " + name);
         messageVar = $('<div>').addClass('nine wide middle aligned continued column')
-        label = $('<label>').text(messageObjects[originalMessageId].original.variables[i].name + " ("
-            + messageObjects[originalMessageId].original.variables[i].valueType + ")")
+        label = $('<label>').text(name + " ("
+            + variable.valueType + ")")
 
         messageVar.append(label)
 
@@ -372,12 +388,12 @@ function NewSubscribeConnectionPrompt(message_id, simulator_id) {
     menu.append(item)
 
 
-    for (j = 0; j < messageObjects[message_id].original.variables.length; j++) {
+    for (let [name, variable] of messageObjects[message_id].original.variables) {
         item = $('<div>', {
             class: 'item',
-            'data-value': j,
-            text: messageObjects[message_id].original.variables[j].name + " ("
-                + messageObjects[message_id].original.variables[j].valueType + ")",
+            'data-value': name,
+            text: name + " ("
+                + variable.valueType + ")",
             originalObjectId: message_id,
         })
 
@@ -389,11 +405,11 @@ function NewSubscribeConnectionPrompt(message_id, simulator_id) {
     dropdown.append($('<div>', { class: 'default text', text: '(DEFAULT)' }))
     dropdown.append(menu)
 
-    for (i = 0; i < simulatorObjects[simulator_id].original.variables.length; i++) {
-        console.log("add variable to list here... " + i);
+    for (let [name, variable] of simulatorObjects[simulator_id].original.variables) {
+        console.log("add variable to list here... " + name);
         simVar = $('<div>').addClass('nine wide middle aligned continued column')
-        label = $('<label>').text(simulatorObjects[simulator_id].original.variables[i].name + " ("
-            + simulatorObjects[simulator_id].original.variables[i].valueType + ")")
+        label = $('<label>').text(name + " ("
+            + variable.valueType + ")")
 
         simVar.append(label)
 
@@ -458,12 +474,12 @@ function EditSubscribeConnectionPrompt() {
     menu.append(item)
 
 
-    for (j = 0; j < messageObjects[originalMessageId].original.variables.length; j++) {
+    for (let [name, variable] of messageObjects[originalMessageId].original.variables) {
         item = $('<div>', {
             class: 'item',
             'data-value': j,
-            text: messageObjects[originalMessageId].original.variables[j].name + " ("
-                + messageObjects[originalMessageId].original.variables[j].valueType + ")",
+            text: name + " ("
+                + variable.valueType + ")",
             originalObjectId: originalMessageId,
         })
 
@@ -475,11 +491,11 @@ function EditSubscribeConnectionPrompt() {
     dropdown.append($('<div>', { class: 'default text', text: '(DEFAULT)' }))
     dropdown.append(menu)
 
-    for (i = 0; i < simulatorObjects[editExistingObject].original.variables.length; i++) {
-        console.log("add variable to list here... " + i);
+    for (let [name, variable] of simulatorObjects[editExistingObject].original.variables) {
+        console.log("add variable to list here... " + name);
         simVar = $('<div>').addClass('nine wide middle aligned continued column')
-        label = $('<label>').text(simulatorObjects[editExistingObject].original.variables[i].name + " ("
-            + simulatorObjects[editExistingObject].original.variables[i].valueType + ")")
+        label = $('<label>').text(name + " ("
+            + variable.valueType + ")")
 
         simVar.append(label)
 
@@ -590,7 +606,8 @@ function ImportObject() {
     }
     var obj = JSON.parse(content);
     if (importType == 1) {
-        listOfSimulators.push(obj.simdef);
+        //TODO: transform
+        simulators.set(obj.simdef.name, ConvertSimulatoro(obj.simdef));
         AppendObjectToSubPanel1()
     } else if (importType == 2) {
         listOfMessages.push(obj.mesdef);
@@ -652,24 +669,24 @@ function AddNewObjectSimulator2() {
     var newFilePath = document.getElementsByName("wrapperFileDirText")[0].innerHTML;
     var newExecute = document.getElementsByName("NewSimExecute")[0].value;
     if (editExistingObject == -1) {
-        listOfSimulators.push({
-            name: newSimName,
-            refName: newRefName, filePath: newFilePath, executeCommand: newExecute,
-            functions: simulatorFunctions, variables: listOfMessageObjects
-        });
+        simulators.set(newSimName, NewSimulator(
+            newSimName,
+            newRefName, newFilePath, newExecute,
+            simulatorFunctions, variables
+        ));
     } else {
-        var originalName = listOfSimulators[editExistingObject].name;
-        listOfSimulators[editExistingObject].name = newSimName;
-        listOfSimulators[editExistingObject].refName = newRefName;
-        listOfSimulators[editExistingObject].filePath = newFilePath;
-        listOfSimulators[editExistingObject].executeCommand = newExecute;
-        listOfSimulators[editExistingObject].functions = simulatorFunctions;
-        listOfSimulators[editExistingObject].variables = listOfMessageObjects;
+        let simulator = simulators.get(editExistingObject)
+        var originalName = simulator.name;
+        simulator.name = newSimName;
+        simulator.refName = newRefName;
+        simulator.filePath = newFilePath;
+        simulator.executeCommand = newExecute;
+        simulator.functions = simulatorFunctions;
+        simulator.variables = variables;
         let i = 0;
         for (i = 0; i < simulatorObjects.length; i++) {
             if (simulatorObjects[i].name == originalName) {
                 simulatorObjects[i].name = newSimName;
-                simulatorObjects[i].original = listOfSimulators[editExistingObject];
                 simulatorObjects[i].objectRef.innerHTML = newSimName;
             }
         }
@@ -694,11 +711,11 @@ function AddNewObjectMessage() {
     }
     var newMessageName = document.getElementsByName("NewMessageName")[0].value;
     if (editExistingObject == -1) {
-        listOfMessages.push({ name: newMessageName, variables: listOfMessageObjects });
+        listOfMessages.push({ name: newMessageName, variables: variables });
     } else {
         var originalName = listOfMessages[editExistingObject].name;
         listOfMessages[editExistingObject].name = newMessageName;
-        listOfMessages[editExistingObject].variables = listOfMessageObjects;
+        listOfMessages[editExistingObject].variables = variables;
         let i = 0;
         for (i = 0; i < messageObjects.length; i++) {
             if (messageObjects[i].name == originalName) {
@@ -719,27 +736,29 @@ function AddNewObjectMessage() {
 	- Add variable object to message (during defining a new message for the project).
 */
 function AddObjectToMessageDef() {
-    var newMessageObjectName = document.getElementsByName("NewMessageObjectName")[0].value;
-    document.getElementsByName("NewMessageObjectName")[0].value = "";
-    let newMessageObjectType = $('.checked').find('input[name="NewMessageObject"]').attr('value')
-    listOfMessageObjects.push({ name: newMessageObjectName, valueType: newMessageObjectType });
-    let panel = $('#modalNewMessagePanel1')
-    if (listOfMessageObjects.length === 1) {
-        panel.show()
-    }
-
-    let child = $('<div>').addClass('div-list-item ui compact segment')
-    child.append($('<label>').html(`<code>${newMessageObjectName}</code> (${newMessageObjectType})`).attr('style', 'vertical-align:sub;'))
-    var button = $('<button>', {
-        class: "ui compact icon button right floated", name: newMessageObjectName
-    }).data('pointer', child).click(
-        function () {
-            RemoveObjectToMessageDef($(this).data('pointer'), $(this).attr('name'))
+    let newMessageVarName = $('[name="NewMessageObjectName"]').val()
+    $('[name="NewMessageObjectName"]').val('')
+    if (!variables.has(newMessageVarName)) {
+        let newMessageObjectType = $('.checked').find('input[name="NewMessageObject"]').attr('value')
+        variables.set(newMessageObjectName, NewVariable(newMessageObjectName, newMessageObjectType));
+        let panel = $('#modalNewMessagePanel1')
+        if (variables.size === 1) {
+            panel.show()
         }
-    )
-    button.append($('<i>').addClass('times icon'))
-    child.append(button)
-    panel.append(child)
+
+        let child = $('<div>').addClass('div-list-item ui compact segment')
+        child.append($('<label>').html(`<code>${newMessageObjectName}</code> (${newMessageObjectType})`).attr('style', 'vertical-align:sub;'))
+        var button = $('<button>', {
+            class: "ui compact icon button right floated", name: newMessageObjectName
+        }).data('pointer', child).click(
+            function () {
+                RemoveObjectToMessageDef($(this).data('pointer'), $(this).attr('name'))
+            }
+        )
+        button.append($('<i>').addClass('times icon'))
+        child.append(button)
+        panel.append(child)
+    }
 
     CheckEnableObjectToMessageDef();
     CheckEnableSubmitObject();
@@ -750,27 +769,30 @@ function AddObjectToMessageDef() {
 	- Add variable object to message (during defining a new simulator for the project).
 */
 function AddObjectToSimulatorDef() {
-    var newMessageObjectName = document.getElementsByName("NewSimulatorObjectName")[0].value;
-    document.getElementsByName("NewSimulatorObjectName")[0].value = "";
-    let newMessageObjectType = $('.checked').find('input[name="NewSimulatorObject"]').attr('value')
-    listOfMessageObjects.push({ name: newMessageObjectName, valueType: newMessageObjectType });
-    let panel = $('#modalNewSimulatorPanel1')
-    if (listOfMessageObjects.length === 1) {
-        panel.show()
+    let newVariableName = $('[name="NewSimulatorObjectName"]').val()
+    $('[name="NewSimulatorObjectName"]').val('')
+    if (!variables.has(newVariableName)) {
+        let newVariableType = $('.checked').find('input[name="NewSimulatorObject"]').attr('value')
+        variables.set(newVariableName, NewVariable(newVariableName, newVariableType));
+        let panel = $('#modalNewSimulatorPanel1')
+        if (variables.size >= 1) {
+            panel.show()
+        }
+
+        let child = $('<div>').addClass('div-list-item ui compact segment')
+        child.append($('<label>').html(`<code>${newVariableName}</code> (${newVariableType})`).attr('style', 'vertical-align:sub;'))
+        var button = $('<button>', {
+            class: "ui compact icon button right floated", name: newVariableName
+        }).data('pointer', child).click(
+            function () {
+                RemoveObjectToSimulatorDef($(this).data('pointer'), $(this).attr('name'))
+            }
+        )
+        button.append($('<i>').addClass('times icon'))
+        child.append(button)
+        panel.append(child)
     }
 
-    let child = $('<div>').addClass('div-list-item ui compact segment')
-    child.append($('<label>').html(`<code>${newMessageObjectName}</code> (${newMessageObjectType})`).attr('style', 'vertical-align:sub;'))
-    var button = $('<button>', {
-        class: "ui compact icon button right floated", name: newMessageObjectName
-    }).data('pointer', child).click(
-        function () {
-            RemoveObjectToSimulatorDef($(this).data('pointer'), $(this).attr('name'))
-        }
-    )
-    button.append($('<i>').addClass('times icon'))
-    child.append(button)
-    panel.append(child)
 
     CheckEnableObjectToSimulatorDef();
 }
@@ -780,11 +802,9 @@ function AddObjectToSimulatorDef() {
 */
 function UpdateObjectToSimulatorDef() {
     let panel = $('#modalNewSimulatorPanel1')
-    let i = 0, name;
-    for (i = 0; i < listOfMessageObjects.length; i++) {
+    for (let [name, variable] of variables) {
         var child = $('<div>').addClass('div-list-item ui compact segment')
-        name = listOfMessageObjects[i].name
-        child.append($('<label>').html(`<code>${listOfMessageObjects[i].name}</code> (${listOfMessageObjects[i].valueType})`).attr('style', 'vertical-align:sub;'))
+        child.append($('<label>').html(`<code>${name}</code> (${variable.valueType})`).attr('style', 'vertical-align:sub;'))
         var button = $('<button>').addClass('ui compact icon button right floated').attr('name', name).data('pointer', child).click(
             function () {
                 RemoveObjectToSimulatorDef($(this).data('pointer'), $(this).attr('name'))
@@ -795,7 +815,7 @@ function UpdateObjectToSimulatorDef() {
         panel.append(child)
     }
 
-    if (listOfMessageObjects.length > 0) {
+    if (variables.size > 0) {
         panel.show()
     } else {
         panel.hide()
@@ -809,22 +829,20 @@ function UpdateObjectToSimulatorDef() {
 */
 function UpdateObjectToMessageDef() {
     let panel = $('#modalNewMessagePanel1')
-    let i = 0;
-    for (i = 0; i < listOfMessageObjects.length; i++) {
+    for (let [name, variable] of variables) {
         var child = $('<div>').addClass('div-list-item ui compact segment')
-        child.append($('<label>').html(`<code>${listOfMessageObjects[i].name}</code> (${listOfMessageObjects[i].valueType})`).attr('style', 'vertical-align:sub;'))
-        var button = $('<button>').addClass('ui compact icon button right floated').attr('name',
-            listOfMessageObjects[i].name).data('pointer', child).click(
-                function () {
-                    RemoveObjectToMessageDef($(this).data('pointer'), $(this).attr('name'))
-                }
-            )
+        child.append($('<label>').html(`<code>${name}</code> (${variable.valueType})`).attr('style', 'vertical-align:sub;'))
+        var button = $('<button>').addClass('ui compact icon button right floated').attr('name', name).data('pointer', child).click(
+            function () {
+                RemoveObjectToMessageDef($(this).data('pointer'), $(this).attr('name'))
+            }
+        )
         button.append($('<i>').addClass('times icon'))
         child.append(button)
         panel.append(child)
     }
 
-    if (listOfMessageObjects.length > 0) {
+    if (variables.size > 0) {
         panel.show()
     } else {
         panel.hide()
@@ -839,16 +857,11 @@ function UpdateObjectToMessageDef() {
 */
 function RemoveObjectToMessageDef(child, btn_id) {
     console.log("Removing object from list.");
-    let i
-    for (i = 0; i < listOfMessageObjects.length; ++i) {
-        if (listOfMessageObjects[i].name == btn_id) {
-            listOfMessageObjects.splice(i, 1);
-        }
-    }
+    variables.delete(btn_id)
 
     child.remove()
 
-    if (listOfMessageObjects.length === 0) {
+    if (variables.size === 0) {
         $('#modalNewMessagePanel1').hide()
     }
 
@@ -860,16 +873,11 @@ function RemoveObjectToMessageDef(child, btn_id) {
 function RemoveObjectToSimulatorDef(child, btn_id) {
 
     console.log("Removing object from list.");
-    let i
-    for (i = 0; i < listOfMessageObjects.length; ++i) {
-        if (listOfMessageObjects[i].name == btn_id) {
-            listOfMessageObjects.splice(i, 1);
-        }
-    }
+    variables.delete(btn_id)
 
     child.remove()
 
-    if (listOfMessageObjects.length === 0) {
+    if (variables.size === 0) {
         $('#modalNewSimulatorPanel1').hide()
     }
 }
@@ -1023,11 +1031,11 @@ function EditSimLocalTime() {
 
     let item
     let i
-    for (i = 0; i < simulatorObjects[editExistingObject].original.variables.length; i++) {
+    for (let [name, variable] of simulatorObjects[editExistingObject].original.variables) {
         item = $('<div>').addClass('item').html(
-            `<code>${simulatorObjects[editExistingObject].original.variables[i].name}</code> (${simulatorObjects[editExistingObject].original.variables[i].valueType})`
+            `<code>${name}</code> (${variable.valueType})`
         )
-        item.attr('data-value', simulatorObjects[editExistingObject].original.variables[i].name)
+        item.attr('data-value', name)
         dropdown.append(item)
     }
 
@@ -1114,9 +1122,9 @@ function EditSimulateFunctions() {
 
     let item
     let i
-    for (i = 0; i < simulatorObjects[editExistingObject].original.functions.length; i++) {
-        item = $('<div>').addClass('item').append($('<code>').text(simulatorObjects[editExistingObject].original.functions[i].name))
-        item.attr('data-value', simulatorObjects[editExistingObject].original.functions[i].name)
+    for (let [name, fn] of simulatorObjects[editExistingObject].original.functions) {
+        item = $('<div>').addClass('item').append($('<code>').text(name))
+        item.attr('data-value', name)
         dropdown.append(item)
     }
 
@@ -1128,9 +1136,9 @@ function EditSimulateFunctions() {
 
     dropdown = $('#dropdownSimulateFunction .menu')
     dropdown.empty()
-    for (i = 0; i < simulatorObjects[editExistingObject].original.functions.length; i++) {
-        item = $('<div>').addClass('item').append($('<code>').text(simulatorObjects[editExistingObject].original.functions[i].name))
-        item.attr('data-value', simulatorObjects[editExistingObject].original.functions[i].name)
+    for (let [name, fn] of simulatorObjects[editExistingObject].original.functions) {
+        item = $('<div>').addClass('item').append($('<code>').text(name))
+        item.attr('data-value', name)
         dropdown.append(item)
     }
 
@@ -1174,11 +1182,10 @@ function EditStageConditions() {
         dropdown.empty()
 
         let item
-        let i
-        for (i = 0; i < simulatorObjects[editExistingObject].original.variables.length; i++) {
-            item = $('<div>').addClass('item').html('<code>' + simulatorObjects[editExistingObject].original.variables[i].name +
-                "</code> (" + simulatorObjects[editExistingObject].original.variables[i].valueType + ")")
-            item.attr('data-value', simulatorObjects[editExistingObject].original.variables[i].name)
+        for (let [name, variable] of simulatorObjects[editExistingObject].original.variables) {
+            item = $('<div>').addClass('item').html('<code>' + name +
+                "</code> (" + variable.valueType + ")")
+            item.attr('data-value', name)
             dropdown.append(item)
         }
 
@@ -1287,10 +1294,10 @@ function EditEndConditions() {
 
         let item
         let i
-        for (i = 0; i < simulatorObjects[editExistingObject].original.variables.length; i++) {
-            item = $('<div>').addClass('item').text(simulatorObjects[editExistingObject].original.variables[i].name +
-                " (" + simulatorObjects[editExistingObject].original.variables[i].valueType + ")")
-            item.attr('data-value', simulatorObjects[editExistingObject].original.variables[i].name)
+        for (let [name, variable] of simulatorObjects[editExistingObject].original.variables) {
+            item = $('<div>').addClass('item').text(name +
+                " (" + variable.valueType + ")")
+            item.attr('data-value', name)
             dropdown.append(item)
         }
 

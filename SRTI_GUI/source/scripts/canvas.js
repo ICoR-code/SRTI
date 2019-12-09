@@ -38,15 +38,15 @@ function CheckRedrawCanvasGrid() {
     var maxSizeY = minGridSizeY;
 
     let i = 0;
-    for (i = 0; i < simulatorObjects.length; i++) {
+    for (let simObj of simulatorObjects) {
         //!!!!
-        if (((simulatorObjects[i].topPos / 100) + 2 + i) > maxSizeY
-            && simulatorObjects[i].stage == stage) {
-            maxSizeY = (simulatorObjects[i].topPos / 100) + 2 + i;
+        if (((simObj.topPos / 100) + 2 + i) > maxSizeY
+            && simObj.stage == stage) {
+            maxSizeY = (simObj.topPos / 100) + 2 + i;
         }
-        if (((simulatorObjects[i].leftPos / 100) - 1 + 2) > maxSizeX
-            && simulatorObjects[i].stage == stage) {
-            maxSizeX = ((simulatorObjects[i].leftPos / 100) - 1 + 2);
+        if (((simObj.leftPos / 100) - 1 + 2) > maxSizeX
+            && simObj.stage == stage) {
+            maxSizeX = ((simObj.leftPos / 100) - 1 + 2);
         }
         //!!!!
     }
@@ -81,16 +81,20 @@ function dragStart(e) {
 function dragStartMove(e) {
     var clickedOnItem = -1;
     let i = 0;
-    for (i = 0; i < simulatorObjects.length; i++) {
-        if (e.target === simulatorObjects[i].objectRef) {
-            clickedOnItem = i;
+    for (let simObj of simulatorObjects) {
+        if (e.target === simObj.objectRef) {
+            clickedOnItem = simObj;
             break;
         }
+
+        i += 1
     }
-    if (clickedOnItem > -1) {
-        dragItem = simulatorObjects[i].objectRef;
-        xOffset = simulatorObjects[i].offsetX;
-        yOffset = simulatorObjects[i].offsetY;
+
+
+    if (i < simulatorObjects.size) {
+        dragItem = clickedOnItem.objectRef;
+        xOffset = clickedOnItem.offsetX;
+        yOffset = clickedOnItem.offsetY;
 
         if (active === false) {
             if (e.type === "touchstart") {
@@ -113,11 +117,11 @@ function dragStartMove(e) {
 
             setTranslate(currentX, currentY, dragItem);
 
-            simulatorObjects[i].offsetX = xOffset;
-            simulatorObjects[i].offsetY = yOffset;
-            simulatorObjects[i].topPos = (getTranslate3d(dragItem.style.transform))[1];
-            simulatorObjects[i].leftPos = (getTranslate3d(dragItem.style.transform))[0];
-            simulatorObjects[i].order = ((simulatorObjects[i].offsetY / 100) + i);
+            clickedOnItem.offsetX = xOffset;
+            clickedOnItem.offsetY = yOffset;
+            clickedOnItem.topPos = (getTranslate3d(dragItem.style.transform))[1];
+            clickedOnItem.leftPos = (getTranslate3d(dragItem.style.transform))[0];
+            clickedOnItem.order = ((clickedOnItem.offsetY / 100) + i);
 
             CheckRedrawCanvasGrid();
             DrawAllArrowsOnCanvas();
@@ -253,7 +257,7 @@ function DeleteItemFromCanvas(e) {
 	- Delete simulator from canvas by ID (if we deleted it from list on the left, 
 			we need to delete it everywhere else too.)
 */
-function DeleteItemFromCanvasById(id) {
+function DeleteItemFromCanvasById(simObj) {
     let i = id;
     simulatorObjects[i].objectRef.parentNode.removeChild(simulatorObjects[i].objectRef);
     simulatorObjects.splice(i, 1);
@@ -673,7 +677,7 @@ function SetItemsVisibleInStage() {
 /*	CreateNewSimulatorOnCanvas()
 	- Add new simulator object on canvas in main screen.
 */
-function CreateNewSimulatorOnCanvas(btn_id) {
+function CreateNewSimulatorOnCanvas(name) {
     console.log("User wants to add a simulator to the canvas");
 
     var panel = document.getElementById("canvassubpanel1");
@@ -682,7 +686,7 @@ function CreateNewSimulatorOnCanvas(btn_id) {
     var addContentType = document.createElement("div");
     addContentType.className = "ui green button div-canvas-sim";
     addContentType.setAttribute("name", "");
-    var addContent1 = document.createTextNode(listOfSimulators[btn_id].name);
+    var addContent1 = document.createTextNode(name);
     addContentType.appendChild(addContent1);
     // addContentType.style = "position: relative; overflow-y:hidden;";
     panel.appendChild(addContentType);
@@ -693,7 +697,7 @@ function CreateNewSimulatorOnCanvas(btn_id) {
     var newOffsetY = (listOfCurrentItems.length - 1) * 100;
     var newOffsetX = 0;//(listOfCurrentItems.length - 1) * 100;
     simulatorObjects.push({
-        name: listOfSimulators[btn_id].name, original: listOfSimulators[btn_id],
+        name: name,
         stage: parseInt(stage), objectRef: addContentType, order: 0,
         offsetX: newOffsetX, offsetY: -newOffsetY, leftPos: 0, topPos: 0,
         subscribedMessages: [], publishedMessages: [],
@@ -705,6 +709,8 @@ function CreateNewSimulatorOnCanvas(btn_id) {
         initialize: "", simulate: "", simulateTimeDelta: 1,
         stageConditions: [], endConditions: []
     });
+
+    simulators.get(name).objects.add(simulatorObjects[-1])
     setTranslate(0, -newOffsetY, addContentType);
     //setTranslate(-newOffsetX, 0, addContentType);
     //!!!!
