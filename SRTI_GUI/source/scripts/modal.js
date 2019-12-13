@@ -93,8 +93,8 @@ function NewMessageObjectPrompt() {
     if (editExistingObject == -1) {
 
     } else {
-        variables = listOfMessages[editExistingObject].variables;
-        document.getElementsByName("NewMessageName")[0].value = listOfMessages[editExistingObject].name;
+        variables = editExistingObject.variables;
+        document.getElementsByName("NewMessageName")[0].value = editExistingObject.name;
         UpdateObjectToMessageDef();
     }
 }
@@ -113,11 +113,13 @@ function CloseNewMessageObjectPrompt() {
 /*	NewPublishConnectionPrompt()
 	- Open prompt to add details to a new "publish" connection (sim -> message).
 */
-function NewPublishConnectionPrompt(message_id, simulator_id) {
+function NewPublishConnectionPrompt(msgObj, simObj) {
     DisplayOrClosePrompt("modalPublishDetails", "block");
 
-    let messageName = messageObjects[message_id].name;
-    let simulatorName = simulatorObjects[simulator_id].name;
+    // TODO: pub has not been updated to the same style as sub!
+
+    let messageName = msgObj.name;
+    let simulatorName = simObj.name;
 
     let segment = $('#modalPublishDetailsSegment')
     segment.empty()
@@ -134,35 +136,20 @@ function NewPublishConnectionPrompt(message_id, simulator_id) {
     let i, messageVar, label, simVar, dropdown, menu, j, item, newDropdown
     dropdown = $('<div>', {
         class: 'ui selection dropdown',
-        originalObjectId: message_id,
-        messageObjectId: -1,
-        variableObjectId: -1,
+        varName: ""
     })
 
     menu = $('<div>').addClass('menu')
     item = $('<div>', {
         class: 'item',
-        'data-value': -1,
+        'data-value': "",
         text: "(DEFAULT)",
-        originalObjectId: simulator_id,
     })
 
     menu.append(item)
 
-    let data_simulator = simulatorObjects[simulator_id].original
+    let data_simulator = simulators.get(simObj.name)
 
-
-    // for (j = 0; j < simulatorObjects[simulator_id].original.variables.length; j++) {
-    //     item = $('<div>', {
-    //         class: 'item',
-    //         'data-value': j,
-    //         text: simulatorObjects[simulator_id].original.variables[j].name + " ("
-    //             + simulatorObjects[simulator_id].original.variables[j].valueType + ")",
-    //         originalObjectId: simulator_id,
-    //     })
-
-    //     menu.append(item)
-    // }
 
     for (let [name, variable] of data_simulator.variables) {
         item = $('<div>', {
@@ -170,7 +157,6 @@ function NewPublishConnectionPrompt(message_id, simulator_id) {
             'data-value': name,
             text: name + " ("
                 + variable.valueType + ")",
-            originalObjectId: simulator_id,
         })
 
         menu.append(item)
@@ -181,7 +167,7 @@ function NewPublishConnectionPrompt(message_id, simulator_id) {
     dropdown.append($('<div>', { class: 'default text', text: '(DEFAULT)' }))
     dropdown.append(menu)
 
-    for (let [name, variable] of messageObjects[message_id].original.variables) {
+    for (let [name, variable] of messages.get(messageName).variables) {
         console.log("add variable to list here... " + name);
         messageVar = $('<div>').addClass('nine wide middle aligned continued column')
         label = $('<label>').text(name + " ("
@@ -191,7 +177,7 @@ function NewPublishConnectionPrompt(message_id, simulator_id) {
 
         simVar = $('<div>').addClass('six wide middle aligned continued column')
 
-        newDropdown = dropdown.clone().attr('messageObjectId', i)
+        newDropdown = dropdown.clone().attr('varName', name)
 
         simVar.append(newDropdown)
 
@@ -212,10 +198,10 @@ function EditPublishConnectionPrompt() {
     // TODO: extract the common logic of edit and new
     DisplayOrClosePrompt("modalPublishDetails", "block");
 
-    let originalMessageId = simulatorObjects[editExistingObject].publishedMessages[editExistingObject2];
-    let messageName = messageObjects[simulatorObjects[editExistingObject].publishedMessages[editExistingObject2]].name;
-    let simulatorName = simulatorObjects[editExistingObject].name;
-    let publishedDetail = simulatorObjects[editExistingObject].publishedDetails[editExistingObject2];
+    let pub = editExistingObject.publishedMessages.get(editExistingObject2);
+    let messageName = pub.name;
+    let simulatorName = editExistingObject.name;
+    let publishedDetail = pub.details;
 
     let segment = $('#modalPublishDetailsSegment')
     segment.empty()
@@ -232,29 +218,25 @@ function EditPublishConnectionPrompt() {
     let i, messageVar, label, simVar, dropdown, menu, j, item, newDropdown, dropdowns = []
     dropdown = $('<div>', {
         class: 'ui selection dropdown',
-        originalObjectId: originalMessageId,
-        messageObjectId: -1,
-        variableObjectId: -1,
+        varName: ""
     })
 
     menu = $('<div>').addClass('menu')
     item = $('<div>', {
         class: 'item',
-        'data-value': -1,
+        'data-value': "",
         text: "(DEFAULT)",
-        originalObjectId: editExistingObject,
     })
 
     menu.append(item)
 
 
-    for (let [name, variable] of simulatorObjects[editExistingObject].original.variables) {
+    for (let [name, variable] of simulators.get(simulatorName).variables) {
         item = $('<div>', {
             class: 'item',
             'data-value': name,
             text: name + " ("
                 + variable.valueType + ")",
-            originalObjectId: editExistingObject,
         })
 
         menu.append(item)
@@ -265,7 +247,7 @@ function EditPublishConnectionPrompt() {
     dropdown.append($('<div>', { class: 'default text', text: '(DEFAULT)' }))
     dropdown.append(menu)
 
-    for (let [name, variable] of messageObjects[originalMessageId].original.variables) {
+    for (let [name, variable] of messages.get(messageName).variables) {
         console.log("add variable to list here... " + name);
         messageVar = $('<div>').addClass('nine wide middle aligned continued column')
         label = $('<label>').text(name + " ("
@@ -275,7 +257,7 @@ function EditPublishConnectionPrompt() {
 
         simVar = $('<div>').addClass('six wide middle aligned continued column')
 
-        newDropdown = dropdown.clone().attr('messageObjectId', i)
+        newDropdown = dropdown.clone().attr('varName', name)
 
         simVar.append(newDropdown)
 
@@ -284,18 +266,14 @@ function EditPublishConnectionPrompt() {
 
         newDropdown.dropdown()
         dropdowns.push(newDropdown)
+
+        let varName = publishedDetail.get(name).value
+        //TODO: replace -1 with null
+        newDropdown.dropdown('set selected', varName ? varName : "")
     }
 
-    for (i = 0; i < publishedDetail.length; i++) {
-        if (publishedDetail[i][1] >= -1) {
-            // then "publishedDetail[j][1]" is the index of the simulator's variable that corresponds to it
-            console.log(dropdowns[publishedDetail[i][0]])
-            $(dropdowns[publishedDetail[i][0]]).dropdown('set selected', String(publishedDetail[i][1]))
-        }
-    }
-
-    $(`input[name="radioPublishInitial"][value="${simulatorObjects[editExistingObject].publishedInitial[editExistingObject2]}"]`).parent().checkbox('check')
-    $('input[name="textPublishDelta"]').val(simulatorObjects[editExistingObject].publishedTimeDelta[editExistingObject2])
+    $(`input[name="radioPublishInitial"][value="${pub.initial}"]`).parent().checkbox('check')
+    $('input[name="textPublishDelta"]').val(pub.timeDelta)
 }
 
 /*	SavePublishConnectionPrompt()
@@ -305,27 +283,28 @@ function SavePublishConnectionPrompt() {
 
 
     // dragItem is the reference to the Simulator
-    let newDetails = [];
+    let newDetails = new Map();
     // list of pairs: [index of message variable, index of simulator variable or -1 for default]
     $('#modalPublishDetailsSegment .dropdown').each(function () {
+
         let j = parseInt($(this).dropdown('get value'))
-        if (j != -1) {
-            newDetails.push([parseInt($(this).attr('messageObjectId')), j]);
-        }
+        newDetails.set($(this).attr('varName'), { name: $(this).attr('varName'), value: j ? null : j })
     })
+
 
     let initial = $('input[name=radioPublishInitial]:checked').val()
     let timeDelta = parseInt($('input[name=textPublishDelta]').val())
 
+    let messageName = $('#modalPublishDetailsSegment .ui.blue.label').text()
+
     if (editExistingObject == -1) {
-        dragItem.publishedDetails.push(newDetails);
-        dragItem.publishedInitial.push(initial);
-        dragItem.publishedTimeDelta.push(parseInt(timeDelta));
+        dragItem.publishedMessages.set(messageName, NewPublish(messageName, initial, parseInt(timeDelta), newDetails))
         // by happy accident, "publishedDetails" will contain an entry in the same order as "publishedMessages".
     } else {
-        simulatorObjects[editExistingObject].publishedDetails[editExistingObject2] = newDetails;
-        simulatorObjects[editExistingObject].publishedInitial[editExistingObject2] = initial;
-        simulatorObjects[editExistingObject].publishedTimeDelta[editExistingObject2] = parseInt(timeDelta);
+        let pub = editExistingObject.publishedMessages.get(messageName)
+        pub.details = newDetails;
+        pub.initial = initial;
+        pub.timeDelta = parseInt(timeDelta);
     }
     ClosePublishConnectionPrompt();
 }
@@ -351,11 +330,11 @@ function ClosePublishConnectionPrompt() {
 /* 	NewSubscribeConnectionPrompt()
 	- Open prompt to create new "subscribe" connection (message -> sim)	 
 */
-function NewSubscribeConnectionPrompt(message_id, simulator_id) {
+function NewSubscribeConnectionPrompt(msgObj, simObj) {
     DisplayOrClosePrompt("modalSubscribeDetails", "block");
 
-    let messageName = messageObjects[message_id].name;
-    let simulatorName = simulatorObjects[simulator_id].name;
+    let messageName = msgObj.name;
+    let simulatorName = simObj.name;
 
     let segment = $('#modalSubscribeDetailsSegment')
     segment.empty()
@@ -372,29 +351,25 @@ function NewSubscribeConnectionPrompt(message_id, simulator_id) {
     let i, messageVar, label, simVar, dropdown, menu, j, item, newDropdown
     dropdown = $('<div>', {
         class: 'ui selection dropdown',
-        originalObjectId: message_id,
-        simulatorObjectId: -1,
-        variableObjectId: -1,
+        varName: "",
     })
 
     menu = $('<div>').addClass('menu')
     item = $('<div>', {
         class: 'item',
-        'data-value': -1,
+        'data-value': "",
         text: "(DEFAULT)",
-        originalObjectId: message_id,
     })
 
     menu.append(item)
 
 
-    for (let [name, variable] of messageObjects[message_id].original.variables) {
+    for (let [name, variable] of messages.get(messageName).variables) {
         item = $('<div>', {
             class: 'item',
             'data-value': name,
             text: name + " ("
                 + variable.valueType + ")",
-            originalObjectId: message_id,
         })
 
         menu.append(item)
@@ -405,7 +380,7 @@ function NewSubscribeConnectionPrompt(message_id, simulator_id) {
     dropdown.append($('<div>', { class: 'default text', text: '(DEFAULT)' }))
     dropdown.append(menu)
 
-    for (let [name, variable] of simulatorObjects[simulator_id].original.variables) {
+    for (let [name, variable] of simulators.get(simObj.name).variables) {
         console.log("add variable to list here... " + name);
         simVar = $('<div>').addClass('nine wide middle aligned continued column')
         label = $('<label>').text(name + " ("
@@ -415,7 +390,7 @@ function NewSubscribeConnectionPrompt(message_id, simulator_id) {
 
         messageVar = $('<div>').addClass('six wide middle aligned continued column')
 
-        newDropdown = dropdown.clone().attr('simulatorObjectId', i)
+        newDropdown = dropdown.clone().attr('varName', name)
 
         messageVar.append(newDropdown)
 
@@ -438,10 +413,10 @@ function EditSubscribeConnectionPrompt() {
     // TODO: extract the common logic of edit and new
     DisplayOrClosePrompt("modalSubscribeDetails", "block");
 
-    let originalMessageId = simulatorObjects[editExistingObject].subscribedMessages[editExistingObject2];
-    let messageName = messageObjects[originalMessageId].name;
-    let simulatorName = simulatorObjects[editExistingObject].name;
-    let subscribedDetail = simulatorObjects[editExistingObject].subscribedDetails[editExistingObject2];
+    let sub = editExistingObject.subscribedMessages.get(editExistingObject2);
+    let messageName = sub.name;
+    let simulatorName = editExistingObject.name;
+    let subscribedDetail = sub.details
 
     let segment = $('#modalSubscribeDetailsSegment')
     segment.empty()
@@ -458,29 +433,25 @@ function EditSubscribeConnectionPrompt() {
     let i, messageVar, label, simVar, dropdown, menu, j, item, newDropdown, dropdowns = []
     dropdown = $('<div>', {
         class: 'ui selection dropdown',
-        originalObjectId: originalMessageId,
-        simulatorObjectId: -1,
-        variableObjectId: -1,
+        varName: ""
     })
 
     menu = $('<div>').addClass('menu')
     item = $('<div>', {
         class: 'item',
-        'data-value': -1,
+        'data-value': "",
         text: "(DEFAULT)",
-        originalObjectId: originalMessageId,
     })
 
     menu.append(item)
 
 
-    for (let [name, variable] of messageObjects[originalMessageId].original.variables) {
+    for (let [name, variable] of messages.get(messageName).variables) {
         item = $('<div>', {
             class: 'item',
-            'data-value': j,
+            'data-value': name,
             text: name + " ("
                 + variable.valueType + ")",
-            originalObjectId: originalMessageId,
         })
 
         menu.append(item)
@@ -491,7 +462,7 @@ function EditSubscribeConnectionPrompt() {
     dropdown.append($('<div>', { class: 'default text', text: '(DEFAULT)' }))
     dropdown.append(menu)
 
-    for (let [name, variable] of simulatorObjects[editExistingObject].original.variables) {
+    for (let [name, variable] of simulators.get(simulatorName).variables) {
         console.log("add variable to list here... " + name);
         simVar = $('<div>').addClass('nine wide middle aligned continued column')
         label = $('<label>').text(name + " ("
@@ -501,7 +472,7 @@ function EditSubscribeConnectionPrompt() {
 
         messageVar = $('<div>').addClass('six wide middle aligned continued column')
 
-        newDropdown = dropdown.clone().attr('simulatorObjectId', i)
+        newDropdown = dropdown.clone().attr('varName', name)
 
         messageVar.append(newDropdown)
 
@@ -510,20 +481,16 @@ function EditSubscribeConnectionPrompt() {
 
         newDropdown.dropdown()
         dropdowns.push(newDropdown)
+
+        let varName = subscribedDetail.get(name).value
+        newDropdown.dropdown('set selected', varName ? varName : "")
     }
 
-    for (i = 0; i < subscribedDetail.length; i++) {
-        if (subscribedDetail[i][1] >= -1) {
-            // then "publishedDetail[j][1]" is the index of the simulator's variable that corresponds to it
-            console.log(dropdowns[subscribedDetail[i][0]])
-            $(dropdowns[subscribedDetail[i][0]]).dropdown('set selected', String(subscribedDetail[i][1]))
-        }
-    }
 
-    $(`input[name="radioSubscribeInitial"][value="${simulatorObjects[editExistingObject].subscribedInitial[editExistingObject2]}"]`).parent().checkbox('check')
-    $('input[name="textSubscribeDelta"]').val(simulatorObjects[editExistingObject].subscribedTimeDelta[editExistingObject2])
-    $('input[name="textSubscribeRelative"]').val(simulatorObjects[editExistingObject].subscribedRelative[editExistingObject2])
-    $('input[name="textSubscribeTimestep"]').val(simulatorObjects[editExistingObject].subscribedTimestep[editExistingObject2])
+    $(`input[name="radioSubscribeInitial"][value="${sub.initial}"]`).parent().checkbox('check')
+    $('input[name="textSubscribeDelta"]').val(sub.timeDelta)
+    $('input[name="textSubscribeRelative"]').val(sub.relative)
+    $('input[name="textSubscribeTimestep"]').val(sub.timestep)
 }
 
 /*	SaveSubscribeConnectionPrompt()
@@ -532,12 +499,10 @@ function EditSubscribeConnectionPrompt() {
 function SaveSubscribeConnectionPrompt() {
     // dragItem is the reference to the Simulator
     console.log("saving subscribe data...");
-    let newDetails = [];
+    let newDetails = new Map();
     $('#modalSubscribeDetailsSegment .dropdown').each(function () {
         let j = parseInt($(this).dropdown('get value'))
-        if (j != -1) {
-            newDetails.push([parseInt($(this).attr('simulatorObjectId')), j]);
-        }
+        newDetails.set($(this).attr('varName'), { name: $(this).attr('varName'), value: j ? null : j })
     })
 
     let initial = $('input[name=radioSubscribeInitial]:checked').val()
@@ -545,18 +510,19 @@ function SaveSubscribeConnectionPrompt() {
     let relative = parseInt($('input[name=textSubscribeRelative]').val())
     let timestep = parseInt($('input[name=textSubscribeTimestep]').val())
 
+    let messageName = $('#modalSubscribeDetailsSegment .ui.blue.label').text()
+
     if (editExistingObject == -1) {
-        dragItem.subscribedDetails.push(newDetails);
-        dragItem.subscribedInitial.push(initial);
-        dragItem.subscribedTimeDelta.push(parseInt(timeDelta));
-        dragItem.subscribedRelative.push(parseInt(relative));
-        dragItem.subscribedTimestep.push(parseInt(timestep));
+        dragItem.subscribedMessage.set(messageName, NewSubscribe(
+            messageName, initial, parseInt(timeDelta), parseInt(relative), parseInt(timestep), newDetails))
     } else {
-        simulatorObjects[editExistingObject].subscribedDetails[editExistingObject2] = newDetails;
-        simulatorObjects[editExistingObject].subscribedInitial[editExistingObject2] = initial;
-        simulatorObjects[editExistingObject].subscribedTimeDelta[editExistingObject2] = parseInt(timeDelta);
-        simulatorObjects[editExistingObject].subscribedRelative[editExistingObject2] = parseInt(relative);
-        simulatorObjects[editExistingObject].subscribedTimestep[editExistingObject2] = parseInt(timestep);
+        let sub = editExistingObject.subscribedMessages.get(messageName)
+
+        sub.details = newDetails;
+        sub.initial = initial;
+        sub.timeDelta = parseInt(timeDelta);
+        sub.relative = parseInt(relative);
+        sub.timestep = parseInt(timestep);
     }
     CloseSubscribeConnectionPrompt();
 }
@@ -607,11 +573,13 @@ function ImportObject() {
     var obj = JSON.parse(content);
     if (importType == 1) {
         //TODO: transform
-        simulators.set(obj.simdef.name, ConvertSimulatoro(obj.simdef));
-        AppendObjectToSubPanel1()
+        let simulator = ConvertSimulator(obj.simdef)
+        simulators.set(obj.simdef.name, simulator);
+        AppendObjectToSubPanel1(simulator)
     } else if (importType == 2) {
-        listOfMessages.push(obj.mesdef);
-        ResetObjectSubPanel2();
+        let message = ConvertMessage(obj.mesdef)
+        messages.set(obj.mesdef.name, message);
+        AppendObjectToSubPanel2(message)
     }
     CloseImportObjectPrompt();
 }
@@ -675,7 +643,7 @@ function AddNewObjectSimulator2() {
             simulatorFunctions, variables
         ));
     } else {
-        let simulator = simulators.get(editExistingObject)
+        let simulator = editExistingObject
         var originalName = simulator.name;
         simulator.name = newSimName;
         simulator.refName = newRefName;
@@ -683,12 +651,9 @@ function AddNewObjectSimulator2() {
         simulator.executeCommand = newExecute;
         simulator.functions = simulatorFunctions;
         simulator.variables = variables;
-        let i = 0;
-        for (i = 0; i < simulatorObjects.length; i++) {
-            if (simulatorObjects[i].name == originalName) {
-                simulatorObjects[i].name = newSimName;
-                simulatorObjects[i].objectRef.innerHTML = newSimName;
-            }
+        for (let simObj in simulator.objects) {
+            simObj.name = newSimName;
+            simObj.objectRef.innerHTML = newSimName;
         }
 
     }
@@ -711,19 +676,15 @@ function AddNewObjectMessage() {
     }
     var newMessageName = document.getElementsByName("NewMessageName")[0].value;
     if (editExistingObject == -1) {
-        listOfMessages.push({ name: newMessageName, variables: variables });
+        messages.set(newMessageName, NewMessage(newMessageName, variables));
     } else {
-        var originalName = listOfMessages[editExistingObject].name;
-        listOfMessages[editExistingObject].name = newMessageName;
-        listOfMessages[editExistingObject].variables = variables;
-        let i = 0;
-        for (i = 0; i < messageObjects.length; i++) {
-            if (messageObjects[i].name == originalName) {
-                messageObjects[i].name = newMessageName;
-                messageObjects[i].original = listOfMessages[editExistingObject];
-                messageObjects[i].objectRef.innerHTML = newMessageName;
-            }
-        }
+        var originalName = editExistingObject.name;
+        editExistingObject.name = newMessageName;
+        editExistingObject.variables = variables;
+
+        msgObj = messageObjects.get(originalName)
+        msgObj.name = newMessageName
+        msgObj.objectRef.innerHTML = newMessageName
     }
     ResetObjectSubPanel2()
     if (selectState == 0) {
@@ -1023,15 +984,15 @@ function EditSimLocalTime() {
     DisplayOrClosePrompt("modalLocalTime", "block");
 
 
-    $('input[name="newTimeDelta"]').val(simulatorObjects[editExistingObject].timeDelta)
-    $('input[name="newTimeScale"]').val(simulatorObjects[editExistingObject].timeScale)
+    $('input[name="newTimeDelta"]').val(editExistingObject.timeDelta)
+    $('input[name="newTimeScale"]').val(editExistingObject.timeScale)
 
     let dropdown = $('#dropdownVar .menu')
     dropdown.empty()
 
     let item
     let i
-    for (let [name, variable] of simulatorObjects[editExistingObject].original.variables) {
+    for (let [name, variable] of simulators.get(editExistingObject.name).variables) {
         item = $('<div>').addClass('item').html(
             `<code>${name}</code> (${variable.valueType})`
         )
@@ -1043,10 +1004,10 @@ function EditSimLocalTime() {
     item.attr('data-value', "''")
 
     dropdown.append(item)
-    if (simulatorObjects[editExistingObject].timeVarDelta == "") {
+    if (editExistingObject.timeVarDelta == "") {
         $('#dropdownVar').dropdown('set selected', "''")
     } else {
-        $('#dropdownVar').dropdown('set selected', simulatorObjects[editExistingObject].timeVarDelta)
+        $('#dropdownVar').dropdown('set selected', editExistingObject.timeVarDelta)
     }
 
 }
@@ -1122,7 +1083,7 @@ function EditSimulateFunctions() {
 
     let item
     let i
-    for (let [name, fn] of simulatorObjects[editExistingObject].original.functions) {
+    for (let [name, fn] of simulators.get(editExistingObject.name).functions) {
         item = $('<div>').addClass('item').append($('<code>').text(name))
         item.attr('data-value', name)
         dropdown.append(item)
@@ -1132,11 +1093,11 @@ function EditSimulateFunctions() {
     item.attr('data-value', "''")
 
     dropdown.append(item)
-    $('#dropdownInitializeFunction').dropdown().dropdown('set selected', simulatorObjects[editExistingObject].initialize)
+    $('#dropdownInitializeFunction').dropdown().dropdown('set selected', editExistingObject.initialize)
 
     dropdown = $('#dropdownSimulateFunction .menu')
     dropdown.empty()
-    for (let [name, fn] of simulatorObjects[editExistingObject].original.functions) {
+    for (let [name, fn] of simulators.get(editExistingObject.name).functions) {
         item = $('<div>').addClass('item').append($('<code>').text(name))
         item.attr('data-value', name)
         dropdown.append(item)
@@ -1146,9 +1107,9 @@ function EditSimulateFunctions() {
     item.attr('data-value', "''")
     dropdown.append(item)
 
-    $('#dropdownSimulateFunction').dropdown().dropdown('set selected', simulatorObjects[editExistingObject].simulate)
+    $('#dropdownSimulateFunction').dropdown().dropdown('set selected', editExistingObject.simulate)
 
-    $('input[name="SimulateFunctionTimestepDelta"]').val(simulatorObjects[editExistingObject].simulateTimeDelta)
+    $('input[name="SimulateFunctionTimestepDelta"]').val(editExistingObject.simulateTimeDelta)
 }
 
 /*	CloseSimulateFunctions()
@@ -1163,11 +1124,11 @@ function CloseSimulateFunctions() {
 	- Save configuration value (time delta) inside configuration prompt for simulator.
 */
 function SaveSimulateFunction() {
-    simulatorObjects[editExistingObject].initialize = $('#dropdownInitializeFunction').dropdown('get value')
-    simulatorObjects[editExistingObject].simulate = $('#dropdownSimulateFunction').dropdown('get value')
+    editExistingObject.initialize = $('#dropdownInitializeFunction').dropdown('get value')
+    editExistingObject.simulate = $('#dropdownSimulateFunction').dropdown('get value')
 
     let newTimeDelta = $('input[name="SimulateFunctionTimestepDelta"]').val()
-    simulatorObjects[editExistingObject].simulateTimeDelta = parseInt(newTimeDelta);
+    editExistingObject.simulateTimeDelta = parseInt(newTimeDelta);
     CloseSimulateFunctions()
 }
 
@@ -1182,7 +1143,7 @@ function EditStageConditions() {
         dropdown.empty()
 
         let item
-        for (let [name, variable] of simulatorObjects[editExistingObject].original.variables) {
+        for (let [name, variable] of simulators.get(editExistingObject.name).variables) {
             item = $('<div>').addClass('item').html('<code>' + name +
                 "</code> (" + variable.valueType + ")")
             item.attr('data-value', name)
@@ -1272,7 +1233,7 @@ function EditStageConditions() {
     stageConditionV3b = "";
     $('#stageCondition1, #stageCondition2, #stageCondition3').text('')
 
-    ResetStageConditionList()
+    ResetStageConditionPanel()
 }
 
 /*	CloseStageConditions()
@@ -1294,7 +1255,7 @@ function EditEndConditions() {
 
         let item
         let i
-        for (let [name, variable] of simulatorObjects[editExistingObject].original.variables) {
+        for (let [name, variable] of simulators.get(editExistingObject.name).variables) {
             item = $('<div>').addClass('item').text(name +
                 " (" + variable.valueType + ")")
             item.attr('data-value', name)
@@ -1395,9 +1356,9 @@ function CloseEndConditions() {
 }
 
 function SaveSimLocalTime() {
-    simulatorObjects[editExistingObject].timeDelta = parseInt($('input[name="newTimeDelta"]').val())
-    simulatorObjects[editExistingObject].timeScale = parseInt($('input[name="newTimeScale"]').val())
-    simulatorObjects[editExistingObject].timeVarDelta = $('#dropdownVar').dropdown('get value')
+    editExistingObject.timeDelta = parseInt($('input[name="newTimeDelta"]').val())
+    editExistingObject.timeScale = parseInt($('input[name="newTimeScale"]').val())
+    editExistingObject.timeVarDelta = $('#dropdownVar').dropdown('get value')
 
     CloseEditSimLocalTime()
 }
@@ -1406,54 +1367,61 @@ function SaveSimLocalTime() {
 	- In prompt, add 'completed' stage condition to list (where multiple AND conditions can be added before final submission).
 */
 function AddStageConditionToSubList() {
-    stageConditionSubSet.push({
-        varName: $('#stageCondition1').text(),
-        condition: unescape($('#stageCondition2').text()),
-        value: stageConditionV3a,
-        varName2: stageConditionV3b
-    });
+    let conditions = NewCondition(
+        $('#stageCondition1').text(),
+        unescape($('#stageCondition2').text()),
+        stageConditionV3a,
+        stageConditionV3b
+    )
+    stageConditionSubSet.add(conditions);
 
-
-    ResetStageConditionSubList()
+    AppendStageConditionToSubPanel(conditions)
 }
 
 /*	RemoveStageConditionFromSubList()
 	- In prompt, remove stage condition to list (where multiple AND conditions can be added before final submission).
 */
-function RemoveStageConditionFromSubList(btn_id) {
-    stageConditionSubSet.splice(btn_id, 1);
+function RemoveStageConditionFromSubList(elem, condition) {
+    stageConditionSubSet.delete(condition);
 
-    ResetStageConditionSubList()
+    elem.remove()
 
 }
 
-function ResetStageConditionSubList() {
+function AppendStageConditionToSubPanel(condition) {
+
+    let subpanel = $("#modalStageConditionsSubPanel")
+    let item, label, text, button, icon
+
+    item = $('<div>').addClass('div-list-item')
+    label = $('<div>').addClass('ui grey expanding middle aligned label')
+    if (!condition.varName2) {
+        text = "if [<code>" + condition.varName + " "
+            + condition.condition + " " + condition.value + "</code>] AND ..."
+    } else {
+        text = "if [<code>" + condition.varName + " "
+            + condition.condition + " " + condition.varName2 + "</code>] AND ..."
+    }
+    label.append($('<label>').html(text).css('max-width', '95%'))
+    button = $('<a>').addClass('ui opaque right floated')
+    icon = $('<i>').addClass('inverted delete icon').data('ref', item).data('data', condition).click(function () {
+        RemoveStageConditionFromSubList($(this).data('ref'), $(this).data('condition'));
+    }
+    )
+
+    button.append(icon)
+    label.append(button)
+    item.append(label)
+    subpanel.append(item)
+}
+
+function ResetStageConditionSubPanel() {
 
     let subpanel = $("#modalStageConditionsSubPanel");
     subpanel.empty()
 
-    let i = 0, item, label, text, tempVarName2, button, icon;
-    for (i = 0; i < stageConditionSubSet.length; i++) {
-        item = $('<div>').addClass('div-list-item')
-        label = $('<div>').addClass('ui grey expanding middle aligned label')
-        if (tempVarName2 == "") {
-            text = "if [<code>" + stageConditionSubSet[i].varName + " "
-                + stageConditionSubSet[i].condition + " " + stageConditionSubSet[i].value + "</code>] AND ..."
-        } else {
-            text = "if [<code>" + stageConditionSubSet[i].varName + " "
-                + stageConditionSubSet[i].condition + " " + stageConditionSubSet[i].varName2 + "</code>] AND ..."
-        }
-        label.append($('<label>').html(text).css('max-width', '95%'))
-        button = $('<a>').addClass('ui opaque right floated')
-        icon = $('<i>').addClass('inverted delete icon').attr('name', i).click(function () {
-            RemoveStageConditionFromSubList($(this).attr('name'));
-        }
-        )
-
-        button.append(icon)
-        label.append(button)
-        item.append(label)
-        subpanel.append(item)
+    for (let conditions of stageConditionSubSet) {
+        AppendStageConditionToSubPanel(conditions)
     }
 }
 
@@ -1462,90 +1430,79 @@ function ResetStageConditionSubList() {
 */
 function AddStageConditionToList() {
     newStage = document.getElementsByName("TextStageConditionsNewStage")[0].value;
-    simulatorObjects[editExistingObject].stageConditions.push({
-        oldStage: stage,
-        conditions: stageConditionSubSet,
-        newStage: newStage
-    });
-
-    ResetStageConditionList()
+    let conditions = NewStageConditions(stage, newStage, stageConditionSubSet)
+    simulators.get(editExistingObject.name).stageConditions.add(conditions)
 
 
-    stageConditionSubSet = [];
-    ResetStageConditionSubList()
+    AppendStageConditionToPanel(conditions)
+
+    stageConditionSubSet = new Set();
+    ResetStageConditionSubPanel()
 }
 
 /*	RemoveStageConditionFromList()
 	- In prompt, remove stage condition set from final list.
 */
-function RemoveStageConditionFromList(btn_name) {
-    console.log('deleting' + btn_name)
+function RemoveStageConditionFromList(elem, conditions) {
+    let simulator = simulators.get(editExistingObject.name);
+    simulator.stageConditions.delete(conditions)
 
-    var indexCount = 0;
-    var simulatorObjectName = simulatorObjects[editExistingObject].name;
-    let k = 0;
-    for (k = 0; k < simulatorObjects.length; k++) {
-        if (simulatorObjects[k].name == simulatorObjectName) {
-            let i = 0;
-            for (i = 0; i < simulatorObjects[k].stageConditions.length; i++) {
-                if (indexCount == btn_name) {
-                    simulatorObjects[k].stageConditions.splice(i, 1);
-                }
-                indexCount++;
-            }
-        }
-    }
+    elem.remove()
 
-    ResetStageConditionList()
 }
 
-function ResetStageConditionList() {
+function AppendStageConditionToPanel(conditions) {
+    let panel = $('#modalStageConditionsPanel')
+
+    let item, label, sentence, button, icon
+    item = $('<div>').addClass('div-list-item')
+    label = $('<div>').addClass('ui grey expanding label')
+    sentence = "in stage " + conditions.oldStage + ", ";
+    let j = 0;
+    for (let condition of conditions.conditions) {
+        var tempVarName2 = condition.varName2;
+
+        if (!tempVarName2) {
+            sentence = sentence + "if [<code>" + condition.varName
+                + " " + condition.condition
+                + " " + condition.value + "</code>] ";
+        } else {
+            sentence = sentence + "if [<code>" + condition.varName
+                + " " + condition.condition
+                + " " + condition.varName2 + "</code>] ";
+        }
+        if (j < conditions.conditions.size - 1) {
+            sentence = sentence + "AND ";
+        }
+        j += 1
+    }
+    sentence = sentence + "go to stage " + conditions.newStage;
+    label.append($('<label>').text(sentence).css('max-width', '95%'))
+
+    button = $('<a>').addClass('ui opaque right floated')
+    icon = $('<i>').addClass('inverted delete icon').data('ref', item).data('data', conditions).click(function () {
+        RemoveStageConditionFromList($(this).data('ref'), $(this).data('data'));
+    }
+    )
+
+    button.append(icon)
+    label.append(button)
+    item.append(label)
+    panel.append(item)
+
+}
+
+function ResetStageConditionPanel() {
 
     let panel = $('#modalStageConditionsPanel')
     panel.empty()
-    let indexCount = 0, item, label, sentence, button, icon
-    var simulatorObjectName = simulatorObjects[editExistingObject].name;
-    let k = 0;
-    for (k = 0; k < simulatorObjects.length; k++) {
-        if (simulatorObjects[k].name == simulatorObjectName) {
-            for (i = 0; i < simulatorObjects[k].stageConditions.length; i++) {
-                item = $('<div>').addClass('div-list-item')
-                label = $('<div>').addClass('ui grey expanding label')
-                sentence = "in stage " + simulatorObjects[k].stageConditions[i].oldStage + ", ";
-                let j = 0;
-                for (j = 0; j < simulatorObjects[k].stageConditions[i].conditions.length; j++) {
-                    var tempVarName2 = simulatorObjects[k].stageConditions[i].conditions[j].varName2;
 
-                    if (tempVarName2 == "") {
-                        sentence = sentence + "if [<code>" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].varName
-                            + " " + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].condition
-                            + " " + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].value + "</code>] ";
-                    } else {
-                        sentence = sentence + "if [<code>" + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].varName
-                            + " " + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].condition
-                            + " " + simulatorObjects[editExistingObject].stageConditions[i].conditions[j].varName2 + "</code>] ";
-                    }
-                    if (j < simulatorObjects[editExistingObject].stageConditions[i].conditions.length - 1) {
-                        sentence = sentence + "AND ";
-                    }
-                }
-                sentence = sentence + "go to stage " + simulatorObjects[k].stageConditions[i].newStage;
-                label.append($('<label>').text(sentence).css('max-width', '95%'))
+    var simulatorObjectName = editExistingObject.name;
 
-                button = $('<a>').addClass('ui opaque right floated')
-                icon = $('<i>').addClass('inverted delete icon').attr('name', indexCount).click(function () {
-                    RemoveStageConditionFromList($(this).attr('name'));
-                }
-                )
 
-                button.append(icon)
-                label.append(button)
-                item.append(label)
-                panel.append(item)
-
-                indexCount++;
-            }
-        }
+    // TODO: this or the stageConditionSet?
+    for (let conditions of simulators.get(simulatorObjectName).stageConditions) {
+        AppendStageConditionToPanel(conditions)
     }
 }
 
@@ -1553,55 +1510,58 @@ function ResetStageConditionList() {
 	- In prompt, add end condition to sublist (where AND conditions are collected).
 */
 function AddEndConditionToSubList() {
-    stageConditionSubSet.push({
-        varName: $('#endCondition1').text(),
-        condition: unescape($('#endCondition2').text()),
-        value: stageConditionV3a,
-        varName2: stageConditionV3b
-    });
+    condition = NewCondition(
+        $('#endCondition1').text(),
+        unescape($('#endCondition2').text()),
+        stageConditionV3a,
+        stageConditionV3b
+    )
+    stageConditionSubSet.add(condition);
 
-    ResetEndConditionSubList()
-
-
-
+    AppendEndConditionToSubPanel(condition)
 }
 
 /*	RemoveEndConditionFromSubList()
 	- In prompt, remove end condition from sublist (where AND conditions are collected).
 */
-function RemoveEndConditionFromSubList(btn_id) {
-    stageConditionSubSet.splice(btn_id, 1);
+function RemoveEndConditionFromSubList(elem, condition) {
+    stageConditionSubSet.delete(condition);
 
-    ResetEndConditionSubList()
+    elem.remove()
 
 }
 
-function ResetEndConditionSubList() {
+function AppendEndConditionToSubPanel(condition) {
+    let subpanel = $("#modalEndConditionsSubPanel");
+    let item, label, text, button, icon;
+    item = $('<div>').addClass('div-list-item')
+    label = $('<div>').addClass('ui grey expanding middle aligned label')
+    if (!condition.varName2) {
+        text = "if [" + condition.varName + "] ["
+            + condition.condition + "] [" + condition.value + "] AND ..."
+    } else {
+        text = "if [" + condition.varName + "] ["
+            + condition.condition + "] [" + condition.varName2 + "] AND ..."
+    }
+    label.append($('<label>').text(text).css('max-width', '95%'))
+    button = $('<a>').addClass('ui opaque right floated')
+    icon = $('<i>').addClass('inverted  delete icon').data('ref', item).data('data', condition).click(function () {
+        RemoveEndConditionFromSubList($(this).data('ref'), $(this).data('condition'));
+    }
+    )
+
+    button.append(icon)
+    label.append(button)
+    item.append(label)
+    subpanel.append(item)
+}
+
+function ResetEndConditionSubPanel() {
     let subpanel = $("#modalEndConditionsSubPanel");
     subpanel.empty()
 
-    let i = 0, item, label, text, tempVarName2, button, icon;
-    for (i = 0; i < stageConditionSubSet.length; i++) {
-        item = $('<div>').addClass('div-list-item')
-        label = $('<div>').addClass('ui grey expanding middle aligned label')
-        if (tempVarName2 == "") {
-            text = "if [" + stageConditionSubSet[i].varName + "] ["
-                + stageConditionSubSet[i].condition + "] [" + stageConditionSubSet[i].value + "] AND ..."
-        } else {
-            text = "if [" + stageConditionSubSet[i].varName + "] ["
-                + stageConditionSubSet[i].condition + "] [" + stageConditionSubSet[i].varName2 + "] AND ..."
-        }
-        label.append($('<label>').text(text).css('max-width', '95%'))
-        button = $('<a>').addClass('ui opaque right floated')
-        icon = $('<i>').addClass('inverted  delete icon').attr('name', i).click(function () {
-            RemoveEndConditionFromSubList($(this).attr('name'));
-        }
-        )
-
-        button.append(icon)
-        label.append(button)
-        item.append(label)
-        subpanel.append(item)
+    for (let condition of stageConditionSubSet) {
+        AppendEndConditionToSubPanel(condition)
     }
 }
 
@@ -1609,88 +1569,70 @@ function ResetEndConditionSubList() {
 	- In prompt, add end condition to list.
 */
 function AddEndConditionToList() {
-    simulatorObjects[editExistingObject].endConditions.push({
-        oldStage: stage,
-        conditions: stageConditionSubSet
-    });
+    let conditions = NewEndConditions(stageConditionSubSet)
+    simulators.get(editExistingObject.name).endConditions.add(conditions)
 
-    ResetEndConditionList()
+    AppendEndConditionToPanel(conditions)
 
-    stageConditionSubSet = [];
-    ResetEndConditionSubList()
+    stageConditionSubSet = new Set();
+    ResetEndConditionSubPanel()
 
 }
 
 /*	RemoveEndConditionFromList()
 	- In prompt, remove end condition from list.
 */
-function RemoveEndConditionFromList(btn_name) {
-    console.log("Removing end condition : " + btn_name);
+function RemoveEndConditionFromList(elem, conditions) {
+    let simulator = simulators.get(editExistingObject.name);
+    simulator.endConditions.delete(conditions)
 
-    var indexCount = 0;
-    var simulatorObjectName = simulatorObjects[editExistingObject].name;
-    let k = 0;
-    for (k = 0; k < simulatorObjects.length; k++) {
-        if (simulatorObjects[k].name == simulatorObjectName) {
-            let i = 0;
-            for (i = 0; i < simulatorObjects[k].endConditions.length; i++) {
-                if (indexCount == btn_name) {
-                    simulatorObjects[k].endConditions.splice(i, 1);
-                }
-                indexCount++;
-            }
+    elem.remove()
+}
+
+function AppendEndConditionToPanel(conditions) {
+    let panel = $('#modalEndConditionsPanel')
+    let item, label, sentence, button, icon
+    item = $('<div>').addClass('div-list-item')
+    label = $('<div>').addClass('ui grey expanding label')
+    sentence = "End system , ";
+    let j = 0;
+    for (let condition of conditions.conditions) {
+        var tempVarName2 = condition.varName2;
+        if (!tempVarName2) {
+            sentence = sentence + "if [" + condition.varName
+                + "] [" + condition.condition
+                + "] [" + condition.value + "] ";
+        } else {
+            sentence = sentence + "if [" + condition.varName
+                + "] [" + condition.condition
+                + "] [" + condition.varName2 + "] ";
+        }
+        if (j < conditions.conditions.size - 1) {
+            sentence = sentence + "AND ";
         }
     }
+    sentence = sentence + "then end simulation system.";
+    label.append($('<label>').text(sentence).css('max-width', '95%'))
 
-    ResetEndConditionList()
+    button = $('<a>').addClass('ui opaque right floated')
+    icon = $('<i>').addClass('inverted  delete icon').data('ref', item).data('data', conditions).click(function () {
+        RemoveEndConditionFromList($(this).data('ref'), $(this).data('data'));
+    }
+    )
+
+    button.append(icon)
+    label.append(button)
+    item.append(label)
+    panel.append(item)
 
 }
 
 function ResetEndConditionList() {
     let panel = $('#modalEndConditionsPanel')
     panel.empty()
-    let indexCount = 0, item, label, sentence, button, icon
-    var simulatorObjectName = simulatorObjects[editExistingObject].name;
-    let k = 0;
-    for (k = 0; k < simulatorObjects.length; k++) {
-        if (simulatorObjects[k].name == simulatorObjectName) {
-            let i = 0;
-            for (i = 0; i < simulatorObjects[k].endConditions.length; i++) {
-                item = $('<div>').addClass('div-list-item')
-                label = $('<div>').addClass('ui grey expanding label')
-                sentence = "End system , ";
-                let j = 0;
-                for (j = 0; j < simulatorObjects[k].endConditions[i].conditions.length; j++) {
-                    var tempVarName2 = simulatorObjects[k].endConditions[i].conditions[j].varName2;
-                    if (tempVarName2 == "") {
-                        sentence = sentence + "if [" + simulatorObjects[k].endConditions[i].conditions[j].varName
-                            + "] [" + simulatorObjects[k].endConditions[i].conditions[j].condition
-                            + "] [" + simulatorObjects[k].endConditions[i].conditions[j].value + "] ";
-                    } else {
-                        sentence = sentence + "if [" + simulatorObjects[k].endConditions[i].conditions[j].varName
-                            + "] [" + simulatorObjects[k].endConditions[i].conditions[j].condition
-                            + "] [" + simulatorObjects[k].endConditions[i].conditions[j].varName2 + "] ";
-                    }
-                    if (j < simulatorObjects[k].endConditions[i].conditions.length - 1) {
-                        sentence = sentence + "AND ";
-                    }
-                }
-                sentence = sentence + "then end simulation system.";
-                label.append($('<label>').text(sentence).css('max-width', '95%'))
+    var simulatorObjectName = editExistingObject.name;
 
-                button = $('<a>').addClass('ui opaque right floated')
-                icon = $('<i>').addClass('inverted  delete icon').attr('name', indexCount).click(function () {
-                    RemoveEndConditionFromList($(this).attr('name'));
-                }
-                )
-
-                button.append(icon)
-                label.append(button)
-                item.append(label)
-                panel.append(item)
-
-                indexCount++;
-            }
-        }
+    for (let conditions of simulators.get(simulatorObjectName).endConditions) {
+        AppendEndConditionToPanel(conditions)
     }
 }

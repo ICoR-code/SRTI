@@ -49,6 +49,7 @@ function CheckRedrawCanvasGrid() {
             maxSizeX = ((simObj.leftPos / 100) - 1 + 2);
         }
         //!!!!
+        i += 1
     }
 
     gridSizeX = maxSizeX;
@@ -180,41 +181,38 @@ function DeleteItemFromCanvas(e) {
     var clickedOnItem = -1;
 
     let i = 0;
-    for (i = 0; i < simulatorObjects.length; i++) {
-        if (e.target === simulatorObjects[i].objectRef) {
-            clickedOnItem = i;
+    for (let simObj of simulatorObjects) {
+        if (e.target === simObj.objectRef) {
+            clickedOnItem = simObj;
             break;
         }
+        i += 1
     }
-    if (clickedOnItem > -1) {
-        simulatorObjects[i].objectRef.parentNode.removeChild(simulatorObjects[i].objectRef);
-        simulatorObjects.splice(i, 1);
+    if (simulatorObjects.has(clickedOnItem)) {
+        simObj.objectRef.parentNode.removeChild(simObj.objectRef);
+        simulatorObjects.delete(simObj);
+        simulators.get(simObj.name).objects.delete(simObj)
+        let arr = Array.from(simulatorObjects.values())
         // because all objects are relative, 
         //		deleting one object makes other objects (that were added after i) 
         //		move up one space. Need to reset everyone.
-        MoveObjectsOnCanvasUpOne(i);
+        MoveObjectsOnCanvasUpOne(i, arr);
         UpdateDrawArrowsAfterDelete(i, -1);
         return;
     }
 
-    clickedOnItem = -1;
-    var listOfMessageVars = document.getElementsByClassName("div-canvas-message");
-    for (i = 0; i < listOfMessageVars.length; i++) {
-        if (e.target === listOfMessageVars[i]) {
-            clickedOnItem = i;
-            break;
-        }
-    }
-    if (clickedOnItem > -1) {
-        listOfMessageVars[clickedOnItem].parentNode.removeChild(listOfMessageVars[clickedOnItem]);
-        messageObjects.splice(clickedOnItem, 1);
-        MoveMessagesOnCanvasUpOne(clickedOnItem);
-        UpdateDrawArrowsAfterDelete(-1, clickedOnItem);
-        console.log(34 + (42 * $('.div-canvas-message').length))
+    clickedOnItem = $(e.target).data('ref')
+
+    if (typeof clickedOnItem !== 'undefined' && 'objectRef' in clickedOnItem && !('variables' in clickedOnItem)) {
+        clickedOnItem.objectRef.parentNode.removeChild(clickedOnItem.objectRef)
+        messageObjects.delete(clickedOnItem.name)
+
+        ResetMessagesOnCanvas();
+        UpdateDrawArrowsAfterDelete(-1, clickedOnItem.name);
         $('.div-canvas-server').height(Math.max(160, -8 + (42 * $('.div-canvas-message').length)))
         return;
     }
-
+    //TODO: remove loop
     clickedOnItem = -1;
     var listOfSimPub = document.getElementsByClassName("div-canvas-pub");
     for (i = 0; i < listOfSimPub.length; i++) {
@@ -224,10 +222,7 @@ function DeleteItemFromCanvas(e) {
         }
     }
     if (clickedOnItem > -1) {
-        simulatorObjects[listOfSimPub[clickedOnItem].nameParent].publishedMessages.splice(listOfSimPub[clickedOnItem].name, 1);
-        simulatorObjects[listOfSimPub[clickedOnItem].nameParent].publishedDetails.splice(listOfSimPub[clickedOnItem].name, 1);
-        simulatorObjects[listOfSimPub[clickedOnItem].nameParent].publishedInitial.splice(listOfSimPub[clickedOnItem].name, 1);
-        simulatorObjects[listOfSimPub[clickedOnItem].nameParent].publishedTimeDelta.splice(listOfSimPub[clickedOnItem].name, 1);
+        listOfSimPub[clickedOnItem].nameParent.publishedMessages.delete(listOfSimPub[clickedOnItem].name);
         UpdateDrawArrowsAfterDelete(-1, -1);
         return;
     }
@@ -241,12 +236,7 @@ function DeleteItemFromCanvas(e) {
         }
     }
     if (clickedOnItem > -1) {
-        simulatorObjects[listOfSimSub[clickedOnItem].nameParent].subscribedMessages.splice(listOfSimSub[clickedOnItem].name, 1);
-        simulatorObjects[listOfSimSub[clickedOnItem].nameParent].subscribedDetails.splice(listOfSimSub[clickedOnItem].name, 1);
-        simulatorObjects[listOfSimSub[clickedOnItem].nameParent].subscribedInitial.splice(listOfSimSub[clickedOnItem].name, 1);
-        simulatorObjects[listOfSimSub[clickedOnItem].nameParent].subscribedTimeDelta.splice(listOfSimSub[clickedOnItem].name, 1);
-        simulatorObjects[listOfSimSub[clickedOnItem].nameParent].subscribedRelative.splice(listOfSimSub[clickedOnItem].name, 1);
-        simulatorObjects[listOfSimSub[clickedOnItem].nameParent].subscribedTimestep.splice(listOfSimSub[clickedOnItem].name, 1);
+        listOfSimSub[clickedOnItem].nameParent.subscribedMessages.delete(listOfSimSub[clickedOnItem].name);
         UpdateDrawArrowsAfterDelete(-1, -1);
         return;
     }
@@ -257,29 +247,41 @@ function DeleteItemFromCanvas(e) {
 	- Delete simulator from canvas by ID (if we deleted it from list on the left, 
 			we need to delete it everywhere else too.)
 */
-function DeleteItemFromCanvasById(simObj) {
-    let i = id;
-    simulatorObjects[i].objectRef.parentNode.removeChild(simulatorObjects[i].objectRef);
-    simulatorObjects.splice(i, 1);
+function DeleteItemFromCanvasById(i, simObj) {
+    simObj.objectRef.parentNode.removeChild(simObj.objectRef);
+    simulatorObjects.delete(simObj)
+    let arr = Array.from(simulatorObjects.values())
+    simulators.get(simObj.name).objects.delete(simObj)
     // because all objects are relative, 
     //		deleting one object makes other objects (that were added after i) move up one space. 
     //		Need to reset everyone.
-    MoveObjectsOnCanvasUpOne(i);
+    MoveObjectsOnCanvasUpOne(i, arr);
+}
+
+/*	DeleteMessageFromCanvasById()
+	- Delete message from canvas by ID (if we deleted it from list on the left,
+			we need to delete it everywhere else too.)
+*/
+function DeleteMessageFromCanvasById(msgObj) {
+    msgObj.objectRef.parentNode.removeChild(msgObj.objectRef)
+    messageObjects.delete(msgObj.name)
+
+    ResetMessagesOnCanvas();
 }
 
 /*	MoveObjectsOnCanvasUpOne()
 	- Move simulator objects up 1 in Y position, to make up for middle object being removed.
 		(While it doesn't seem like it, the canvas objects are positions relative to each other).
 */
-function MoveObjectsOnCanvasUpOne(j) {
+function MoveObjectsOnCanvasUpOne(j, arr) {
     let i = 0;
-    for (i = j; i < simulatorObjects.length; i++) {
-        dragItem = simulatorObjects[i].objectRef;
+    for (i = j; i < arr.length; i++) {
+        dragItem = arr[i].objectRef;
         //!!!!
-        simulatorObjects[i].offsetY = simulatorObjects[i].offsetY + 100;
-        //simulatorObjects[i].offsetX = simulatorObjects[i].offsetX + 100;
+        arr[i].offsetY = arr[i].offsetY + 100;
+        //arr[i].offsetX = arr[i].offsetX + 100;
         //!!!!
-        setTranslate(simulatorObjects[i].offsetX, simulatorObjects[i].offsetY, dragItem);
+        setTranslate(arr[i].offsetX, arr[i].offsetY, dragItem);
     }
 }
 
@@ -288,19 +290,13 @@ function MoveObjectsOnCanvasUpOne(j) {
 */
 function ConnectSimAndMessage(e) {
     console.log("asked to draw arrow on canvas");
-    var clickedOnItem = -1;
+    var clickedOnItem = $(e.target).data('ref');
     let i = 0;
-    for (i = 0; i < simulatorObjects.length; i++) {
-        if (e.target === simulatorObjects[i].objectRef) {
-            clickedOnItem = i;
-            break;
-        }
-    }
 
-    if (clickedOnItem > -1) {
+    if (simulatorObjects.has(clickedOnItem)) {
         if (active == false) {
             // if active == false, then this is the first item clicked. Prepare Sim to Message connection.
-            dragItem = simulatorObjects[clickedOnItem];
+            dragItem = clickedOnItem;
             dragItem.objectRef.style.backgroundColor = "#ffaa00";
             active = true;
             console.log("focused object during Connection");
@@ -308,37 +304,22 @@ function ConnectSimAndMessage(e) {
             // if active == true, and 'dragItem' is of type 'Message', then draw Message to Sim connection.
             // else, make active = false, undo state.
             // else, if active == true and 'dragItem' is of type' Sim, What to do? Undo previous selection and make new selection, without active = false.
-            var dragItemIsSim = false;
-            let i = 0;
-            for (i = 0; i < simulatorObjects.length; i++) {
-                if (simulatorObjects[i] == dragItem) {
-                    dragItemIsSim = true;
-                }
-            }
-            if (dragItemIsSim == false) {
+            if (!simulatorObjects.has(dragItem)) {
                 // must have originally clicked on Message object. Make connection from Message to Sim.
                 //what is the 'id' of the message? find that here:
-                var dragItemId = 0;
-                let i = 0;
-                for (i = 0; i < messageObjects.length; i++) {
-                    if (messageObjects[i] == dragItem) {
-                        dragItemId = i;
-                        break;
-                    }
-                }
-                NewSubscribeConnectionPrompt(i, clickedOnItem);
-                simulatorObjects[clickedOnItem].subscribedMessages.push(dragItemId);
+                NewSubscribeConnectionPrompt(dragItem, clickedOnItem);
+                // clickedOnItem.subscribedMessages.set(dragItem.name, {});
                 DrawAllArrowsOnCanvas();
                 active = false;
                 if (dragItem != null) {
                     dragItem.objectRef.style.backgroundColor = "";
                 }
-                dragItem = simulatorObjects[clickedOnItem];
+                dragItem = clickedOnItem;
                 console.log("Connection, sim clicked, set active = false");
                 AddToUndoBuffer("Create subscribe connection on canvas.");
             } else {
                 dragItem.objectRef.style.backgroundColor = "";
-                dragItem = simulatorObjects[clickedOnItem];
+                dragItem = clickedOnItem;
                 dragItem.objectRef.style.backgroundColor = "#ffaa00";
                 active = true;
                 console.log("Connection, sim clicked, set active = true");
@@ -347,17 +328,10 @@ function ConnectSimAndMessage(e) {
         return;
     }
 
-    clickedOnItem = -1;
-    for (i = 0; i < messageObjects.length; i++) {
-        if (e.target === messageObjects[i].objectRef) {
-            clickedOnItem = i;
-            break;
-        }
-    }
-    if (clickedOnItem > -1) {
+    if (typeof clickedOnItem !== 'undefined' && 'objectRef' in clickedOnItem && !('variables' in clickedOnItem)) {
         if (active == false) {
             // if active == false, then this is the first item clicked. Prepare Sim to Message connection.
-            dragItem = messageObjects[clickedOnItem];
+            dragItem = clickedOnItem;
             dragItem.objectRef.style.backgroundColor = "#ffaa00";
             active = true;
             console.log("focused message object during Connection");
@@ -365,29 +339,23 @@ function ConnectSimAndMessage(e) {
             // if active == true, and 'dragItem' is of type 'Message', then draw Message to Sim connection.
             // else, make active = false, undo state.
             // else, if active == true and 'dragItem' is of type' Sim, What to do? Undo previous selection and make new selection, without active = false.
-            var dragItemIsSim = false;
-            let i = 0;
-            for (i = 0; i < simulatorObjects.length; i++) {
-                if (simulatorObjects[i] == dragItem) {
-                    dragItemIsSim = true;
-                    break;
-                }
-            }
-            if (dragItemIsSim == true) {
-                NewPublishConnectionPrompt(clickedOnItem, i);
+            if (simulatorObjects.has(dragItem)) {
+                NewPublishConnectionPrompt(clickedOnItem, dragItem);
                 // must have originally clicked on Simulator object. Make connection from Sim to Message.
-                dragItem.publishedMessages.push(clickedOnItem);
+                // dragItem.publishedMessages.push(clickedOnItem);
                 DrawAllArrowsOnCanvas();
                 active = false;
                 if (dragItem != null) {
                     dragItem.objectRef.style.backgroundColor = "";
                 }
-                dragItem = simulatorObjects[i];
+                // TODO: why set dragItem to simulatorObjects
+                // dragItem = simulatorObjects[i];
+                dragItem = clickedOnItem
                 console.log("Connection, message clicked, set active = false");
                 AddToUndoBuffer("Create publish connection on canvas.");
             } else {
                 dragItem.objectRef.style.backgroundColor = "";
-                dragItem = messageObjects[clickedOnItem];
+                dragItem = clickedOnItem;
                 dragItem.objectRef.style.backgroundColor = "#ffaa00";
                 active = true;
                 console.log("Connection, message clicked, set active = true");
@@ -440,15 +408,15 @@ function DrawArrowOnCanvas1() {
     // second, redraw all arrows
     var panel = document.getElementById("canvassubpanel1arrows");
     let i = 0;
-    for (i = 0; i < simulatorObjects.length; i++) {
-        if (simulatorObjects[i].stage == stage) {
-            console.log("simulatorObjects.offsetY = " + simulatorObjects[i].offsetY + " , topPos = " + simulatorObjects[i].topPos);
-            for (j = 0; j < simulatorObjects[i].publishedMessages.length; j++) {
+    for (let simObj of simulatorObjects) {
+        if (simObj.stage == stage) {
+            console.log("simulatorObject.offsetY = " + simObj.offsetY + " , topPos = " + simObj.topPos);
+            for (j = 0; j < simObj.publishedMessages.size; j++) {
                 //!!!!
-                var leftPos = parseInt(simulatorObjects[i].leftPos, 10) + (j * 5) + 2;
-                var topPos = parseInt(simulatorObjects[i].offsetY, 10) + (i * 100) + 100 + 2 + (14 * j);
-                //var leftPos = parseInt(simulatorObjects[i].offsetX, 10) + (i * 100) + (j * 5) + 2;
-                //var topPos = parseInt(simulatorObjects[i].topPos, 10) + 100 + 2 + (14 * j);
+                var leftPos = parseInt(simObj.leftPos, 10) + (j * 5) + 2;
+                var topPos = parseInt(simObj.offsetY, 10) + (i * 100) + 100 + 2 + (14 * j);
+                //var leftPos = parseInt(simObj.offsetX, 10) + (i * 100) + (j * 5) + 2;
+                //var topPos = parseInt(simObj.topPos, 10) + 100 + 2 + (14 * j);
                 //!!!!
                 var htmlString = "<svg width='" + 22 + "' height='" + (gridSizeY * 100) + "' style='position: absolute; left:" + (leftPos - 12) + "px'>";
                 htmlString += "<defs>";
@@ -461,19 +429,21 @@ function DrawArrowOnCanvas1() {
                 panel.insertAdjacentHTML("beforeend", htmlString);
             }
         }
+        i += 1
     }
 
     panel = document.getElementById("canvassubpanel2arrows");
-    for (i = 0; i < simulatorObjects.length; i++) {
-        if (simulatorObjects[i].stage == stage) {
+    for (let simObj of simulatorObjects) {
+        if (simObj.stage == stage) {
             let j = 0;
-            for (j = 0; j < simulatorObjects[i].publishedMessages.length; j++) {
+            for (let [name, pub] of simObj.publishedMessages) {
                 //!!!!
-                var leftPos = parseInt(simulatorObjects[i].leftPos, 10) + (j * 5) + 2;
-                //var leftPos = parseInt(simulatorObjects[i].offsetX, 10) + (i * 100) + (j * 5) + 2;
+                var leftPos = parseInt(simObj.leftPos, 10) + (j * 5) + 2;
+                //var leftPos = parseInt(simObj.offsetX, 10) + (i * 100) + (j * 5) + 2;
                 //!!!!
                 var topPos = 0;
-                var bottomPos = (10 + (42 * simulatorObjects[i].publishedMessages[j]) - 10 + 3);
+                // TODO: 
+                var bottomPos = (messageObjects.get(name).position - 10 + 3);
                 var htmlString = "<svg width='" + 22 + "' height='" + (bottomPos + 10) + "' style='position: absolute; left:" + (leftPos - 12) + "px'>";
                 htmlString += "<defs>";
                 htmlString += "	<marker id='arrow' markerWidth='10' markerHeight='10' refx='2' refy='6' orient='auto'>";
@@ -484,6 +454,8 @@ function DrawArrowOnCanvas1() {
                 htmlString += "<path d='M" + 12 + "," + topPos + "L" + 12 + "," + bottomPos + "' style='stroke:#DB2828; stroke-width: 1.25px; fill: none; marker-end: url(#arrow);'/>"
                 htmlString += "</svg>";
                 panel.insertAdjacentHTML("beforeend", htmlString);
+
+                j += 1
             }
         }
     }
@@ -496,25 +468,27 @@ function DrawArrowObjectOnCanvas1() {
     var panel = document.getElementById("canvassubpanel1arrows");
 
     let i = 0;
-    for (i = 0; i < simulatorObjects.length; i++) {
-        if (simulatorObjects[i].stage == stage) {
+    for (let simObj of simulatorObjects) {
+        if (simObj.stage == stage) {
             let j = 0;
-            for (j = 0; j < simulatorObjects[i].publishedMessages.length; j++) {
+            for (let [name, pub] of simObj.publishedMessages) {
                 var addContentType = document.createElement("svg");
                 //!!!!
-                var leftOffset = parseInt(simulatorObjects[i].leftPos, 10) + 1;
-                var topOffset = parseInt(simulatorObjects[i].offsetY, 10) + (i * 100) + 100 + 2 + (14 * j);
-                //var leftOffset = parseInt(simulatorObjects[i].offsetX, 10) + (i * 100) + 1;
-                //var topOffset = parseInt(simulatorObjects[i].topPos, 10) + 100 + 2 + (14 * j);
+                var leftOffset = parseInt(simObj.leftPos, 10) + 1;
+                var topOffset = parseInt(simObj.offsetY, 10) + (i * 100) + 100 + 2 + (14 * j);
+                //var leftOffset = parseInt(simObj.offsetX, 10) + (i * 100) + 1;
+                //var topOffset = parseInt(simObj.topPos, 10) + 100 + 2 + (14 * j);
                 //!!!!
                 addContentType.className = "div-canvas-pub";
-                addContentType.name = j;
-                addContentType.nameParent = i;
-                addContentType.setAttribute("name", j);
+                addContentType.name = name;
+                addContentType.nameParent = simObj;
+                addContentType.setAttribute("name", name);
                 addContentType.style = "position: absolute; left: " + leftOffset + "px; top: " + topOffset + "px;";
                 panel.appendChild(addContentType);
+                j += 1
             }
         }
+        i += 1
     }
 }
 
@@ -524,16 +498,16 @@ function DrawArrowObjectOnCanvas1() {
 function DrawArrowOnCanvas2() {
     var panel = document.getElementById("canvassubpanel1arrows");
     let i = 0;
-    for (i = 0; i < simulatorObjects.length; i++) {
-        if (simulatorObjects[i].stage == stage) {
-            console.log("simulatorObjects.offsetY = " + simulatorObjects[i].offsetY + " , topPos = " + simulatorObjects[i].topPos);
+    for (let simObj of simulatorObjects) {
+        if (simObj.stage == stage) {
+            console.log("simulatorObject.offsetY = " + simObj.offsetY + " , topPos = " + simObj.topPos);
             let j = 0;
-            for (j = 0; j < simulatorObjects[i].subscribedMessages.length; j++) {
+            for (j = 0; j < simObj.subscribedMessages.size; j++) {
                 //!!!!
-                var leftPos = parseInt(simulatorObjects[i].leftPos, 10) + 100 - (j * 5) - 2;
-                var topPos = parseInt(simulatorObjects[i].offsetY, 10) + (i * 100) + 100 + (14 * j) + 10 + 10;
-                //var leftPos = parseInt(simulatorObjects[i].offsetX, 10) + (i * 100) + 100 - (j * 5) - 2;
-                //var topPos = parseInt(simulatorObjects[i].topPos, 10) + 100 + (14 * j) + 10 + 10;
+                var leftPos = parseInt(simObj.leftPos, 10) + 100 - (j * 5) - 2;
+                var topPos = parseInt(simObj.offsetY, 10) + (i * 100) + 100 + (14 * j) + 10 + 10;
+                //var leftPos = parseInt(simObj.offsetX, 10) + (i * 100) + 100 - (j * 5) - 2;
+                //var topPos = parseInt(simObj.topPos, 10) + 100 + (14 * j) + 10 + 10;
                 //!!!!
                 var htmlString = "<svg width='" + 22 + "' height='" + (gridSizeY * 100) + "' style='position: absolute; left:" + (leftPos - 12) + "px'>";
                 htmlString += "<defs>";
@@ -546,19 +520,22 @@ function DrawArrowOnCanvas2() {
                 panel.insertAdjacentHTML("beforeend", htmlString);
             }
         }
+        i += 1
     }
 
     panel = document.getElementById("canvassubpanel2arrows");
-    for (i = 0; i < simulatorObjects.length; i++) {
-        if (simulatorObjects[i].stage == stage) {
+    for (let simObj of simulatorObjects) {
+        if (simObj.stage == stage) {
             let j = 0;
-            for (j = 0; j < simulatorObjects[i].subscribedMessages.length; j++) {
+            for (let [name, sub] of simObj.subscribedMessages) {
                 //!!!!
-                var leftPos = parseInt(simulatorObjects[i].leftPos, 10) + 100 - (j * 5) - 2;
-                //var leftPos = parseInt(simulatorObjects[i].offsetX, 10) + (i * 100) + 100 - (j * 5) - 2;
+                var leftPos = parseInt(simObj.leftPos, 10) + 100 - (j * 5) - 2;
+                //var leftPos = parseInt(simObj.offsetX, 10) + (i * 100) + 100 - (j * 5) - 2;
                 //!!!!
                 var topPos = 0;
-                var bottomPos = (10 + (42 * parseInt(simulatorObjects[i].subscribedMessages[j])));
+
+
+                var bottomPos = messageObjects.get(name).position
                 var htmlString = "<svg width='" + 22 + "' height='" + (bottomPos + 10) + "' style='position: absolute; left:" + (leftPos - 12) + "px'>";
                 htmlString += "<defs>";
                 htmlString += "	<marker id='arrow' markerWidth='10' markerHeight='10' refx='2' refy='6' orient='auto'>";
@@ -569,6 +546,8 @@ function DrawArrowOnCanvas2() {
                 htmlString += "<path d='M" + 12 + "," + bottomPos + "L" + 12 + "," + topPos + "' style='stroke:red; stroke-width: 1.25px; fill: none; marker-end: url(#arrow);'/>"
                 htmlString += "</svg>";
                 panel.insertAdjacentHTML("beforeend", htmlString);
+
+                j += 1
             }
         }
     }
@@ -580,25 +559,27 @@ function DrawArrowOnCanvas2() {
 function DrawArrowObjectOnCanvas2() {
     var panel = document.getElementById("canvassubpanel1arrows");
     let i = 0;
-    for (i = 0; i < simulatorObjects.length; i++) {
-        if (simulatorObjects[i].stage == stage) {
+    for (let simObj of simulatorObjects) {
+        if (simObj.stage == stage) {
             let j = 0;
-            for (j = 0; j < simulatorObjects[i].subscribedMessages.length; j++) {
+            for (let [name, sub] of simObj.subscribedMessages) {
                 var addContentType = document.createElement("svg");
                 //!!!!
-                var leftOffset = parseInt(simulatorObjects[i].leftPos, 10) + 100 - 48 - 1;
-                var topOffset = parseInt(simulatorObjects[i].offsetY, 10) + (i * 100) + 100 + 2 + (14 * j);
-                //var leftOffset = parseInt(simulatorObjects[i].offsetX, 10) + (i * 100) + 100 - 48 - 1;
-                //var topOffset = parseInt(simulatorObjects[i].topPos, 10) + 100 + 2 + (14 * j);
+                var leftOffset = parseInt(simObj.leftPos, 10) + 100 - 48 - 1;
+                var topOffset = parseInt(simObj.offsetY, 10) + (i * 100) + 100 + 2 + (14 * j);
+                //var leftOffset = parseInt(simObj.offsetX, 10) + (i * 100) + 100 - 48 - 1;
+                //var topOffset = parseInt(simObj.topPos, 10) + 100 + 2 + (14 * j);
                 //!!!!
                 addContentType.className = "div-canvas-sub";
-                addContentType.name = j;
-                addContentType.nameParent = i;
-                addContentType.setAttribute("name", j);
+                addContentType.name = name;
+                addContentType.nameParent = simObj;
+                addContentType.setAttribute("name", name);
                 addContentType.style = "position: absolute; left: " + leftOffset + "px; top: " + topOffset + "px;";
                 panel.appendChild(addContentType);
+                j += 1
             }
         }
+        i += 1
     }
 }
 
@@ -611,45 +592,49 @@ function UpdateDrawArrowsAfterDelete(simDelete, messageDelete) {
     }
     if (messageDelete != -1) {
         let i = 0;
-        for (i = 0; i < simulatorObjects.length; i++) {
+        for (let simObj of simulatorObjects) {
             let j = 0;
-            for (j = simulatorObjects[i].publishedMessages.length - 1; j >= 0; j--) {
-                if (simulatorObjects[i].publishedMessages[j] == messageDelete) {
-                    simulatorObjects[i].publishedMessages.splice(j, 1);
-                    simulatorObjects[i].publishedDetails.splice(j, 1);
-                    simulatorObjects[i].publishedInitial.splice(j, 1);
-                    simulatorObjects[i].publishedTimeDelta.splice(j, 1);
-                } else if (simulatorObjects[i].publishedMessages[j] > messageDelete) {
-                    simulatorObjects[i].publishedMessages[j]--;
-                }
-            }
-            for (j = simulatorObjects[i].subscribedMessages.length - 1; j >= 0; j--) {
-                if (simulatorObjects[i].subscribedMessages[j] == messageDelete) {
-                    simulatorObjects[i].subscribedMessages.splice(j, 1);
-                    simulatorObjects[i].subscribedDetails.splice(j, 1);
-                    simulatorObjects[i].subscribedInitial.splice(j, 1);
-                    simulatorObjects[i].subscribedTimeDelta.splice(j, 1);
-                    simulatorObjects[i].subscribedRelative.splice(j, 1);
-                    simulatorObjects[i].subscribedTimestep.splice(j, 1);
-                } else if (simulatorObjects[i].subscribedMessages[j] > messageDelete) {
-                    simulatorObjects[i].subscribedMessages[j]--;
-                }
-            }
+            // for (j = simObj.publishedMessages.length - 1; j >= 0; j--) {
+            //     if (simObj.publishedMessages[j] == messageDelete) {
+            //         simObj.publishedMessages.splice(j, 1);
+            //         simObj.publishedDetails.splice(j, 1);
+            //         simObj.publishedInitial.splice(j, 1);
+            //         simObj.publishedTimeDelta.splice(j, 1);
+            //     } else if (simObj.publishedMessages[j] > messageDelete) {
+            //         simObj.publishedMessages[j]--;
+            //     }
+            // }
+            simObj.publishedMessages.delete(messageDelete)
+            simObj.subscribedMessages.delete(messageDelete)
+            // for (j = simObj.subscribedMessages.length - 1; j >= 0; j--) {
+            //     if (simObj.subscribedMessages[j] == messageDelete) {
+            //         simObj.subscribedMessages.splice(j, 1);
+            //         simObj.subscribedDetails.splice(j, 1);
+            //         simObj.subscribedInitial.splice(j, 1);
+            //         simObj.subscribedTimeDelta.splice(j, 1);
+            //         simObj.subscribedRelative.splice(j, 1);
+            //         simObj.subscribedTimestep.splice(j, 1);
+            //     } else if (simObj.subscribedMessages[j] > messageDelete) {
+            //         simObj.subscribedMessages[j]--;
+            //     }
+            // }
         }
     }
+    //TODO: update coordinates
     DrawAllArrowsOnCanvas();
 }
 
-/*	MoveMessageOnCanvasUpOne()
-	- Move message objects up 1 in Y position, to make up for middle object being removed.
+/*	ResetMessagesOnCanvas()
+	- Reset message object positions, to make up for middle object being removed.
 		(While it doesn't seem like it, the canvas objects are positions relative to each other).
 */
-function MoveMessagesOnCanvasUpOne(j) {
-    var listOfMessageVars = document.getElementsByClassName("div-canvas-message");
+function ResetMessagesOnCanvas() {
     let i = 0;
-    for (i = j; i < listOfMessageVars.length; i++) {
-        dragItem = listOfMessageVars[i];
-        dragItem.style = "position: absolute; overflow-y:hidden;" + "left:100px; top:" + (10 + (42 * i)) + "px;";
+    for (let [name, msgObj] of messageObjects) {
+        msgObj.objectRef.style = "position: absolute; overflow-y:hidden;" + "left:100px; top:" + (10 + (42 * i)) + "px;";
+        msgObj.position = 10 + 42 * i
+
+        i += 1
     }
 }
 
@@ -657,18 +642,17 @@ function MoveMessagesOnCanvasUpOne(j) {
 	- Set what simulator items should be visible, based on current stage.	
 */
 function SetItemsVisibleInStage() {
-    // TODO: why set them invisible when you can just not render them?
 
     let i = 0;
-    for (i = 0; i < simulatorObjects.length; i++) {
+    for (let simObj of simulatorObjects) {
         // console.log("SetItemsVisibleInStage(), i = " + i
-        // 	+ " simulatorObjects.name = " + simulatorObjects[i].name
-        // 	+ " objectRef = " + simulatorObjects[i].objectRef
-        // 	+ " objectRef.style = " + simulatorObjects[i].objectRef.style);
-        if (simulatorObjects[i].stage == stage) {
-            simulatorObjects[i].objectRef.style.y = 'visible';
+        // 	+ " simulatorObjects.name = " + simObj.name
+        // 	+ " objectRef = " + simObj.objectRef
+        // 	+ " objectRef.style = " + simObj.objectRef.style);
+        if (simObj.stage == stage) {
+            simObj.objectRef.style.y = 'visible';
         } else {
-            simulatorObjects[i].objectRef.style.visibility = 'hidden';
+            simObj.objectRef.style.visibility = 'hidden';
         }
     }
 
@@ -696,21 +680,12 @@ function CreateNewSimulatorOnCanvas(name) {
     //!!!!
     var newOffsetY = (listOfCurrentItems.length - 1) * 100;
     var newOffsetX = 0;//(listOfCurrentItems.length - 1) * 100;
-    simulatorObjects.push({
-        name: name,
-        stage: parseInt(stage), objectRef: addContentType, order: 0,
-        offsetX: newOffsetX, offsetY: -newOffsetY, leftPos: 0, topPos: 0,
-        subscribedMessages: [], publishedMessages: [],
-        subscribedDetails: [], publishedDetails: [],
-        timeDelta: 1, timeVarDelta: "", timeScale: 1,
-        subscribedInitial: [], publishedInitial: [],
-        subscribedTimeDelta: [], publishedTimeDelta: [],
-        subscribedRelative: [], subscribedTimestep: [],
-        initialize: "", simulate: "", simulateTimeDelta: 1,
-        stageConditions: [], endConditions: []
-    });
+    let simObj = NewSimulatorObject(name, stage, addContentType, newOffsetX, -newOffsetY)
 
-    simulators.get(name).objects.add(simulatorObjects[-1])
+    $(addContentType).data('ref', simObj)
+    simulatorObjects.add(simObj);
+
+    simulators.get(name).objects.add(simObj)
     setTranslate(0, -newOffsetY, addContentType);
     //setTranslate(-newOffsetX, 0, addContentType);
     //!!!!
@@ -721,59 +696,64 @@ function CreateNewSimulatorOnCanvas(name) {
 /*	CreateExistingSimulatorOnCanvas()
 	- Edit saved configuration for existing simulator on the canvas in main screen.
 */
-function CreateExistingSimulatorOnCanvas(sim_id) {
+function CreateExistingSimulatorOnCanvas(simObj) {
     var panel = document.getElementById("canvassubpanel1");
 
-    let i = sim_id;
-    var newOffsetY = simulatorObjects[i].offsetY;
-    var newOffsetX = simulatorObjects[i].offsetX;
+    var newOffsetY = simObj.offsetY;
+    var newOffsetX = simObj.offsetX;
     var addContentType = document.createElement("div");
     addContentType.className = "ui green button div-canvas-sim";
-    addContentType.setAttribute("name", "");
-    var addContent1 = document.createTextNode(simulatorObjects[i].name);
+    addContentType.setAttribute("name", simObj.name);
+    var addContent1 = document.createTextNode(simObj.name);
     addContentType.appendChild(addContent1);
     // addContentType.style = "position: relative; overflow-y:hidden;";
     panel.appendChild(addContentType);
+    $(addContentType).data('ref', simObj)
     setTranslate(newOffsetX, newOffsetY, addContentType);
-    simulatorObjects[i].objectRef = addContentType;
+    simObj.objectRef = addContentType;
 }
 
 /*	CreateNewMessageOnCanvas()
 	- Create new message object on canvas in main screen.
 */
-function CreateNewMessageOnCanvas(btn_id) {
+function CreateNewMessageOnCanvas(name) {
     console.log("User wants to add a message to the canvas");
 
     var panel = document.getElementById("canvassubpanel2grid");
     var listOfCurrentItems = document.getElementsByClassName("div-canvas-message");
     var addContentType = document.createElement("div");
     addContentType.className = "ui blue button div-canvas-message";
-    addContentType.setAttribute("name", listOfMessages[btn_id].name);
-    var addContent1 = document.createTextNode(listOfMessages[btn_id].name);
+    addContentType.setAttribute("name", name);
+    var addContent1 = document.createTextNode(name);
     addContentType.appendChild(addContent1);
     addContentType.style = "position: absolute; overflow-y:hidden;" + "left:100px; top:" + (10 + (42 * listOfCurrentItems.length)) + "px;";
     $('.div-canvas-server').height(Math.max(160, 34 + (42 * listOfCurrentItems.length)))
+
+
+    let msgObj = NewMessageObject(name, 10 + (42 * listOfCurrentItems.length), addContentType)
     panel.appendChild(addContentType);
-    messageObjects.push({ name: listOfMessages[btn_id].name, original: listOfMessages[btn_id], objectRef: addContentType });
+    $(addContentType).data('ref', msgObj)
+    messageObjects.set(name, msgObj)
     DisableCertainObjectButtons();
 }
 
 /*	CreateExistingMessageOnCanvas()
 	- Modify configuration of message already on canvas in main screen.
 */
-function CreateExistingMessageOnCanvas(message_id) {
+function CreateExistingMessageOnCanvas(msgObj) {
     var panel = document.getElementById("canvassubpanel2grid");
 
-    let i = message_id;
     var listOfCurrentItems = document.getElementsByClassName("div-canvas-message");
     var addContentType = document.createElement("div");
     addContentType.className = "ui blue button div-canvas-message";
-    addContentType.setAttribute("name", messageObjects[message_id].name);
-    var addContent1 = document.createTextNode(messageObjects[message_id].name);
+    addContentType.setAttribute("name", msgObj.name);
+    var addContent1 = document.createTextNode(msgObj.name);
     addContentType.appendChild(addContent1);
     addContentType.style = "position: absolute; overflow-y:hidden;" + "left:100px; top:"
         + (10 + (42 * listOfCurrentItems.length)) + "px;";
     $('.div-canvas-server').height(Math.max(160, 34 + (42 * listOfCurrentItems.length)))
+    msgObj.position = 10 + (42 * listOfCurrentItems.length)
+    $(addContentType).data('ref', msgObj)
     panel.appendChild(addContentType);
-    messageObjects[i].objectRef = addContentType;
+    msgObj.objectRef = addContentType;
 }

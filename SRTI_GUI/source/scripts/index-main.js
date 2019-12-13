@@ -27,11 +27,11 @@ var yOffset = 0;
 var newObjectSelection = "none";
 // References to simulators and messages available in the project 
 var simulators = new Map();
-var listOfMessages = [];
+var messages = new Map();
 // references to objects on canvas, plus their sub-components 
-//		(custom versions that can't generally be specified in 'simulators' or 'listOfMessages').
+//		(custom versions that can't generally be specified in 'simulators' or 'messages').
 var simulatorObjects = new Set()
-var messageObjects = [];
+var messageObjects = new Map()
 
 // Array of entire project states to allow 'undo' and 'redo' 
 //		(effectively, saves same data as the 'save file' would, up to 30 times, 
@@ -102,8 +102,8 @@ var stageConditionV2 = "";
 var stageConditionV3a = "";
 var stageConditionV3b = "";
 var stageConditionV3 = "";
-var stageConditionSubSet = [];
-var stageConditionSet = [];
+var stageConditionSubSet = new Set();
+var stageConditionSet = new Set(); // TODO: never used?
 
 var child_process;
 var execServer;
@@ -145,26 +145,33 @@ function NewProject() {
 	- Clear memory of current project, and delete objects on canvas.
 */
 function ClearProject() {
+	let iLength = simulatorObjects.size;
 	let i = 0;
-	var iLength = simulatorObjects.length;
-	for (i = iLength - 1; i >= 0; i--) {
-		simulatorObjects[i].objectRef.parentNode.removeChild(simulatorObjects[i].objectRef);
-		simulatorObjects.splice(i, 1);
-		// because all objects are relative, deleting one object makes other objects (that were added after i) move up one space. Need to reset everyone.
-		MoveObjectsOnCanvasUpOne(i);
-		UpdateDrawArrowsAfterDelete(i, -1);
-	}
-	var listOfMessageVars = document.getElementsByClassName("div-canvas-message");
-	iLength = listOfMessageVars.length;
-	for (i = iLength - 1; i >= 0; i--) {
-		listOfMessageVars[i].parentNode.removeChild(listOfMessageVars[i]);
-		messageObjects.splice(i, 1);
+	// for (i = iLength - 1; i >= 0; i--) {
+	// 	// TODO: Why delete this one by one?
+	// 	simulatorObjects[i].objectRef.parentNode.removeChild(simulatorObjects[i].objectRef);
+	// 	simulatorObjects.splice(i, 1);
+	// 	// because all objects are relative, deleting one object makes other objects (that were added after i) move up one space. Need to reset everyone.
+	// 	// TODO: why bother moving these?
+	// 	MoveObjectsOnCanvasUpOne(i);
+	// 	UpdateDrawArrowsAfterDelete(i, -1);
+	// }
+
+	for (let simObj of simulatorObjects) {
+		simObj.objectRef.parentNode.removeChild(simObj.objectRef)
 	}
 
+	for (let [name, msgObj] of messageObjects) {
+		console.log(msgObj)
+		msgObj.objectRef.parentNode.removeChild(msgObj.objectRef)
+	}
+
+	ResetArrowOnCanvas()
+
 	simulators = new Map();
-	listOfMessages = [];
-	simulatorObjects = [];
-	messageObjects = [];
+	messages = new Map();
+	simulatorObjects = new Set();
+	messageObjects = new Map();
 	numOfStages = 1;
 	serverPath = __dirname + '\\..\\extraResources\\srti_server\\';
 	serverFileName = 'SRTI_v2_22_02.jar';
@@ -202,13 +209,13 @@ function SaveProject() {
 			var simdef = {
 				simdef: simulator
 			};
-			fs.writeFileSync(savepath + name + "_def.simdef", JSON.stringify(simdef, MapToList, 4), 'utf-8');
+			fs.writeFileSync(savepath + name + "_def.simdef", JSON.stringify(simdef, StringifyHelper, 4), 'utf-8');
 		}
-		for (i = 0; i < listOfMessages.length; i++) {
+		for (let [name, message] of messages) {
 			var mesdef = {
-				mesdef: listOfMessages[i]
+				mesdef: message
 			};
-			fs.writeFileSync(savepath + listOfMessages[i].name + "_def.mesdef", JSON.stringify(mesdef, MapToList, 4), 'utf-8');
+			fs.writeFileSync(savepath + name + "_def.mesdef", JSON.stringify(mesdef, StringifyHelper, 4), 'utf-8');
 		}
 	} catch (e) {
 		console.log("failed to save file: " + e);
@@ -223,10 +230,10 @@ function SaveProject() {
 function CreateProjectText() {
 	var content = "";
 	// JavaScript supports "JavaScript Object Notation" by default.
-	//TODO: change this logic
+	//TODO: not outputting server info
 	var obj = {
 		simulators: simulators,
-		listOfMessages: listOfMessages,
+		messages: messages,
 		simulatorObjects: simulatorObjects,
 		messageObjects: messageObjects,
 		numOfStages: numOfStages,
@@ -235,7 +242,7 @@ function CreateProjectText() {
 		hostName: hostName,
 		portNumber: portNumber
 	};
-	content = JSON.stringify(obj, MapToList, 4);
+	content = JSON.stringify(obj, StringifyHelper, 4);
 	return content;
 }
 
@@ -311,27 +318,27 @@ function OpenExistingProject(filepath, filename) {
 	- Clear existing project, load new project data.
 */
 function ResetCanvasWithNewProject(projectText) {
-	console.log("Reseting canvas with new project.");
+	console.log("Resetting canvas with new project.");
 	ClearProject();
 
 	var obj = JSON.parse(projectText);
 	console.log(obj)
 	simulators = ConvertSimulators(typeof obj.simulators !== 'undefined' ? obj.simulators : obj.listOfSimulators);
-	listOfMessages = ConvertMessages(obj.listOfMessages);
-	simulatorObjects = obj.simulatorObjects;
-	messageObjects = obj.messageObjects;
-	LinkReferences(simulators, listOfMessages, simulatorObjects, messageObjects)
+	messages = ConvertMessages(typeof obj.messages !== 'undefined' ? obj.messages : obj.listOfMessages);
+	simulatorObjects = ConvertSimulatorObjects(obj.simulatorObjects);
+	messageObjects = ConvertMessageObjects(obj.messageObjects);
+	LinkReferences(simulators, messages, simulatorObjects, messageObjects)
 	numOfStages = obj.numOfStages;
-	serverPath = obj.serverPath;
-	serverFileName = obj.serverFileName;
-	hostName = obj.hostName;
-	portNumber = obj.portNumber;
+	serverPath = obj.serverPath ? obj.serverPath : serverPath;
+	serverFileName = obj.serverFileName ? obj.serverFileName : serverFileName;
+	hostName = obj.hostName ? obj.hostName : hostName;
+	portNumber = obj.portNumber ? obj.portNumber : portNumber;
 	let i = 0;
-	for (i = 0; i < simulatorObjects.length; i++) {
-		CreateExistingSimulatorOnCanvas(i);
+	for (let simObj of simulatorObjects) {
+		CreateExistingSimulatorOnCanvas(simObj);
 	}
-	for (i = 0; i < messageObjects.length; i++) {
-		CreateExistingMessageOnCanvas(i);
+	for (let [name, msgObj] of messageObjects) {
+		CreateExistingMessageOnCanvas(msgObj);
 	}
 
 	UpdateCanvasGrid();
@@ -373,134 +380,136 @@ function WriteWrapperConfigFiles() {
 			var stageConditions = [];
 
 			//errorLocation = 1;
+			//TODO: this part is really confusing
 
 			let j = 0;
-			for (j = 0; j < simulatorObjects.length; j++) {
+			for (let simObj of simulator.objects) {
 				errorLocation = 0;
-				if (simulatorObjects[j].name == name) {
-					errorLocation = 1;
-					stageChannels.push(
+
+				errorLocation = 1;
+				stageChannels.push(
+					{
+						stage: parseInt(simObj.stage),
+						order: parseInt(simObj.order),
+						timestepDelta: parseInt(simObj.timeDelta),
+						timestepMul: parseInt(simObj.timeScale),
+						timestepVarDelta: simObj.timeVarDelta
+					});
+				if (simObj.initialize != "" && simObj.initialize != '""'
+					&& simObj.initialize != "''") {
+					initializeChannels.push(
 						{
-							stage: parseInt(simulatorObjects[j].stage),
-							order: parseInt(simulatorObjects[j].order),
-							timestepDelta: parseInt(simulatorObjects[j].timeDelta),
-							timestepMul: parseInt(simulatorObjects[j].timeScale),
-							timestepVarDelta: simulatorObjects[j].timeVarDelta
+							functionName: simObj.initialize,
+							stage: parseInt(simObj.stage)
 						});
-					if (simulatorObjects[j].initialize != "" && simulatorObjects[j].initialize != '""'
-						&& simulatorObjects[j].initialize != "''") {
-						initializeChannels.push(
-							{
-								functionName: simulatorObjects[j].initialize,
-								stage: parseInt(simulatorObjects[j].stage)
-							});
-					}
-					if (simulatorObjects[j].simulate != "" && simulatorObjects[j].simulate != '""'
-						&& simulatorObjects[j].simulate != "''") {
-						simulateChannels.push(
-							{
-								functionName: simulatorObjects[j].simulate,
-								timestepDelta: parseInt(simulatorObjects[j].simulateTimeDelta),
-								stage: parseInt(simulatorObjects[j].stage)
-							});
-					}
-					errorLocation = 2;
-					console.log("preparing for sim " + j + ", has name " + simulatorObjects[j].name);
-					let k = 0;
-					for (k = 0; k < simulatorObjects[j].subscribedMessages.length; k++) {
-						var varChannel = [];
-						let m = 0;
-						for (m = 0; m < simulatorObjects[j].subscribedDetails[k].length; m++) {
-							errorLocation = simulatorObjects[j].name + " s " + simulatorObjects[j].subscribedMessages[k] + " " + simulatorObjects[j].subscribedDetails[k][m][0] + " " + simulatorObjects[j].subscribedDetails[k][m][1];
-							var varNameIndex = simulatorObjects[j].subscribedDetails[k][m][0];
-							var varNameIndex2 = simulatorObjects[j].subscribedDetails[k][m][1];
-							if (varNameIndex != -1 && varNameIndex2 != -1) {
-								varChannel.push(
-									{
-										valueName: messageObjects[simulatorObjects[j].subscribedMessages[k]].original.variables[simulatorObjects[j].subscribedDetails[k][m][1]].name,//listOfMessages[simulatorObjects[j].subscribedMessages[k]].variables[simulatorObjects[j].subscribedDetails[k][m][1]].name,
-										varName: simulator.variables.get(simulatorObjects[j].subscribedDetails[k][m][0]).name
-									});
-							}
-						}
-						subscribedChannels.push(
-							{
-								messageName: messageObjects[simulatorObjects[j].subscribedMessages[k]].original.name,//listOfMessages[simulatorObjects[j].subscribedMessages[k]].name,
-								oneTime: (simulatorObjects[j].subscribedInitial[k] == "true"),
-								mandatory: true,
-								relativeOrder: parseInt(simulatorObjects[j].subscribedRelative[k]),
-								maxTimestep: parseInt(simulatorObjects[j].subscribedTimestep[k]),
-								timestepDelta: parseInt(simulatorObjects[j].subscribedTimeDelta[k]),
-								stage: parseInt(simulatorObjects[j].stage),
-								varChannel: varChannel
-							});
-					}
-					errorLocation = 3;
-					for (k = 0; k < simulatorObjects[j].publishedMessages.length; k++) {
-						var varChannel = [];
-						let m = 0;
-						for (m = 0; m < simulatorObjects[j].publishedDetails[k].length; m++) {
-							errorLocation = simulatorObjects[j].name + " p " + simulatorObjects[j].publishedMessages[k] + " " + simulatorObjects[j].publishedDetails[k][m][0] + " " + simulatorObjects[j].publishedDetails[k][m][1];
-							var varNameIndex = simulatorObjects[j].publishedDetails[k][m][0];
-							var varNameIndex2 = simulatorObjects[j].publishedDetails[k][m][1];
-							if (varNameIndex != -1 && varNameIndex2 != -1) {
-								varChannel.push(
-									{
-										valueName: messageObjects[simulatorObjects[j].publishedMessages[k]].original.variables[simulatorObjects[j].publishedDetails[k][m][0]].name,//listOfMessages[simulatorObjects[j].publishedMessages[k]].variables[simulatorObjects[j].publishedDetails[k][m][0]].name,
-										varName: simulator.variables.get(simulatorObjects[j].publishedDetails[k][m][1]).name
-									});
-							}
-						}
-						publishedChannels.push(
-							{
-								messageName: messageObjects[simulatorObjects[j].publishedMessages[k]].original.name,//listOfMessages[simulatorObjects[j].publishedMessages[k]].name,
-								initial: (simulatorObjects[j].publishedInitial[k] == "true"),
-								timestepDelta: parseInt(simulatorObjects[j].publishedTimeDelta[k]),
-								stage: parseInt(simulatorObjects[j].stage),
-								varChannel: varChannel
-							});
-					}
-					errorLocation = 4;
-					for (k = 0; k < simulatorObjects[j].endConditions.length; k++) {
-						var newCondition = [];
-						let m = 0;
-						for (m = 0; m < simulatorObjects[j].endConditions[k].conditions.length; m++) {
-							// (extra parse to a number instead of a string necessary for Wrapper to properly check if condition is met)
-							var tempValue = simulatorObjects[j].endConditions[k].conditions[m].value;
-							if (isNaN(tempValue) == false) {
-								tempValue = parseFloat(tempValue);
-							}
-							newCondition.push(
-								{
-									varName: simulatorObjects[j].endConditions[k].conditions[m].varName,
-									condition: simulatorObjects[j].endConditions[k].conditions[m].condition,
-									value: tempValue,
-									varName2: simulatorObjects[j].endConditions[k].conditions[m].varName2
-								});
-						}
-						endConditions.push(newCondition);
-					}
-					errorLocation = 5;
-					for (k = 0; k < simulatorObjects[j].stageConditions.length; k++) {
-						var newCondition = [];
-						let m = 0;
-						for (m = 0; m < simulatorObjects[j].stageConditions[k].conditions.length; m++) {
-							var tempValue = simulatorObjects[j].stageConditions[k].conditions[m].value;
-							if (isNaN(tempValue) == false) {
-								tempValue = parseFloat(tempValue);
-							}
-							newCondition.push(
-								{
-									oldStage: parseInt(simulatorObjects[j].stageConditions[k].oldStage),
-									newStage: parseInt(simulatorObjects[j].stageConditions[k].newStage),
-									varName: simulatorObjects[j].stageConditions[k].conditions[m].varName,
-									condition: simulatorObjects[j].stageConditions[k].conditions[m].condition,
-									value: tempValue,
-									varName2: simulatorObjects[j].stageConditions[k].conditions[m].varName2
-								});
-						}
-						stageConditions.push(newCondition);
-					}
 				}
+				if (simObj.simulate != "" && simObj.simulate != '""'
+					&& simObj.simulate != "''") {
+					simulateChannels.push(
+						{
+							functionName: simObj.simulate,
+							timestepDelta: parseInt(simObj.simulateTimeDelta),
+							stage: parseInt(simObj.stage)
+						});
+				}
+				errorLocation = 2;
+				console.log("preparing for sim " + j + ", has name " + simObj.name);
+				let k = 0;
+				for (let [name, sub] of simObj.subscribedMessages) {
+					var varChannel = [];
+					let m = 0;
+					for (let [varName, detail] of sub.details) {
+						errorLocation = simObj.name + " s " + sub + " " + varName + " " + detail.value;
+						var varNameIndex = varName;
+						var varNameIndex2 = detail.value;
+						if (varNameIndex && varNameIndex2) {
+							varChannel.push(
+								{
+									valueName: detail.value,//messages[simObj.subscribedMessages[k]].variables[simObj.subscribedDetails[k][m][1]].name,
+									varName: varName
+								});
+						}
+					}
+					subscribedChannels.push(
+						{
+							messageName: name,//messages[simObj.subscribedMessages[k]].name,
+							oneTime: (sub.initial == "true"),
+							mandatory: true,
+							relativeOrder: parseInt(sub.relative),
+							maxTimestep: parseInt(sub.timestep),
+							timestepDelta: parseInt(sub.timeDelta),
+							stage: parseInt(simObj.stage),
+							varChannel: varChannel
+						});
+				}
+				errorLocation = 3;
+				for (let [name, pub] of simObj.publishedMessages) {
+					var varChannel = [];
+					let m = 0;
+					for (let [varName, detail] of pub.details) {
+						errorLocation = simObj.name + " p " + pub + " " + varName + " " + detail.value;
+						var varNameIndex = varName;
+						var varNameIndex2 = detail.value;
+						if (varNameIndex && varNameIndex2) {
+							varChannel.push(
+								{
+									valueName: varName,//messages[simObj.publishedMessages[k]].variables[simObj.publishedDetails[k][m][0]].name,
+									varName: detail.value
+								});
+						}
+					}
+					publishedChannels.push(
+						{
+							messageName: name,//messages[simObj.publishedMessages[k]].name,
+							initial: (pub.initial == "true"),
+							timestepDelta: parseInt(pub.timeDelta[k]),
+							stage: parseInt(simObj.stage),
+							varChannel: varChannel
+						});
+				}
+				errorLocation = 4;
+				for (k = 0; k < simObj.endConditions.length; k++) {
+					var newCondition = [];
+					let m = 0;
+					for (m = 0; m < simObj.endConditions[k].conditions.length; m++) {
+						// (extra parse to a number instead of a string necessary for Wrapper to properly check if condition is met)
+						var tempValue = simObj.endConditions[k].conditions[m].value;
+						if (isNaN(tempValue) == false) {
+							tempValue = parseFloat(tempValue);
+						}
+						newCondition.push(
+							{
+								varName: simObj.endConditions[k].conditions[m].varName,
+								condition: simObj.endConditions[k].conditions[m].condition,
+								value: tempValue,
+								varName2: simObj.endConditions[k].conditions[m].varName2
+							});
+					}
+					endConditions.push(newCondition);
+				}
+				errorLocation = 5;
+				// TODO: the wrapper file structure may also need changing
+				for (k = 0; k < simObj.stageConditions.length; k++) {
+					var newCondition = [];
+					let m = 0;
+					for (m = 0; m < simObj.stageConditions[k].conditions.length; m++) {
+						var tempValue = simObj.stageConditions[k].conditions[m].value;
+						if (isNaN(tempValue) == false) {
+							tempValue = parseFloat(tempValue);
+						}
+						newCondition.push(
+							{
+								oldStage: parseInt(simObj.stageConditions[k].oldStage),
+								newStage: parseInt(simObj.stageConditions[k].newStage),
+								varName: simObj.stageConditions[k].conditions[m].varName,
+								condition: simObj.stageConditions[k].conditions[m].condition,
+								value: tempValue,
+								varName2: simObj.stageConditions[k].conditions[m].varName2
+							});
+					}
+					stageConditions.push(newCondition);
+				}
+
 			}
 
 			//errorLocation = 2;
@@ -522,7 +531,7 @@ function WriteWrapperConfigFiles() {
 			};
 
 			//errorLocation = 3;
-			content = JSON.stringify(obj, MapToList, 4);
+			content = JSON.stringify(obj, StringifyHelper, 4);
 			try {
 				var fs = require('fs');
 				fs.writeFileSync(savePathLocal + saveNameLocal + ".json", content, 'utf-8');
@@ -572,7 +581,7 @@ function WriteServerConfigFile() {
 
 	contentJSON = JSON.parse(content);
 	contentJSON.portNumber = parseInt(portNumber);
-	content = JSON.stringify(contentJSON, MapToList, 4);
+	content = JSON.stringify(contentJSON, StringifyHelper, 4);
 
 	fs.writeFileSync(serverPath + "settings.txt", content, "utf-8");
 }
@@ -590,10 +599,10 @@ function AddToUndoBuffer(description) {
 	// occurs when an action occurs to add to "Undo" stack
 	undoStack.push({
 		description: description,
-		simulators: JSON.stringify(simulators, MapToList),
-		listOfMessages: JSON.stringify(listOfMessages, MapToList),
-		simulatorObjects: JSON.stringify(simulatorObjects, MapToList),
-		messageObjects: JSON.stringify(messageObjects, MapToList),
+		simulators: JSON.stringify(simulators, StringifyHelper),
+		messages: JSON.stringify(messages, StringifyHelper),
+		simulatorObjects: JSON.stringify(simulatorObjects, StringifyHelper),
+		messageObjects: JSON.stringify(messageObjects, StringifyHelper),
 		numOfStages: numOfStages
 	});
 	let i = 0;
@@ -618,25 +627,26 @@ function Undo() {
 		undoStack.splice(undoStack.length - 1, 1);
 		redoStack.push({
 			description: obj.description,
-			simulators: JSON.stringify(simulators, MapToList),
-			listOfMessages: JSON.stringify(listOfMessages, MapToList),
-			simulatorObjects: JSON.stringify(simulatorObjects, MapToList),
-			messageObjects: JSON.stringify(messageObjects, MapToList),
+			simulators: JSON.stringify(simulators, StringifyHelper),
+			messages: JSON.stringify(messages, StringifyHelper),
+			simulatorObjects: JSON.stringify(simulatorObjects, StringifyHelper),
+			messageObjects: JSON.stringify(messageObjects, StringifyHelper),
 			numOfStages: numOfStages
 		});
 		ClearProject();
 		//TODO: link
-		simulators = ConvertSimulators(JSON.parse(obj.simulators, MapToList));
-		listOfMessages = ConvertMessages(JSON.parse(obj.listOfMessages, MapToList));
-		simulatorObjects = JSON.parse(obj.simulatorObjects, MapToList);
-		messageObjects = JSON.parse(obj.messageObjects, MapToList);
+		simulators = ConvertSimulators(JSON.parse(obj.simulators, StringifyHelper));
+		messages = ConvertMessages(JSON.parse(obj.messages, StringifyHelper));
+		simulatorObjects = ConvertSimulatorObjects(JSON.parse(obj.simulatorObjects, StringifyHelper));
+		messageObjects = ConvertMessageObjects(JSON.parse(obj.messageObjects, StringifyHelper));
+		LinkReferences(simulators, messages, simulatorObjects, messageObjects)
 		numOfStages = obj.numOfStages;
 		let i = 0;
-		for (i = 0; i < simulatorObjects.length; i++) {
-			CreateExistingSimulatorOnCanvas(i);
+		for (let simObj of simulatorObjects) {
+			CreateExistingSimulatorOnCanvas(simObj);
 		}
-		for (i = 0; i < messageObjects.length; i++) {
-			CreateExistingMessageOnCanvas(i);
+		for (let [name, msgObj] of messageObjects) {
+			CreateExistingMessageOnCanvas(msgObj);
 		}
 		UpdateCanvasGrid();
 		DrawAllArrowsOnCanvas();
@@ -659,25 +669,26 @@ function Redo() {
 		redoStack.splice(redoStack.length - 1, 1);
 		undoStack.push({
 			description: obj.description,
-			simulators: JSON.stringify(simulators, MapToList),
-			listOfMessages: JSON.stringify(listOfMessages, MapToList),
-			simulatorObjects: JSON.stringify(simulatorObjects, MapToList),
-			messageObjects: JSON.stringify(messageObjects, MapToList),
+			simulators: JSON.stringify(simulators, StringifyHelper),
+			messages: JSON.stringify(messages, StringifyHelper),
+			simulatorObjects: JSON.stringify(simulatorObjects, StringifyHelper),
+			messageObjects: JSON.stringify(messageObjects, StringifyHelper),
 			numOfStages: numOfStages
 		});
 		ClearProject();
 		//TODO: link
 		simulators = ConvertSimulators(JSON.parse(obj.simulators));
-		listOfMessages = ConvertMessages(JSON.parse(obj.listOfMessages));
-		simulatorObjects = JSON.parse(obj.simulatorObjects);
-		messageObjects = JSON.parse(obj.messageObjects);
+		messages = ConvertMessages(JSON.parse(obj.messages));
+		simulatorObjects = ConvertSimulatorObjects(JSON.parse(obj.simulatorObjects));
+		messageObjects = ConvertMessageObjects(JSON.parse(obj.messageObjects));
+		LinkReferences(simulators, messages, simulatorObjects, messageObjects)
 		numOfStages = obj.numOfStages;
 		let i = 0;
-		for (i = 0; i < simulatorObjects.length; i++) {
-			CreateExistingSimulatorOnCanvas(i);
+		for (let simObj of simulatorObjects) {
+			CreateExistingSimulatorOnCanvas(simObj);
 		}
-		for (i = 0; i < messageObjects.length; i++) {
-			CreateExistingMessageOnCanvas(i);
+		for (let [name, msgObj] of messageObjects) {
+			CreateExistingMessageOnCanvas(msgObj);
 		}
 		UpdateCanvasGrid();
 		DrawAllArrowsOnCanvas();
@@ -693,14 +704,12 @@ function Redo() {
 	- Add the default "RTI_" message to subscribe to onto the canvas, for all new messages.
 */
 function AddProprietaryRTIMessage() {
-	// TODO: eliminate this parsing and apply new format
-	var rtiMessage = "{\"mesdef\":{\"name\":\"RTI_\","
-		+ "\"variables\":[{\"name\":\"vTimestep\",\"valueType\":\"integer\"},"
-		+ "{\"name\":\"stage\",\"valueType\":\"integer\"},"
-		+ " {\"name\":\"stageVTimestepMul\",\"valueType\":\"integer\"},"
-		+ "{\"name\":\"stageVTimestep\",\"valueType\":\"integer\"}]}}";
-	var obj = JSON.parse(rtiMessage);
-	listOfMessages.push(obj.mesdef);
+	let variables = new Map()
+	variables.set('vTimestep', NewVariable('vTimestep', 'integer'))
+	variables.set('stage', NewVariable('stage', 'integer'))
+	variables.set('stageVTimestepMul', NewVariable('stageVTimestepMul', 'integer'))
+	variables.set('stageVTimestep', NewVariable('stageVTimestep', 'integer'))
+	messages.set("RTI_", NewMessage("RTI_", variables));
 	ResetObjectSubPanel2();
 }
 
@@ -719,7 +728,71 @@ function NewSimulator(newSimName, newRefName, newFilePath, newExecute,
 		refName: newRefName,
 		filePath: newFilePath, executeCommand: newExecute,
 		functions: simulatorFunctions, 'variables': variables,
-		objects: new Set()
+		objects: new Set(),
+		stageConditions: new Set(),
+		endConditions: new Set()
+	}
+}
+
+function NewSimulatorObject(name, stage, addContentType, newOffsetX, newOffsetY) {
+	return {
+		name: name,
+		stage: parseInt(stage), objectRef: addContentType, order: 0,
+		offsetX: newOffsetX, offsetY: newOffsetY, leftPos: 0, topPos: 0,
+		subscribedMessages: new Map(), publishedMessages: new Map(),
+
+		timeDelta: 1, timeVarDelta: "", timeScale: 1,
+		initialize: "", simulate: "", simulateTimeDelta: 1,
+	}
+}
+
+function NewMessage(name, variables) {
+	return {
+		name: name, variables: variables
+	}
+}
+
+function NewMessageObject(name, position, objectRef) {
+	return {
+		name: name, position: position, objectRef: objectRef
+	}
+}
+
+function NewSubscribe(name, initial, timeDelta, relative, timestep, details) {
+	return {
+		name: name, initial: initial,
+		timeDelta: timeDelta, relative: relative,
+		timestep: timestep, details: details
+	}
+}
+
+function NewPublish(name, initial, timeDelta, details) {
+	return {
+		name: name, initial: initial,
+		timeDelta: timeDelta, details: details
+	}
+}
+
+function NewStageConditions(oldStage, newStage, conditions) {
+	return {
+		oldStage: oldStage,
+		newStage: newStage,
+		conditions: conditions
+	}
+}
+
+function NewEndConditions(conditions) {
+	return {
+		conditions: conditions
+	}
+}
+
+function NewCondition(varName, condition, value, varName2) {
+	return {
+		varName: varName,
+		condition: condition,
+		value: value,
+		varName2: varName2
 	}
 }
 
@@ -755,41 +828,211 @@ function ConvertSimulators(oldSimulators) {
 	return newSimulators
 }
 
-function ConvertMessages(oldMessages) {
-	for (let message of oldMessages) {
-		if (Array.isArray(message['variables'])) {
-			let variables = new Map()
-			for (let variable of message['variables']) {
-				variables.set(variable['name'], variable)
-			}
-			message['variables'] = variables
+function ConvertMessage(message) {
+	if (Array.isArray(message['variables'])) {
+		let variables = new Map()
+		for (let variable of message['variables']) {
+			variables.set(variable['name'], variable)
 		}
+		message['variables'] = variables
 	}
-
-	return oldMessages
 }
 
-function LinkReferences(simulators, listOfMessages, simulatorObjects, messageObjects) {
+function ConvertMessages(oldMessages) {
+	newMessages = new Map()
+	for (let message of oldMessages) {
+		ConvertMessage(message)
+		newMessages.set(message.name, message)
+	}
+
+	return newMessages
+}
+
+function ConvertSimulatorObjects(oldSimulatorObjects) {
+	for (let simObj of oldSimulatorObjects) {
+		delete simObj.original
+	}
+	return new Set(oldSimulatorObjects)
+}
+
+function ConvertMessageObjects(oldMessageObjects) {
+	newMessageObjects = new Map()
+	for (let msgObj of oldMessageObjects) {
+		delete msgObj.original
+
+		newMessageObjects.set(msgObj.name, msgObj)
+	}
+
+	return newMessageObjects
+}
+
+function LinkReferences(simulators, messages, simulatorObjects, messageObjects) {
 	for (let simObj of simulatorObjects) {
 		simulators.get(simObj.name).objects.add(simObj)
 	}
 
-	for (let msgObj of messageObjects) {
-		for (let msg of listOfMessages) {
-			if (msg.name === msgObj.name) {
-				msgObj.original = msg
-				break
+	// stageConditions, endConditions
+	// TODO: ignore stage conditions when exporting a single simulator
+	for (let [name, simulator] of simulators) {
+		if ('stageConditions' in simulator) {
+			for (let conditions of simulator.stageConditions) {
+				conditions.conditions = new Set(conditions.conditions)
 			}
+
+			simulator.stageConditions = new Set(simulator.stageConditions)
+		} else {
+			simulator.stageConditions = new Set()
+		}
+
+		//aggregate sim objects
+		for (let simObj of simulator.objects) {
+			if ('stageConditions' in simObj) {
+				for (let conditions of simObj.stageConditions) {
+					conditions.conditions = new Set(conditions.conditions)
+					simulator.stageConditions.add(conditions)
+				}
+			}
+
+
+			delete simObj.stageConditions
+		}
+
+		if ('endConditions' in simulator) {
+			for (let conditions of simulator.endConditions) {
+				conditions.conditions = new Set(conditions.conditions)
+			}
+
+			simulator.endConditions = new Set(simulator.endConditions)
+		} else {
+			simulator.endConditions = new Set()
+		}
+
+		//aggregate sim objects
+		for (let simObj of simulator.objects) {
+			if ('endConditions' in simObj) {
+				for (let conditions of simObj.endConditions) {
+					conditions.conditions = new Set(conditions.conditions)
+
+					delete conditions.oldStage
+					simulator.endConditions.add(conditions)
+				}
+			}
+
+			delete simObj.endConditions
+		}
+
+	}
+
+	// subscribe and publish
+	let arrMessages = Array.from(messages.values()), message
+	for (let simObj of simulatorObjects) {
+		if ('subscribedDetails' in simObj) {
+			let subscribedMessages = new Map(), subMessage, messageVars
+			for (let i = 0; i < simObj.subscribedMessages.length; i++) {
+				message = arrMessages[simObj.subscribedMessages[i] + 1]
+				messageVars = Array.from(message.variables.values())
+				subMessage = NewSubscribe(
+					message.name, simObj.subscribedInitial[i],
+					simObj.subscribedTimeDelta[i], simObj.subscribedRelative[i],
+					simObj.subscribedTimestep[i], null
+				)
+
+				subMessage.details = new Map()
+				let j = 0, otherVar
+				for (let [name, variable] of simulators.get(simObj.name).variables) {
+					otherVar = simObj.subscribedDetails[i][j][1]
+					if (otherVar === -1) {
+						otherVar = null
+					} else {
+						otherVar = messageVars[otherVar].name
+					}
+					subMessage.details.set(name, { name: name, value: otherVar })
+					j += 1
+				}
+
+				subscribedMessages.set(message.name, subMessage)
+			}
+
+			simObj.subscribedMessages = subscribedMessages
+			delete simObj.subscribedDetails
+			delete simObj.subscribedTimestep
+			delete simObj.subscribedInitial
+			delete simObj.subscribedTimeDelta
+			delete simObj.subscribedRelative
+
+		} else {
+			let subscribedMessages = new Map()
+			for (let message of simObj.subscribedMessages) {
+				let newDetails = new Map()
+				for (let detail of message.details) {
+					newDetails.set(detail.name, detail)
+				}
+				message.details = newDetails
+				subscribedMessages.set(message.name, message)
+			}
+
+			simObj.subscribedMessages = subscribedMessages
+		}
+
+		if ('publishedDetails' in simObj) {
+			let publishedMessages = new Map(), pubMessage, simulatorVars
+			for (let i = 0; i < simObj.publishedMessages.length; i++) {
+				message = arrMessages[simObj.publishedMessages[i] + 1]
+				simulatorVars = Array.from(simulators.get(simObj.name).variables.values())
+				pubMessage = NewPublish(
+					message.name, simObj.publishedInitial[i],
+					simObj.publishedTimeDelta[i], null
+				)
+
+				pubMessage.details = new Map()
+				let j = 0, otherVar
+				for (let [name, variable] of message.variables) {
+					console.log(simObj.publishedDetails, i, j)
+					otherVar = simObj.publishedDetails[i][j][1]
+					if (otherVar === -1) {
+						otherVar = null
+					} else {
+						otherVar = simulatorVars[otherVar].name
+					}
+					pubMessage.details.set(name, { name: name, value: otherVar })
+					j += 1
+				}
+
+				publishedMessages.set(message.name, pubMessage)
+			}
+
+			simObj.publishedMessages = publishedMessages
+			delete simObj.publishedDetails
+			delete simObj.publishedTimestep
+			delete simObj.publishedInitial
+			delete simObj.publishedTimeDelta
+			delete simObj.publishedRelative
+
+		} else {
+			let publishedMessages = new Map()
+			for (let message of simObj.publishedMessages) {
+				let newDetails = new Map()
+				for (let detail of message.details) {
+					newDetails.set(detail.name, detail)
+				}
+				message.details = newDetails
+				publishedMessages.set(message.name, message)
+			}
+
+			simObj.publishedMessages = publishedMessages
 		}
 	}
 }
 
-
-function MapToList(key, value) {
+function StringifyHelper(key, value) {
 	const originalObject = this[key];
-	if (originalObject instanceof Map) {
+	if (key == 'objects' || key == 'objectRef') {
+		return undefined
+	} else if (originalObject instanceof Map) {
+		return Array.from(originalObject.values())
+	} else if (originalObject instanceof Set) {
 		return Array.from(originalObject.values())
 	} else {
-		return value;
+		return value
 	}
 }

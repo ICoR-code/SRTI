@@ -182,21 +182,22 @@ function ResetObjectSubPanel1() {
 /*	AppendObjectToSubPanel2()
 	- Append object to sub-panel (canvas) on the main screen.
 */
-function AppendObjectToSubPanel2(index = listOfMessages.length - 1) {
-    console.log(index)
+function AppendObjectToSubPanel2(message) {
     let panel = $('#objectsubpanel2')
-    button = $('<button>').addClass('ui blue button btn-list-item').text(listOfMessages[index].name)
-    button.attr('id', index)
+    button = $('<button>').addClass('ui blue button btn-list-item').text(message.name)
+    button.data('id', message.name)
+    button.data('ref', button)
     button.click(function () {
-        console.log("onclick at index = " + this.id);
+        elem = $(this)
+        console.log("onclick at index = " + elem.data('id'));
         if (selectState == 0) {
-            CreateNewMessageOnCanvas(this.id);
+            CreateNewMessageOnCanvas(elem.data('id'));
         } else if (selectState == 1) {
-            ConfigureMessageFromList(this.id);
+            ConfigureMessageFromList(elem.data('id'));
         } else if (selectState == 2) {
 
         } else if (selectState == 3) {
-            DeleteMessageFromList(this.id);
+            DeleteMessageFromList(elem.data('id'), elem.data('ref'));
         }
     })
     panel.append(button)
@@ -209,8 +210,8 @@ function AppendObjectToSubPanel2(index = listOfMessages.length - 1) {
 function ResetObjectSubPanel2() {
     $('#objectsubpanel2').empty()
     let i = 0;
-    for (i = 0; i < listOfMessages.length; i++) {
-        AppendObjectToSubPanel2(i)
+    for (let [name, message] of messages) {
+        AppendObjectToSubPanel2(message)
     }
 }
 
@@ -221,8 +222,13 @@ function DeleteSimulatorFromList(btn_id, child) {
     var deleteSimName = btn_id;
 
     console.log("Deleting sim from project, check if it's on the canvas = " + deleteSimName);
-    for (let simObj of Array.from(simulators.get(btn_id).objects).reverse()) {
-        DeleteItemFromCanvasById(simObj);
+    let i = simulatorObjects.size - 1;
+    for (let simObj of Array.from(simulatorObjects, values()).reverse()) {
+        if (simObj.name == deleteSimName) {
+
+            DeleteItemFromCanvasById(i, simObj);
+        }
+        i -= 1
     }
 
     simulators.delete(btn_id)
@@ -234,18 +240,15 @@ function DeleteSimulatorFromList(btn_id, child) {
 /*	DeleteMessageFromList()
 	- Delete message from project on left list and canvas in main screen.
 */
-function DeleteMessageFromList(btn_id) {
-    var deleteMessageName = listOfMessages[btn_id].name;
-    listOfMessages.splice(btn_id, 1);
-    ResetObjectSubPanel2()
-    for (i = messageObjects.length - 1; i >= 0; i--) {
-        console.log("... " + i + " of " + (messageObjects.length - 1) + " " + messageObjects[i].name);
-        if (messageObjects[i].name == deleteMessageName) {
-            console.log(" found one to remove!");
-            DeleteMessageFromCanvasById(i);
-            UpdateDrawArrowsAfterDelete(-1, i);
-        }
-    }
+function DeleteMessageFromList(btn_id, child) {
+    var deleteMessageName = btn_id;
+
+    let msgObj = messageObjects.get(deleteMessageName)
+    DeleteMessageFromCanvasById(msgObj);
+    UpdateDrawArrowsAfterDelete(-1, btn_id);
+
+    messages.delete(btn_id);
+    child.remove()
 }
 
 /*	DisableCertainObjectButtons()
@@ -263,25 +266,24 @@ function DisableCertainObjectButtons() {
     for (j = 0; j < subpanel2btns.length; j++) {
         subpanel2btns[j].disabled = false;
     }
+    // TODO: probably unnecessary loop
     //check simulator buttons to disable
-    for (i = 0; i < simulatorObjects.length; i++) {
-        if (simulatorObjects[i].stage == stage && selectState == 0) {
-            console.log("disable this button = " + simulatorObjects[i].name);
+    for (let simObj of simulatorObjects) {
+        if (simObj.stage == stage && selectState == 0) {
+            console.log("disable this button = " + simObj.name);
             for (j = 0; j < subpanel1btns.length; j++) {
-                if (subpanel1btns[j].innerText == simulatorObjects[i].name) {
+                if (subpanel1btns[j].innerText == simObj.name) {
                     subpanel1btns[j].disabled = true;
                 }
             }
         }
     }
     //check message buttons to disable
-    for (i = 0; i < messageObjects.length; i++) {
-        if (selectState == 0) {
-            console.log("disable this button message = " + messageObjects[i].name);
-            for (j = 0; j < subpanel2btns.length; j++) {
-                if (subpanel2btns[j].innerText == messageObjects[i].name) {
-                    subpanel2btns[j].disabled = true;
-                }
+    if (selectState == 0) {
+
+        for (j = 0; j < subpanel2btns.length; j++) {
+            if (messageObjects.has(subpanel2btns[j].innerText)) {
+                subpanel2btns[j].disabled = true;
             }
         }
     }
@@ -294,22 +296,17 @@ function DisableCertainObjectButtons() {
 function ConfigureItemFromCanvas(e) {
     // include simulators, messages, AND the RTI Server itself
     // TODO: separate creation logic to different functions for reuse purposes
+    // TODO: the logic for checking which object is clicked on should be O(1)
 
     ConfigureClearInspectorPanel();
 
     let panel = $('#inspectorpanel')
-    let clickedOnItem = -1;
+    let clickedOnItem = $(e.target).data('ref')
     let i = 0;
-    for (i = 0; i < simulatorObjects.length; i++) {
-        if (e.target === simulatorObjects[i].objectRef) {
-            clickedOnItem = i;
-            break;
-        }
-    }
 
-    if (clickedOnItem > -1) {
+    if (simulatorObjects.has(clickedOnItem)) {
         let header = $('<div>').addClass('ui compact segment')
-        let label = $('<label>').addClass('ui green large label').text(simulatorObjects[i].name)
+        let label = $('<label>').addClass('ui green large label').text(clickedOnItem.name)
         header.append($('<h3>').text('Simulator in Project'))
         header.append(label)
 
@@ -350,19 +347,9 @@ function ConfigureItemFromCanvas(e) {
         return;
     }
 
-    panel = document.getElementById("inspectorpanel")
+    if (typeof clickedOnItem !== 'undefined' && 'objectRef' in clickedOnItem && !('variables' in clickedOnItem)) {
 
-    clickedOnItem = -1;
-    var listOfMessageVars = document.getElementsByClassName("div-canvas-message");
-    for (i = 0; i < listOfMessageVars.length; i++) {
-        if (e.target === listOfMessageVars[i]) {
-            clickedOnItem = i;
-            break;
-        }
-    }
-    if (clickedOnItem > -1) {
-
-        let messageName = messageObjects[clickedOnItem].name
+        let messageName = clickedOnItem.name
 
         let panel = $('#inspectorpanel')
         let header = $('<div>').addClass('ui compact segment')
@@ -386,8 +373,8 @@ function ConfigureItemFromCanvas(e) {
     }
     if (clickedOnItem > -1) {
         ConfigureClearInspectorPanel();
-        let simName = simulatorObjects[listOfSimPub[clickedOnItem].nameParent].name;
-        let messageName = messageObjects[simulatorObjects[listOfSimPub[clickedOnItem].nameParent].publishedMessages[listOfSimPub[clickedOnItem].name]].name;
+        let simName = listOfSimPub[clickedOnItem].nameParent.name;
+        let messageName = listOfSimPub[clickedOnItem].name;
 
         let panel = $('#inspectorpanel')
         let header = $('<div>').addClass('ui compact segment')
@@ -424,8 +411,8 @@ function ConfigureItemFromCanvas(e) {
     }
     if (clickedOnItem > -1) {
         ConfigureClearInspectorPanel();
-        let simName = simulatorObjects[listOfSimSub[clickedOnItem].nameParent].name;
-        let messageName = messageObjects[simulatorObjects[listOfSimSub[clickedOnItem].nameParent].subscribedMessages[listOfSimSub[clickedOnItem].name]].name;
+        let simName = listOfSimSub[clickedOnItem].nameParent.name;
+        let messageName = listOfSimSub[clickedOnItem].name;
         let panel = $('#inspectorpanel')
         let header = $('<div>').addClass('ui compact segment')
         let message = $('<label>').addClass('ui blue large label').text(messageName)
@@ -495,7 +482,7 @@ function ConfigureSimulatorFromList(btn_id) {
     let divider = $('<div>').addClass('ui hidden divider')
     let button = $('<button>').addClass('ui green basic button').text('Change Properties')
     button.click(() => {
-        editExistingObject = btn_id;
+        editExistingObject = selectedObject;
         NewSimulatorObjectPrompt();
     })
     content.append(warning)
@@ -515,7 +502,7 @@ function ConfigureMessageFromList(btn_id) {
     ConfigureClearInspectorPanel();
 
     let panel = $('#inspectorpanel')
-    let selectedObject = listOfMessages[btn_id]
+    let selectedObject = messages.get(btn_id)
     let header = $('<div>').addClass('ui compact segment')
     let label = $('<label>').addClass('ui blue large label').text(selectedObject.name)
     header.append($('<h3>').text('Message in Project'))
@@ -526,7 +513,7 @@ function ConfigureMessageFromList(btn_id) {
     let divider = $('<div>').addClass('ui hidden divider')
     let button = $('<button>').addClass('ui blue basic button').text('Change Properties')
     button.click(() => {
-        editExistingObject = btn_id;
+        editExistingObject = selectedObject;
         NewMessageObjectPrompt();
     })
     content.append(warning)

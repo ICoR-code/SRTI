@@ -364,29 +364,27 @@ function UpdateSimExecutionColor(message) {
             var destination = JSON.parse(obj.destination);
             var content = JSON.parse(obj.content);
             let i = 0;
-            for (i = 0; i < simulatorObjects.length; i++) {
-                if (destination.includes(simulatorObjects[i].name)) {
-                    if (simulatorObjects[i].stage == parseInt(content.stage)) {
-                        simulatorObjects[i].objectRef.style.backgroundColor = "red";
+            for (let simObj of simulatorObjects) {
+                if (destination.includes(simObj.name)) {
+                    if (simObj.stage == parseInt(content.stage)) {
+                        simObj.objectRef.style.backgroundColor = "red";
                     }
                 }
             }
         }
     } else if (obj.name == "RTI_FinishStep") {
         // obj.source = name of sim
-        let i = 0;
-        for (i = 0; i < simulatorObjects.length; i++) {
-            if (obj.source == simulatorObjects[i].name) {
-                simulatorObjects[i].objectRef.style.backgroundColor = "blue";
+        for (let simObj of simulatorObjects) {
+            if (obj.source == simObj.name) {
+                simObj.objectRef.style.backgroundColor = "blue";
             }
         }
     }
 }
 
 function ResetSimExecutionColor() {
-    let i = 0;
-    for (i = 0; i < simulatorObjects.length; i++) {
-        simulatorObjects[i].objectRef.style.backgroundColor = "green";
+    for (let simObj of simulatorObjects) {
+        simObj.objectRef.style.backgroundColor = "green";
     }
 }
 
