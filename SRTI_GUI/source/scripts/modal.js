@@ -5,7 +5,6 @@
 	- General function to display a 'div' with grey overlay, to save code lines elsewhere.
 */
 function DisplayOrClosePrompt(promptName, displayType) {
-    // document.getElementById("greyoverlay").style.display = displayType;
     // document.getElementById(promptName).style.display = displayType;
     if (displayType === 'block') {
         $('#' + promptName).modal('refresh').modal('show')
@@ -133,7 +132,7 @@ function NewPublishConnectionPrompt(msgObj, simObj) {
     segment.append(message)
     segment.append(simulator)
 
-    let i, messageVar, label, simVar, dropdown, menu, j, item, newDropdown
+    let messageVar, label, simVar, dropdown, menu, item, newDropdown
     dropdown = $('<div>', {
         class: 'ui selection dropdown',
         varName: ""
@@ -155,8 +154,7 @@ function NewPublishConnectionPrompt(msgObj, simObj) {
         item = $('<div>', {
             class: 'item',
             'data-value': name,
-            text: name + " ("
-                + variable.valueType + ")",
+            text: name + " (" + variable.valueType + ")",
         })
 
         menu.append(item)
@@ -170,8 +168,7 @@ function NewPublishConnectionPrompt(msgObj, simObj) {
     for (let [name, variable] of messages.get(messageName).variables) {
         console.log("add variable to list here... " + name);
         messageVar = $('<div>').addClass('nine wide middle aligned continued column')
-        label = $('<label>').text(name + " ("
-            + variable.valueType + ")")
+        label = $('<label>').text(name + " (" + variable.valueType + ")")
 
         messageVar.append(label)
 
@@ -215,7 +212,7 @@ function EditPublishConnectionPrompt() {
     segment.append(message)
     segment.append(simulator)
 
-    let i, messageVar, label, simVar, dropdown, menu, j, item, newDropdown, dropdowns = []
+    let messageVar, label, simVar, dropdown, menu, item, newDropdown, dropdowns = []
     dropdown = $('<div>', {
         class: 'ui selection dropdown',
         varName: ""
@@ -235,8 +232,7 @@ function EditPublishConnectionPrompt() {
         item = $('<div>', {
             class: 'item',
             'data-value': name,
-            text: name + " ("
-                + variable.valueType + ")",
+            text: name + " (" + variable.valueType + ")",
         })
 
         menu.append(item)
@@ -250,8 +246,7 @@ function EditPublishConnectionPrompt() {
     for (let [name, variable] of messages.get(messageName).variables) {
         console.log("add variable to list here... " + name);
         messageVar = $('<div>').addClass('nine wide middle aligned continued column')
-        label = $('<label>').text(name + " ("
-            + variable.valueType + ")")
+        label = $('<label>').text(name + " (" + variable.valueType + ")")
 
         messageVar.append(label)
 
@@ -318,7 +313,8 @@ function ClosePublishConnectionPrompt() {
     editExistingObject = null;
     editExistingObject2 = null;
     var radioList = document.getElementsByName("radioPublishInitial");
-    for (i = 0; i < radioList.length; i++) {
+    // TODO: use jquery to avoid loop
+    for (let i = 0; i < radioList.length; i++) {
         if (radioList[i].checked) {
             radioList[i].checked = false;
         }
@@ -347,7 +343,7 @@ function NewSubscribeConnectionPrompt(msgObj, simObj) {
     segment.append(simulator)
     segment.append(message)
 
-    let i, messageVar, label, simVar, dropdown, menu, j, item, newDropdown
+    let messageVar, label, simVar, dropdown, menu, item, newDropdown
     dropdown = $('<div>', {
         class: 'ui selection dropdown',
         varName: "",
@@ -367,8 +363,7 @@ function NewSubscribeConnectionPrompt(msgObj, simObj) {
         item = $('<div>', {
             class: 'item',
             'data-value': name,
-            text: name + " ("
-                + variable.valueType + ")",
+            text: name + " (" + variable.valueType + ")",
         })
 
         menu.append(item)
@@ -382,8 +377,7 @@ function NewSubscribeConnectionPrompt(msgObj, simObj) {
     for (let [name, variable] of simulators.get(simObj.name).variables) {
         console.log("add variable to list here... " + name);
         simVar = $('<div>').addClass('nine wide middle aligned continued column')
-        label = $('<label>').text(name + " ("
-            + variable.valueType + ")")
+        label = $('<label>').text(name + " (" + variable.valueType + ")")
 
         simVar.append(label)
 
@@ -429,7 +423,7 @@ function EditSubscribeConnectionPrompt() {
     segment.append(simulator)
     segment.append(message)
 
-    let i, messageVar, label, simVar, dropdown, menu, j, item, newDropdown, dropdowns = []
+    let messageVar, label, simVar, dropdown, menu, item, newDropdown, dropdowns = []
     dropdown = $('<div>', {
         class: 'ui selection dropdown',
         varName: ""
@@ -449,8 +443,7 @@ function EditSubscribeConnectionPrompt() {
         item = $('<div>', {
             class: 'item',
             'data-value': name,
-            text: name + " ("
-                + variable.valueType + ")",
+            text: name + " (" + variable.valueType + ")",
         })
 
         menu.append(item)
@@ -464,8 +457,7 @@ function EditSubscribeConnectionPrompt() {
     for (let [name, variable] of simulators.get(simulatorName).variables) {
         console.log("add variable to list here... " + name);
         simVar = $('<div>').addClass('nine wide middle aligned continued column')
-        label = $('<label>').text(name + " ("
-            + variable.valueType + ")")
+        label = $('<label>').text(name + " (" + variable.valueType + ")")
 
         simVar.append(label)
 
@@ -536,7 +528,8 @@ function CloseSubscribeConnectionPrompt() {
     editExistingObject = null;
     editExistingObject2 = null;
     var radioList = document.getElementsByName("radioSubscribeInitial");
-    for (i = 0; i < radioList.length; i++) {
+    // TODO: use jquery
+    for (let i = 0; i < radioList.length; i++) {
         if (radioList[i].checked) {
             radioList[i].checked = false;
         }
@@ -571,7 +564,6 @@ function ImportObject() {
     }
     var obj = JSON.parse(content);
     if (importType == 1) {
-        //TODO: transform
         let simulator = ConvertSimulator(obj.simdef)
         simulators.set(obj.simdef.name, simulator);
         AppendObjectToSubPanel1(simulator)
@@ -643,14 +635,13 @@ function AddNewObjectSimulator2() {
         ));
     } else {
         let simulator = editExistingObject
-        var originalName = simulator.name;
         simulator.name = newSimName;
         simulator.refName = newRefName;
         simulator.filePath = newFilePath;
         simulator.executeCommand = newExecute;
         simulator.functions = simulatorFunctions;
         simulator.variables = variables;
-        for (let simObj in simulator.objects) {
+        for (let simObj of simulator.objects) {
             simObj.name = newSimName;
             simObj.objectRef.innerHTML = newSimName;
         }
@@ -669,7 +660,7 @@ function AddNewObjectSimulator2() {
 */
 function AddNewObjectMessage() {
     console.log("User wants to add a new message.");
-    var panel = document.getElementById("objectsubpanel2");
+    var panel = document.getElementById("objects-subpanel2");
     while (panel.firstChild) {
         panel.removeChild(panel.firstChild);
     }
@@ -681,7 +672,7 @@ function AddNewObjectMessage() {
         editExistingObject.name = newMessageName;
         editExistingObject.variables = variables;
 
-        msgObj = messageObjects.get(originalName)
+        let msgObj = messageObjects.get(originalName)
         msgObj.name = newMessageName
         msgObj.objectRef.innerHTML = newMessageName
     }
@@ -699,17 +690,17 @@ function AddObjectToMessageDef() {
     let newMessageVarName = $('[name="NewMessageObjectName"]').val()
     $('[name="NewMessageObjectName"]').val('')
     if (!variables.has(newMessageVarName)) {
-        let newMessageObjectType = $('.checked').find('input[name="NewMessageObject"]').attr('value')
-        variables.set(newMessageObjectName, NewVariable(newMessageObjectName, newMessageObjectType));
+        let newMessageVarType = $('.checked').find('input[name="NewMessageObject"]').attr('value')
+        variables.set(newMessageVarName, NewVariable(newMessageVarName, newMessageVarType));
         let panel = $('#modalNewMessagePanel1')
         if (variables.size === 1) {
             panel.show()
         }
 
         let child = $('<div>').addClass('div-list-item ui compact segment')
-        child.append($('<label>').html(`<code>${newMessageObjectName}</code> (${newMessageObjectType})`).attr('style', 'vertical-align:sub;'))
+        child.append($('<label>').html(`<code>${newMessageVarName}</code> (${newMessageVarType})`).attr('style', 'vertical-align:sub;'))
         var button = $('<button>', {
-            class: "ui compact icon button right floated", name: newMessageObjectName
+            class: "ui compact icon button right floated", name: newMessageVarName
         }).data('pointer', child).click(
             function () {
                 RemoveObjectToMessageDef($(this).data('pointer'), $(this).attr('name'))
@@ -870,7 +861,7 @@ function CheckEnableObjectToSimulatorDef() {
 	- In prompt to add new message, check when to finish defining message.
 */
 function CheckEnableSubmitObject() {
-    var btnToEnable = document.getElementsByName("btn-newmessageconfirm")[0];
+    var btnToEnable = document.getElementsByName("btn-new-message-confirm")[0];
     var nameEntered = false;
     var nameTextBox = document.getElementsByName("NewMessageName")[0].value;
     if (nameTextBox.length > 0) {
@@ -990,7 +981,6 @@ function EditSimLocalTime() {
     dropdown.empty()
 
     let item
-    let i
     for (let [name, variable] of simulators.get(editExistingObject.name).variables) {
         item = $('<div>').addClass('item').html(
             `<code>${name}</code> (${variable.valueType})`
@@ -1052,7 +1042,7 @@ function CloseEditServer() {
 
     ConfigureClearInspectorPanel();
 
-    let panel = $('#inspectorpanel')
+    let panel = $('#inspector-panel')
     let header = $('<div>').addClass('ui compact segment')
     header.append($('<h3>').text('RTI Server'))
 
@@ -1081,7 +1071,6 @@ function EditSimulateFunctions() {
     dropdown.empty()
 
     let item
-    let i
     for (let [name, fn] of simulators.get(editExistingObject.name).functions) {
         item = $('<div>').addClass('item').append($('<code>').text(name))
         item.attr('data-value', name)
@@ -1132,7 +1121,7 @@ function SaveSimulateFunction() {
 }
 
 /*	EditStageConditions()
-	- Edit configration (show prompt) on simulator for when stage transition should occur.
+	- Edit configuration (show prompt) on simulator for when stage transition should occur.
 */
 function EditStageConditions() {
     DisplayOrClosePrompt("modalStageConditions", "block");
@@ -1171,7 +1160,7 @@ function EditStageConditions() {
         dropdown.empty()
 
         let item
-        for (variable of ["RTI_vTimestep", "RTI_stage", "RTI_stageVTimestepMul", "RTI_stageVTimestep"]) {
+        for (let variable of ["RTI_vTimestep", "RTI_stage", "RTI_stageVTimestepMul", "RTI_stageVTimestep"]) {
             item = $('<div>').addClass('item').append($('<code>').text(variable))
             item.attr(variable)
             dropdown.append(item)
@@ -1198,7 +1187,7 @@ function EditStageConditions() {
     dropdown.empty()
 
     let item
-    for (variable of ["==", "!=", ">", "<", ">=", "<="]) {
+    for (let variable of ["==", "!=", ">", "<", ">=", "<="]) {
         item = $('<div>').addClass('item').append($('<code>').text(variable))
         item.attr(variable)
         dropdown.append(item)
@@ -1253,7 +1242,6 @@ function EditEndConditions() {
         dropdown.empty()
 
         let item
-        let i
         for (let [name, variable] of simulators.get(editExistingObject.name).variables) {
             item = $('<div>').addClass('item').text(name +
                 " (" + variable.valueType + ")")
@@ -1283,7 +1271,7 @@ function EditEndConditions() {
         dropdown.empty()
 
         let item
-        for (variable of ["RTI_vTimestep", "RTI_stage", "RTI_stageVTimestepMul", "RTI_stageVTimestep"]) {
+        for (let variable of ["RTI_vTimestep", "RTI_stage", "RTI_stageVTimestepMul", "RTI_stageVTimestep"]) {
             item = $('<div>').addClass('item').text(variable)
             item.attr(variable)
             dropdown.append(item)
@@ -1310,7 +1298,7 @@ function EditEndConditions() {
     dropdown.empty()
 
     let item
-    for (variable of ["==", "!=", ">", "<", ">=", "<="]) {
+    for (let variable of ["==", "!=", ">", "<", ">=", "<="]) {
         item = $('<div>').addClass('item').text(variable)
         item.attr(variable)
         dropdown.append(item)
@@ -1395,11 +1383,11 @@ function AppendStageConditionToSubPanel(condition) {
     item = $('<div>').addClass('div-list-item')
     label = $('<div>').addClass('ui grey expanding middle aligned label')
     if (!condition.varName2) {
-        text = "if [<code>" + condition.varName + " "
-            + condition.condition + " " + condition.value + "</code>] AND ..."
+        text = "if [<code>" + condition.varName + " " +
+            condition.condition + " " + condition.value + "</code>] AND ..."
     } else {
-        text = "if [<code>" + condition.varName + " "
-            + condition.condition + " " + condition.varName2 + "</code>] AND ..."
+        text = "if [<code>" + condition.varName + " " +
+            condition.condition + " " + condition.varName2 + "</code>] AND ..."
     }
     label.append($('<label>').html(text).css('max-width', '95%'))
     button = $('<a>').addClass('ui opaque right floated')
@@ -1428,7 +1416,7 @@ function ResetStageConditionSubPanel() {
 	- In prompt, add 'completed' stage condition set to final list.
 */
 function AddStageConditionToList() {
-    newStage = document.getElementsByName("TextStageConditionsNewStage")[0].value;
+    let newStage = document.getElementsByName("TextStageConditionsNewStage")[0].value;
     let conditions = NewStageConditions(stage, newStage, stageConditionSubSet)
     simulators.get(editExistingObject.name).stageConditions.add(conditions)
 
@@ -1462,13 +1450,11 @@ function AppendStageConditionToPanel(conditions) {
         var tempVarName2 = condition.varName2;
 
         if (!tempVarName2) {
-            sentence = sentence + "if [<code>" + condition.varName
-                + " " + condition.condition
-                + " " + condition.value + "</code>] ";
+            sentence = sentence + "if [<code>" + condition.varName +
+                " " + condition.condition + " " + condition.value + "</code>] ";
         } else {
-            sentence = sentence + "if [<code>" + condition.varName
-                + " " + condition.condition
-                + " " + condition.varName2 + "</code>] ";
+            sentence = sentence + "if [<code>" + condition.varName +
+                " " + condition.condition + " " + condition.varName2 + "</code>] ";
         }
         if (j < conditions.conditions.size - 1) {
             sentence = sentence + "AND ";
@@ -1509,7 +1495,7 @@ function ResetStageConditionPanel() {
 	- In prompt, add end condition to sublist (where AND conditions are collected).
 */
 function AddEndConditionToSubList() {
-    condition = NewCondition(
+    let condition = NewCondition(
         $('#endCondition1').text(),
         unescape($('#endCondition2').text()),
         stageConditionV3a,
@@ -1536,11 +1522,11 @@ function AppendEndConditionToSubPanel(condition) {
     item = $('<div>').addClass('div-list-item')
     label = $('<div>').addClass('ui grey expanding middle aligned label')
     if (!condition.varName2) {
-        text = "if [" + condition.varName + "] ["
-            + condition.condition + "] [" + condition.value + "] AND ..."
+        text = "if [" + condition.varName + "] [" +
+            condition.condition + "] [" + condition.value + "] AND ..."
     } else {
-        text = "if [" + condition.varName + "] ["
-            + condition.condition + "] [" + condition.varName2 + "] AND ..."
+        text = "if [" + condition.varName + "] [" +
+            condition.condition + "] [" + condition.varName2 + "] AND ..."
     }
     label.append($('<label>').text(text).css('max-width', '95%'))
     button = $('<a>').addClass('ui opaque right floated')
@@ -1598,13 +1584,11 @@ function AppendEndConditionToPanel(conditions) {
     for (let condition of conditions.conditions) {
         var tempVarName2 = condition.varName2;
         if (!tempVarName2) {
-            sentence = sentence + "if [" + condition.varName
-                + "] [" + condition.condition
-                + "] [" + condition.value + "] ";
+            sentence = sentence + "if [" + condition.varName +
+                "] [" + condition.condition + "] [" + condition.value + "] ";
         } else {
-            sentence = sentence + "if [" + condition.varName
-                + "] [" + condition.condition
-                + "] [" + condition.varName2 + "] ";
+            sentence = sentence + "if [" + condition.varName +
+                "] [" + condition.condition + "] [" + condition.varName2 + "] ";
         }
         if (j < conditions.conditions.size - 1) {
             sentence = sentence + "AND ";

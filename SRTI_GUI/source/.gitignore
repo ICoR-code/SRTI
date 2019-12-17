@@ -47,6 +47,8 @@ compile_commands.json
 
 .npmrc
 
+.jshintrc
+
 # Generated API definitions
 electron-api.json
 electron.d.ts

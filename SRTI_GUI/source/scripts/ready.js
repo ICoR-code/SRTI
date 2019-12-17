@@ -1,14 +1,14 @@
 // actions to be executed when the document is ready
 $(document).ready(() => {
     wrapperFileFolder.onchange = function () {
-        var files = wrapperFileFolder.files, len = files.length;
+        var files = wrapperFileFolder.files;
         var totalText = "";
         totalText = totalText + files[0].path;
         wrapperFileFolderText.innerHTML = totalText;
     }
 
     saveAsFolder.onchange = function () {
-        var files = saveAsFolder.files, len = files.length;
+        var files = saveAsFolder.files;
         var totalText = "";
         console.log("Listing folder...");
         console.log("value = " + saveAsFolder.value);
@@ -38,7 +38,8 @@ $(document).ready(() => {
         } else {
             importType = 0;
             importObjectText.innerHTML = "... object type not recognized.";
-            importObjectPath = "";
+            //TODO: importObjectPath is not defined. Is it really necessary?
+            // importObjectPath = "";
         }
     }
 
@@ -57,13 +58,13 @@ $(document).ready(() => {
     document.getElementById("btn-play").disabled = true;
     document.getElementById("btn-stop").disabled = true;
     document.getElementById("btn-pause").disabled = true;
-    canvascontainer.addEventListener("mousedown", dragStart, false);
-    canvascontainer.addEventListener("mouseup", dragEnd, false);
-    canvascontainer.addEventListener("mousemove", drag, false);
+    canvasContainer.addEventListener("mousedown", dragStart, false);
+    canvasContainer.addEventListener("mouseup", dragEnd, false);
+    canvasContainer.addEventListener("mousemove", drag, false);
     resizePanel(document.getElementById("separator"), "H");
     resizePanel(document.getElementById("separator2"), "H");
 
-    // $('#buttons-simulation').css('left', Math.max(document.getElementById("objectpanel").offsetWidth + 15, 176.86))
+    // $('#buttons-simulation').css('left', Math.max(document.getElementById("object-panel").offsetWidth + 15, 176.86))
 
     UpdateCanvasGrid();
     UpdateSelectedStateButtons(selectState);

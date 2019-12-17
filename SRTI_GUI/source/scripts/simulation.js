@@ -64,12 +64,12 @@ function PlaySimulationSystem() {
 
     if (hasStartedRunningSystem == false) {
         hasStartedRunningSystem = true;
-        var outputString = "{\"name\":\"RTI_StartSim\",\"content\":\"{}\",\"timestamp\":\"1234567890123\",\"vTimestamp\":0,\"source\":\"RTI-v2-GUI\",\"tcp\":\"false\"}\n";
+        let outputString = "{\"name\":\"RTI_StartSim\",\"content\":\"{}\",\"timestamp\":\"1234567890123\",\"vTimestamp\":0,\"source\":\"RTI-v2-GUI\",\"tcp\":\"false\"}\n";
         document.getElementById("btn-play").disabled = true;
         document.getElementById("btn-pause").disabled = false;
         guiDedicatedClient.write(outputString);
     } else {
-        var outputString = "{\"name\":\"RTI_ResumeSystem\",\"content\":\"{}\",\"timestamp\":\"1234567890123\",\"vTimestamp\":0,\"source\":\"RTI-v2-GUI\",\"tcp\":\"false\"}\n";
+        let outputString = "{\"name\":\"RTI_ResumeSystem\",\"content\":\"{}\",\"timestamp\":\"1234567890123\",\"vTimestamp\":0,\"source\":\"RTI-v2-GUI\",\"tcp\":\"false\"}\n";
         document.getElementById("btn-play").disabled = true;
         document.getElementById("btn-pause").disabled = false;
         guiDedicatedClient.write(outputString);
@@ -95,7 +95,7 @@ function StopSimulationSystem() {
         textConsoleLastAction.innerHTML = "Try to close Server. " + execServer.pid;
         serverActive = false;
         try {
-            var kill = require('tree-kill');
+            let kill = require('tree-kill');
             kill(execServer.pid);
         } catch (e) {
             alert('Error when trying to end RTI Server. ' + e);
@@ -107,7 +107,7 @@ function StopSimulationSystem() {
     let i = 0;
     for (i = 0; i < execSims.length; i++) {
         try {
-            var kill = require('tree-kill');
+            let kill = require('tree-kill');
             kill(execSims[i].pid);
             console.log('killed' + execSims[i].pid)
         } catch (e) {
@@ -129,7 +129,7 @@ function StopSimulationSystem() {
 
 function ConnectToRTIServer() {
 
-    var dedicatedServerPort = 4200;
+    // var dedicatedServerPort = 4200;
 
     var net = require('net');
     guiFirstClient = new net.Socket();
@@ -252,7 +252,7 @@ function UpdateInspectorPanelMessage(data, step) {
 }
 
 function UpdateInspectorPanelMessageObjects(message, step, stage) {
-    let panel = $('#inspectorpanel')
+    let panel = $('#inspector-panel')
     panel.empty()
 
     let header = $('<div>').addClass('ui compact segment')
@@ -300,17 +300,19 @@ function UpdateInspectorPanelMessageObjects(message, step, stage) {
         if (receivedMessageBuffer[i].message == 'N/A') {
             messageContent.append($('<p>').addClass('break-word').text('N/A'))
         } else {
-            parsedMessage = JSON.parse(receivedMessageBuffer[i].message)
+            let parsedMessage = JSON.parse(receivedMessageBuffer[i].message)
             console.log(parsedMessage)
             contentAccordion = $('<div>').addClass('accordion')
-            for (entry in parsedMessage) {
-                subtitle = $('<div>').addClass('break-word title').text(entry)
-                subtitle.prepend($('<i>').addClass('dropdown icon'))
-                subcontent = $('<div>').addClass('content')
-                subcontent.append($('<p>').addClass('break-word').text(parsedMessage[entry]))
+            for (let entry in parsedMessage) {
+                if (parsedMessage.hasOwnProperty(entry)) {
+                    subtitle = $('<div>').addClass('break-word title').text(entry)
+                    subtitle.prepend($('<i>').addClass('dropdown icon'))
+                    subcontent = $('<div>').addClass('content')
+                    subcontent.append($('<p>').addClass('break-word').text(parsedMessage[entry]))
 
-                contentAccordion.append(subtitle)
-                contentAccordion.append(subcontent)
+                    contentAccordion.append(subtitle)
+                    contentAccordion.append(subcontent)
+                }
             }
 
             messageContent.append(contentAccordion)
@@ -363,7 +365,6 @@ function UpdateSimExecutionColor(message) {
         if (obj.hasOwnProperty('destination')) {
             var destination = JSON.parse(obj.destination);
             var content = JSON.parse(obj.content);
-            let i = 0;
             for (let simObj of simulatorObjects) {
                 if (destination.includes(simObj.name)) {
                     if (simObj.stage == parseInt(content.stage)) {
@@ -404,10 +405,8 @@ function LaunchSimulators() {
         // FIRST, must export Wrapper config files (automatically save when running, or else prompt user before running)
 
         // start all other simulators (all that exist anywhere on the canvas).
-        let i = 0;
-        for (let [name, simulator] in simulators) {
-            var execCommand = "cd /d " + simulator.filePath
-                + " && " + simulator.executeCommand;
+        for (let [name, simulator] of simulators) {
+            var execCommand = "cd /d " + simulator.filePath + " && " + simulator.executeCommand;
             var execSim = child_process.exec(execCommand,
                 (error, stdout, stderror) => {
                     if (error) {

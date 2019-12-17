@@ -1,11 +1,11 @@
 // clicking/drawing/removing objects on the canvas
 
 /*	CanvasOnScroll()
-	- When horizontal scroll for 'canvassubpanel1' (where Sims are) occurs,
-		match horizontal movement for 'canvassubpanel2' (where Messages are).
+	- When horizontal scroll for 'canvas-subpanel1' (where Sims are) occurs,
+		match horizontal movement for 'canvas-subpanel2' (where Messages are).
 */
 function CanvasOnScroll(div) {
-    var canvas1 = document.getElementById("canvassubpanel2");
+    var canvas1 = document.getElementById("canvas-subpanel2");
     canvas1.scrollLeft = div.scrollLeft;
 }
 
@@ -14,7 +14,7 @@ function CanvasOnScroll(div) {
 */
 function UpdateCanvasGrid() {
     console.log("UpdateCanvasGrid() called.");
-    let panel = $('#canvassubpanel1grid')
+    let panel = $('#canvas-subpanel1-grid')
     panel.empty()
 
     let i, j, cell;
@@ -40,13 +40,11 @@ function CheckRedrawCanvasGrid() {
     let i = 0;
     for (let simObj of simulatorObjects) {
         //!!!!
-        if (((simObj.topPos / 100) + 2 + i) > maxSizeY
-            && simObj.stage == stage) {
-            maxSizeY = (simObj.topPos / 100) + 2 + i;
+        if (simObj.topPos / 100 + 2 + i > maxSizeY && simObj.stage == stage) {
+            maxSizeY = simObj.topPos / 100 + 2 + i;
         }
-        if (((simObj.leftPos / 100) - 1 + 2) > maxSizeX
-            && simObj.stage == stage) {
-            maxSizeX = ((simObj.leftPos / 100) - 1 + 2);
+        if (simObj.leftPos / 100 - 1 + 2 > maxSizeX && simObj.stage == stage) {
+            maxSizeX = simObj.leftPos / 100 - 1 + 2;
         }
         //!!!!
         i += 1
@@ -122,7 +120,7 @@ function dragStartMove(e) {
             clickedOnItem.offsetY = yOffset;
             clickedOnItem.topPos = (getTranslate3d(dragItem.style.transform))[1];
             clickedOnItem.leftPos = (getTranslate3d(dragItem.style.transform))[0];
-            clickedOnItem.order = ((clickedOnItem.offsetY / 100) + i);
+            clickedOnItem.order = clickedOnItem.offsetY / 100 + i;
 
             CheckRedrawCanvasGrid();
             DrawAllArrowsOnCanvas();
@@ -189,15 +187,15 @@ function DeleteItemFromCanvas(e) {
         i += 1
     }
     if (simulatorObjects.has(clickedOnItem)) {
-        simObj.objectRef.parentNode.removeChild(simObj.objectRef);
-        simulatorObjects.delete(simObj);
-        simulators.get(simObj.name).objects.delete(simObj)
+        clickedOnItem.objectRef.parentNode.removeChild(clickedOnItem.objectRef);
+        simulatorObjects.delete(clickedOnItem);
+        simulators.get(clickedOnItem.name).objects.delete(clickedOnItem)
         let arr = Array.from(simulatorObjects.values())
         // because all objects are relative, 
         //		deleting one object makes other objects (that were added after i) 
         //		move up one space. Need to reset everyone.
         MoveObjectsOnCanvasUpOne(i, arr);
-        UpdateDrawArrowsAfterDelete(simObj.name, null);
+        UpdateDrawArrowsAfterDelete(clickedOnItem.name, null);
         return;
     }
 
@@ -209,18 +207,18 @@ function DeleteItemFromCanvas(e) {
 
         ResetMessagesOnCanvas();
         UpdateDrawArrowsAfterDelete(null, clickedOnItem.name);
-        $('.div-canvas-server').height(Math.max(160, -8 + (42 * $('.div-canvas-message').length)))
+        $('.div-canvas-server').height(Math.max(160, -8 + 42 * $('.div-canvas-message').length))
         return;
     }
     clickedOnItem = e.target;
     if (clickedOnItem.classList.contains('div-canvas-pub')) {
-        listOfSimPub[clickedOnItem].nameParent.publishedMessages.delete(listOfSimPub[clickedOnItem].name);
+        clickedOnItem.nameParent.publishedMessages.delete(clickedOnItem.name);
         UpdateDrawArrowsAfterDelete(null, null);
         return;
     }
 
     if (clickedOnItem.classList.contains('div-canvas-sub')) {
-        listOfSimSub[clickedOnItem].nameParent.subscribedMessages.delete(listOfSimSub[clickedOnItem].name);
+        clickedOnItem.nameParent.subscribedMessages.delete(clickedOnItem.name);
         UpdateDrawArrowsAfterDelete(null, null);
         return;
     }
@@ -275,7 +273,6 @@ function MoveObjectsOnCanvasUpOne(j, arr) {
 function ConnectSimAndMessage(e) {
     console.log("asked to draw arrow on canvas");
     var clickedOnItem = $(e.target).data('ref');
-    let i = 0;
 
     if (simulatorObjects.has(clickedOnItem)) {
         if (active == false) {
@@ -374,11 +371,11 @@ function DrawAllArrowsOnCanvas() {
 	- Called to remove arrows, after moving a simulator across a canvas.
 */
 function ResetArrowOnCanvas() {
-    var panel = document.getElementById("canvassubpanel1arrows");
+    var panel = document.getElementById("canvas-subpanel1-arrows");
     while (panel.firstChild) {
         panel.removeChild(panel.firstChild);
     }
-    panel = document.getElementById("canvassubpanel2arrows");
+    panel = document.getElementById("canvas-subpanel2-arrows");
     while (panel.firstChild) {
         panel.removeChild(panel.firstChild);
     }
@@ -390,15 +387,15 @@ function ResetArrowOnCanvas() {
 function DrawArrowOnCanvas1() {
     // first, clear panel with arrows
     // second, redraw all arrows
-    var panel = document.getElementById("canvassubpanel1arrows");
+    var panel = document.getElementById("canvas-subpanel1-arrows");
     let i = 0;
     for (let simObj of simulatorObjects) {
         if (simObj.stage == stage) {
             console.log("simulatorObject.offsetY = " + simObj.offsetY + " , topPos = " + simObj.topPos);
-            for (j = 0; j < simObj.publishedMessages.size; j++) {
+            for (let j = 0; j < simObj.publishedMessages.size; j++) {
                 //!!!!
-                var leftPos = parseInt(simObj.leftPos, 10) + (j * 5) + 2;
-                var topPos = parseInt(simObj.offsetY, 10) + (i * 100) + 100 + 2 + (14 * j);
+                let leftPos = parseInt(simObj.leftPos, 10) + j * 5 + 2;
+                let topPos = parseInt(simObj.offsetY, 10) + i * 100 + 100 + 2 + 14 * j;
                 //var leftPos = parseInt(simObj.offsetX, 10) + (i * 100) + (j * 5) + 2;
                 //var topPos = parseInt(simObj.topPos, 10) + 100 + 2 + (14 * j);
                 //!!!!
@@ -408,7 +405,7 @@ function DrawArrowOnCanvas1() {
                 htmlString += "		<path d='M2,2 L2,11 L10,6 L2,2' style='fill:red;' />";
                 htmlString += "	</marker>";
                 htmlString += "</defs>";
-                htmlString += "<path d='M" + 12 + "," + topPos + "L" + 12 + "," + ((gridSizeY * 100)) + "' style='stroke:#DB2828; stroke-width: 1.25px; fill: none; marker-end: url(#arrow);'/>"
+                htmlString += "<path d='M" + 12 + "," + topPos + "L" + 12 + "," + (gridSizeY * 100) + "' style='stroke:#DB2828; stroke-width: 1.25px; fill: none; marker-end: url(#arrow);'/>"
                 htmlString += "</svg>";
                 panel.insertAdjacentHTML("beforeend", htmlString);
             }
@@ -416,19 +413,18 @@ function DrawArrowOnCanvas1() {
         i += 1
     }
 
-    panel = document.getElementById("canvassubpanel2arrows");
+    panel = document.getElementById("canvas-subpanel2-arrows");
     for (let simObj of simulatorObjects) {
         if (simObj.stage == stage) {
             let j = 0;
             for (let [name, pub] of simObj.publishedMessages) {
                 //!!!!
-                var leftPos = parseInt(simObj.leftPos, 10) + (j * 5) + 2;
+                let leftPos = parseInt(simObj.leftPos, 10) + j * 5 + 2;
                 //var leftPos = parseInt(simObj.offsetX, 10) + (i * 100) + (j * 5) + 2;
                 //!!!!
-                var topPos = 0;
-                // TODO: 
-                var bottomPos = (messageObjects.get(name).position - 10 + 3);
-                var htmlString = "<svg width='" + 22 + "' height='" + (bottomPos + 10) + "' style='position: absolute; left:" + (leftPos - 12) + "px'>";
+                let topPos = 0;
+                let bottomPos = messageObjects.get(name).position - 10 + 3;
+                let htmlString = "<svg width='" + 22 + "' height='" + (bottomPos + 10) + "' style='position: absolute; left:" + (leftPos - 12) + "px'>";
                 htmlString += "<defs>";
                 htmlString += "	<marker id='arrow' markerWidth='10' markerHeight='10' refx='2' refy='6' orient='auto'>";
                 htmlString += "		<path d='M2,2 L2,11 L10,6 L2,2' style='fill:red;' />";
@@ -449,7 +445,7 @@ function DrawArrowOnCanvas1() {
 	- Draw small boxes underneath simulators to connect the arrows to.
 */
 function DrawArrowObjectOnCanvas1() {
-    var panel = document.getElementById("canvassubpanel1arrows");
+    var panel = document.getElementById("canvas-subpanel1-arrows");
 
     let i = 0;
     for (let simObj of simulatorObjects) {
@@ -459,7 +455,7 @@ function DrawArrowObjectOnCanvas1() {
                 var addContentType = document.createElement("svg");
                 //!!!!
                 var leftOffset = parseInt(simObj.leftPos, 10) + 1;
-                var topOffset = parseInt(simObj.offsetY, 10) + (i * 100) + 100 + 2 + (14 * j);
+                var topOffset = parseInt(simObj.offsetY, 10) + i * 100 + 100 + 2 + 14 * j;
                 //var leftOffset = parseInt(simObj.offsetX, 10) + (i * 100) + 1;
                 //var topOffset = parseInt(simObj.topPos, 10) + 100 + 2 + (14 * j);
                 //!!!!
@@ -480,7 +476,7 @@ function DrawArrowObjectOnCanvas1() {
 	- Draw arrows on bottom canvas (where messages are) up to the top canvas panel. 
 */
 function DrawArrowOnCanvas2() {
-    var panel = document.getElementById("canvassubpanel1arrows");
+    var panel = document.getElementById("canvas-subpanel1-arrows");
     let i = 0;
     for (let simObj of simulatorObjects) {
         if (simObj.stage == stage) {
@@ -488,18 +484,18 @@ function DrawArrowOnCanvas2() {
             let j = 0;
             for (j = 0; j < simObj.subscribedMessages.size; j++) {
                 //!!!!
-                var leftPos = parseInt(simObj.leftPos, 10) + 100 - (j * 5) - 2;
-                var topPos = parseInt(simObj.offsetY, 10) + (i * 100) + 100 + (14 * j) + 10 + 10;
+                let leftPos = parseInt(simObj.leftPos, 10) + 100 - j * 5 - 2;
+                let topPos = parseInt(simObj.offsetY, 10) + i * 100 + 100 + 14 * j + 10 + 10;
                 //var leftPos = parseInt(simObj.offsetX, 10) + (i * 100) + 100 - (j * 5) - 2;
                 //var topPos = parseInt(simObj.topPos, 10) + 100 + (14 * j) + 10 + 10;
                 //!!!!
-                var htmlString = "<svg width='" + 22 + "' height='" + (gridSizeY * 100) + "' style='position: absolute; left:" + (leftPos - 12) + "px'>";
+                let htmlString = "<svg width='" + 22 + "' height='" + (gridSizeY * 100) + "' style='position: absolute; left:" + (leftPos - 12) + "px'>";
                 htmlString += "<defs>";
                 htmlString += "	<marker id='arrow' markerWidth='13' markerHeight='13' refx='2' refy='6' orient='auto'>";
                 htmlString += "		<path d='M2,2 L2,11 L10,6 L2,2' style='fill:red;' />";
                 htmlString += "	</marker>";
                 htmlString += "</defs>";
-                htmlString += "<path d='M" + 12 + "," + ((gridSizeY * 100)) + "L" + 12 + "," + topPos + "' style='stroke:#DB2828; stroke-width: 1.25px; fill: none; marker-end: url(#arrow);'/>"
+                htmlString += "<path d='M" + 12 + "," + (gridSizeY * 100) + "L" + 12 + "," + topPos + "' style='stroke:#DB2828; stroke-width: 1.25px; fill: none; marker-end: url(#arrow);'/>"
                 htmlString += "</svg>";
                 panel.insertAdjacentHTML("beforeend", htmlString);
             }
@@ -507,20 +503,20 @@ function DrawArrowOnCanvas2() {
         i += 1
     }
 
-    panel = document.getElementById("canvassubpanel2arrows");
+    panel = document.getElementById("canvas-subpanel2-arrows");
     for (let simObj of simulatorObjects) {
         if (simObj.stage == stage) {
             let j = 0;
             for (let [name, sub] of simObj.subscribedMessages) {
                 //!!!!
-                var leftPos = parseInt(simObj.leftPos, 10) + 100 - (j * 5) - 2;
+                let leftPos = parseInt(simObj.leftPos, 10) + 100 - j * 5 - 2;
                 //var leftPos = parseInt(simObj.offsetX, 10) + (i * 100) + 100 - (j * 5) - 2;
                 //!!!!
-                var topPos = 0;
+                let topPos = 0;
 
 
-                var bottomPos = messageObjects.get(name).position
-                var htmlString = "<svg width='" + 22 + "' height='" + (bottomPos + 10) + "' style='position: absolute; left:" + (leftPos - 12) + "px'>";
+                let bottomPos = messageObjects.get(name).position
+                let htmlString = "<svg width='" + 22 + "' height='" + (bottomPos + 10) + "' style='position: absolute; left:" + (leftPos - 12) + "px'>";
                 htmlString += "<defs>";
                 htmlString += "	<marker id='arrow' markerWidth='10' markerHeight='10' refx='2' refy='6' orient='auto'>";
                 htmlString += "		<path d='M2,2 L2,11 L10,6 L2,2' style='fill:red;' />";
@@ -541,7 +537,7 @@ function DrawArrowOnCanvas2() {
 	- 
 */
 function DrawArrowObjectOnCanvas2() {
-    var panel = document.getElementById("canvassubpanel1arrows");
+    var panel = document.getElementById("canvas-subpanel1-arrows");
     let i = 0;
     for (let simObj of simulatorObjects) {
         if (simObj.stage == stage) {
@@ -550,7 +546,7 @@ function DrawArrowObjectOnCanvas2() {
                 var addContentType = document.createElement("svg");
                 //!!!!
                 var leftOffset = parseInt(simObj.leftPos, 10) + 100 - 48 - 1;
-                var topOffset = parseInt(simObj.offsetY, 10) + (i * 100) + 100 + 2 + (14 * j);
+                var topOffset = parseInt(simObj.offsetY, 10) + i * 100 + 100 + 2 + 14 * j;
                 //var leftOffset = parseInt(simObj.offsetX, 10) + (i * 100) + 100 - 48 - 1;
                 //var topOffset = parseInt(simObj.topPos, 10) + 100 + 2 + (14 * j);
                 //!!!!
@@ -575,9 +571,7 @@ function UpdateDrawArrowsAfterDelete(simDelete, messageDelete) {
         // don't need to do anything, arrow-data is stored with sim, so if it is deleted, just need to redraw.
     }
     if (messageDelete) {
-        let i = 0;
         for (let simObj of simulatorObjects) {
-            let j = 0;
             // for (j = simObj.publishedMessages.length - 1; j >= 0; j--) {
             //     if (simObj.publishedMessages[j] == messageDelete) {
             //         simObj.publishedMessages.splice(j, 1);
@@ -604,7 +598,6 @@ function UpdateDrawArrowsAfterDelete(simDelete, messageDelete) {
             // }
         }
     }
-    //TODO: update coordinates
     DrawAllArrowsOnCanvas();
 }
 
@@ -615,7 +608,7 @@ function UpdateDrawArrowsAfterDelete(simDelete, messageDelete) {
 function ResetMessagesOnCanvas() {
     let i = 0;
     for (let [name, msgObj] of messageObjects) {
-        msgObj.objectRef.style = "position: absolute; overflow-y:hidden;" + "left:100px; top:" + (10 + (42 * i)) + "px;";
+        msgObj.objectRef.style = "position: absolute; overflow-y:hidden;" + "left:100px; top:" + (10 + 42 * i) + "px;";
         msgObj.position = 10 + 42 * i
 
         i += 1
@@ -627,7 +620,6 @@ function ResetMessagesOnCanvas() {
 */
 function SetItemsVisibleInStage() {
 
-    let i = 0;
     for (let simObj of simulatorObjects) {
         // console.log("SetItemsVisibleInStage(), i = " + i
         // 	+ " simulatorObjects.name = " + simObj.name
@@ -648,7 +640,7 @@ function SetItemsVisibleInStage() {
 function CreateNewSimulatorOnCanvas(name) {
     console.log("User wants to add a simulator to the canvas");
 
-    var panel = document.getElementById("canvassubpanel1");
+    var panel = document.getElementById("canvas-subpanel1");
     //!!!!
     //var addContentType = document.createElement("button");
     var addContentType = document.createElement("div");
@@ -681,7 +673,7 @@ function CreateNewSimulatorOnCanvas(name) {
 	- Edit saved configuration for existing simulator on the canvas in main screen.
 */
 function CreateExistingSimulatorOnCanvas(simObj) {
-    var panel = document.getElementById("canvassubpanel1");
+    var panel = document.getElementById("canvas-subpanel1");
 
     var newOffsetY = simObj.offsetY;
     var newOffsetX = simObj.offsetX;
@@ -703,18 +695,18 @@ function CreateExistingSimulatorOnCanvas(simObj) {
 function CreateNewMessageOnCanvas(name) {
     console.log("User wants to add a message to the canvas");
 
-    var panel = document.getElementById("canvassubpanel2grid");
+    var panel = document.getElementById("canvas-subpanel2-grid");
     var listOfCurrentItems = document.getElementsByClassName("div-canvas-message");
     var addContentType = document.createElement("div");
     addContentType.className = "ui blue button div-canvas-message";
     addContentType.setAttribute("name", name);
     var addContent1 = document.createTextNode(name);
     addContentType.appendChild(addContent1);
-    addContentType.style = "position: absolute; overflow-y:hidden;" + "left:100px; top:" + (10 + (42 * listOfCurrentItems.length)) + "px;";
-    $('.div-canvas-server').height(Math.max(160, 34 + (42 * listOfCurrentItems.length)))
+    addContentType.style = "position: absolute; overflow-y:hidden;" + "left:100px; top:" + (10 + 42 * listOfCurrentItems.length) + "px;";
+    $('.div-canvas-server').height(Math.max(160, 34 + 42 * listOfCurrentItems.length))
 
 
-    let msgObj = NewMessageObject(name, 10 + (42 * listOfCurrentItems.length), addContentType)
+    let msgObj = NewMessageObject(name, 10 + 42 * listOfCurrentItems.length, addContentType)
     panel.appendChild(addContentType);
     $(addContentType).data('ref', msgObj)
     messageObjects.set(name, msgObj)
@@ -725,7 +717,7 @@ function CreateNewMessageOnCanvas(name) {
 	- Modify configuration of message already on canvas in main screen.
 */
 function CreateExistingMessageOnCanvas(msgObj) {
-    var panel = document.getElementById("canvassubpanel2grid");
+    var panel = document.getElementById("canvas-subpanel2-grid");
 
     var listOfCurrentItems = document.getElementsByClassName("div-canvas-message");
     var addContentType = document.createElement("div");
@@ -733,10 +725,10 @@ function CreateExistingMessageOnCanvas(msgObj) {
     addContentType.setAttribute("name", msgObj.name);
     var addContent1 = document.createTextNode(msgObj.name);
     addContentType.appendChild(addContent1);
-    addContentType.style = "position: absolute; overflow-y:hidden;" + "left:100px; top:"
-        + (10 + (42 * listOfCurrentItems.length)) + "px;";
-    $('.div-canvas-server').height(Math.max(160, 34 + (42 * listOfCurrentItems.length)))
-    msgObj.position = 10 + (42 * listOfCurrentItems.length)
+    addContentType.style = "position: absolute; overflow-y:hidden;" + "left:100px; top:" +
+        (10 + 42 * listOfCurrentItems.length) + "px;";
+    $('.div-canvas-server').height(Math.max(160, 34 + 42 * listOfCurrentItems.length))
+    msgObj.position = 10 + 42 * listOfCurrentItems.length
     $(addContentType).data('ref', msgObj)
     panel.appendChild(addContentType);
     msgObj.objectRef = addContentType;
