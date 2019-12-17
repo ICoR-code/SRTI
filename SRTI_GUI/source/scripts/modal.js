@@ -17,7 +17,7 @@ function DisplayOrClosePrompt(promptName, displayType) {
 */
 function NewObjectPrompt() {
     DisplayOrClosePrompt("modalNewObject", "block");
-    editExistingObject = -1;
+    editExistingObject = null;
 }
 
 /*	CloseNewObjectPrompt()
@@ -33,7 +33,7 @@ function CloseNewObjectPrompt() {
 
 function NewSimulatorObjectPrompt() {
     DisplayOrClosePrompt("modalNewSim", "block");
-    if (editExistingObject == -1) {
+    if (editExistingObject) {
         document.getElementsByName("NewSimName")[0].value = "";
         document.getElementsByName("NewSimRef")[0].value = "";
         document.getElementsByName("wrapperFileDirText")[0].innerHTML = "";
@@ -59,7 +59,7 @@ function CloseNewSimulatorObjectPrompt() {
 */
 function NewSimulatorObjectPrompt2() {
     DisplayOrClosePrompt("modalNewSim2", "block");
-    if (editExistingObject == -1) {
+    if (editExistingObject) {
         // nothing, it already gets cleared in different location
         $('#modalNewSimulatorPanel1').hide()
         $('#modalNewSimulatorPanel2').hide()
@@ -82,7 +82,7 @@ function CloseNewSimulatorObjectPrompt2() {
     simulatorFunctions = new Map();
     $('#modalNewSimulatorPanel1').empty()
     $('#modalNewSimulatorPanel2').empty()
-    editExistingObject = -1;
+    editExistingObject = null;
 }
 
 /*	NewMessageObjectPrompt()
@@ -90,7 +90,7 @@ function CloseNewSimulatorObjectPrompt2() {
 */
 function NewMessageObjectPrompt() {
     DisplayOrClosePrompt("modalNewMessage", "block");
-    if (editExistingObject == -1) {
+    if (editExistingObject) {
 
     } else {
         variables = editExistingObject.variables;
@@ -107,7 +107,7 @@ function CloseNewMessageObjectPrompt() {
     variables = new Map();
     document.getElementsByName("NewMessageName")[0].value = "";
     $('#modalNewMessagePanel1').empty()
-    editExistingObject = -1;
+    editExistingObject = null;
 }
 
 /*	NewPublishConnectionPrompt()
@@ -268,7 +268,6 @@ function EditPublishConnectionPrompt() {
         dropdowns.push(newDropdown)
 
         let varName = publishedDetail.get(name).value
-        //TODO: replace -1 with null
         newDropdown.dropdown('set selected', varName ? varName : "")
     }
 
@@ -297,7 +296,7 @@ function SavePublishConnectionPrompt() {
 
     let messageName = $('#modalPublishDetailsSegment .ui.blue.label').text()
 
-    if (editExistingObject == -1) {
+    if (editExistingObject) {
         dragItem.publishedMessages.set(messageName, NewPublish(messageName, initial, parseInt(timeDelta), newDetails))
         // by happy accident, "publishedDetails" will contain an entry in the same order as "publishedMessages".
     } else {
@@ -316,8 +315,8 @@ function ClosePublishConnectionPrompt() {
     DisplayOrClosePrompt("modalPublishDetails", "none");
 
     dragItem = null;
-    editExistingObject = -1;
-    editExistingObject2 = -1;
+    editExistingObject = null;
+    editExistingObject2 = null;
     var radioList = document.getElementsByName("radioPublishInitial");
     for (i = 0; i < radioList.length; i++) {
         if (radioList[i].checked) {
@@ -512,7 +511,7 @@ function SaveSubscribeConnectionPrompt() {
 
     let messageName = $('#modalSubscribeDetailsSegment .ui.blue.label').text()
 
-    if (editExistingObject == -1) {
+    if (editExistingObject) {
         dragItem.subscribedMessage.set(messageName, NewSubscribe(
             messageName, initial, parseInt(timeDelta), parseInt(relative), parseInt(timestep), newDetails))
     } else {
@@ -534,8 +533,8 @@ function CloseSubscribeConnectionPrompt() {
     DisplayOrClosePrompt("modalSubscribeDetails", "none");
 
     dragItem = null;
-    editExistingObject = -1;
-    editExistingObject2 = -1;
+    editExistingObject = null;
+    editExistingObject2 = null;
     var radioList = document.getElementsByName("radioSubscribeInitial");
     for (i = 0; i < radioList.length; i++) {
         if (radioList[i].checked) {
@@ -636,7 +635,7 @@ function AddNewObjectSimulator2() {
     var newRefName = document.getElementsByName("NewSimRef")[0].value;
     var newFilePath = document.getElementsByName("wrapperFileDirText")[0].innerHTML;
     var newExecute = document.getElementsByName("NewSimExecute")[0].value;
-    if (editExistingObject == -1) {
+    if (editExistingObject) {
         simulators.set(newSimName, NewSimulator(
             newSimName,
             newRefName, newFilePath, newExecute,
@@ -675,7 +674,7 @@ function AddNewObjectMessage() {
         panel.removeChild(panel.firstChild);
     }
     var newMessageName = document.getElementsByName("NewMessageName")[0].value;
-    if (editExistingObject == -1) {
+    if (editExistingObject) {
         messages.set(newMessageName, NewMessage(newMessageName, variables));
     } else {
         var originalName = editExistingObject.name;
@@ -1017,7 +1016,7 @@ function EditSimLocalTime() {
 */
 function CloseEditSimLocalTime() {
     DisplayOrClosePrompt("modalLocalTime", "none");
-    editExistingObject = -1;
+    editExistingObject = null;
 }
 
 /*	EditServer()

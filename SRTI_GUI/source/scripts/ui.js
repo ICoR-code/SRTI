@@ -233,7 +233,7 @@ function DeleteSimulatorFromList(btn_id, child) {
 
     simulators.delete(btn_id)
     child.remove()
-    UpdateDrawArrowsAfterDelete(-1, -1);
+    UpdateDrawArrowsAfterDelete(null, null);
 }
 
 
@@ -245,7 +245,7 @@ function DeleteMessageFromList(btn_id, child) {
 
     let msgObj = messageObjects.get(deleteMessageName)
     DeleteMessageFromCanvasById(msgObj);
-    UpdateDrawArrowsAfterDelete(-1, btn_id);
+    UpdateDrawArrowsAfterDelete(null, btn_id);
 
     messages.delete(btn_id);
     child.remove()
@@ -363,18 +363,11 @@ function ConfigureItemFromCanvas(e) {
         return;
     }
 
-    clickedOnItem = -1;
-    var listOfSimPub = document.getElementsByClassName("div-canvas-pub");
-    for (i = 0; i < listOfSimPub.length; i++) {
-        if (e.target === listOfSimPub[i]) {
-            clickedOnItem = i;
-            break;
-        }
-    }
-    if (clickedOnItem > -1) {
+    clickedOnItem = e.target;
+    if (clickedOnItem.classList.contains('div-canvas-pub')) {
         ConfigureClearInspectorPanel();
-        let simName = listOfSimPub[clickedOnItem].nameParent.name;
-        let messageName = listOfSimPub[clickedOnItem].name;
+        let simName = clickedOnItem.nameParent.name;
+        let messageName = clickedOnItem.name;
 
         let panel = $('#inspectorpanel')
         let header = $('<div>').addClass('ui compact segment')
@@ -389,8 +382,8 @@ function ConfigureItemFromCanvas(e) {
         let content = $('<div>').addClass('ui compact segment')
         let button = $('<button>').addClass('ui red basic button').text('Change Publish Parameters')
         button.click(() => {
-            editExistingObject = listOfSimPub[clickedOnItem].nameParent;		//index in 'simulatorObjects' of sim
-            editExistingObject2 = listOfSimPub[clickedOnItem].name;				//index in 'simulatorObjects[i].publishedMessages'
+            editExistingObject = clickedOnItem.nameParent;		//index in 'simulatorObjects' of sim
+            editExistingObject2 = clickedOnItem.name;				//index in 'simulatorObjects[i].publishedMessages'
             EditPublishConnectionPrompt();
         })
         content.append(button)
@@ -401,18 +394,10 @@ function ConfigureItemFromCanvas(e) {
         return;
     }
 
-    clickedOnItem = -1;
-    var listOfSimSub = document.getElementsByClassName("div-canvas-sub");
-    for (i = 0; i < listOfSimSub.length; i++) {
-        if (e.target === listOfSimSub[i]) {
-            clickedOnItem = i;
-            break;
-        }
-    }
-    if (clickedOnItem > -1) {
+    if (clickedOnItem.classList.contains('div-canvas-sub')) {
         ConfigureClearInspectorPanel();
-        let simName = listOfSimSub[clickedOnItem].nameParent.name;
-        let messageName = listOfSimSub[clickedOnItem].name;
+        let simName = clickedOnItem.nameParent.name;
+        let messageName = clickedOnItem.name;
         let panel = $('#inspectorpanel')
         let header = $('<div>').addClass('ui compact segment')
         let message = $('<label>').addClass('ui blue large label').text(messageName)
@@ -426,8 +411,8 @@ function ConfigureItemFromCanvas(e) {
         let content = $('<div>').addClass('ui compact segment')
         let button = $('<button>').addClass('ui red basic button').text('Change Subscribe Parameters')
         button.click(() => {
-            editExistingObject = listOfSimSub[clickedOnItem].nameParent;
-            editExistingObject2 = listOfSimSub[clickedOnItem].name;
+            editExistingObject = clickedOnItem.nameParent;
+            editExistingObject2 = clickedOnItem.name;
             EditSubscribeConnectionPrompt();
         })
         content.append(button)
@@ -438,12 +423,7 @@ function ConfigureItemFromCanvas(e) {
         return;
     }
 
-    clickedOnItem = -1;
-    var serverGUI = document.getElementsByClassName("div-canvas-server");
-    if (e.target === serverGUI[0]) {
-        clickedOnItem = 0;
-    }
-    if (clickedOnItem > -1) {
+    if (clickedOnItem.classList.contains("div-canvas-server")) {
         let panel = $('#inspectorpanel')
         let header = $('<div>').addClass('ui compact segment')
         header.append($('<h3>').text('RTI Server'))

@@ -91,8 +91,8 @@ var nMessages = 0
 // simulation stages
 var simStage = 0
 
-var editExistingObject = -1;
-var editExistingObject2 = -1;
+var editExistingObject = null;
+var editExistingObject2 = null;
 
 var selectMessageId;
 var selectSimId;

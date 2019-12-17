@@ -80,7 +80,7 @@ function dragStart(e) {
 	- if in "Select" state, allow moving object (if an object on the canvas)
 */
 function dragStartMove(e) {
-    var clickedOnItem = -1;
+    var clickedOnItem = null;
     let i = 0;
     for (let simObj of simulatorObjects) {
         if (e.target === simObj.objectRef) {
@@ -178,7 +178,7 @@ function getTranslate3d(e1) {
 	- Delete item from canvas, where 'e' is the selected object.
 */
 function DeleteItemFromCanvas(e) {
-    var clickedOnItem = -1;
+    var clickedOnItem = null;
 
     let i = 0;
     for (let simObj of simulatorObjects) {
@@ -197,7 +197,7 @@ function DeleteItemFromCanvas(e) {
         //		deleting one object makes other objects (that were added after i) 
         //		move up one space. Need to reset everyone.
         MoveObjectsOnCanvasUpOne(i, arr);
-        UpdateDrawArrowsAfterDelete(i, -1);
+        UpdateDrawArrowsAfterDelete(simObj.name, null);
         return;
     }
 
@@ -208,36 +208,20 @@ function DeleteItemFromCanvas(e) {
         messageObjects.delete(clickedOnItem.name)
 
         ResetMessagesOnCanvas();
-        UpdateDrawArrowsAfterDelete(-1, clickedOnItem.name);
+        UpdateDrawArrowsAfterDelete(null, clickedOnItem.name);
         $('.div-canvas-server').height(Math.max(160, -8 + (42 * $('.div-canvas-message').length)))
         return;
     }
-    //TODO: remove loop
-    clickedOnItem = -1;
-    var listOfSimPub = document.getElementsByClassName("div-canvas-pub");
-    for (i = 0; i < listOfSimPub.length; i++) {
-        if (e.target === listOfSimPub[i]) {
-            clickedOnItem = i;
-            break;
-        }
-    }
-    if (clickedOnItem > -1) {
+    clickedOnItem = e.target;
+    if (clickedOnItem.classList.contains('div-canvas-pub')) {
         listOfSimPub[clickedOnItem].nameParent.publishedMessages.delete(listOfSimPub[clickedOnItem].name);
-        UpdateDrawArrowsAfterDelete(-1, -1);
+        UpdateDrawArrowsAfterDelete(null, null);
         return;
     }
 
-    clickedOnItem = -1;
-    var listOfSimSub = document.getElementsByClassName("div-canvas-sub");
-    for (i = 0; i < listOfSimSub.length; i++) {
-        if (e.target === listOfSimSub[i]) {
-            clickedOnItem = i;
-            break;
-        }
-    }
-    if (clickedOnItem > -1) {
+    if (clickedOnItem.classList.contains('div-canvas-sub')) {
         listOfSimSub[clickedOnItem].nameParent.subscribedMessages.delete(listOfSimSub[clickedOnItem].name);
-        UpdateDrawArrowsAfterDelete(-1, -1);
+        UpdateDrawArrowsAfterDelete(null, null);
         return;
     }
 }
@@ -587,10 +571,10 @@ function DrawArrowObjectOnCanvas2() {
 	- Redraw arrows after an item was deleted (required repositioning of some items underneath a sim).
 */
 function UpdateDrawArrowsAfterDelete(simDelete, messageDelete) {
-    if (simDelete != -1) {
+    if (simDelete) {
         // don't need to do anything, arrow-data is stored with sim, so if it is deleted, just need to redraw.
     }
-    if (messageDelete != -1) {
+    if (messageDelete) {
         let i = 0;
         for (let simObj of simulatorObjects) {
             let j = 0;
