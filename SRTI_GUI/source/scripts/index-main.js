@@ -1017,13 +1017,18 @@ function StringifyHelper(key, value) {
 	}
 }
 
-function IsNull(value){
+function IsNull(value) {
 	// value == null		-> Returns false for 'null', or undefined.
 	// value === null		-> Explicit check for 'null'
 	// (value)				-> Returns false for 'null', empty strings, undefined...
-	if (value){
-		return false;
-	} else {
-		return true;
-	}
+	// if (value){
+	// 	return false;
+	// } else {
+	// 	return true;
+	// }
+
+	// The if statement above is totally unnecessary. We want to return the boolean value of "value", and that 
+	// can be done simply by returning the value.
+	// Remember that when you call this function, there is usually already an outside if.
+	return !value
 }

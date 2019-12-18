@@ -567,10 +567,11 @@ function DrawArrowObjectOnCanvas2() {
 	- Redraw arrows after an item was deleted (required repositioning of some items underneath a sim).
 */
 function UpdateDrawArrowsAfterDelete(simDelete, messageDelete) {
-    if (IsNull(simDelete) == false) {
+    // No need to compare a boolean value to true or false. That is exactly what if statements are for.
+    if (!IsNull(simDelete)) {
         // don't need to do anything, arrow-data is stored with sim, so if it is deleted, just need to redraw.
     }
-    if (IsNull(messageDelete) == false) {
+    if (!IsNull(messageDelete)) {
         for (let simObj of simulatorObjects) {
             // for (j = simObj.publishedMessages.length - 1; j >= 0; j--) {
             //     if (simObj.publishedMessages[j] == messageDelete) {
