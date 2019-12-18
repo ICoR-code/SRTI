@@ -41,8 +41,8 @@
 		Refer to https://www.kirupa.com/html5/drag.htm -->
 
 	<div class="container">
-		<div class="container">
-			<div id="executepanel">
+		<div class="splitter">
+			<div id="execute-panel">
 				<div class="ui icon buttons">
 					<button class="ui grey button" name="select-state-buttons" id="btn-pointer"
 						onclick="UpdateSelectedStateButtons(0)"><i class="mouse pointer icon"></i>
@@ -54,8 +54,8 @@
 					<button class="ui button" name="select-state-buttons" id="btn-delete"
 						onclick="UpdateSelectedStateButtons(3)"><i class="times icon"></i></button>
 				</div>
-				&nbsp;&nbsp;
-				<div class="ui icon buttons">
+
+				<div class="ui icon buttons" id="buttons-simulation">
 					<button class="ui button" id="btn-start" onclick="StartSimulationSystem()"><i
 							class="power off icon"></i></button></button>
 					<button class="ui button" id="btn-play" onclick="PlaySimulationSystem()"><i
@@ -69,95 +69,52 @@
 		</div>
 		<div class="splitter">
 			<div class="splitter">
-				<div id="objectpanel" class="ui segments">
-					<button class="ui segment" id="btn-newobject" onclick="NewObjectPrompt()"><i class="plus icon"></i>
+				<div id="object-panel" class="ui segments">
+					<button class="ui segment" id="btn-new-object" onclick="NewObjectPrompt()"><i class="plus icon"></i>
 						New</button>
-					<div class="ui segment objectsubpanel" style="overflow-y: auto;">
-						<div class="ui expanding vertical buttons" id="objectsubpanel1"></div>
+					<div class="ui segment objects-subpanel" style="overflow-y: auto;">
+						<div class="ui expanding vertical buttons" id="objects-subpanel1"></div>
 					</div>
-					<div class="ui segment objectsubpanel" style="overflow-y: auto;">
-						<div class="ui expanding vertical buttons" id="objectsubpanel2"></div>
+					<div class="ui segment objects-subpanel" style="overflow-y: auto;">
+						<div class="ui expanding vertical buttons" id="objects-subpanel2"></div>
 					</div>
 				</div>
 				<div id="separator" class="separator"></div>
-				<div id="canvaspanel">
-					<div class="ui top attached menu" id="canvastabpanel">
+				<div id="canvas-panel">
+					<div class="ui top attached menu" id="canvas-tab-panel">
 						<a class="ui active item" name=0 onclick="UpdateSelectedStage(this.name)">0</a>
 						<div class="right menu">
 							<a class="item" onclick="AddNewStage()">
 								<i class="plus icon"></i>
 							</a>
 						</div>
-						<!-- <button class="ui compact icon button btn-canvastab" onclick="AddNewStage()"><i
-								class="plus icon"></i></button>
-						<button class="ui basic secondary compact button btn-canvastab" name=0
-							onclick="UpdateSelectedStage(this.name)">0</button> -->
-						<!-- <button id="btn-canvastab" name=0 style="background-color: #aaa; color: #fff;"
-							onclick="UpdateSelectedStage(this.name)">0</button> -->
 					</div>
-					<div class="ui attached segment" id="canvassubpanel1"
+					<div class="ui attached segment" id="canvas-subpanel1"
 						style="overflow-y: scroll; overflow-x: scroll;" onscroll="CanvasOnScroll(this)">
-						<!-- <canvas style="width:calc(100% - 8px);height:calc(100% - 8px);background-color: #002;"> </canvas> -->
 
-
-						<div id="canvassubpanel1grid" style="position: relative;">
+						<div id="canvas-subpanel1-grid" style="position: relative;">
 						</div>
 
-						<div id="canvassubpanel1arrows" style="position: relative; background-color: green;">
-							<!-- <svg width="100%" height="400" style="display: block; position: absolute; left: 100px; top: 400px; background-color: yellow;">
-															<defs>
-																<marker id="arrow" markerWidth="13" markerHeight="13" refx="2" refy="6" orient="auto">
-																	<path d="M2,2 L2,11 L10,6 L2,2" style="fill:red;" />
-																</marker>
-															</defs>
-							
-															<path d="M20,100 L20,150" style="stroke:red; stroke-width: 1.25px; fill: none; marker-end: url(#arrow);"/>
-														</svg> -->
+						<div id="canvas-subpanel1-arrows" style="position: relative; background-color: green;">
 						</div>
-						<!-- <div class="item" name="item1" style="position: relative; overflow-y:hidden;">
-													 Sim Name Example
-													 Test me. Keep testing to see if it overflows or not.
-													 </div>
-													 <div class="item" name="item2" style="position: relative; overflow-y:hidden;">
-													 Sim Name Example
-													 Test me. Keep testing to see if it overflows or not.
-													 </div> -->
-
-
-
 
 					</div>
-					<div class="ui bottom attached segment" id="canvassubpanel2"
+					<div class="ui bottom attached segment" id="canvas-subpanel2"
 						style="overflow-y: scroll; overflow-x: hidden;">
-						<div id="canvassubpanel2server" style="position: relative;">
+						<div id="canvas-subpanel2-server" style="position: relative;">
 							<div class="ui blue button div-canvas-server"
 								style="position: absolute; overflow-y:hidden;">
 								RTI Server
 							</div>
 						</div>
-						<div id="canvassubpanel2arrows" style="position: relative; background-color: green;">
-							<!-- <svg width="100%" height="400" style="display: block; position: absolute; left: 100px; top: 400px; background-color: yellow;">
-								<defs>
-									<marker id="arrow" markerWidth="13" markerHeight="13" refx="2" refy="6" orient="auto">
-										<path d="M2,2 L2,11 L10,6 L2,2" style="fill:red;" />
-									</marker>
-								</defs>
-
-								<path d="M20,100 L20,150" style="stroke:red; stroke-width: 1.25px; fill: none; marker-end: url(#arrow);"/>
-							</svg> -->
+						<div id="canvas-subpanel2-arrows" style="position: relative; background-color: green;">
 						</div>
-						<div id="canvassubpanel2grid" style="position: relative;">
-							<!-- <div class="item-message" name="item1" style="position: absolute; left:100px; top:10px; overflow-y:hidden;">
-								Message 01
-							</div>
-							<div class="item-message" name="item2" style="position: absolute; left:100px; top:46px; overflow-y:hidden;">
-								Message 02
-							</div> -->
+						<div id="canvas-subpanel2-grid" style="position: relative;">
 						</div>
 					</div>
 				</div>
 				<div id="separator2" class="separator"></div>
-				<div id="inspectorpanel" class="ui segments" style="overflow-y: scroll;"></div>
+				<div id="inspector-panel" class="ui segments" style="overflow-y: scroll;"></div>
 			</div>
 		</div>
 	</div>
@@ -166,7 +123,6 @@
 
 	<!-- BELOW ARE POPUP DESIGNS. -->
 
-	<div id="greyoverlay"></div>
 	<div class="ui modal" id="modalNewObject">
 		<div class="header">What new object do you want to add to the project?</div>
 		<div class="ui form content">
@@ -195,8 +151,8 @@
 		</div>
 
 		<div class="actions">
-			<button class="ui button positive" id="btn-modalconfirm" onclick="AddNewObject()">Next</button>
-			<button class="ui button deny" id="btn-modalcancel" onclick="CloseNewObjectPrompt()">Cancel</button>
+			<button class="ui button positive" id="btn-modal-confirm" onclick="AddNewObject()">Next</button>
+			<button class="ui button deny" id="btn-modal-cancel" onclick="CloseNewObjectPrompt()">Cancel</button>
 		</div>
 	</div>
 
@@ -207,7 +163,7 @@
 				<div class="ten wide middle aligned column"><label>Simulator Name</label></div>
 				<div class="six wide column"><input type="text" name="NewSimName"></div>
 				<div class="ten wide middle aligned column"><label>Reference Name (inside code)</label></div>
-				<div class="six wide column"><input type="text" name="NewSimRef"></div>
+				<div class="six wide column"><input class="code" type="text" name="NewSimRef"></div>
 				<div class="ten wide middle aligned column"><label>Wrapper File Location</label></div>
 				<div class="six wide column"><button class="ui button"
 						onclick="document.getElementsByName('wrapperFileDir')[0].click()">Choose File
@@ -220,12 +176,12 @@
 				</div>
 				<div class="ten wide middle aligned column"><label>Execute Command (to launch Wrapper with Sim)</label>
 				</div>
-				<div class="six wide column"><input type="text" name="NewSimExecute"></div>
+				<div class="sixteen wide column"><input class="code" type="text" name="NewSimExecute"></div>
 			</div>
 		</div>
 		<div class="actions">
-			<button class="ui button positive" id="btn-modalconfirm" onclick="AddNewObjectSimulator()">Confirm</button>
-			<button class="ui button deny" id="btn-modalcancel"
+			<button class="ui button positive" id="btn-modal-confirm" onclick="AddNewObjectSimulator()">Confirm</button>
+			<button class="ui button deny" id="btn-modal-cancel"
 				onclick="CloseNewSimulatorObjectPrompt()">Cancel</button>
 		</div>
 	</div>
@@ -243,7 +199,7 @@
 							<div class="ui form">
 								<div class="field">
 									<label>Simulator Variable Name</label>
-									<input type="text" name="NewSimulatorObjectName"
+									<input class="code" type="text" name="NewSimulatorObjectName"
 										onkeyup="CheckEnableObjectToSimulatorDef()">
 								</div>
 								<div class="grouped fields">
@@ -340,7 +296,7 @@
 							<div class="ui form">
 								<div class="field">
 									<label>Simulator Function Name</label>
-									<input type="text" name="NewSimulatorFunctionName"
+									<input class="code" type="text" name="NewSimulatorFunctionName"
 										onkeyup="CheckEnableFunctionToSimulatorDef()">
 								</div>
 
@@ -360,9 +316,9 @@
 		</div>
 
 		<div class="actions">
-			<button class="ui button positive" id="btn-modalconfirm" name="btn-newsimulatorconfirm"
+			<button class="ui button positive" id="btn-modal-confirm" name="btn-new-simulator-confirm"
 				onclick="AddNewObjectSimulator2()">Confirm</button>
-			<button class="ui button deny" id="btn-modalcancel"
+			<button class="ui button deny" id="btn-modal-cancel"
 				onclick="CloseNewSimulatorObjectPrompt2()">Cancel</button>
 		</div>
 	</div>
@@ -412,45 +368,6 @@
 			<button class="ui button positive" onclick="SavePublishConnectionPrompt()">Confirm</button>
 			<button class="ui button deny" onclick="ClosePublishConnectionPrompt()">Cancel</button>
 		</div>
-
-		<!-- <div style="float:left;width:calc(60% - 2px);height:300px;">
-			<div id="modalPublishDetailsTitle01" style="width:100%;height:40px;">
-				Message Name: XXX
-				<br>
-				Message Variables:
-			</div>
-			<div id="modalPublishDetailsMessageList"
-				style="width:100%;height:240px;background-color:#DDD;overflow-y:scroll;border:1px solid black;">
-				<div class="div-list-item">Item 1 (integer)   
-					<button style="float:right;">X</button>
-				</div>
-				<div class="div-list-item">Item 2 (integer) 
-					<button style="float:right;">X</button>
-				</div>
-				<button class="listitem"> </button>
-			</div>
-		</div> -->
-		<!-- <div style="float:right;width:calc(40% - 2px);height:300px;">
-			<div id="modalPublishDetailsTitle02" style="width:100%;height:40px;">
-				Simulator Name: XXX
-				<br>
-				Simulator Variables:
-			</div>
-			<div id="modalPublishDetailsSimList"
-				style="width:100%;height:240px;background-color:#DDD;overflow-y:scroll;border:1px solid black;">
-
-			</div>
-		</div> -->
-		<!-- <div style="width:100%; padding: 8px;">
-			Initial (publish message at step 0?): <input type="radio" name="radioPublishInitial" value="true">True
-			<input type="radio" name="radioPublishInitial" value="false">False
-		</div>
-		<div style="width:100%; padding: 8px;">
-			Timestep delta (should be multiple of Sim's delta): <input style="float: right; margin-right:8px;"
-				type="text" size="4" name="textPublishDelta" onkeyup="">
-		</div> -->
-		<!-- <button id="btn-modalconfirm" onclick="SavePublishConnectionPrompt()">Confirm</button>
-		<button id="btn-modalcancel" onclick="ClosePublishConnectionPrompt()">Cancel</button> -->
 	</div>
 	<div class="ui modal" id="modalSubscribeDetails">
 		<div class="header">Subscribe Details</div>
@@ -509,23 +426,6 @@
 			<button class="ui button positive" onclick="SaveSubscribeConnectionPrompt()">Confirm</button>
 			<button class="ui button deny" onclick="CloseSubscribeConnectionPrompt()">Cancel</button>
 		</div>
-
-		<!-- <div style="width:100%; padding:8px;">
-			One-time (only subscribe once, at step 0?): <input type="radio" name="radioSubscribeInitial"
-				value="true">True <input type="radio" name="radioSubscribeInitial" value="false">False
-		</div>
-		<div style="width:100%; padding:8px;">
-			Timestep delta (should be multiple of Sim's delta): <input style="float: right; margin-right:8px;"
-				type="text" size="4" name="textSubscribeDelta" onkeyup="">
-		</div>
-		<div style="width:100%; padding:8px;">
-			Relative Order (default '0', see documentation): <input style="float: right; margin-right:8px;" type="text"
-				size="4" name="textSubscribeRelative" onkeyup="">
-		</div>
-		<div style="width:100%; padding:8px;">
-			Max Timestep (default '0', see documentation): <input style="float: right; margin-right:8px;" type="text"
-				size="4" name="textSubscribeTimestep" onkeyup="">
-		</div> -->
 	</div>
 	<div class="ui modal" id="modalNewMessage">
 		<div class="header">Please define message format</div>
@@ -544,7 +444,7 @@
 							<div class="ui form">
 								<div class="field">
 									<label>Message Object Name</label>
-									<input type="text" name="NewMessageObjectName"
+									<input class="code" type="text" name="NewMessageObjectName"
 										onkeyup="CheckEnableObjectToMessageDef()">
 								</div>
 								<div class="grouped fields">
@@ -639,9 +539,9 @@
 
 
 		<div class="actions">
-			<button class="ui button positive" name="btn-newmessageconfirm" id="btn-modalconfirm" disabled=true
+			<button class="ui button positive" name="btn-new-message-confirm" id="btn-modal-confirm" disabled=true
 				onclick="AddNewObjectMessage()">Confirm</button>
-			<button class="ui button deny" id="btn-modalcancel" onclick="CloseNewMessageObjectPrompt()">Cancel</button>
+			<button class="ui button deny" id="btn-modal-cancel" onclick="CloseNewMessageObjectPrompt()">Cancel</button>
 		</div>
 	</div>
 
@@ -666,7 +566,7 @@
 					<label class="padded" name="divTimeVarScale">Time Variable Multiplier</label></div>
 				<div class="six wide column">
 					<div class="ui selection dropdown" id="dropdownVar">
-						<input type="hidden" name="divTimeVarScale">
+						<input class="code" type="hidden" name="divTimeVarScale">
 						<i class="dropdown icon"></i>
 						<div class="default text">Pick Var</div>
 						<div class="menu">
@@ -679,34 +579,11 @@
 		</div>
 
 		<div class="actions">
-			<button class="ui button positive" id="btn-modalconfirm" onclick="SaveSimLocalTime()">Confirm</button>
-			<button class="ui button deny" id="btn-modalcancel" onclick="CloseEditSimLocalTime()">Cancel</button>
+			<button class="ui button positive" id="btn-modal-confirm" onclick="SaveSimLocalTime()">Confirm</button>
+			<button class="ui button deny" id="btn-modal-cancel" onclick="CloseEditSimLocalTime()">Cancel</button>
 		</div>
 
-		<!-- <br>
-		<br>
-		<br>
-		<br>
-		<div name="divTimeDelta">Current Time Delta: 1.0</div>
-		<pre>New Time Delta (between 1.0 and infinity): <input type="text" size="8" name="NewTimeDelta"> <button onclick="UpdateTimeDelta()">Update</button></pre>
-		<br>
-		<br>
-		<div name="divTimeScale">Current Time Multiplier: 1.0</div>
-		<pre>New Time Mult. (between 0.0 and infinity): <input type="text" size="8" name="NewTimeScale"> <button onclick="UpdateTimeScale()">Update</button></pre>
-		<br>
-		<br> -->
-		<!-- <div name="divTimeVarScale">Current Time Variable Multiplier: ''</div>
-		<pre>(Optional) Use a variable inside the Simulator to 
-determine time scale: </pre>
-		<button class="dropbtn" onclick="DropdownFunction()">Pick Var</button>
-		<div id="dropdownVar" class="dropdown-content">
-			<a href="#">Link 1</a>
-			<a href="#">Link 2</a>
-			<a href="#">Link 3</a>
-		</div>
-		<br>
-		<br>
-		<button id="btn-modalcancel" onclick="CloseEditSimLocalTime()">Return</button> -->
+
 	</div>
 	<div class="ui modal" id="modalServer">
 		<div class="header">Modify "RTI Server" launch properties</div>
@@ -762,21 +639,6 @@ determine time scale: </pre>
 			<button class="ui button positive" onclick="SaveEditServer()">Confirm</button>
 			<button class="ui button deny" onclick="CloseEditServer()">Cancel</button>
 		</div>
-		<!-- <div>File reference to RTI Server (only set if not using default):</div>
-		<pre><input type="file" size="28" name="NewSimWrapper"></pre>
-		<br>
-		<div name="divHostName">Host Name: localhost</div>
-		<div>(Allow connections only locally, or across Internet network. Internet network IP address decided by
-			computer and Internet router. This is only used by local simulators to connect properly to the Server.)
-		</div>
-		<pre><input type="radio" name="HostNameObject" value="localhost" onclick="">localhost   <input type="radio" name="HostNameObject" value="network" onclick="">network   <button onclick="UpdateHostName()">CONFIRM</button></pre>
-		<br>
-		<div name="divPortNumber">Port Number: 4200</div>
-		<div>(Set the application port number the Server opens on. If port is unavailable, chooses a random available
-			port.)</div>
-		<pre><input type="text" size="8" name="PortNumberObject">    <button onclick="UpdatePortNumber()">CONFIRM</button></pre>
-		<br>
-		<button id="btn-modalcancel" onclick="CloseEditServer()">Return</button> -->
 	</div>
 	<div class="ui modal" id="modalSimulateFunctions">
 
@@ -820,32 +682,9 @@ determine time scale: </pre>
 		</div>
 
 		<div class="actions">
-			<button class="ui button positive" id="btn-modalconfirm" onclick="SaveSimulateFunction()">Confirm</button>
-			<button class="ui button deny" id="btn-modalcancel" onclick="CloseSimulateFunctions()">Cancel</button>
+			<button class="ui button positive" id="btn-modal-confirm" onclick="SaveSimulateFunction()">Confirm</button>
+			<button class="ui button deny" id="btn-modal-cancel" onclick="CloseSimulateFunctions()">Cancel</button>
 		</div>
-
-		<!-- <div name="divInitializeFunction"> Initialize Function: null</div>
-		<button class="dropbtn" onclick="DropdownInitializeFunction()">Pick Function (click to show/hide)</button>
-		<div id="dropdownInitializeFunction" class="dropdown-content">
-			<a href="#">Link 1</a>
-			<a href="#">Link 2</a>
-			<a href="#">Link 3</a>
-		</div>
-		<br>
-		<br>
-		<div name="divSimulateFunction"> Simulate Function: null</div>
-		<button class="dropbtn" onclick="DropdownSimulateFunction()">Pick Function (click to show/hide)</button>
-		<div id="dropdownSimulateFunction" class="dropdown-content">
-			<a href="#">Link 1</a>
-			<a href="#">Link 2</a>
-			<a href="#">Link 3</a>
-		</div>
-		<br>
-		<div name="divSimulateFunctionTimestepDelta"> Simulate Function timestep delta: 1</div>
-		<input type="text" size="4" name="SimulateFunctionTimestepDelta"><button
-			onclick="SaveSimulateFunction()">CONFIRM</button>
-		<br>
-		<button id="btn-modalcancel" onclick="CloseSimulateFunctions()">Return</button> -->
 	</div>
 	<div class="ui modal" id="modalStageConditions">
 		<div class="header">Stage Conditions</div>
@@ -968,88 +807,6 @@ determine time scale: </pre>
 			<!-- <button class="ui button positive" onclick="SaveSimulateFunction()">Confirm</button> -->
 			<button class="ui button deny" onclick="CloseStageConditions()">Return</button>
 		</div>
-		<!-- <b>Stage Conditions:</b>
-		<br>
-		<br>
-		<br> -->
-		<!-- <div id="divStageConditionStatement" style="float:left;width:calc(65%);">
-			If [ ] [ ] [ ] AND ...
-		</div>
-		<div style="float:right;width:calc(35%);">
-			<button style="width:100%;" onclick="AddStageConditionToSubList()">Add to Condition</button>
-		</div>
-		<br>
-		<br>
-		Pick one of the following:
-		<br>
-		<button class="dropbtn" style="width:250px;margin:2px;" onclick="DropdownStageConditionPickVar1()">Pick Var
-			(click to show/hide)</button>
-		<div id="dropdownStageConditionPickVar1" class="dropdown-content">
-			<a href="#">Link 1</a>
-			<a href="#">Link 2</a>
-			<a href="#">Link 3</a>
-		</div>
-		<br>
-		<button class="dropbtn" style="width:250px;margin:2px;" onclick="DropdownStageConditionPickRTIVar1()">Pick
-			RTI
-			Var (click to show/hide)</button>
-		<div id="dropdownStageConditionPickRTIVar1" class="dropdown-content">
-			<a href="#">Link 1</a>
-			<a href="#">Link 2</a>
-			<a href="#">Link 3</a>
-		</div>
-		<br>
-		---
-		<br>
-		Pick one of the following:
-		<br>
-		<button class="dropbtn" style="width:250px;margin:2px;" onclick="DropdownStageConditionCondition1()">Pick
-			Condition (click to show/hide)</button>
-		<div id="dropdownStageConditionCondition1" class="dropdown-content">
-			<a href="#">Link 1</a>
-			<a href="#">Link 2</a>
-			<a href="#">Link 3</a>
-		</div>
-		<br>
-		---
-		<br>
-		Pick one of the following:
-		<br>
-		<button class="dropbtn" style="width:250px;margin:2px;" onclick="DropdownStageConditionPickVar2()">Pick Var
-			(click to show/hide)</button>
-		<div id="dropdownStageConditionPickVar2" class="dropdown-content">
-			<a href="#">Link 1</a>
-			<a href="#">Link 2</a>
-			<a href="#">Link 3</a>
-		</div>
-		<br>
-		<button class="dropbtn" style="width:250px;margin:2px;" onclick="DropdownStageConditionPickRTIVar2()">Pick
-			RTI
-			Var (click to show/hide)</button>
-		<div id="dropdownStageConditionPickRTIVar2" class="dropdown-content">
-			<a href="#">Link 1</a>
-			<a href="#">Link 2</a>
-			<a href="#">Link 3</a>
-		</div>
-		<br>
-		Compare Value: <input type="text" size="4" name="TextStageConditionsPickValue2"> <button
-			onclick="UpdateStageConditionCompareValue()">CONFIRM</button>
-		<br> -->
-		<!-- <div id="modalStageConditionsSubPanel"
-			style="margin:2px;float:left;width:calc(60% - 2px);height:80px;background-color:#DDD;overflow-y:scroll;border:1px solid black;">
-		</div>
-		<div style="margin:2px;float:right;width:calc(36% - 2px);height:80px;">
-			If these are all true, go to stage: <input type="text" size="4" name="TextStageConditionsNewStage">
-			<br>
-			<br>
-			<button style="width:100%;" onclick="AddStageConditionToList()">Add to Conditions List</button>
-		</div>
-
-		<div id="modalStageConditionsPanel"
-			style="margin:2px;float:left;width:calc(100% - 2px);height:100px;background-color:#DDD;overflow-y:scroll;border:1px solid black;">
-		</div> -->
-
-		<!-- <button id="btn-modalcancel" onclick="CloseStageConditions()">Return</button> -->
 	</div>
 	<div class="ui modal" id="modalEndConditions">
 		<div class="header">End Conditions</div>
@@ -1183,8 +940,8 @@ determine time scale: </pre>
 			</div>
 		</div>
 		<div class="actions">
-			<button class="ui button positive" id="btn-modalconfirm" onclick="SaveSaveAsProject()">Confirm</button>
-			<button class="ui button deny" id="btn-modalcancel" onclick="CloseSaveAsProject()">Cancel</button>
+			<button class="ui button positive" id="btn-modal-confirm" onclick="SaveSaveAsProject()">Confirm</button>
+			<button class="ui button deny" id="btn-modal-cancel" onclick="CloseSaveAsProject()">Cancel</button>
 		</div>
 	</div>
 	<div class="ui modal" id="modalOpenProject">
@@ -1210,7 +967,7 @@ determine time scale: </pre>
 		<br>
 		<br> -->
 		<!-- <input name="openProjectFileDir" type="file" accept=".project" /> -->
-		<!-- <button id="btn-modalcancel" onclick="CloseOpenProject()">Cancel</button> -->
+		<!-- <button id="btn-modal-cancel" onclick="CloseOpenProject()">Cancel</button> -->
 	</div>
 	<div class="ui modal" id="modalImportObject">
 		<div class="header">Import existing object file ('.simdef' or '.mesdef') to import Simulator or Message into
@@ -1230,8 +987,8 @@ determine time scale: </pre>
 			</div>
 		</div>
 		<div class="actions">
-			<button class="ui button positive" id="btn-modalconfirm" onclick="ImportObject()">Confirm</button>
-			<button class="ui button deny" id="btn-modalcancel" onclick="CloseImportObjectPrompt()">Cancel</button>
+			<button class="ui button positive" id="btn-modal-confirm" onclick="ImportObject()">Confirm</button>
+			<button class="ui button deny" id="btn-modal-cancel" onclick="CloseImportObjectPrompt()">Cancel</button>
 		</div>
 	</div>
 
@@ -1247,8 +1004,12 @@ determine time scale: </pre>
 		(last action)
 	</div>
 
-	<script src="index_main.js"></script>
-	<script src="ui-actions.js"></script>
+	<script src="scripts/index-main.js"></script>
+	<script src="scripts/canvas.js"></script>
+	<script src="scripts/ui.js"></script>
+	<script src="scripts/modal.js"></script>
+	<script src="scripts/simulation.js"></script>
+	<script src="scripts/ready.js"></script>
 	<script>
 		/*const { foo } = require('./index_main.js');
 		const { ipcRenderer } = require('electron');
