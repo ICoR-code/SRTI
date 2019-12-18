@@ -626,7 +626,7 @@ function SetItemsVisibleInStage() {
         // 	+ " objectRef = " + simObj.objectRef
         // 	+ " objectRef.style = " + simObj.objectRef.style);
         if (simObj.stage == stage) {
-            simObj.objectRef.style.y = 'visible';
+            simObj.objectRef.style.visibility = 'visible';
         } else {
             simObj.objectRef.style.visibility = 'hidden';
         }

@@ -451,49 +451,53 @@ function WriteWrapperConfigFiles() {
 						});
 				}
 				errorLocation = 4;
-				for (k = 0; k < simObj.endConditions.length; k++) {
-					let newCondition = [];
-					let m = 0;
-					for (m = 0; m < simObj.endConditions[k].conditions.length; m++) {
-						// (extra parse to a number instead of a string necessary for Wrapper to properly check if condition is met)
-						var tempValue = simObj.endConditions[k].conditions[m].value;
-						if (isNaN(tempValue) == false) {
-							tempValue = parseFloat(tempValue);
-						}
-						newCondition.push(
-							{
-								varName: simObj.endConditions[k].conditions[m].varName,
-								condition: simObj.endConditions[k].conditions[m].condition,
-								value: tempValue,
-								varName2: simObj.endConditions[k].conditions[m].varName2
-							});
-					}
-					endConditions.push(newCondition);
-				}
-				errorLocation = 5;
-				// TODO: the wrapper file structure may also need changing
-				for (k = 0; k < simObj.stageConditions.length; k++) {
-					let newCondition = [];
-					let m = 0;
-					for (m = 0; m < simObj.stageConditions[k].conditions.length; m++) {
-						let tempValue = simObj.stageConditions[k].conditions[m].value;
-						if (isNaN(tempValue) == false) {
-							tempValue = parseFloat(tempValue);
-						}
-						newCondition.push(
-							{
-								oldStage: parseInt(simObj.stageConditions[k].oldStage),
-								newStage: parseInt(simObj.stageConditions[k].newStage),
-								varName: simObj.stageConditions[k].conditions[m].varName,
-								condition: simObj.stageConditions[k].conditions[m].condition,
-								value: tempValue,
-								varName2: simObj.stageConditions[k].conditions[m].varName2
-							});
-					}
-					stageConditions.push(newCondition);
-				}
 
 			}
+			errorLocation = 100;
+			for (k = 0; k < simulator.endConditions.length; k++) {
+				var newCondition = [];
+				let m = 0;
+				errorLocation = 101;
+				for (m = 0; m < simulator.endConditions[k].conditions.length; m++) {
+					// (extra parse to a number instead of a string necessary for Wrapper to properly check if condition is met)
+					errorLocation = 102;
+					var tempValue = simulator.endConditions[k].conditions[m].value;
+					if (isNaN(tempValue) == false) {
+						tempValue = parseFloat(tempValue);
+					}
+					newCondition.push(
+						{
+							varName: simulator.endConditions[k].conditions[m].varName,
+							condition: simulator.endConditions[k].conditions[m].condition,
+							value: tempValue,
+							varName2: simulator.endConditions[k].conditions[m].varName2
+						});
+				}
+				endConditions.push(newCondition);
+			}
+			errorLocation = 110;
+			// TODO: the wrapper file structure may also need changing
+			for (k = 0; k < simulator.stageConditions.length; k++) {
+				var newCondition = [];
+				let m = 0;
+				for (m = 0; m < simulator.stageConditions[k].conditions.length; m++) {
+					var tempValue = simulator.stageConditions[k].conditions[m].value;
+					if (isNaN(tempValue) == false) {
+						tempValue = parseFloat(tempValue);
+					}
+					newCondition.push(
+						{
+							oldStage: parseInt(simulator.stageConditions[k].oldStage),
+							newStage: parseInt(simulator.stageConditions[k].newStage),
+							varName: simulator.stageConditions[k].conditions[m].varName,
+							condition: simulator.stageConditions[k].conditions[m].condition,
+							value: tempValue,
+							varName2: simulator.stageConditions[k].conditions[m].varName2
+						});
+				}
+				stageConditions.push(newCondition);
+			}
+			errorLocation = 120;
 
 			//errorLocation = 2;
 			var obj = {
@@ -556,7 +560,7 @@ function WriteServerConfigFile() {
 	try {
 		content = fs.readFileSync(serverPath + "settings.txt", 'utf-8');
 	} catch (e) {
-		alert('failed to open project file!');
+		alert('failed to export settings.txt to server path!  ' + serverPath);
 		return;
 	}
 
@@ -719,7 +723,7 @@ function NewSimulatorObject(name, stage, addContentType, newOffsetX, newOffsetY)
 		subscribedMessages: new Map(), publishedMessages: new Map(),
 
 		timeDelta: 1, timeVarDelta: "", timeScale: 1,
-		initialize: "", simulate: "", simulateTimeDelta: 1,
+		initialize: "''", simulate: "''", simulateTimeDelta: 1,
 	}
 }
 
