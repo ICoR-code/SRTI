@@ -1,4 +1,6 @@
 \\ lines that start with \\ will not run.
 \\ This is the Windows version of the commands that need to execute to run this project. 
 cd (RTIServerLocation)
-java -jar SRTI_v2_16_02.jar
+java -jar SRTI_v2_22_02.jar
+cd D:\Work\Acer\DSK\UMich\ICoR\Reading-Materials\201912\projects\refactortest01
+

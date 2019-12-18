@@ -1012,3 +1012,11 @@ function StringifyHelper(key, value) {
 		return value
 	}
 }
+
+function IsNull(value){
+	if (value == null){
+		return true;
+	} else {
+		return false;
+	}
+}

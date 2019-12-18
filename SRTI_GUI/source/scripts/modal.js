@@ -32,7 +32,7 @@ function CloseNewObjectPrompt() {
 
 function NewSimulatorObjectPrompt() {
     DisplayOrClosePrompt("modalNewSim", "block");
-    if (editExistingObject) {
+    if (IsNull(editExistingObject)) {
         document.getElementsByName("NewSimName")[0].value = "";
         document.getElementsByName("NewSimRef")[0].value = "";
         document.getElementsByName("wrapperFileDirText")[0].innerHTML = "";
@@ -58,7 +58,7 @@ function CloseNewSimulatorObjectPrompt() {
 */
 function NewSimulatorObjectPrompt2() {
     DisplayOrClosePrompt("modalNewSim2", "block");
-    if (editExistingObject) {
+    if (IsNull(editExistingObject)) {
         // nothing, it already gets cleared in different location
         $('#modalNewSimulatorPanel1').hide()
         $('#modalNewSimulatorPanel2').hide()
@@ -89,7 +89,7 @@ function CloseNewSimulatorObjectPrompt2() {
 */
 function NewMessageObjectPrompt() {
     DisplayOrClosePrompt("modalNewMessage", "block");
-    if (editExistingObject) {
+    if (IsNull(editExistingObject)) {
 
     } else {
         variables = editExistingObject.variables;
@@ -291,7 +291,7 @@ function SavePublishConnectionPrompt() {
 
     let messageName = $('#modalPublishDetailsSegment .ui.blue.label').text()
 
-    if (editExistingObject) {
+    if (IsNull(editExistingObject)) {
         dragItem.publishedMessages.set(messageName, NewPublish(messageName, initial, parseInt(timeDelta), newDetails))
         // by happy accident, "publishedDetails" will contain an entry in the same order as "publishedMessages".
     } else {
@@ -503,7 +503,7 @@ function SaveSubscribeConnectionPrompt() {
 
     let messageName = $('#modalSubscribeDetailsSegment .ui.blue.label').text()
 
-    if (editExistingObject) {
+    if (IsNull(editExistingObject)) {
         dragItem.subscribedMessage.set(messageName, NewSubscribe(
             messageName, initial, parseInt(timeDelta), parseInt(relative), parseInt(timestep), newDetails))
     } else {
@@ -627,7 +627,7 @@ function AddNewObjectSimulator2() {
     var newRefName = document.getElementsByName("NewSimRef")[0].value;
     var newFilePath = document.getElementsByName("wrapperFileDirText")[0].innerHTML;
     var newExecute = document.getElementsByName("NewSimExecute")[0].value;
-    if (editExistingObject) {
+    if (IsNull(editExistingObject)) {
         simulators.set(newSimName, NewSimulator(
             newSimName,
             newRefName, newFilePath, newExecute,
@@ -665,7 +665,7 @@ function AddNewObjectMessage() {
         panel.removeChild(panel.firstChild);
     }
     var newMessageName = document.getElementsByName("NewMessageName")[0].value;
-    if (editExistingObject) {
+    if (IsNull(editExistingObject)) {
         messages.set(newMessageName, NewMessage(newMessageName, variables));
     } else {
         var originalName = editExistingObject.name;

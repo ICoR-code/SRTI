@@ -567,10 +567,10 @@ function DrawArrowObjectOnCanvas2() {
 	- Redraw arrows after an item was deleted (required repositioning of some items underneath a sim).
 */
 function UpdateDrawArrowsAfterDelete(simDelete, messageDelete) {
-    if (simDelete) {
+    if (IsNull(simDelete) == false) {
         // don't need to do anything, arrow-data is stored with sim, so if it is deleted, just need to redraw.
     }
-    if (messageDelete) {
+    if (IsNull(messageDelete) == false) {
         for (let simObj of simulatorObjects) {
             // for (j = simObj.publishedMessages.length - 1; j >= 0; j--) {
             //     if (simObj.publishedMessages[j] == messageDelete) {
