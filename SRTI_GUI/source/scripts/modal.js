@@ -35,6 +35,7 @@ function NewSimulatorObjectPrompt() {
     let form = $('#modalNewSim .ui.form')
     if (IsNull(editExistingObject)) {
         form.form('clear')
+        $('#modalNewSim .ui.form [name="wrapperFileDirText"]').text()
     } else {
         let simulator = editExistingObject
         form.form('set values', {
@@ -43,6 +44,7 @@ function NewSimulatorObjectPrompt() {
             wrapperFileDirText: simulator.filePath,
             NewSimExecute: simulator.executeCommand
         })
+        $('#modalNewSim .ui.form [name="wrapperFileDirText"]').text(simulator.filePath)
         form.form('validate form')
     }
 

@@ -56,6 +56,15 @@ function StartSimulationSystem() {
                 textConsoleLastAction.innerHTML = "Ready to begin sim system!";
             }
         }, 10000);
+
+        // reset message buffer
+        receivedMessageBuffer = [];
+        let i = 0;
+        for (i = 0; i < receivedMessageBufferLength; i++) {
+            receivedMessageBuffer.push({ name: "N/A", message: "N/A" });
+        }
+
+        UpdateInspectorPanelMessageObjects(-1, -1)
     }
 }
 
@@ -230,15 +239,6 @@ function UpdateStepAndStage(step, stage) {
 function UpdateInspectorPanelMessage(data, step) {
     // keep track of most recent 6 messages received
 
-    //TODO: why
-    if (receivedMessageBuffer.length < receivedMessageBufferLength) {
-        receivedMessageBuffer = [];
-        let i = 0;
-        for (i = 0; i < receivedMessageBufferLength; i++) {
-            receivedMessageBuffer.push({ name: "N/A", message: "N/A" });
-        }
-    }
-
     receivedMessageBuffer.splice(0, 1);
 
     var obj = JSON.parse(data);
@@ -246,12 +246,53 @@ function UpdateInspectorPanelMessage(data, step) {
 
     receivedMessageBuffer.push({ name: objName, message: data });
 
-    //TODO optimize logic
 
-    UpdateInspectorPanelMessageObjects("(message content here)", step, simStage);
+    AppendMessageObjectToInspectorPanel(receivedMessageBuffer[receivedMessageBufferLength - 1], step, simStage);
 }
 
-function UpdateInspectorPanelMessageObjects(message, step, stage) {
+function AppendMessageObjectToInspectorPanel(message, step, simStage) {
+    $('#simStep').text(step)
+    $('#simStage').text(simStage)
+
+    let accordion = $('#feed-accordion')
+    accordion.find('.break-word.title').first().remove()
+    accordion.find('.content').first().remove()
+
+    let title, messageContent, contentAccordion, subtitle, subcontent
+
+    title = $('<div>').addClass('break-word title').text(message.name)
+    messageContent = $('<div>').addClass('content')
+    if (message.message == 'N/A') {
+        messageContent.append($('<p>').addClass('break-word').text('N/A'))
+    } else {
+        let parsedMessage = JSON.parse(message.message)
+        console.log(parsedMessage)
+        contentAccordion = $('<div>').addClass('accordion')
+        for (let entry in parsedMessage) {
+            if (parsedMessage.hasOwnProperty(entry)) {
+                subtitle = $('<div>').addClass('break-word title').text(entry)
+                subtitle.prepend($('<i>').addClass('dropdown icon'))
+                subcontent = $('<div>').addClass('content')
+                subcontent.append($('<p>').addClass('break-word').text(parsedMessage[entry]))
+
+                contentAccordion.append(subtitle)
+                contentAccordion.append(subcontent)
+            }
+        }
+
+        messageContent.append(contentAccordion)
+
+    }
+
+    accordion.append(title)
+    accordion.append(messageContent)
+
+    // TODO: RTI messages seem repetitive
+
+}
+
+function UpdateInspectorPanelMessageObjects(step, stage) {
+
     let panel = $('#inspector-panel')
     panel.empty()
 
@@ -261,13 +302,13 @@ function UpdateInspectorPanelMessageObjects(message, step, stage) {
     let div = $('<div>').addClass('ui tiny horizontal statistics')
     let statistic = $('<div>').addClass('ui horizontal statistic')
     statistic.append($('<div>').addClass('label').html('Stage&nbsp;&nbsp;'))
-    statistic.append($('<div>').addClass('value').text(stage))
+    statistic.append($('<div>').addClass('value').attr('id', 'simStage').text(stage))
 
     div.append(statistic)
 
     statistic = $('<div>').addClass('ui horizontal statistic')
     statistic.append($('<div>').addClass('label').html('Step&nbsp;&nbsp;'))
-    statistic.append($('<div>').addClass('value').text(step))
+    statistic.append($('<div>').addClass('value').attr('id', 'simStep').text(step))
     div.append(statistic)
 
     header.append(div)
@@ -286,7 +327,7 @@ function UpdateInspectorPanelMessageObjects(message, step, stage) {
 
 
     let treebox = $('<div>').addClass('ui active tab bottom attached treemenu boxed').attr('data-tab', 'feed')
-    let accordion = $('<div>').addClass('ui styled fluid accordion')
+    let accordion = $('<div>').addClass('ui styled fluid accordion').attr('id', 'feed-accordion')
 
 
     var inspectorPanelString = ""; //TODO: what is this for
