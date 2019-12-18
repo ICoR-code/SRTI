@@ -454,45 +454,39 @@ function WriteWrapperConfigFiles() {
 
 			}
 			errorLocation = 100;
-			for (k = 0; k < simulator.endConditions.length; k++) {
+			for (let endConditionEntry of simulator.endConditions) {
 				var newCondition = [];
-				let m = 0;
-				errorLocation = 101;
-				for (m = 0; m < simulator.endConditions[k].conditions.length; m++) {
-					// (extra parse to a number instead of a string necessary for Wrapper to properly check if condition is met)
-					errorLocation = 102;
-					var tempValue = simulator.endConditions[k].conditions[m].value;
-					if (isNaN(tempValue) == false) {
+				for (let endSubConditionEntry of endConditionEntry.conditions){
+					var tempValue = endSubConditionEntry.value;
+					if (isNaN(tempValue) == false){
 						tempValue = parseFloat(tempValue);
 					}
 					newCondition.push(
 						{
-							varName: simulator.endConditions[k].conditions[m].varName,
-							condition: simulator.endConditions[k].conditions[m].condition,
+							varName: endSubConditionEntry.varName,
+							condition: endSubConditionEntry.condition,
 							value: tempValue,
-							varName2: simulator.endConditions[k].conditions[m].varName2
+							varName2: endSubConditionEntry.varName2
 						});
 				}
 				endConditions.push(newCondition);
 			}
 			errorLocation = 110;
-			// TODO: the wrapper file structure may also need changing
-			for (k = 0; k < simulator.stageConditions.length; k++) {
+			for (let stageConditionEntry of simulator.stageConditions) {
 				var newCondition = [];
-				let m = 0;
-				for (m = 0; m < simulator.stageConditions[k].conditions.length; m++) {
-					var tempValue = simulator.stageConditions[k].conditions[m].value;
-					if (isNaN(tempValue) == false) {
+				for (let stageSubConditionEntry of stageConditionEntry.conditions){
+					var tempValue = stageSubConditionEntry.value;
+					if (isNaN(tempValue) == false){
 						tempValue = parseFloat(tempValue);
 					}
 					newCondition.push(
 						{
-							oldStage: parseInt(simulator.stageConditions[k].oldStage),
-							newStage: parseInt(simulator.stageConditions[k].newStage),
-							varName: simulator.stageConditions[k].conditions[m].varName,
-							condition: simulator.stageConditions[k].conditions[m].condition,
+							oldStage: parseInt(stageConditionEntry.oldStage),
+							newStage: parseInt(stageConditionEntry.newStage),
+							varName: stageSubConditionEntry.varName,
+							condition: stageSubConditionEntry.condition,
 							value: tempValue,
-							varName2: simulator.stageConditions[k].conditions[m].varName2
+							varName2: stageSubConditionEntry.varName2
 						});
 				}
 				stageConditions.push(newCondition);
