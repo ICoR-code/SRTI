@@ -16,6 +16,7 @@ function DisplayOrClosePrompt(promptName, displayType) {
 */
 function NewObjectPrompt() {
     DisplayOrClosePrompt("modalNewObject", "block");
+    $('#modalNewObject .ui.radio.checkbox.checked').checkbox('check')
     editExistingObject = null;
 }
 
@@ -31,19 +32,22 @@ function CloseNewObjectPrompt() {
 */
 
 function NewSimulatorObjectPrompt() {
-    DisplayOrClosePrompt("modalNewSim", "block");
+    let form = $('#modalNewSim .ui.form')
     if (IsNull(editExistingObject)) {
-        document.getElementsByName("NewSimName")[0].value = "";
-        document.getElementsByName("NewSimRef")[0].value = "";
-        document.getElementsByName("wrapperFileDirText")[0].innerHTML = "";
-        document.getElementsByName("NewSimExecute")[0].value = "";
+        form.form('clear')
     } else {
-        let simulator = simulators.get(editExistingObject)
-        document.getElementsByName("NewSimName")[0].value = simulator.name;
-        document.getElementsByName("NewSimRef")[0].value = simulator.refName;
-        document.getElementsByName("wrapperFileDirText")[0].innerHTML = simulator.filePath;
-        document.getElementsByName("NewSimExecute")[0].value = simulator.executeCommand;
+        let simulator = editExistingObject
+        form.form('set values', {
+            NewSimName: simulator.name,
+            NewSimRef: simulator.refName,
+            wrapperFileDirText: simulator.filePath,
+            NewSimExecute: simulator.executeCommand
+        })
+        form.form('validate form')
     }
+
+    // Display the modal after we have edit the content so we don't see the size change
+    DisplayOrClosePrompt("modalNewSim", "block");
 }
 
 /*	CloseNewSimulatorObjectPrompt()
@@ -63,7 +67,7 @@ function NewSimulatorObjectPrompt2() {
         $('#modalNewSimulatorPanel1').hide()
         $('#modalNewSimulatorPanel2').hide()
     } else {
-        let simulator = simulators.get(editExistingObject)
+        let simulator = editExistingObject
         simulatorFunctions = simulator.functions;
         variables = simulator.variables;
         UpdateObjectToSimulatorDef();
@@ -613,9 +617,13 @@ function AddNewObject() {
 	- Add new simulator to project (prompt).
 */
 function AddNewObjectSimulator() {
-    console.log("User wants to add a new simulator.");
-    CloseNewSimulatorObjectPrompt();
-    NewSimulatorObjectPrompt2();
+    $('#modalNewSim .ui.form').form('validate form')
+    if ($('#modalNewSim .ui.form').form('is valid')) {
+        console.log("User wants to add a new simulator.")
+        CloseNewSimulatorObjectPrompt();
+        NewSimulatorObjectPrompt2();
+    }
+
 }
 
 /*	AddNewObjectSimulator2()

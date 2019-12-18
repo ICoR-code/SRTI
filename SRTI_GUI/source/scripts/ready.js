@@ -73,6 +73,12 @@ $(document).ready(() => {
     $('.ui.modal').modal().modal(
         { closable: false, transition: 'fade', autofocus: false }
     )
+
+    // This is a known bug for semantic modals. Deny buttons don't work so we need to explicitly attach events to them
+    $('#modalNewObject').modal('attach events', '#modalNewObject .ui.button.deny')
+    $('#modalNewSim').modal('attach events', '#modalNewSim .ui.button.deny')
+
+
     $('.ui.radio.checkbox').checkbox()
     $('.choose-file').change(function () {
         console.log($(this).val())
@@ -82,4 +88,22 @@ $(document).ready(() => {
 
 
     $('div.dropdown, select.dropdown').dropdown()
+
+
+    // Form validation
+    $('#modalNewSim .ui.form').form({
+        fields: {
+            NewSimName: 'empty',
+            NewSimRef: 'empty',
+            NewSimExecute: 'empty'
+        },
+        inline: true,
+        on: 'blur'
+    })
+    $('#modalNewSim').modal({
+        onApprove: function () { return false }
+    })
+
+    //TODO: set default values to time delta time multiplier etc
+
 })

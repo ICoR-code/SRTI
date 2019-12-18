@@ -128,7 +128,7 @@
 		<div class="ui form content">
 			<div class="grouped fields">
 				<div class="field">
-					<div class="ui radio checkbox">
+					<div class="ui radio checkbox checked">
 						<input type="radio" name="NewObject" value="Simulator">
 						<label>Simulator</label>
 					</div>
@@ -151,8 +151,8 @@
 		</div>
 
 		<div class="actions">
-			<button class="ui button positive" id="btn-modal-confirm" onclick="AddNewObject()">Next</button>
-			<button class="ui button deny" id="btn-modal-cancel" onclick="CloseNewObjectPrompt()">Cancel</button>
+			<button class="ui button positive" onclick="AddNewObject()">Next</button>
+			<button class="ui button deny" onclick="CloseNewObjectPrompt()">Cancel</button>
 		</div>
 	</div>
 
@@ -161,14 +161,14 @@
 		<div class="ui form content">
 			<div class="ui two column grid">
 				<div class="ten wide middle aligned column"><label>Simulator Name</label></div>
-				<div class="six wide column"><input type="text" name="NewSimName"></div>
+				<div class="six wide column field"><input type="text" name="NewSimName"></div>
 				<div class="ten wide middle aligned column"><label>Reference Name (inside code)</label></div>
-				<div class="six wide column"><input class="code" type="text" name="NewSimRef"></div>
+				<div class="six wide column field"><input class="code" type="text" name="NewSimRef"></div>
 				<div class="ten wide middle aligned column"><label>Wrapper File Location</label></div>
 				<div class="six wide column"><button class="ui button"
 						onclick="document.getElementsByName('wrapperFileDir')[0].click()">Choose File
 						Directory</button></div>
-				<div class="sixteen wide right aligned continued column">
+				<div class="sixteen wide right aligned continued column field">
 					<div name="wrapperFileDirText" style="word-wrap:break-word;word-break:break-all;">
 						(chosen directory)
 					</div>
@@ -176,13 +176,12 @@
 				</div>
 				<div class="ten wide middle aligned column"><label>Execute Command (to launch Wrapper with Sim)</label>
 				</div>
-				<div class="sixteen wide column"><input class="code" type="text" name="NewSimExecute"></div>
+				<div class="sixteen wide column field"><input class="code" type="text" name="NewSimExecute"></div>
 			</div>
 		</div>
 		<div class="actions">
-			<button class="ui button positive" id="btn-modal-confirm" onclick="AddNewObjectSimulator()">Confirm</button>
-			<button class="ui button deny" id="btn-modal-cancel"
-				onclick="CloseNewSimulatorObjectPrompt()">Cancel</button>
+			<button class="ui button positive" onclick="AddNewObjectSimulator()">Confirm</button>
+			<button class="ui button deny" onclick="CloseNewSimulatorObjectPrompt()">Cancel</button>
 		</div>
 	</div>
 
@@ -316,10 +315,9 @@
 		</div>
 
 		<div class="actions">
-			<button class="ui button positive" id="btn-modal-confirm" name="btn-new-simulator-confirm"
+			<button class="ui button positive" name="btn-new-simulator-confirm"
 				onclick="AddNewObjectSimulator2()">Confirm</button>
-			<button class="ui button deny" id="btn-modal-cancel"
-				onclick="CloseNewSimulatorObjectPrompt2()">Cancel</button>
+			<button class="ui button deny" onclick="CloseNewSimulatorObjectPrompt2()">Cancel</button>
 		</div>
 	</div>
 
@@ -539,9 +537,9 @@
 
 
 		<div class="actions">
-			<button class="ui button positive" name="btn-new-message-confirm" id="btn-modal-confirm" disabled=true
+			<button class="ui button positive" name="btn-new-message-confirm" disabled=true
 				onclick="AddNewObjectMessage()">Confirm</button>
-			<button class="ui button deny" id="btn-modal-cancel" onclick="CloseNewMessageObjectPrompt()">Cancel</button>
+			<button class="ui button deny" onclick="CloseNewMessageObjectPrompt()">Cancel</button>
 		</div>
 	</div>
 
@@ -579,8 +577,8 @@
 		</div>
 
 		<div class="actions">
-			<button class="ui button positive" id="btn-modal-confirm" onclick="SaveSimLocalTime()">Confirm</button>
-			<button class="ui button deny" id="btn-modal-cancel" onclick="CloseEditSimLocalTime()">Cancel</button>
+			<button class="ui button positive" onclick="SaveSimLocalTime()">Confirm</button>
+			<button class="ui button deny" onclick="CloseEditSimLocalTime()">Cancel</button>
 		</div>
 
 
@@ -682,8 +680,8 @@
 		</div>
 
 		<div class="actions">
-			<button class="ui button positive" id="btn-modal-confirm" onclick="SaveSimulateFunction()">Confirm</button>
-			<button class="ui button deny" id="btn-modal-cancel" onclick="CloseSimulateFunctions()">Cancel</button>
+			<button class="ui button positive" onclick="SaveSimulateFunction()">Confirm</button>
+			<button class="ui button deny" onclick="CloseSimulateFunctions()">Cancel</button>
 		</div>
 	</div>
 	<div class="ui modal" id="modalStageConditions">
@@ -940,8 +938,8 @@
 			</div>
 		</div>
 		<div class="actions">
-			<button class="ui button positive" id="btn-modal-confirm" onclick="SaveSaveAsProject()">Confirm</button>
-			<button class="ui button deny" id="btn-modal-cancel" onclick="CloseSaveAsProject()">Cancel</button>
+			<button class="ui button positive" onclick="SaveSaveAsProject()">Confirm</button>
+			<button class="ui button deny" onclick="CloseSaveAsProject()">Cancel</button>
 		</div>
 	</div>
 	<div class="ui modal" id="modalOpenProject">
@@ -987,8 +985,8 @@
 			</div>
 		</div>
 		<div class="actions">
-			<button class="ui button positive" id="btn-modal-confirm" onclick="ImportObject()">Confirm</button>
-			<button class="ui button deny" id="btn-modal-cancel" onclick="CloseImportObjectPrompt()">Cancel</button>
+			<button class="ui button positive" onclick="ImportObject()">Confirm</button>
+			<button class="ui button deny" onclick="CloseImportObjectPrompt()">Cancel</button>
 		</div>
 	</div>
 
