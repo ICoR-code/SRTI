@@ -1018,9 +1018,12 @@ function StringifyHelper(key, value) {
 }
 
 function IsNull(value){
-	if (value == null){
-		return true;
-	} else {
+	// value == null		-> Returns false for 'null', or undefined.
+	// value === null		-> Explicit check for 'null'
+	// (value)				-> Returns false for 'null', empty strings, undefined...
+	if (value){
 		return false;
+	} else {
+		return true;
 	}
 }
