@@ -324,15 +324,22 @@ function ConnectSimAndMessage(e) {
                 NewPublishConnectionPrompt(clickedOnItem, dragItem);
                 // must have originally clicked on Simulator object. Make connection from Sim to Message.
                 // dragItem.publishedMessages.push(clickedOnItem);
-                DrawAllArrowsOnCanvas();
+				// ... to keep original functionality, could use the following. But it makes more sense to call function if actually saving the data.
+				//let messageName = $('#modalPublishDetailsSegment .ui.blue.label').text();
+				//dragItem.publishedMessages.set(messageName, null);
+				DrawAllArrowsOnCanvas();
                 active = false;
                 if (dragItem != null) {
                     dragItem.objectRef.style.backgroundColor = "";
                 }
                 // TODO: why set dragItem to simulatorObjects
                 // dragItem = simulatorObjects[i];
-                dragItem = clickedOnItem
-                console.log("Connection, message clicked, set active = false");
+				/* Explaination: 'dragItem' is used to reference the item that should hold 'publishMessage' and 'subscribeMessage' Maps. 
+				Previously, we redundently set it to be the simulator (even if it already was).
+				Setting it to 'clickedOnItem' (presumed to be messageObject) would cause an error after trying to save 'publishMessage' data.
+				*/
+                // dragItem = clickedOnItem
+				console.log("Connection, message clicked, set active = false");
                 AddToUndoBuffer("Create publish connection on canvas.");
             } else {
                 dragItem.objectRef.style.backgroundColor = "";

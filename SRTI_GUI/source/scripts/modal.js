@@ -35,6 +35,7 @@ function NewSimulatorObjectPrompt() {
     let form = $('#modalNewSim .ui.form')
     if (IsNull(editExistingObject)) {
         form.form('clear')
+        $('#modalNewSim .ui.form [name="wrapperFileDirText"]').text()
     } else {
         let simulator = editExistingObject
         form.form('set values', {
@@ -43,6 +44,7 @@ function NewSimulatorObjectPrompt() {
             wrapperFileDirText: simulator.filePath,
             NewSimExecute: simulator.executeCommand
         })
+        $('#modalNewSim .ui.form [name="wrapperFileDirText"]').text(simulator.filePath)
         form.form('validate form')
     }
 
@@ -297,7 +299,6 @@ function SavePublishConnectionPrompt() {
 
     if (IsNull(editExistingObject)) {
         dragItem.publishedMessages.set(messageName, NewPublish(messageName, initial, parseInt(timeDelta), newDetails))
-        // by happy accident, "publishedDetails" will contain an entry in the same order as "publishedMessages".
     } else {
         let pub = editExistingObject.publishedMessages.get(messageName)
         pub.details = newDetails;
@@ -305,6 +306,7 @@ function SavePublishConnectionPrompt() {
         pub.timeDelta = parseInt(timeDelta);
     }
     ClosePublishConnectionPrompt();
+	DrawAllArrowsOnCanvas();
 }
 
 /*	ClosePublishConnectionPrompt()
@@ -508,7 +510,7 @@ function SaveSubscribeConnectionPrompt() {
     let messageName = $('#modalSubscribeDetailsSegment .ui.blue.label').text()
 
     if (IsNull(editExistingObject)) {
-        dragItem.subscribedMessage.set(messageName, NewSubscribe(
+        dragItem.subscribedMessages.set(messageName, NewSubscribe(
             messageName, initial, parseInt(timeDelta), parseInt(relative), parseInt(timestep), newDetails))
     } else {
         let sub = editExistingObject.subscribedMessages.get(messageName)
@@ -520,6 +522,7 @@ function SaveSubscribeConnectionPrompt() {
         sub.timestep = parseInt(timestep);
     }
     CloseSubscribeConnectionPrompt();
+	DrawAllArrowsOnCanvas();
 }
 
 /*	CloseSubscribeConnectionPrompt()
