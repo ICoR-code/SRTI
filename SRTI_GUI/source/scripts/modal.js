@@ -286,9 +286,9 @@ function SavePublishConnectionPrompt() {
     let newDetails = new Map();
     // list of pairs: [index of message variable, index of simulator variable or -1 for default]
     $('#modalPublishDetailsSegment .dropdown').each(function () {
-
-        let j = parseInt($(this).dropdown('get value'))
-        newDetails.set($(this).attr('varName'), { name: $(this).attr('varName'), value: j ? null : j })
+        //let j = parseInt($(this).dropdown('get value'))
+        let j = $(this).dropdown('get value');
+		newDetails.set($(this).attr('varName'), { name: $(this).attr('varName'), value: j ? j : null })
     })
 
 
@@ -498,8 +498,9 @@ function SaveSubscribeConnectionPrompt() {
     console.log("saving subscribe data...");
     let newDetails = new Map();
     $('#modalSubscribeDetailsSegment .dropdown').each(function () {
-        let j = parseInt($(this).dropdown('get value'))
-        newDetails.set($(this).attr('varName'), { name: $(this).attr('varName'), value: j ? null : j })
+        //let j = parseInt($(this).dropdown('get value'))
+        let j = $(this).dropdown('get value');
+		newDetails.set($(this).attr('varName'), { name: $(this).attr('varName'), value: j ? j : null })
     })
 
     let initial = $('input[name=radioSubscribeInitial]:checked').val()
