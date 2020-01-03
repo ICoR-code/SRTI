@@ -294,6 +294,8 @@ function SavePublishConnectionPrompt() {
 
     let initial = $('input[name=radioPublishInitial]:checked').val()
     let timeDelta = parseInt($('input[name=textPublishDelta]').val())
+	
+	//console.log("SAVING PUBLISHED DETAIL: timeDelta should be = " + timeDelta);
 
     let messageName = $('#modalPublishDetailsSegment .ui.blue.label').text()
 
@@ -304,6 +306,7 @@ function SavePublishConnectionPrompt() {
         pub.details = newDetails;
         pub.initial = initial;
         pub.timeDelta = parseInt(timeDelta);
+		//console.log("FINISHED SAVING PUBLISHED DETAIL: timeDelta = " + pub.timeDelta);
     }
     ClosePublishConnectionPrompt();
 	DrawAllArrowsOnCanvas();
@@ -986,8 +989,8 @@ function EditSimLocalTime() {
     DisplayOrClosePrompt("modalLocalTime", "block");
 
 
-    $('input[name="newTimeDelta"]').val(editExistingObject.timeDelta)
-    $('input[name="newTimeScale"]').val(editExistingObject.timeScale)
+    $('input[name="NewTimeDelta"]').val(editExistingObject.timeDelta)
+    $('input[name="NewTimeScale"]').val(editExistingObject.timeScale)
 
     let dropdown = $('#dropdownVar .menu')
     dropdown.empty()
@@ -1355,8 +1358,8 @@ function CloseEndConditions() {
 }
 
 function SaveSimLocalTime() {
-    editExistingObject.timeDelta = parseInt($('input[name="newTimeDelta"]').val())
-    editExistingObject.timeScale = parseInt($('input[name="newTimeScale"]').val())
+    editExistingObject.timeDelta = parseInt($('input[name="NewTimeDelta"]').val())
+    editExistingObject.timeScale = parseInt($('input[name="NewTimeScale"]').val())
     editExistingObject.timeVarDelta = $('#dropdownVar').dropdown('get value')
 
     CloseEditSimLocalTime()
@@ -1474,7 +1477,8 @@ function AppendStageConditionToPanel(conditions) {
         j += 1
     }
     sentence = sentence + "go to stage " + conditions.newStage;
-    label.append($('<label>').text(sentence).css('max-width', '95%'))
+    //label.append($('<label>').text(sentence).css('max-width', '95%'))
+	label.append($('<label>').html(sentence).css('max-width', '95%'))
 
     button = $('<a>').addClass('ui opaque right floated')
     icon = $('<i>').addClass('inverted delete icon').data('ref', item).data('data', conditions).click(function () {

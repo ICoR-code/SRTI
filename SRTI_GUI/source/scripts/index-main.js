@@ -47,7 +47,7 @@ var savename = "";
 // variables to launch RTI Server, and to connect sims to the Server.
 var hostName = "localhost";
 var portNumber = "42012";
-var serverPath = __dirname + '\\..\\..\\extraResources\\srti_server\\';
+var serverPath = __dirname + '\\..\\extraResources\\srti_server\\';
 var serverFileName = 'SRTI_v2_22_02.jar';
 // Total number of stages (different states in simulation system) in this project.
 var numOfStages = 1;
@@ -445,7 +445,7 @@ function WriteWrapperConfigFiles() {
 						{
 							messageName: name,//messages[simObj.publishedMessages[k]].name,
 							initial: pub.initial == "true",
-							timestepDelta: parseInt(pub.timeDelta[k]),
+							timestepDelta: parseInt(pub.timeDelta),//timestepDelta: parseInt(pub.timeDelta[k]),
 							stage: parseInt(simObj.stage),
 							varChannel: varChannel
 						});
