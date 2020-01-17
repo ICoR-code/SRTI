@@ -447,16 +447,31 @@ function LaunchSimulators() {
 
         // start all other simulators (all that exist anywhere on the canvas).
         for (let [name, simulator] of simulators) {
-            var execCommand = "cd /d " + simulator.filePath + " && " + simulator.executeCommand;
-            var execSim = child_process.exec(execCommand,
-                (error, stdout, stderror) => {
-                    if (error) {
-                        alert("error when running command to open sim: " + error);
-                    } else {
-                        alert("executing sim was successful!");
-                    }
-                });
-            execSims.push(execSim);
+			if (simulator.sshType == "local"){
+				var execCommand = "cd /d " + simulator.filePath + " && " + simulator.executeCommand;
+				var execSim = child_process.exec(execCommand,
+					(error, stdout, stderror) => {
+						if (error) {
+							alert("error when running command to open sim: " + error);
+						} else {
+							alert("executing sim was successful!");
+						}
+					});
+				execSims.push(execSim);
+			} else if (simulator.sshType == "sshRemote"){
+				execServer = child_process.exec('cd /d ' + __dirname + '\\..\\extraResources\\srti_sshapp\\' 
+					+ ' && java -jar JavaSSHApp.jar ' + simulator.filePath + '\\' + name + '_sshsim.json',
+					(error, stdout, stderror) => {
+						if (error) {
+							alert("error when running ssh command: " + error);
+						} else {
+							alert("command worked!");
+						}
+					});
+				execSims.push(execSim);
+			} else {
+				alert('sshType invalid: ' + simulator.sshType);
+			}
         }
 
     } catch (e) {

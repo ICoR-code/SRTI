@@ -1042,8 +1042,22 @@ function EditServer() {
 function SaveEditServer() {
     hostName = $('input[name="HostNameObject"]:checked').val()
     if (hostName != 'localhost') {
-        hostName = "123.456.78.9"
+		var os = require('os');
+		var networkInterfaces = os.networkInterfaces();
+		console.log(networkInterfaces);
+		hostName = "0.0.0.0";
+		for (var ipName in networkInterfaces){
+			var ip = networkInterfaces[ipName];
+			let i = 0;
+			for (i = 0; i < ip.length; i++){
+				var alias = ip[i];
+				if (alias.family === 'IPv4' && alias.address !== '127.0.0.1' && !alias.internal){
+					hostName = alias.address;
+				}
+			}
+		}
     }
+	console.log("New Host Name: " + hostName);
     portNumber = $('input[name="PortNumberObject"]').val()
 
     CloseEditServer()
@@ -1355,6 +1369,49 @@ function EditEndConditions() {
 */
 function CloseEndConditions() {
     DisplayOrClosePrompt("modalEndConditions", "none");
+}
+
+function EditSSH(){
+	DisplayOrClosePrompt("modalSSH", "block");
+	
+	console.log('index ' + editExistingObject)
+	
+	//let simulator = simulators.get(editExistingObject.name);
+	let simulator = editExistingObject;
+	
+	$(`input[name="SSHType"][value="${simulator.sshType}"]`).parent().checkbox('check');
+	
+    $('input[name="sshHost"]').val(simulator.sshHost);
+	$('input[name="sshUsername"]').val(simulator.sshUsername);
+	$('input[name="sshPassword"]').val(simulator.sshPassword);
+	$('input[name="sshPort"]').val(simulator.sshPort);
+	$('input[name="sshRemoteDir"]').val(simulator.sshRemoteDir);
+	/*$('input[name="sshRemoteExecuteCommand"]').val(simulators.get(editExistingObject.name).sshRemoteExecuteCommand);
+	$('input[name="sshLocalSSHInputFile"]').val(simulators.get(editExistingObject.name).sshLocalSSHInputFile);
+	$('input[name="sshLocalExecuteApp"]').val(simulators.get(editExistingObject.name).sshLocalExecuteApp);
+	$('input[name="sshLocalExecuteCommand"]').val(simulators.get(editExistingObject.name).sshLocalExecuteCommand);*/
+}
+
+function CloseSSH(){
+	DisplayOrClosePrompt("modalSSH", "none");
+	
+	let sshType = $('input[name=SSHType]:checked').val();
+	console.log("SSH Type = " + sshType);
+	
+	//let simulator = simulators.get(editExistingObject.name);
+	let simulator = editExistingObject;
+	
+	simulators.get(editExistingObject.name).sshType = sshType;
+	
+	simulators.get(editExistingObject.name).sshHost = $('input[name="sshHost"]').val();
+	simulators.get(editExistingObject.name).sshUsername = $('input[name="sshUsername"]').val();
+	simulators.get(editExistingObject.name).sshPassword = $('input[name="sshPassword"]').val();
+	simulators.get(editExistingObject.name).sshPort = parseInt($('input[name="sshPort"]').val());	
+	simulators.get(editExistingObject.name).sshRemoteDir = $('input[name="sshRemoteDir"]').val();
+	/*simulators.get(editExistingObject.name).sshRemoteExecuteCommand = $('input[name="sshRemoteExecuteCommand"]').val();
+	simulators.get(editExistingObject.name).sshLocalSSHInputFile = $('input[name="sshLocalSSHInputFile"]').val();
+	simulators.get(editExistingObject.name).sshLocalExecuteApp = $('input[name="sshLocalExecuteApp"]').val();	
+	simulators.get(editExistingObject.name).sshLocalExecuteCommand = $('input[name="sshLocalExecuteCommand"]').val();*/	
 }
 
 function SaveSimLocalTime() {

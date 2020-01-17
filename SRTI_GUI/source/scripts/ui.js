@@ -331,11 +331,17 @@ function ConfigureItemFromCanvas(e) {
             editExistingObject = clickedOnItem;
             EditEndConditions();
         })
+		/*let button4 = $('<button>').addClass('ui green basic button').text('Configure Remote SSH Details');
+		button4.click(() => {
+			editExistingObject = clickedOnItem;
+			EditSSH();
+		})*/
 
         buttons.append(button0)
         buttons.append(button1)
         buttons.append(button2)
         buttons.append(button3)
+		//buttons.append(button4)
 
         content.append(buttons)
 
@@ -463,9 +469,15 @@ function ConfigureSimulatorFromList(btn_id) {
         editExistingObject = selectedObject;
         NewSimulatorObjectPrompt();
     })
+	let button2 = $('<button>').addClass('ui green basic button').text('Configure Remote SSH Details');
+	button2.click(() => {
+		editExistingObject = selectedObject;
+		EditSSH();
+	})
     content.append(warning)
     content.append(divider)
     content.append(button)
+	content.append(button2)
 
     panel.append(header)
     panel.append(content)

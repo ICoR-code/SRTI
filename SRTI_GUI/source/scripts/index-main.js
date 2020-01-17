@@ -342,6 +342,7 @@ function ExportExecuteFiles() {
 	WriteWrapperConfigFiles();
 	WriteCommandsToFile();
 	WriteServerConfigFile();
+	WriteSSHConfigFiles();
 
 	var d = new Date();
 	var textConsoleLastAction = document.getElementById("TextConsoleLastAction");
@@ -565,6 +566,48 @@ function WriteServerConfigFile() {
 	fs.writeFileSync(serverPath + "settings.txt", content, "utf-8");
 }
 
+function WriteSSHConfigFiles(){
+	try {
+		for (let [name, simulator] of simulators) {
+			if (simulator.sshType == "local"){
+				continue;
+			}
+
+			var savePathLocal = simulator.filePath + "\\";
+			var saveNameLocal = name + "_sshsim";
+			var content = "";
+			var sshHost = simulator.sshHost;
+			var sshUser = simulator.sshUsername;
+			var sshPassword = simulator.sshPassword;
+			var sshWrapperConfigFileName = name + "_config.json";
+			var sshRemoteWrapperDir = simulator.sshRemoteDir;
+			var sshRemoteSimExec = simulator.executeCommand;
+			var sshPort = simulator.sshPort;
+			
+			var obj = {
+				host: sshHost,
+				user: sshUser,
+				password: sshPassword,
+				wrapperConfigFileName: sshWrapperConfigFileName,
+				localWrapperDir: savePathLocal,
+				remoteWrapperDir: sshRemoteWrapperDir,
+				remoteSimExec: sshRemoteSimExec,
+				port: sshPort
+			};
+
+			content = JSON.stringify(obj, StringifyHelper, 4);
+			try {
+				var fs = require('fs');
+				fs.writeFileSync(savePathLocal + saveNameLocal + ".json", content, 'utf-8');
+			} catch (e) {
+				alert('failed to save export file for ' + name + ' ... error = ' + e);
+			}
+		}
+	} catch (e) {
+		alert('failed to export config files... i = ' + i + ' errorLocation = ' + errorLocation + ' error = ' + e);
+	}
+}
+
 /*	Below functions handle managing "undo" and "redo" functionality.
 	
 */
@@ -705,7 +748,17 @@ function NewSimulator(newSimName, newRefName, newFilePath, newExecute,
 		functions: simulatorFunctions, 'variables': variables,
 		objects: new Set(),
 		stageConditions: new Set(),
-		endConditions: new Set()
+		endConditions: new Set(),
+		sshType: "local",
+		sshHost: null,
+		sshUsername: null,
+		sshPassword: null,
+		sshPort: 22,
+		sshRemoteDir: null,
+		sshRemoteExecuteCommand: null,
+		sshLocalSSHInputFile: null,
+		sshLocalExecuteApp: null,
+		sshLocalExecuteCommand: null
 	}
 }
 
