@@ -1,5 +1,5 @@
 :root {
-    --containerheight: calc(100vh - 100px);
+    --container-height: calc(100vh - 100px);
 }
 
 html {
@@ -25,7 +25,7 @@ input.code {
     font-family: 'Fira Code'!important;
 }
 
-#containermenu {
+#container-menu {
     width: 22%;
     margin: 2% 0% 2% 2%;
     height: 400px;
@@ -56,50 +56,6 @@ input.code {
 }
 
 .ui.green.button.div-canvas-sim {
-    box-sizing: border-box;
-    width: 100px;
-    height: 100px;
-    /* background-color: rgb(255, 167, 147); */
-    /* border: 10px solid rgba(136, 136, 136, .5); */
-    border: 5px solid #72a66c;
-    border-radius: 5%;
-    /* border-radius: 10%!important; */
-    /* color: white; */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px 0px;
-    margin: 0px;
-    touch-action: none;
-    user-select: none;
-    word-wrap: break-all;
-    position: relative;
-    /* overflow-y: hidden; */
-}
-
-.ui.blue.button.div-canvas-sim {
-    box-sizing: border-box;
-    width: 100px;
-    height: 100px;
-    /* background-color: rgb(255, 167, 147); */
-    /* border: 10px solid rgba(136, 136, 136, .5); */
-    border: 5px solid #72a66c;
-    border-radius: 5%;
-    /* border-radius: 10%!important; */
-    /* color: white; */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px 0px;
-    margin: 0px;
-    touch-action: none;
-    user-select: none;
-    word-wrap: break-all;
-    position: relative;
-    /* overflow-y: hidden; */
-}
-
-.ui.red.button.div-canvas-sim {
     box-sizing: border-box;
     width: 100px;
     height: 100px;
@@ -237,35 +193,35 @@ input.code {
     cursor: col-resize;
     background: url(../srti_modules/images/icon_resizegrip.png) center center no-repeat #e1e2e3;
     width: 10px;
-    height: calc(var(--containerheight) - 2px);
+    height: calc(var(--container-height) - 2px);
     min-width: 10px;
 }
 
-#panelcontainer {
+#panel-container {
     width: 100%;
     height: 500px;
     background-color: #eef;
     border: 1px solid black;
 }
 
-#objectpanel {
+#object-panel {
     /* background-color: #eee; */
     width: 20%;
-    height: calc(var(--containerheight) - 2px);
+    height: calc(var(--container-height) - 2px);
     overflow-y: hidden;
     min-width: 100px;
     margin-bottom: 0px;
     /* border: 1px solid black; */
 }
 
-.objectsubpanel {
+.objects-subpanel {
     /* background-color: #ddd; */
     width: calc(100% - 1px);
     height: 47%;
     /* border: 1px solid black; */
 }
 
-#btn-newobject {
+#btn-new-object {
     width: 100%;
     height: 6%;
     padding: 6px;
@@ -297,23 +253,23 @@ input.code {
     padding: 6px;
 }
 
-#canvaspanel {
+#canvas-panel {
     /* background-color: #333; */
     width: 60%;
-    height: calc(var(--containerheight) - 2px);
+    height: calc(var(--container-height) - 2px);
     min-width: 200px;
     display: flex;
     flex-flow: column;
     /* border: 1px solid black; */
 }
 
-#canvastabpanel {
+#canvas-tab-panel {
     /* background-color: #ddd; */
     width: 100%;
     /* height: 3%; */
 }
 
-#canvassubpanel1 {
+#canvas-subpanel1 {
     /* background-color: #333; */
     width: calc(100% - 1px);
     height: calc(67% - 2px);
@@ -321,7 +277,7 @@ input.code {
     padding: 0px;
 }
 
-#canvassubpanel2 {
+#canvas-subpanel2 {
     /* background-color: #333; */
     width: calc(100% - 1px);
     /* height: calc(30% - 2px); */
@@ -330,7 +286,7 @@ input.code {
     padding: 0px;
 }
 
-.btn-canvastab {
+.btn-canvas-tab {
     /* width: 5%; */
     /* height: 100%; */
     /* background-color: #eee; */
@@ -341,16 +297,16 @@ input.code {
     /* padding: 0px 0px 0px 0px; */
 }
 
-#inspectorpanel {
+#inspector-panel {
     /* background-color: #eee; */
     width: 20%;
-    height: calc(var(--containerheight) - 2px);
+    height: calc(var(--container-height) - 2px);
     min-width: 100px;
     margin: 0;
     /* border: 1px solid black; */
 }
 
-#executepanel {
+#execute-panel {
     /* background-color: #ddd; */
     width: 100%;
     height: 40px;
@@ -373,28 +329,14 @@ input.code {
     cursor: pointer;
 }
 
-#greyoverlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background-color: #002;
-    opacity: 0.5;
-    display: none;
-}
-
-.modal {
+/* .modal {
     position: fixed;
     top: 50vh;
     left: 50vw;
     transform: translate(-50%, -50%);
-    /* height: 300px;
-    width: 400px;
-    padding: 8px 8px 8px 8px; */
     background-color: white;
     display: none;
-}
+} */
 
 .ui.modal {
     width: 600px;
@@ -406,18 +348,6 @@ input.code {
 
 .ui.segment .ui.form .fields {
     margin: 0;
-}
-
-.dropbtn {
-    background-color: #3498DB;
-    color: white;
-    padding: 2px 4px;
-    border: none;
-    cursor: pointer;
-}
-
-.dropbtn:hover, .dropbtn:focus {
-    background-color: #2980B9;
 }
 
 .dropdown {
@@ -503,7 +433,7 @@ kbd {
     color: #FFFFFF;
 }
 
-.objectsubpanel .buttons .button {
+.objects-subpanel .buttons .button {
     background-clip: padding-box!important;
     /* border-color: ; */
     border-bottom: 1px solid #FFFFFF!important;
