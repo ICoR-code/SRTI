@@ -25,16 +25,29 @@ function StartSimulationSystem() {
             execServer = child_process.exec('cd /d ' + serverPath + ' && java -jar ' + serverFileName,
                 (error, stdout, stderror) => {
                     if (error) {
-                        alert("error when running command: " + error);
+                        //alert("error when running command: " + error);
+						Alert("Error when running command: " + error, 2);
+						/*if (error.length <= 40){
+							Alert("Error when running command: " + error, 3);
+						} else {
+							Alert("Error when running command: " + error.substring(0,38) + "...", 3);
+						}*/
                     } else {
-                        alert("command worked!");
-                    }
+                        //alert("command worked!");
+						Alert("Command worked! (I think.)", 0);
+					}
                 });
 
             // start all other simulators (all that exist anywhere on the canvas).
         } catch (e) {
-            alert('Error when trying to open RTI Server. ' + e);
-            return;
+            //alert('Error when trying to open RTI Server. ' + e);
+            Alert("Error when trying to open RTI Server. " + e, 3);
+			/*if (e.length <= 40){
+				Alert("Error when trying to open RTI Server: " + e, 3);
+			} else {
+				Alert("Error when trying to open RTI Server: " + e.substring(0,38) + "...", 3);
+			}*/
+			return;
         }
         var textConsoleLastAction = document.getElementById("TextConsoleLastAction");
         textConsoleLastAction.innerHTML = "Try to open Server: " + execServer.pid + " and enable 'play' button in 10 seconds.";
@@ -107,8 +120,14 @@ function StopSimulationSystem() {
             let kill = require('tree-kill');
             kill(execServer.pid);
         } catch (e) {
-            alert('Error when trying to end RTI Server. ' + e);
-        }
+            //alert('Error when trying to end RTI Server. ' + e);
+			Alert("Error when trying to end RTI Server. " + e, 2);
+			/*if (e.length <= 40){
+				Alert("Error when trying to end RTI Server: " + e, 2);
+			} else {
+				Alert("Error when trying to end RTI Server: " + e.substring(0,38) + "...", 2);
+			}*/
+		}
         // need to try to close other simulators too.
 
     }
@@ -120,7 +139,13 @@ function StopSimulationSystem() {
             kill(execSims[i].pid);
             console.log('killed' + execSims[i].pid)
         } catch (e) {
-            alert('Error when trying to end sim. ' + e);
+            //alert('Error when trying to end sim. ' + e);
+			Alert("Error when trying to end sim. " + e, 2);
+			/*if (e.length <= 40){
+				Alert("Error when trying to end sim: " + e, 2);
+			} else {
+				Alert("Error when trying to end sim: " + e.substring(0,38) + "...", 2);
+			}*/
         }
     }
 
@@ -147,6 +172,7 @@ function ConnectToRTIServer() {
             console.log("Successfully connected GUI to RTI Server!");
             var textConsoleLastAction = document.getElementById("TextConsoleLastAction");
             textConsoleLastAction.innerHTML = "First step complete to connect GUI to RTI Server...";
+			console.log("First step complete to connect GUI to RTI Server...");
 
 			/*var rl = require('readline');
 			var readInterface = rl.createInterface(
@@ -157,41 +183,84 @@ function ConnectToRTIServer() {
 			guiServer.listen(0, 'localhost');*/
 
         });
+		
+		var dataPacketsReceived = 0;
         guiFirstClient.on('data', function (data) {
             var textConsoleLastAction = document.getElementById("TextConsoleLastAction");
             textConsoleLastAction.innerHTML = "Data received by RTI Server: " + data.toString();
+			 var dataReceived = data.toString().split("\n");
+			
+			// 2 expected numbers: if both received at same time, we should get something like "NUM\nNUM\n", which is 3 separate values.
+			console.log("dataReceived.length = " + dataReceived.length + " , dataPacketsReceived = " + dataPacketsReceived);
 
-            var dataReceived = data.toString().split("\n");
-            textConsoleLastAction.innerHTML = "Separated data received by RTI Server: (" + dataReceived[1] + ")";
-            console.log(dataReceived)
-            var dedicatedClientPort = parseInt(dataReceived[1]);
-            var dedicatedServerPort = 0;
+           
+			if (dataReceived.length == 2 && dataPacketsReceived == 0){
+				// should be length = 2. If not, then we need to wait further for next data packet.
+				textConsoleLastAction.innerHTML = "Only 1 data packet received from RTI Server... need to wait for next one.";
+				console.log("Only 1 data packet received from RTI Server... need to wait for next one.");
+				console.log(dataReceived);
+				
+				dataPacketsReceived++;
+			} else if (dataReceived.length == 2 && dataPacketsReceived == 1){			
+				dataPacketsReceived++;
+	
+				textConsoleLastAction.innerHTML = "Separated data received by RTI Server: (" + dataReceived[0] + ")";
+				console.log( "Separated data received by RTI Server: (" + dataReceived[0] + ")");
+				console.log(dataReceived)
+				var dedicatedClientPort = parseInt(dataReceived[0]);
+				var dedicatedServerPort = 0;
 
-            guiDedicatedClient = new net.Socket();
-            guiDedicatedClient.connect(dedicatedClientPort, function () {
-                var textConsoleLastAction = document.getElementById("TextConsoleLastAction");
-                textConsoleLastAction.innerHTML = "Finished successfully connecting to RTI Server!";
+				guiDedicatedClient = new net.Socket();
+				guiDedicatedClient.connect(dedicatedClientPort, function () {
+					var textConsoleLastAction = document.getElementById("TextConsoleLastAction");
+					textConsoleLastAction.innerHTML = "Finished successfully connecting to RTI Server!";
 
-                var outputString = "{\"name\":\"RTI_InitializeSim\",\"content\":\"{\\\"simName\\\":\\\"RTI-v2-GUI\\\"}\",\"timestamp\":\"1234567890123\",\"vTimestamp\":0,\"source\":\"RTI-v2-GUI\",\"tcp\":\"false\"}\n";
-                guiDedicatedClient.write(outputString);
+					var outputString = "{\"name\":\"RTI_InitializeSim\",\"content\":\"{\\\"simName\\\":\\\"RTI-v2-GUI\\\"}\",\"timestamp\":\"1234567890123\",\"vTimestamp\":0,\"source\":\"RTI-v2-GUI\",\"tcp\":\"false\"}\n";
+					guiDedicatedClient.write(outputString);
 
-                outputString = "{\"name\":\"RTI_SubscribeToAllPlusHistory\",\"content\":\"\",\"timestamp\":\"1234567890123\",\"vTimestamp\":0,\"source\":\"RTI-v2-GUI\",\"tcp\":\"false\"}\n";
-                guiDedicatedClient.write(outputString);
-            });
+					outputString = "{\"name\":\"RTI_SubscribeToAllPlusHistory\",\"content\":\"\",\"timestamp\":\"1234567890123\",\"vTimestamp\":0,\"source\":\"RTI-v2-GUI\",\"tcp\":\"false\"}\n";
+					guiDedicatedClient.write(outputString);
+				});
 
-            guiDedicatedClient.on('data', function (data) {
-                // TODO why we need to split
-                let messages = data.toString().split('\n')
-                for (const message of messages) {
-                    HandleRTIInputData(message)
-                }
+				guiDedicatedClient.on('data', function (data) {
+					// TODO why we need to split
+					let messages = data.toString().split('\n')
+					for (const message of messages) {
+						HandleRTIInputData(message)
+					}
+				});
+			} else if (dataReceived.length == 3){
+				textConsoleLastAction.innerHTML = "Separated data received by RTI Server: (" + dataReceived[1] + ")";
+				console.log("Separated data received by RTI Server: (" + dataReceived[1] + ")");
+				console.log(dataReceived)
+				var dedicatedClientPort = parseInt(dataReceived[1]);
+				var dedicatedServerPort = 0;
 
-            });
+				guiDedicatedClient = new net.Socket();
+				guiDedicatedClient.connect(dedicatedClientPort, function () {
+					var textConsoleLastAction = document.getElementById("TextConsoleLastAction");
+					textConsoleLastAction.innerHTML = "Finished successfully connecting to RTI Server!";
 
+					var outputString = "{\"name\":\"RTI_InitializeSim\",\"content\":\"{\\\"simName\\\":\\\"RTI-v2-GUI\\\"}\",\"timestamp\":\"1234567890123\",\"vTimestamp\":0,\"source\":\"RTI-v2-GUI\",\"tcp\":\"false\"}\n";
+					guiDedicatedClient.write(outputString);
+
+					outputString = "{\"name\":\"RTI_SubscribeToAllPlusHistory\",\"content\":\"\",\"timestamp\":\"1234567890123\",\"vTimestamp\":0,\"source\":\"RTI-v2-GUI\",\"tcp\":\"false\"}\n";
+					guiDedicatedClient.write(outputString);
+				});
+
+				guiDedicatedClient.on('data', function (data) {
+					// TODO why we need to split
+					let messages = data.toString().split('\n')
+					for (const message of messages) {
+						HandleRTIInputData(message)
+					}
+				});
+			}
         });
     } catch (e) {
         var textConsoleLastAction = document.getElementById("TextConsoleLastAction");
         textConsoleLastAction.innerHTML = "Error occurred when trying to connect GUI to RTI Server! :(";
+		console.log("Error occurred when trying to connect GUI to RTI Server! :(");
     }
 
     // TODO: issue: I have to effectively recreate a major part of "RTILib" in JavaScript to properly subscribe/publish messages.
@@ -243,8 +312,13 @@ function UpdateInspectorPanelMessage(data, step) {
 
     var obj = JSON.parse(data);
     var objName = obj.name;
+	var objTimestamp = "" + obj.timestamp;
+	objTimestamp = objTimestamp.substr(objTimestamp.length - 5);
+	if (objName.length > 22){
+		objName = objName.substring(0,20) + "...";
+	}
 
-    receivedMessageBuffer.push({ name: objName, message: data });
+    receivedMessageBuffer.push({ name: objTimestamp + " - " + objName, message: data });
 
 
     AppendMessageObjectToInspectorPanel(receivedMessageBuffer[receivedMessageBufferLength - 1], step, simStage);
@@ -320,9 +394,11 @@ function UpdateInspectorPanelMessageObjects(step, stage) {
     let item = $('<a>').addClass('active item').text('Feed').attr('data-tab', 'feed')
     // item.prepend($('<i>').addClass('calendar alternative outline icon'))
     menu.append(item)
-    item = $('<a>').addClass('item').text('History').attr('data-tab', 'history')
+    
+	// TODO: add potential feature to see history of all messages from start->end of execution.
+	/*item = $('<a>').addClass('item').text('History').attr('data-tab', 'history')
     // item.prepend($('<i>').addClass('archive icon'))
-    menu.append(item)
+    menu.append(item)*/
 
 
 
@@ -330,7 +406,7 @@ function UpdateInspectorPanelMessageObjects(step, stage) {
     let accordion = $('<div>').addClass('ui styled fluid accordion').attr('id', 'feed-accordion')
 
 
-    var inspectorPanelString = ""; //TODO: what is this for
+    var inspectorPanelString = ""; 
     let i = 0, title, messageContent, contentAccordion, subtitle, subcontent
     for (; i < receivedMessageBufferLength; i++) {
         inspectorPanelString = inspectorPanelString + receivedMessageBuffer[i].name + ", " + "<br>";
@@ -434,7 +510,7 @@ function LaunchSimulators() {
     try {
         execSims = [];
         child_process = require('child_process');
-		/*execServer = child_process.exec('cd /d D:\\Work\\Acer\\DSK\\UMich\\ICoR\\Reading-Materials\\201908\\srti_gui_test\\server && java -jar SRTI_v2_12_02.jar',
+		/*execServer = child_process.exec('cd /d D:\\Work\\Acer\\....\\srti_gui_test\\server && java -jar SRTI_v2_12_02.jar',
 			(error, stdout, stderror) => {
 				if (error){
 					alert("error when running command: " + error);
@@ -452,9 +528,17 @@ function LaunchSimulators() {
 				var execSim = child_process.exec(execCommand,
 					(error, stdout, stderror) => {
 						if (error) {
-							alert("error when running command to open sim: " + error);
+							//alert("error when running command to open sim: " + error);
+							Alert("Some error when trying to launch local simulator " + name, 3);
+							Alert("Error = " + error, 3);
+							/*if (error.length <= 40){
+								Alert("Error when trying to launch local simulator: " + error, 3);
+							} else {
+								Alert("Error when trying to laucnh local simulator: " + error.substring(0,38) + "...", 3);
+							}*/
 						} else {
-							alert("executing sim was successful!");
+							//alert("executing sim was successful!");
+							Alert("Command worked to launch local simulator.", 0);
 						}
 					});
 				execSims.push(execSim);
@@ -463,20 +547,36 @@ function LaunchSimulators() {
 					+ ' && java -jar JavaSSHApp.jar ' + simulator.filePath + '\\' + name + '_sshsim.json',
 					(error, stdout, stderror) => {
 						if (error) {
-							alert("error when running ssh command: " + error);
+							//alert("error when running ssh command: " + error);
+							Alert("Some error when trying to launch SSH simulator " + name, 3);
+							Alert("Error = " + error, 3);
+							/*if (error.length <= 40){
+								Alert("Error when trying to launch SSH simulator: " + error, 3);
+							} else {
+								Alert("Error when trying to laucnh SSH simulator: " + error.substring(0,38) + "...", 3);
+							}*/
 						} else {
-							alert("command worked!");
+							//alert("command worked!");
+							Alert("Command worked to launch remote simulator.", 0);
 						}
 					});
 				execSims.push(execSim);
 			} else {
-				alert('sshType invalid: ' + simulator.sshType);
+				//alert('sshType invalid: ' + simulator.sshType);
+				Alert("sshType invalid for some reason. Type = " + simulator.sshType, 3);
 			}
         }
 
     } catch (e) {
-        alert('Error when trying to open RTI Server. ' + e);
-        return;
+        //alert('Error when trying to open RTI Server. ' + e);
+		Alert("Some error when trying to launch simulators.", 3);
+		Alert("Error = " + e, 3);
+        /*if (e.length <= 40){
+			Alert("Error = " + e, 3);
+		} else {
+			Alert("Error = " + e.substring(0,38) + "...", 3);
+		}*/
+		return;
     }
     var textConsoleLastAction = document.getElementById("TextConsoleLastAction");
     textConsoleLastAction.innerHTML = "Try to open sims: " + execSims.pid + "...";

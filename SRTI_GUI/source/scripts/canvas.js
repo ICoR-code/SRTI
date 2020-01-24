@@ -13,7 +13,7 @@ function CanvasOnScroll(div) {
 	- Redraw canvas grid (where Sims are) based on current size of 'gridSizeX' and 'gridSizeY'.
 */
 function UpdateCanvasGrid() {
-    console.log("UpdateCanvasGrid() called.");
+    //console.log("UpdateCanvasGrid() called.");
     let panel = $('#canvas-subpanel1-grid')
     panel.empty()
 
@@ -39,14 +39,12 @@ function CheckRedrawCanvasGrid() {
 
     let i = 0;
     for (let simObj of simulatorObjects) {
-        //!!!!
         if (simObj.topPos / 100 + 2 + i > maxSizeY && simObj.stage == stage) {
             maxSizeY = simObj.topPos / 100 + 2 + i;
         }
         if (simObj.leftPos / 100 - 1 + 2 > maxSizeX && simObj.stage == stage) {
             maxSizeX = simObj.leftPos / 100 - 1 + 2;
         }
-        //!!!!
         i += 1
     }
 
@@ -104,7 +102,7 @@ function dragStartMove(e) {
                 initialY = e.clientY - yOffset;
             }
             active = true;
-            AddToUndoBuffer("Moving object on canvas.");
+            AddToUndoBuffer("Moving object on canvas : " + clickedOnItem.name);
         } else {
             active = false;
             initialX = Math.round(currentX / 100) * 100;
@@ -259,10 +257,8 @@ function MoveObjectsOnCanvasUpOne(j, arr) {
     let i = 0;
     for (i = j; i < arr.length; i++) {
         dragItem = arr[i].objectRef;
-        //!!!!
         arr[i].offsetY = arr[i].offsetY + 100;
         //arr[i].offsetX = arr[i].offsetX + 100;
-        //!!!!
         setTranslate(arr[i].offsetX, arr[i].offsetY, dragItem);
     }
 }
@@ -398,14 +394,12 @@ function DrawArrowOnCanvas1() {
     let i = 0;
     for (let simObj of simulatorObjects) {
         if (simObj.stage == stage) {
-            console.log("simulatorObject.offsetY = " + simObj.offsetY + " , topPos = " + simObj.topPos);
+            //console.log("simulatorObject.offsetY = " + simObj.offsetY + " , topPos = " + simObj.topPos);
             for (let j = 0; j < simObj.publishedMessages.size; j++) {
-                //!!!!
                 let leftPos = parseInt(simObj.leftPos, 10) + j * 5 + 2;
                 let topPos = parseInt(simObj.offsetY, 10) + i * 100 + 100 + 2 + 14 * j;
                 //var leftPos = parseInt(simObj.offsetX, 10) + (i * 100) + (j * 5) + 2;
                 //var topPos = parseInt(simObj.topPos, 10) + 100 + 2 + (14 * j);
-                //!!!!
                 var htmlString = "<svg width='" + 22 + "' height='" + (gridSizeY * 100) + "' style='position: absolute; left:" + (leftPos - 12) + "px'>";
                 htmlString += "<defs>";
                 htmlString += "	<marker id='arrow' markerWidth='13' markerHeight='13' refx='2' refy='6' orient='auto'>";
@@ -425,10 +419,8 @@ function DrawArrowOnCanvas1() {
         if (simObj.stage == stage) {
             let j = 0;
             for (let [name, pub] of simObj.publishedMessages) {
-                //!!!!
                 let leftPos = parseInt(simObj.leftPos, 10) + j * 5 + 2;
                 //var leftPos = parseInt(simObj.offsetX, 10) + (i * 100) + (j * 5) + 2;
-                //!!!!
                 let topPos = 0;
                 let bottomPos = messageObjects.get(name).position - 10 + 3;
                 let htmlString = "<svg width='" + 22 + "' height='" + (bottomPos + 10) + "' style='position: absolute; left:" + (leftPos - 12) + "px'>";
@@ -460,12 +452,10 @@ function DrawArrowObjectOnCanvas1() {
             let j = 0;
             for (let [name, pub] of simObj.publishedMessages) {
                 var addContentType = document.createElement("svg");
-                //!!!!
                 var leftOffset = parseInt(simObj.leftPos, 10) + 1;
                 var topOffset = parseInt(simObj.offsetY, 10) + i * 100 + 100 + 2 + 14 * j;
                 //var leftOffset = parseInt(simObj.offsetX, 10) + (i * 100) + 1;
                 //var topOffset = parseInt(simObj.topPos, 10) + 100 + 2 + (14 * j);
-                //!!!!
                 addContentType.className = "div-canvas-pub";
                 addContentType.name = name;
                 addContentType.nameParent = simObj;
@@ -490,12 +480,10 @@ function DrawArrowOnCanvas2() {
             console.log("simulatorObject.offsetY = " + simObj.offsetY + " , topPos = " + simObj.topPos);
             let j = 0;
             for (j = 0; j < simObj.subscribedMessages.size; j++) {
-                //!!!!
                 let leftPos = parseInt(simObj.leftPos, 10) + 100 - j * 5 - 2;
                 let topPos = parseInt(simObj.offsetY, 10) + i * 100 + 100 + 14 * j + 10 + 10;
                 //var leftPos = parseInt(simObj.offsetX, 10) + (i * 100) + 100 - (j * 5) - 2;
                 //var topPos = parseInt(simObj.topPos, 10) + 100 + (14 * j) + 10 + 10;
-                //!!!!
                 let htmlString = "<svg width='" + 22 + "' height='" + (gridSizeY * 100) + "' style='position: absolute; left:" + (leftPos - 12) + "px'>";
                 htmlString += "<defs>";
                 htmlString += "	<marker id='arrow' markerWidth='13' markerHeight='13' refx='2' refy='6' orient='auto'>";
@@ -515,12 +503,9 @@ function DrawArrowOnCanvas2() {
         if (simObj.stage == stage) {
             let j = 0;
             for (let [name, sub] of simObj.subscribedMessages) {
-                //!!!!
                 let leftPos = parseInt(simObj.leftPos, 10) + 100 - j * 5 - 2;
                 //var leftPos = parseInt(simObj.offsetX, 10) + (i * 100) + 100 - (j * 5) - 2;
-                //!!!!
                 let topPos = 0;
-
 
                 let bottomPos = messageObjects.get(name).position
                 let htmlString = "<svg width='" + 22 + "' height='" + (bottomPos + 10) + "' style='position: absolute; left:" + (leftPos - 12) + "px'>";
@@ -551,12 +536,10 @@ function DrawArrowObjectOnCanvas2() {
             let j = 0;
             for (let [name, sub] of simObj.subscribedMessages) {
                 var addContentType = document.createElement("svg");
-                //!!!!
                 var leftOffset = parseInt(simObj.leftPos, 10) + 100 - 48 - 1;
                 var topOffset = parseInt(simObj.offsetY, 10) + i * 100 + 100 + 2 + 14 * j;
                 //var leftOffset = parseInt(simObj.offsetX, 10) + (i * 100) + 100 - 48 - 1;
                 //var topOffset = parseInt(simObj.topPos, 10) + 100 + 2 + (14 * j);
-                //!!!!
                 addContentType.className = "div-canvas-sub";
                 addContentType.name = name;
                 addContentType.nameParent = simObj;
@@ -580,30 +563,8 @@ function UpdateDrawArrowsAfterDelete(simDelete, messageDelete) {
     }
     if (!IsNull(messageDelete)) {
         for (let simObj of simulatorObjects) {
-            // for (j = simObj.publishedMessages.length - 1; j >= 0; j--) {
-            //     if (simObj.publishedMessages[j] == messageDelete) {
-            //         simObj.publishedMessages.splice(j, 1);
-            //         simObj.publishedDetails.splice(j, 1);
-            //         simObj.publishedInitial.splice(j, 1);
-            //         simObj.publishedTimeDelta.splice(j, 1);
-            //     } else if (simObj.publishedMessages[j] > messageDelete) {
-            //         simObj.publishedMessages[j]--;
-            //     }
-            // }
             simObj.publishedMessages.delete(messageDelete)
             simObj.subscribedMessages.delete(messageDelete)
-            // for (j = simObj.subscribedMessages.length - 1; j >= 0; j--) {
-            //     if (simObj.subscribedMessages[j] == messageDelete) {
-            //         simObj.subscribedMessages.splice(j, 1);
-            //         simObj.subscribedDetails.splice(j, 1);
-            //         simObj.subscribedInitial.splice(j, 1);
-            //         simObj.subscribedTimeDelta.splice(j, 1);
-            //         simObj.subscribedRelative.splice(j, 1);
-            //         simObj.subscribedTimestep.splice(j, 1);
-            //     } else if (simObj.subscribedMessages[j] > messageDelete) {
-            //         simObj.subscribedMessages[j]--;
-            //     }
-            // }
         }
     }
     DrawAllArrowsOnCanvas();
@@ -634,6 +595,7 @@ function SetItemsVisibleInStage() {
         // 	+ " objectRef = " + simObj.objectRef
         // 	+ " objectRef.style = " + simObj.objectRef.style);
         if (simObj.stage == stage) {
+			console.log("Set simulator to be visible in stage " + stage + " : " + simObj.name);
             simObj.objectRef.style.visibility = 'visible';
         } else {
             simObj.objectRef.style.visibility = 'hidden';
@@ -649,7 +611,6 @@ function CreateNewSimulatorOnCanvas(name) {
     console.log("User wants to add a simulator to the canvas");
 
     var panel = document.getElementById("canvas-subpanel1");
-    //!!!!
     //var addContentType = document.createElement("button");
     var addContentType = document.createElement("div");
     addContentType.className = "ui green button div-canvas-sim";
@@ -661,7 +622,7 @@ function CreateNewSimulatorOnCanvas(name) {
 
     var listOfCurrentItems = document.getElementsByClassName("div-canvas-sim");
     // add offset... for some reason, default would add object below original position of existing objects.
-    //!!!!
+
     var newOffsetY = (listOfCurrentItems.length - 1) * 100;
     var newOffsetX = 0;//(listOfCurrentItems.length - 1) * 100;
     let simObj = NewSimulatorObject(name, stage, addContentType, newOffsetX, -newOffsetY)
@@ -672,9 +633,11 @@ function CreateNewSimulatorOnCanvas(name) {
     simulators.get(name).objects.add(simObj)
     setTranslate(0, -newOffsetY, addContentType);
     //setTranslate(-newOffsetX, 0, addContentType);
-    //!!!!
 
     DisableCertainObjectButtons();
+	
+	AddToUndoBuffer("Create new simulator object on canvas for : " + name);
+	
 }
 
 /*	CreateExistingSimulatorOnCanvas()
@@ -719,6 +682,8 @@ function CreateNewMessageOnCanvas(name) {
     $(addContentType).data('ref', msgObj)
     messageObjects.set(name, msgObj)
     DisableCertainObjectButtons();
+	
+	AddToUndoBuffer("Create new message object on canvas for : " + name);
 }
 
 /*	CreateExistingMessageOnCanvas()

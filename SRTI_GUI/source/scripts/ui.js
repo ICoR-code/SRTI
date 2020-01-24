@@ -93,6 +93,8 @@ function AddNewStage() {
 		disable all simulator objects from previous stage and enable objects for new stage.
 */
 function UpdateSelectedStage(btn_id) {
+	
+	console.log("UpdateSelectedState() with stage = " + btn_id);
     stage = btn_id;
 
     // redraw buttons on top bar.
@@ -131,6 +133,8 @@ function UpdateSelectedStage(btn_id) {
     DrawAllArrowsOnCanvas();
     SetItemsVisibleInStage();
     DisableCertainObjectButtons();
+	
+	console.log("Finish UpdateSelectedStage().");
 }
 
 /*	ClearObjectSubPanel1()

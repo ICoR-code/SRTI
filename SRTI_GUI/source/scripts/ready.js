@@ -93,14 +93,20 @@ $(document).ready(() => {
     // Form validation
     $('#modalNewSim .ui.form').form({
         fields: {
-            NewSimName: 'empty',
-            NewSimRef: 'empty',
-            NewSimExecute: 'empty'
+            NewSimName: 'empty'
+            /*NewSimRef: 'empty',
+            NewSimExecute: 'empty'*/
         },
         inline: true,
         on: 'blur'
     })
-    $('#modalNewSim').modal({
+    /*$('#modalNewSim').modal({
+        onApprove: function () {
+			return false; 
+		}
+    })*/
+	
+	$('#modalAbout').modal({
         onApprove: function () { return false }
     })
 

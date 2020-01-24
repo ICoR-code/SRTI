@@ -6,6 +6,7 @@
 */
 function DisplayOrClosePrompt(promptName, displayType) {
     // document.getElementById(promptName).style.display = displayType;
+	console.log("Requested to display or close prompt");
     if (displayType === 'block') {
         $('#' + promptName).modal('refresh').modal('show')
     }
@@ -56,6 +57,7 @@ function NewSimulatorObjectPrompt() {
 	- Close prompt to create/edit new simulator object to project.
 */
 function CloseNewSimulatorObjectPrompt() {
+	console.log("Close New Simulator prompt.");
     DisplayOrClosePrompt("modalNewSim", "none");
 }
 
@@ -310,6 +312,8 @@ function SavePublishConnectionPrompt() {
     }
     ClosePublishConnectionPrompt();
 	DrawAllArrowsOnCanvas();
+	
+	AddToUndoBuffer("Save details in publish connection for : " + messageName);
 }
 
 /*	ClosePublishConnectionPrompt()
@@ -527,6 +531,8 @@ function SaveSubscribeConnectionPrompt() {
     }
     CloseSubscribeConnectionPrompt();
 	DrawAllArrowsOnCanvas();
+	
+	AddToUndoBuffer("Save details in subscribe connection for : " + messageName);
 }
 
 /*	CloseSubscribeConnectionPrompt()
@@ -570,7 +576,14 @@ function ImportObject() {
             content = fs.readFileSync(importFilePath, 'utf-8');
         }
     } catch (e) {
-        alert('failed to open project file!');
+        //alert('failed to open project file!');
+		Alert("Failed to import object file.", 3);
+		Alert("Error = " + e, 3);
+		/*if (e.length <= 40){
+			Alert("Error: " + e, 3);
+		} else {
+			Alert("Error: " + e.substring(0,38) + "...", 3);
+		}*/
         return;
     }
     var obj = JSON.parse(content);
@@ -591,6 +604,25 @@ function ImportObject() {
 */
 function CloseImportObjectPrompt() {
     DisplayOrClosePrompt("modalImportObject", "none");
+}
+
+/*	DisplayAboutModal()
+	- Disply 'About' window.
+*/
+function DisplayAboutModal() {
+	/*var elec = require('electron');
+	var elecApp = elec.remote.app;
+	var versionString = elecApp.getVersion();
+	document.getElementById("modalAboutVersion").innerHTML = "Version: " + versionString;
+	*/
+    DisplayOrClosePrompt("modalAbout", "block");
+}
+
+/*	CloseAboutModal()
+	- Close 'About' window.
+*/
+function CloseAboutModal() {
+    DisplayOrClosePrompt("modalAbout", "none");
 }
 
 /*	AddNewObject()
@@ -624,7 +656,9 @@ function AddNewObject() {
 	- Add new simulator to project (prompt).
 */
 function AddNewObjectSimulator() {
+	console.log("Try to validate Simulator form...");
     $('#modalNewSim .ui.form').form('validate form')
+	console.log("Check if valid.");
     if ($('#modalNewSim .ui.form').form('is valid')) {
         console.log("User wants to add a new simulator.")
         CloseNewSimulatorObjectPrompt();
@@ -668,6 +702,8 @@ function AddNewObjectSimulator2() {
         DisableCertainObjectButtons();
     }
     CloseNewSimulatorObjectPrompt2();
+	
+	AddToUndoBuffer("Create new simulator definition for : " + newSimName);
 }
 
 /*	AddNewObjectMessage()
@@ -696,6 +732,8 @@ function AddNewObjectMessage() {
         DisableCertainObjectButtons();
     }
     CloseNewMessageObjectPrompt();
+	
+	AddToUndoBuffer("Create new message definition for : " + newMessageName);
 }
 
 /*	AddObjectToMessageDef()
@@ -1061,6 +1099,8 @@ function SaveEditServer() {
     portNumber = $('input[name="PortNumberObject"]').val()
 
     CloseEditServer()
+	
+	AddToUndoBuffer("Save RTI Server details.");
 }
 
 /*	CloseEditServer()
@@ -1147,6 +1187,8 @@ function SaveSimulateFunction() {
     let newTimeDelta = $('input[name="SimulateFunctionTimestepDelta"]').val()
     editExistingObject.simulateTimeDelta = parseInt(newTimeDelta);
     CloseSimulateFunctions()
+	
+	AddToUndoBuffer("Save simulate and initialize functions for : " + editExistingObject.name);
 }
 
 /*	EditStageConditions()
@@ -1258,6 +1300,8 @@ function EditStageConditions() {
 */
 function CloseStageConditions() {
     DisplayOrClosePrompt("modalStageConditions", "none");
+	
+	AddToUndoBuffer("Save details in stage conditions.");
 }
 
 /* EditEndConditions()
@@ -1369,6 +1413,7 @@ function EditEndConditions() {
 */
 function CloseEndConditions() {
     DisplayOrClosePrompt("modalEndConditions", "none");
+	AddToUndoBuffer("Save details for end conditions.");
 }
 
 function EditSSH(){
@@ -1412,6 +1457,8 @@ function CloseSSH(){
 	simulators.get(editExistingObject.name).sshLocalSSHInputFile = $('input[name="sshLocalSSHInputFile"]').val();
 	simulators.get(editExistingObject.name).sshLocalExecuteApp = $('input[name="sshLocalExecuteApp"]').val();	
 	simulators.get(editExistingObject.name).sshLocalExecuteCommand = $('input[name="sshLocalExecuteCommand"]').val();*/	
+	
+	AddToUndoBuffer("Save SSH details for : " + editExistingObject.name);
 }
 
 function SaveSimLocalTime() {
@@ -1420,6 +1467,8 @@ function SaveSimLocalTime() {
     editExistingObject.timeVarDelta = $('#dropdownVar').dropdown('get value')
 
     CloseEditSimLocalTime()
+	
+	AddToUndoBuffer("Save local execute time for : " + editExistingObject.name);
 }
 
 /*	AddStageConditionToSubList()

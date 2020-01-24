@@ -16,7 +16,7 @@ const menutemplate = [
 		label: 'File',
 		submenu: [
 			{
-				label: 'New', role: 'new',
+				label: 'New', accelerator: "Ctrl+N",
 				click: function () {
 					/* To call external functions, in files loaded in index.html, this works!:
 					
@@ -27,25 +27,25 @@ const menutemplate = [
 				}
 			},
 			{
-				label: 'Open', role: 'open',
+				label: 'Open', accelerator: "Ctrl+O",
 				click: function () {
 					mainWindow.webContents.executeJavaScript("OpenOpenProject()");
 				}
 			},
 			{
-				label: 'Save', role: 'save',
+				label: 'Save', accelerator: "Ctrl+S",
 				click: function () {
 					mainWindow.webContents.executeJavaScript("SaveProject()");
 				}
 			},
 			{
-				label: 'Save As', role: 'saveas',
+				label: 'Save As', accelerator: "Ctrl+Alt+S",
 				click: function () {
 					mainWindow.webContents.executeJavaScript("OpenSaveAsProject()");
 				}
 			},
 			{
-				label: 'Export Execute Files', role: 'exportexecute',
+				label: 'Export Execute Files', accelerator: "Ctrl+E",
 				click: function () {
 					mainWindow.webContents.executeJavaScript("ExportExecuteFiles()");
 				}
@@ -73,22 +73,42 @@ const menutemplate = [
 				click: function () {
 					mainWindow.webContents.executeJavaScript("Redo()");
 				}
-			}
+			}/*,
+			{
+				label: 'Alert Test',
+				click: function() {
+					mainWindow.webContents.executeJavaScript("Alert('Hello! This is a test to confirm if the alert feature works, and if we can export a long line of text or not.',0)");
+				}
+			}*/
 		]
 	},
-	{
+	/*{
 		label: 'View',
 		submenu: [
 			{ label: '(to add later)', role: '(to add later)' }
-			/*{ label: 'Zoom In', role: 'zoom in' },
-			{ label: 'Zoom Out', role: 'zoom out' }*/
+			{ label: 'Zoom In', role: 'zoom in' },
+			{ label: 'Zoom Out', role: 'zoom out' }
 		]
-	},
+	},*/
 	{
 		label: 'Help',
 		submenu: [
-			{ label: 'About', role: 'about' },
-			{ label: 'Documentation', role: 'documentation' }
+			{ label: 'About', accelerator: "Ctrl+1",
+				click: function(){
+					mainWindow.webContents.executeJavaScript("DisplayAboutModal()");
+				}
+			},
+			{ label: 'Documentation (pdf)', accelerator: "Ctrl+2",
+				click: function(){
+					mainWindow.webContents.executeJavaScript("var { shell } = require('electron'); console.log(shell.openItem(__dirname + '\\\\..\\\\extraResources\\\\docs\\\\pdf\\\\SRTI_v02_20_02_Documentation.pdf'));");
+				}																							 
+			},
+			{ label: 'Documentation (html)', accelerator: "Ctrl+3",
+				click: function(){
+					mainWindow.webContents.executeJavaScript("window.open('file://' + __dirname + '/../extraResources/docs/html/index.html');");
+					//mainWindow.webContents.executeJavaScript("var { shell } = require('electron'); console.log(shell.openExternal(__dirname + '\\\\..\\\\extraResources\\\\docs\\\\html\\\\index.html'));");
+				}
+			}
 		]
 	}
 ]

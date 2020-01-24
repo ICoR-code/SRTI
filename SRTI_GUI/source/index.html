@@ -13,6 +13,7 @@
 	<script src="assets/jquery-3.4.1.min.js"></script>
 	<script src="semantic/dist/semantic.min.js"></script>
 	<link rel="stylesheet" type="text/css" href="assets/custom.css">
+	<link rel="stylesheet" type="text/css" href="scripts/semanticUiAlert/Semantic-UI-Alert.css">
 	</link>
 
 	<script>if (window.module) module = window.module;</script>
@@ -89,14 +90,18 @@
 							</a>
 						</div>
 					</div>
-					<div class="ui attached segment" id="canvas-subpanel1"
-						style="overflow-y: scroll; overflow-x: scroll;" onscroll="CanvasOnScroll(this)">
+					<div class="ui attached segment" id="canvas-subpanel1" background-image: url("./srti_modules/images/icon_backgroundarrow_01.png")
+						style="overflow-y: scroll; overflow-x: scroll; background-image: url('./srti_modules/images/icon_backgroundarrow_01.png'); background-repeat: no-repeat;" onscroll="CanvasOnScroll(this)">
+
+						
 
 						<div id="canvas-subpanel1-grid" style="position: relative;">
 						</div>
 
 						<div id="canvas-subpanel1-arrows" style="position: relative; background-color: green;">
 						</div>
+<!-- <img src="./srti_modules/images/icon_backgroundarrow_01.png" height="256" width="256" align="left"> -->
+
 
 					</div>
 					<div class="ui bottom attached segment" id="canvas-subpanel2"
@@ -179,7 +184,9 @@
 			</div>
 		</div>
 		<div class="actions">
-			<button class="ui button positive" onclick="AddNewObjectSimulator()">Confirm</button>
+			<!-- DON'T USE 'positive' TAG: It automatically submits form (closes it), taking away our control of it. -->
+			<!-- <button class="ui button positive" onclick="AddNewObjectSimulator()">Confirm</button> -->
+			<button class="ui button green" onclick="AddNewObjectSimulator()">Confirm</button>
 			<button class="ui button deny" onclick="CloseNewSimulatorObjectPrompt()">Cancel</button>
 		</div>
 	</div>
@@ -1077,6 +1084,7 @@
 		</div>
 	</div>
 
+
 	<!-- Debug output on bottom of screen.
 			... why isn't this code put above the layout for invisible popups?
 			Because when we set "font-size" here, it seems to affect ALL font written after it.
@@ -1095,6 +1103,7 @@
 	<script src="scripts/modal.js"></script>
 	<script src="scripts/simulation.js"></script>
 	<script src="scripts/ready.js"></script>
+	<script src="scripts/semanticUiAlert/Semantic-UI-Alert.js"></script>
 	<script>
 		/*const { foo } = require('./index_main.js');
 		const { ipcRenderer } = require('electron');
@@ -1105,7 +1114,24 @@
 	</script>
 	<!-- end of ADDED -->
 
-
+	<div class="ui modal" id="modalAbout">
+		<div class="header">About SRTI v2 GUI:</div>
+		<div class="ui form content">
+			<p id="modalAboutVersion">
+				<b>Version: 
+				<script type="text/javascript">
+					var elec = require('electron');
+					var versionString = elec.remote.app.getVersion();
+					document.write(versionString);
+				</script> </b>
+				<img src="./srti_modules/srti_logo/srti_logo_dark_128.png" height="128" width="128" hspace="32" vspace="24" alt="SRTI_logo" align="right">
+			</p>
+			
+			<p>The SRTI v2 GUI is a companion application for the SRTI v2.00.00 framework.</p>
+			<p>The "Simple Run-Time Infrastructure" is an open-source project to enable researchers and programmers to share data between computer programs (regardless of language) and to control complex simulation systems, with ease-of-use being the driving factor.</p>
+			<p>More information about this project (including documentation and its source code) can be found at <a href="https://icor.engin.umich.edu/" target="_blank">https://icor.engin.umich.edu/</a> .</p>
+		</div>
+	</div>
 </body>
 
 </html>

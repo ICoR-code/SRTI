@@ -116,7 +116,7 @@ var guiFirstClient;
 var guiDedicatedClient;
 
 var receivedMessageBuffer = [];
-var receivedMessageBufferLength = 6;
+var receivedMessageBufferLength = 16;
 var execSims;
 
 
@@ -205,10 +205,19 @@ function SaveProject() {
 			};
 			fs.writeFileSync(savepath + name + "_def.mesdef", JSON.stringify(mesdef, StringifyHelper, 4), 'utf-8');
 		}
+		
+		var textConsoleProjectName = document.getElementById("TextConsoleProjectName");
+        textConsoleProjectName.innerHTML = "Project: " + savepath + savename + ".project";
+		Alert("Successfully saved file.", 0);
 	} catch (e) {
 		console.log("failed to save file: " + e);
-		alert('failed to save file!');
-
+		//alert('failed to save file!');
+		Alert("Failed to save file!", 3);
+		//if (e.length <= 40){
+			Alert("Error: " + e, 3);
+		//} else {
+		//	Alert("Error: " + e.substring(0,38) + "...", 3);
+		//}
 	}
 }
 
@@ -218,7 +227,6 @@ function SaveProject() {
 function CreateProjectText() {
 	var content = "";
 	// JavaScript supports "JavaScript Object Notation" by default.
-	//TODO: not outputting server info
 	var obj = {
 		simulators: simulators,
 		messages: messages,
@@ -271,7 +279,6 @@ function SaveSaveAsProject() {
 	console.log("Print out folders.");
 	let i = 0;
 	for (i = 0; i < saveAsFolder.files.length; i++) {
-		//!!!!
 		console.log("Folder: " + saveAsFolder.files[i].path);
 	}
 	newSavePath = saveAsFolder.files[0].path + "\\";
@@ -294,12 +301,24 @@ function OpenExistingProject(filepath, filename) {
 	try {
 		content = fs.readFileSync(filepath + filename + ".project", 'utf-8');
 	} catch (e) {
-		alert('failed to open project file!');
+		//alert('failed to open project file!');
+		Alert("Failed to open project file!", 3);
+		Alert("Error = " + e, 3);
+		/*if (e.length <= 40){
+			Alert("Error: " + e, 3);
+		} else {
+			Alert("Error: " + e.substring(0,38) + "...", 3);
+		}*/
 		return;
 	}
 	savepath = filepath;
 	savename = filename;
 	ResetCanvasWithNewProject(content);
+	
+	var textConsoleProjectName = document.getElementById("TextConsoleProjectName");
+    textConsoleProjectName.innerHTML = "Project: " + savepath + savename + ".project";
+	Alert("Successfully opened project file!", 0);
+	
 }
 
 /*	ResetCanvasWithNewProject()
@@ -519,13 +538,28 @@ function WriteWrapperConfigFiles() {
 				fs.writeFileSync(savePathLocal + saveNameLocal + ".json", content, 'utf-8');
 				fs.writeFileSync(savePathLocal + "Global.json", "{}", 'utf-8');
 				fs.writeFileSync(savePathLocal + "Settings.json", "{\"global\": \"Global.json\", \"configuration\": \"" + saveNameLocal + ".json\"}", 'utf-8');
-
+				
 			} catch (e) {
-				alert('failed to save export file for ' + name + ' ... error = ' + e);
+				//alert('failed to save export file for ' + name + ' ... error = ' + e);
+				Alert("Failed to save export file for " + name, 3);
+				Alert("Error = " + e, 3);
+				/*if (e.length <= 40){
+					Alert("Error: " + e, 3);
+				} else {
+					Alert("Error: " + e.substring(0,38) + "...", 3);
+				}*/
 			}
 		}
+		Alert("Successfully exported execution files (f. simulators and RTI Server).", 0);
 	} catch (e) {
-		alert('failed to export config files... i = ' + i + ' errorLocation = ' + errorLocation + ' error = ' + e);
+		//alert('failed to export config files... i = ' + i + ' errorLocation = ' + errorLocation + ' error = ' + e);
+		Alert("Failed to export config files (generating content).", 3);
+		Alert("Error = " + error, 3);
+		/*if (e.length <= 40){
+			Alert("Error: " + e, 3);
+		} else {
+			Alert("Error: " + e.substring(0,38) + "...", 3);
+		}*/
 	}
 }
 
@@ -543,19 +577,32 @@ function WriteCommandsToFile() {
 		}
 		fs.writeFileSync(savepath + "executeCommands" + ".txt", fsContent, 'utf-8');
 	} catch (e) {
-		alert('failed to save export file of execution commands ' + ' ... error = ' + e);
+		//alert('failed to save export file of execution commands ' + ' ... error = ' + e);
+		Alert("Failed to save export file of example execution commands.", 3);
+		Alert("Error = " + e, 3);
+		/*if (e.length <= 40){
+			Alert("Error: " + e, 3);
+		} else {
+			Alert("Error: " + e.substring(0,38) + "...", 3);
+		}*/
 	}
 }
 
 function WriteServerConfigFile() {
-	//!!!!
 	var content = "Hello world! \na simple test.";
 	// 'fs' is for filesystem, comes with Electron (or, as included within it, Node.js)
 	var fs = require('fs');
 	try {
 		content = fs.readFileSync(serverPath + "settings.txt", 'utf-8');
 	} catch (e) {
-		alert('failed to export settings.txt to server path!  ' + serverPath);
+		Alert("Failed to export settings.txt to following RTI Server path: " + serverPath, 3);
+		Alert("Error = " + e, 3);
+		/*if (e.length <= 40){
+			Alert("Error: " + e, 3);
+		} else {
+			Alert("Error: " + e.substring(0,38) + "...", 3);
+		}*/
+		//alert('failed to export settings.txt to server path!  ' + serverPath);
 		return;
 	}
 
@@ -600,11 +647,25 @@ function WriteSSHConfigFiles(){
 				var fs = require('fs');
 				fs.writeFileSync(savePathLocal + saveNameLocal + ".json", content, 'utf-8');
 			} catch (e) {
-				alert('failed to save export file for ' + name + ' ... error = ' + e);
+				//alert('failed to save export file for ' + name + ' ... error = ' + e);
+				Alert("Failed to save export SSH file for " + name, 3);
+				Alert("Error = " + e, 3);
+				/*if (e.length <= 40){
+					Alert("Error: " + e, 3);
+				} else {
+					Alert("Error: " + e.substring(0,38) + "...", 3);
+				}*/
 			}
 		}
 	} catch (e) {
-		alert('failed to export config files... i = ' + i + ' errorLocation = ' + errorLocation + ' error = ' + e);
+		//alert('failed to export config files... i = ' + i + ' errorLocation = ' + errorLocation + ' error = ' + e);
+		Alert("Failed to save export SSH files (generating content).", 3);
+		Alert("Error = " + e, 3);
+		/*if (e.length <= 40){
+			Alert("Error: " + e, 3);
+		} else {
+			Alert("Error: " + e.substring(0,38) + "...", 3);
+		}*/
 	}
 }
 
@@ -625,13 +686,14 @@ function AddToUndoBuffer(description) {
 		messages: JSON.stringify(messages, StringifyHelper),
 		simulatorObjects: JSON.stringify(simulatorObjects, StringifyHelper),
 		messageObjects: JSON.stringify(messageObjects, StringifyHelper),
-		numOfStages: numOfStages
+		numOfStages: numOfStages,
+		currentStage: stage
 	});
 	let i = 0;
-	var offsetYText = "";
+	/*var offsetYText = "";
 	for (i = 0; i < undoStack.length; i++) {
 		offsetYText = offsetYText + " " + JSON.parse(undoStack[i].simulatorObjects)[0].offsetY;
-	}
+	}*/
 	if (undoStack.length > 30) {
 		undoStack.splice(0, 1);
 	}
@@ -653,7 +715,8 @@ function Undo() {
 			messages: JSON.stringify(messages, StringifyHelper),
 			simulatorObjects: JSON.stringify(simulatorObjects, StringifyHelper),
 			messageObjects: JSON.stringify(messageObjects, StringifyHelper),
-			numOfStages: numOfStages
+			numOfStages: numOfStages,
+			currentStage: obj.currentStage
 		});
 		ClearProject();
 		simulators = ConvertSimulators(JSON.parse(obj.simulators, StringifyHelper));
@@ -662,6 +725,8 @@ function Undo() {
 		messageObjects = ConvertMessageObjects(JSON.parse(obj.messageObjects, StringifyHelper));
 		LinkReferences(simulators, messages, simulatorObjects, messageObjects)
 		numOfStages = obj.numOfStages;
+		stage = obj.currentStage;
+		
 		for (let simObj of simulatorObjects) {
 			CreateExistingSimulatorOnCanvas(simObj);
 		}
@@ -672,7 +737,8 @@ function Undo() {
 		DrawAllArrowsOnCanvas();
 		ResetObjectSubPanel1();
 		ResetObjectSubPanel2();
-		UpdateSelectedStage(0);
+		UpdateSelectedStage(parseInt(stage));
+		
 		let textConsoleLastAction = document.getElementById("TextConsoleLastAction");
 		textConsoleLastAction.innerHTML = "UNDO: " + obj.description + " (" + undoStack.length + " actions left)";
 	}
@@ -693,7 +759,8 @@ function Redo() {
 			messages: JSON.stringify(messages, StringifyHelper),
 			simulatorObjects: JSON.stringify(simulatorObjects, StringifyHelper),
 			messageObjects: JSON.stringify(messageObjects, StringifyHelper),
-			numOfStages: numOfStages
+			numOfStages: numOfStages,
+			currentStage: obj.stage
 		});
 		ClearProject();
 		simulators = ConvertSimulators(JSON.parse(obj.simulators));
@@ -702,6 +769,9 @@ function Redo() {
 		messageObjects = ConvertMessageObjects(JSON.parse(obj.messageObjects));
 		LinkReferences(simulators, messages, simulatorObjects, messageObjects)
 		numOfStages = obj.numOfStages;
+		stage = obj.currentStage;
+		
+		
 		for (let simObj of simulatorObjects) {
 			CreateExistingSimulatorOnCanvas(simObj);
 		}
@@ -712,7 +782,8 @@ function Redo() {
 		DrawAllArrowsOnCanvas();
 		ResetObjectSubPanel1();
 		ResetObjectSubPanel2();
-		UpdateSelectedStage(0);
+		UpdateSelectedStage(parseInt(stage));
+		
 		var textConsoleLastAction = document.getElementById("TextConsoleLastAction");
 		textConsoleLastAction.innerHTML = "REDO: " + obj.description + " (" + redoStack.length + " actions left)";
 	}
@@ -1074,8 +1145,75 @@ function IsNull(value) {
 	// 	return true;
 	// }
 
-	// The if statement above is totally unnecessary. We want to return the boolean value of "value", and that 
-	// can be done simply by returning the value.
-	// Remember that when you call this function, there is usually already an outside if.
+	// Simplified for optimization purposes below.
 	return !value
+}
+
+/* Alert()
+	- Uses 'Semantic UI Alert' library to create popup messages, instead of default HTML 'alert' system.
+	- Defauly 'alert' system causes Electron app to be out of focus, unable to click on text-boxes or other input unless triggering another system alert (like 'open file').
+	- This alert library from: https://diw112.github.io/semanticUiAlert/ . */
+function Alert(message, type){
+	
+	if (message.length > 120){
+		message = message.substring(0,118) + "...";
+	}
+	
+	if (type == 0){
+		// SUCCESS (green)
+		$.uiAlert({
+			textHead: 'SUCCESS', // header
+			text: message, // Text
+			bgcolor: '#19c3aa', // background-color
+			textcolor: '#fff', // color
+			position: 'bottom-right',// position . top And bottom ||  left / center / right
+			icon: 'checkmark box', // icon in semantic-UI
+			time: 5, // time
+		});
+	} else if (type == 1){
+		// INFO (blue)
+		$.uiAlert({
+			textHead: 'INFO', // header
+			text: message, // Text
+			bgcolor: '#55a9ee', // background-color
+			textcolor: '#fff', // color
+			position: 'bottom-right',// position . top And bottom ||  left / center / right
+			icon: 'info circle', // icon in semantic-UI
+			time: 5, // time
+		});
+	} else if (type == 2){
+		// WARNING (yellow)
+		$.uiAlert({
+			textHead: 'Possible WARNING:', // header
+			text: message, // Text
+			bgcolor: '#F2711C', // background-color
+			textcolor: '#fff', // color
+			position: 'bottom-right',// position . top And bottom ||  left / center / right
+			icon: 'warning sign', // icon in semantic-UI
+			time: 10, // time
+		});
+	} else if (type == 3){
+		// ERROR (red)
+		$.uiAlert({
+			textHead: "Possible ERROR has occurred:", // header
+			text: message, // Text
+			bgcolor: '#DB2828', // background-color
+			textcolor: '#fff', // color
+			position: 'bottom-right',// position . top And bottom ||  left / center / right
+			icon: 'remove circle', // icon in semantic-UI
+			time: 999, // time
+		});
+	} else {
+		// WARNING (yellow)
+		$.uiAlert({
+			textHead: 'Possible WARNING:', // header
+			text: message, // Text
+			bgcolor: '#F2711C', // background-color
+			textcolor: '#fff', // color
+			position: 'bottom-right',// position . top And bottom ||  left / center / right
+			icon: 'warning sign', // icon in semantic-UI
+			time: 10, // time
+		});
+	}
+
 }

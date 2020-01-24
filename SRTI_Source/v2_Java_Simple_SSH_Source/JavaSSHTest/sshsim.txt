@@ -1,0 +1,10 @@
+{
+	"host": "sftp.itd.umich.edu",
+	"user": "ahlynka",
+	"password": "And18rew!",
+	"wrapperConfigFileName": "testconfig.json",
+	"localWrapperDir": "C:\\Users\\hlynk\\Desktop\\",
+	"remoteWrapperDir": "/afs/umich.edu/user/a/h/ahlynka/javatest/",
+	"remoteSimExec": "pwd",
+	"port": 22
+}
