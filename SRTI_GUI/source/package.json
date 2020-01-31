@@ -1,6 +1,6 @@
 {
   "name": "SRTI-v2-Manager-GUI",
-  "version": "1.00.01",
+  "version": "1.00.02",
   "license": "CC0-1.0",
   "description": "A GUI application to help run a local SRTI simulator system.",
   "main": "main.js",
@@ -18,7 +18,14 @@
       "extraResources": [
         "./extraResources/**"
       ]
-    }
+    },
+	"mac": {
+		"target": "dmg",
+		"icon": "srti_modules/srti_logo/srti_logo_dark_512_icon.icns",
+		 "extraResources": [
+			"**/extraResources/**"
+		]
+	}
   },
   "dependencies": {
     "npm": "^6.12.0",

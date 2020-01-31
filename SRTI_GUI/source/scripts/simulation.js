@@ -13,31 +13,65 @@ function StartSimulationSystem() {
             child_process = require('child_process');
             // if running command directly (without opening separate cmd), then we can close it successfully using standard process.
             // otherwise, we need to figure out new way to close it.
-            //execServer = child_process.exec('cd /d D:\\Work\\Acer\\DSK\\UMich\\ICoR\\Reading-Materials\\201908\\srti_gui_test\\server && java -jar SRTI_v2_12_02.jar\',
+            //execServer = child_process.exec('cd /d D:\\Work\\Acer\\...\\srti_gui_test\\server && java -jar SRTI_v2_12_02.jar\',
             // ... conclusion: no easy way to do this. Strongly recommend users prepare simulators with basic GUI.
-            //execServer = child_process.exec('start cmd /k \"cd /d D:\\Work\\Acer\\DSK\\UMich\\ICoR\\Reading-Materials\\201908\\srti_gui_test\\server && java -jar SRTI_v2_12_02.jar\"',
-            //execServer = child_process.exec('cd /d D:\\Work\\Acer\\DSK\\UMich\\ICoR\\Reading-Materials\\201908\\srti_gui_test\\server && java -jar SRTI_v2_16_02.jar',
+            //execServer = child_process.exec('start cmd /k \"cd /d D:\\Work\\Acer\\...\\srti_gui_test\\server && java -jar SRTI_v2_12_02.jar\"',
+            //execServer = child_process.exec('cd /d D:\\Work\\Acer\\...\\srti_gui_test\\server && java -jar SRTI_v2_16_02.jar',
 
             // 'var tempPath' is correct for compiled versions of the app, but not for 'npm start .' for debugging purposes...
             //var tempPath = __dirname + '\\..\\extraResources\\srti_server\\';
             //tempPath = __dirname + "\\extraResources\\srti_server\\";
             //alert(tempPath.substring(tempPath.length-64,tempPath.length-1));
-            execServer = child_process.exec('cd /d ' + serverPath + ' && java -jar ' + serverFileName,
-                (error, stdout, stderror) => {
-                    if (error) {
-                        //alert("error when running command: " + error);
-						Alert("Error when running command: " + error, 2);
-						/*if (error.length <= 40){
-							Alert("Error when running command: " + error, 3);
+			if (osType == 0 || osType == 1){
+				execServer = child_process.exec('cd /d ' + serverPath + ' && java -jar ' + serverFileName,
+					(error, stdout, stderror) => {
+						if (error) {
+							//alert("error when running command: " + error);
+							Alert("Error when running command: " + error, 2);
+							/*if (error.length <= 40){
+								Alert("Error when running command: " + error, 3);
+							} else {
+								Alert("Error when running command: " + error.substring(0,38) + "...", 3);
+							}*/
 						} else {
-							Alert("Error when running command: " + error.substring(0,38) + "...", 3);
-						}*/
-                    } else {
-                        //alert("command worked!");
-						Alert("Command worked! (I think.)", 0);
-					}
-                });
+							//alert("command worked!");
+							Alert("Command worked! (I think.)", 0);
+						}
+					});
+			} else if (osType == 2){
+					execServer = child_process.exec('cd ' + serverPath + ' && java -jar ' + serverFileName,
+					(error, stdout, stderror) => {
+						if (error) {
+							//alert("error when running command: " + error);
+							Alert("Error when running command: " + error, 2);
+							/*if (error.length <= 40){
+								Alert("Error when running command: " + error, 3);
+							} else {
+								Alert("Error when running command: " + error.substring(0,38) + "...", 3);
+							}*/
+						} else {
+							//alert("command worked!");
+							Alert("Command worked! (I think.)", 0);
+						}
+					});
 
+			} else if (osType == 3){
+				execServer = child_process.exec('cd ' + serverPath + ' && java -jar ' + serverFileName,
+					(error, stdout, stderror) => {
+						if (error) {
+							//alert("error when running command: " + error);
+							Alert("Error when running command: " + error, 2);
+							/*if (error.length <= 40){
+								Alert("Error when running command: " + error, 3);
+							} else {
+								Alert("Error when running command: " + error.substring(0,38) + "...", 3);
+							}*/
+						} else {
+							//alert("command worked!");
+							Alert("Command worked! (I think.)", 0);
+						}
+					});
+			}
             // start all other simulators (all that exist anywhere on the canvas).
         } catch (e) {
             //alert('Error when trying to open RTI Server. ' + e);
@@ -524,7 +558,14 @@ function LaunchSimulators() {
         // start all other simulators (all that exist anywhere on the canvas).
         for (let [name, simulator] of simulators) {
 			if (simulator.sshType == "local"){
-				var execCommand = "cd /d " + simulator.filePath + " && " + simulator.executeCommand;
+				var execCommand = "";
+				if (osType == 0 || osType == 1){
+					execCommand = "cd /d " + simulator.filePath + " && " + simulator.executeCommand;
+				} else if (osType == 2){
+					execCommand = "cd " + simulator.filePath + " && " + simulator.executeCommand;
+				} else if (osType == 3){
+					execCommand = "cd " + simulator.filePath + " && " + simulator.executeCommand;
+				}
 				var execSim = child_process.exec(execCommand,
 					(error, stdout, stderror) => {
 						if (error) {
@@ -543,8 +584,18 @@ function LaunchSimulators() {
 					});
 				execSims.push(execSim);
 			} else if (simulator.sshType == "sshRemote"){
-				execServer = child_process.exec('cd /d ' + __dirname + '\\..\\extraResources\\srti_sshapp\\' 
-					+ ' && java -jar JavaSSHApp.jar ' + simulator.filePath + '\\' + name + '_sshsim.json',
+				var execCommand = "";
+				if (osType == 0 || osType == 1){
+					execCommand = 'cd /d ' + __dirname + '\\..\\extraResources\\srti_sshapp\\' 
+						+ ' && java -jar JavaSSHApp.jar ' + simulator.filePath + '\\' + name + '_sshsim.json';
+				} else if (osType == 2){
+					execCommand = 'cd ' +__dirname.replace("app.asar","") + 'extraResources//srti_sshapp//'
+						+ ' && java -jar JavaSSHApp.jar ' + simulator.filePath + '//' + name + '_sshsim.json';
+				} else if (osType == 3){
+					execCommand = 'cd ' + __dirname.replace("app.asar","") + 'extraResources//srti_sshapp//'
+						+ ' && java -jar JavaSSHApp.jar ' + simulator.filePath + '//' + name + '_sshsim.json';
+				}
+				execServer = child_process.exec(execCommand,
 					(error, stdout, stderror) => {
 						if (error) {
 							//alert("error when running ssh command: " + error);

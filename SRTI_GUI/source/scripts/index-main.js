@@ -47,7 +47,7 @@ var savename = "";
 // variables to launch RTI Server, and to connect sims to the Server.
 var hostName = "localhost";
 var portNumber = "42012";
-var serverPath = __dirname + '\\..\\extraResources\\srti_server\\';
+
 var serverFileName = 'SRTI_v2_22_02.jar';
 // Total number of stages (different states in simulation system) in this project.
 var numOfStages = 1;
@@ -119,6 +119,38 @@ var receivedMessageBuffer = [];
 var receivedMessageBufferLength = 16;
 var execSims;
 
+// osType: 0 = undefined, 1 = Windows, 2 = Mac, 3 = Linux
+var os = require('os');
+var osType = 0;
+console.log("OS type is = " + os.platform());
+if (os.platform() == 'darwin'){
+	osType = 2;
+} else if (os.platform() == 'linux'){
+	osType = 3;
+} else if (os.platform() == 'win32'){
+	osType = 1;
+}
+var textConsoleProjectName = document.getElementById("TextConsoleProjectName");
+if (osType == 0){
+	textConsoleProjectName.innerHTML = "Running GUI for [undefined] OS.";
+} else if (osType == 1){
+	textConsoleProjectName.innerHTML = "Running GUI for Windows OS.";
+} else if (osType == 2){
+	textConsoleProjectName.innerHTML = "Running GUI for Mac OS.";
+} else if (osType == 3){
+	textConsoleProjectName.innerHTML = "Running GUI for Linux OS.";
+}
+
+
+var serverPath = "";
+if (osType == 0 || osType == 1){
+	serverPath = __dirname + '\\..\\extraResources\\srti_server\\';
+} else if (osType == 2){
+	serverPath = __dirname.replace("app.asar","") + 'extraResources//srti_server//';
+} else if (osType == 3){
+	serverPath = __dirname.replace("app.asar","") + 'extraResources//srti_server//';
+}
+
 
 function ImportProject() {
 	var openProjectFolder = document.getElementsByName("openProjectFileDir")[0];
@@ -162,7 +194,14 @@ function ClearProject() {
 	simulatorObjects = new Set();
 	messageObjects = new Map();
 	numOfStages = 1;
-	serverPath = __dirname + '\\..\\extraResources\\srti_server\\';
+	//serverPath = __dirname + '\\..\\extraResources\\srti_server\\';
+	if (osType == 0 || osType == 1){
+		serverPath = __dirname + '\\..\\extraResources\\srti_server\\';
+	} else if (osType == 2){
+		serverPath = __dirname.replace("app.asar","") + 'extraResources//srti_server//';
+	} else if (osType == 3){
+		serverPath = __dirname.replace("app.asar","") + 'extraResources//srti_server//';
+	}
 	serverFileName = 'SRTI_v2_22_02.jar';
 	hostName = "localhost";
 	portNumber = "42012";
@@ -1155,8 +1194,14 @@ function IsNull(value) {
 	- This alert library from: https://diw112.github.io/semanticUiAlert/ . */
 function Alert(message, type){
 	
-	if (message.length > 120){
-		message = message.substring(0,118) + "...";
+	console.log("Alert Message: " + message);
+	
+	if (message.length > 200){
+		//message = message.substring(0,60) + " ...... " + message.substring(message.length - 140, message.length-1);
+		
+		Alert("...... " + message.substring(message.length - 140, message.length-1), type);
+		Alert(message.substring(0,60) + " ......", type);
+		return;
 	}
 	
 	if (type == 0){
