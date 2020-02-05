@@ -19,13 +19,20 @@
         "./extraResources/**"
       ]
     },
-	"mac": {
-		"target": "dmg",
-		"icon": "srti_modules/srti_logo/srti_logo_dark_512_icon.icns",
-		 "extraResources": [
-			"**/extraResources/**"
-		]
-	}
+    "mac": {
+      "target": "dmg",
+      "icon": "srti_modules/srti_logo/srti_logo_dark_512_icon.icns",
+      "extraResources": [
+        "**/extraResources/**"
+      ]
+    },
+    "linux": {
+      "target": "AppImage",
+      "icon": "srti_modules/srti_logo/srti_logo_dark_512_icon.icns",
+      "extraResources": [
+        "**/extraResources/**"
+      ]
+    }
   },
   "dependencies": {
     "npm": "^6.12.0",
@@ -34,7 +41,7 @@
   },
   "devDependencies": {
     "devtron": "^1.4.0",
-    "electron": "latest",
+    "electron": "^6.1.7",
     "electron-builder": "^21.2.0"
   }
 }
