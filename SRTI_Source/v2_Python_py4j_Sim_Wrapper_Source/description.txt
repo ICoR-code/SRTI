@@ -1,0 +1,17 @@
+This is a prototype for a Python Wrapper in SRTI v2.00.00.
+
+The RTI Wrapper normally has to access both the user's simulator and a copy of the RTI Lib API.
+The RTI Lib API for SRTI v2.00.00 is available for Java, which Python is not natively compatible with.
+
+Using open-source framework 'py4j', we are able to write a Python RTI Wrapper 
+that can connect to a Java version of the RTI Lib API.
+Both must import 'py4j' for this to work.
+Because this requires an extra step for the user (to install 'py4j' in their Python library),
+we still intended to create a native Python RTI Lib API.
+
+To use the 'py4j' version,
+first launch the Java-py4j RTI Lib API,
+then launch the Python-py4j Wrapper to listen to it and a user's local Python simulator.
+
+For more information on 'py4j',
+visit: https://www.py4j.org/

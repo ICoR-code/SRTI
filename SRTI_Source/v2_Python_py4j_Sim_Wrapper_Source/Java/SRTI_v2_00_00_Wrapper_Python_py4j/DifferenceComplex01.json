@@ -1,0 +1,67 @@
+{
+    "hostName": "localhost",
+    "portNumber": "4200",
+    "simulatorName": "DifferenceSim",
+    "simulatorRef": "main.DifferenceSim",
+	"initializeFunction": "generateInitialMessageCustom",
+	"stageChannels":[
+		{
+			"stage": 0,
+			"order": 0,
+			"timestepDelta": 1,
+			"timestepMul": 1
+		}
+	],
+	"simulateChannels":[
+		{
+			"functionName": "simulateCustom",
+			"timestepDelta": 1,
+			"stage": 0
+		}
+	],
+    "subscribedChannels": [
+        {
+			"messageName", "Sum",
+            "oneTime": false,
+            "stepRelation": 0,
+            "varChannel": [
+            	{
+            		"valueName": "someValueFromMessage",
+					"varName": "someValueFromSim"
+            	}
+            ],
+			"timestepDelta": 1,
+			"stage": 0
+        }
+    ],
+    "publishedChannels": [
+		{
+			"messageName": "Difference",
+            "initial": true,
+            "varChannel": [
+            	{
+            		"valueName": "otherValueFromMessage",
+            		"varName": "otherValueFromSim"
+            	}
+            ],
+			"timestepDelta": 1,
+			"stage": 0
+        }
+    ],
+	"endCondition": [
+		{
+			"varName": "varFromSim",
+			"condition": "<",
+			"value": 42
+		}
+	],
+	"stageCondition": [
+		{
+			"oldStage": 0,
+			"varName": "varFromSim",
+			"condition": "=",
+			"value": 12,
+			"newStage": 1
+		}
+	]
+}

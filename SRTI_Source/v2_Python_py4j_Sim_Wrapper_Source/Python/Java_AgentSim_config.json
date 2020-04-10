@@ -1,0 +1,127 @@
+{
+    "hostName": "localhost",
+    "portNumber": "42012",
+    "simulatorName": "python_AgentSim",
+    "simulatorRef": "python_AgentSim.AgentSim",
+    "debugConsole": false,
+    "debugFile": true,
+    "dataOutFile": false,
+    "stageChannels": [
+        {
+            "stage": 0,
+            "order": 1,
+            "timestepDelta": 1,
+            "timestepMul": 1,
+            "timestepVarDelta": ""
+        }
+    ],
+    "initializeChannels": [
+        {
+            "functionName": "InitializeAgent",
+            "stage": 0
+        }
+    ],
+    "simulateChannels": [
+        {
+            "functionName": "UpdateAgentMove",
+            "timestepDelta": 1,
+            "stage": 0
+        }
+    ],
+    "subscribedChannels": [
+        {
+            "messageName": "m_AvailableMove",
+            "oneTime": false,
+            "mandatory": true,
+            "relativeOrder": 0,
+            "maxTimestep": 0,
+            "timestepDelta": 1,
+            "stage": 0,
+            "varChannel": [
+                {
+                    "valueName": "north",
+                    "varName": "north"
+                },
+                {
+                    "valueName": "east",
+                    "varName": "east"
+                },
+                {
+                    "valueName": "south",
+                    "varName": "south"
+                },
+                {
+                    "valueName": "west",
+                    "varName": "west"
+                },
+                {
+                    "valueName": "currentX",
+                    "varName": "latestX"
+                },
+                {
+                    "valueName": "currentY",
+                    "varName": "latestY"
+                }
+            ]
+        },
+        {
+            "messageName": "m_InitializeMove",
+            "oneTime": true,
+            "mandatory": true,
+            "relativeOrder": 0,
+            "maxTimestep": 0,
+            "timestepDelta": 1,
+            "stage": 0,
+            "varChannel": [
+                {
+                    "valueName": "north",
+                    "varName": "north"
+                },
+                {
+                    "valueName": "east",
+                    "varName": "east"
+                },
+                {
+                    "valueName": "south",
+                    "varName": "south"
+                },
+                {
+                    "valueName": "west",
+                    "varName": "west"
+                },
+                {
+                    "valueName": "posX",
+                    "varName": "latestX"
+                },
+                {
+                    "valueName": "posY",
+                    "varName": "latestY"
+                }
+            ]
+        }
+    ],
+    "publishedChannels": [
+        {
+            "messageName": "m_UpdateAgent",
+            "initial": true,
+            "timestepDelta": 1,
+            "stage": 0,
+            "varChannel": [
+                {
+                    "valueName": "name",
+                    "varName": "name"
+                },
+                {
+                    "valueName": "latestX",
+                    "varName": "latestX"
+                },
+                {
+                    "valueName": "latestY",
+                    "varName": "latestY"
+                }
+            ]
+        }
+    ],
+    "endConditions": [],
+    "stageConditions": []
+}
