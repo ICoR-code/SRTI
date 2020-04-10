@@ -1,0 +1,195 @@
+<html>
+	<body>
+		<h2>How To Install / Download:</h2>
+		<p>SRTI v2.00.00 and the corresponding v2 GUI are considered separate components. 
+		Both are open-source, and a pre-compiled version is available for download.</p> 
+		<p>No installation of the SRTI is required to open and run the SRTI. However,
+		your computer system must have a version of the <b>Java Runtime Environment (JRE)</b> 
+		installed to run the RTI Server. 
+		Additionally, your system may also require installation of your language library 
+		of choice, to support simulators written in different programming languages.</p>
+		
+		<br> 
+		
+		<h3>Downloading SRTI v2.00.00 (without GUI):</h3>
+		<p>Go to the following Github URL: 
+		<a href="https://github.com/ICoR-code/SRTI/tree/master/SRTI_Compiled/SRTI_v2_00_00" 
+		target="_blank">https://github.com/ICoR-code/SRTI/tree/master/SRTI_Compiled/SRTI_v2_00_00</a></p>
+		<p>SRTI v2.00.00 requires 3 main components: 1 instance of the <b>"RTI Server,"</b> 
+		'n' instances of the <b>"RTI Wrapper"</b> (in Java, or another supported language), 
+		and 'n' instances of simulators (provided by the user). The RTI Wrapper also makes
+		use of the RTI Lib API to connect with the RTI Server: both the API and the Server 
+		are stored in the same .jar file, but the user will need to copy different instances
+		of the same file for each folder location.</p>
+		<p>The file containing the RTI Server is called: </p>
+		<ul>
+			<li>SRTI_v2_22_02.jar</li>
+		</ul>
+		<p>The files for RTI Wrapper (Java, Matlab, NetLogo) are called:</p>
+		<ul>
+			<li>SRTI_JavaWrapper_v2_22_02.jar</li>
+			<li>SRTI_Wrapper_v2_22_02.m</li>
+			<li>[NetLogoWrapper_Download_Link.txt -> gives instructions to 
+			download a Java .jar file that includes an internal copy of NetLogo]</li>
+		</ul>
+		<p>To run an instance of a SRTI v2.00.00 project, first launch the RTI Server. Then 
+		launch each individual RTI Wrapper (to start their corresponding simulators), which
+		will connect to the open instance of the RTI Server.</p>
+		<p>To run the RTI Server, double-click on the .jar file. A simplified Java-Swing-based GUI
+		will open to indicade the Server is active, and to indicate any messages it receives. 
+		Alternatively, this program can be launched through the command line to observe additional
+		log output. An optional "settings.txt" file can be placed in the same directory as the RTI Server
+		to set certain properties (see Github for example).</p>
+		<p>To run the RTI Wrapper, you may need to include a reference to the simulator file
+		in your filepath or classpath. Therefore, you might need to launch this through a 
+		command line, using a specific command. See HTML Documentation under 
+		<b>"SRTI v2.00.00 - User Simulations."</b> Additional configuration files in the same
+		folder location tell the RTI Wrapper what simulator it must launch, and how they function
+		relative to other simulators in an open simulation system. See HTML Documentation under 
+		<b>"SRTI v2.00.00 - RTI Configuration File."</b></p>
+		
+		<br>
+		
+		<h3>Downloading SRTI v2 GUI (with RTI Server included):</h3>
+		<p>Go to the following Github URL: 
+		<a href="https://github.com/ICoR-code/SRTI/tree/master/SRTI_GUI" target="_blank">
+		https://github.com/ICoR-code/SRTI/tree/master/SRTI_GUI</a></p>
+		<p>The v2 GUI is an optional component that allows the user to visually create and 
+		generate the configuration files the RTI Wrapper(s) need to define what simulator 
+		files they are running, and how they correspond to external simulators. The compiled
+		v2 GUI includes a copy of the RTI Server, but this reference can be replaced by the 
+		user in their v2 GUI project. RTI Wrapper files are not included and must be downloaded
+		separately.</p>
+		<p>There are 2 versions of the SRTI v2 GUI: a single packaged standalone executable, and an
+		unpacked folder with an executable. You may use either of these, the only difference being
+		the unpacked version opens more quickly (the packed version becomes unpacked in memory upon
+		startup). For each version, double click on [TO DO] or [TO DO] to open the v2 GUI.</p>
+		<p>We recommend you maintain a similar folder structure to the following to manage your project(s):</p>
+		<ul>
+			<li>"*/GUI/": Store the SRTI v2 GUI executable.</li>
+			<li>"*/projects/": Store the v2 GUI project files saved from an open instance of the v2 GUI.</li>
+			<li>"*/sims/": Store folders for each individual simulator from your or your collaborators. Each folder should include the simulator, the corresponding RTI Wrapper, and if necessary, a corresponding RTI Lib API.</li>
+			<li>"*/server/": If you are not using the RTI Server included with the v2 GUI, include a copy of the .jar file in here.</li>
+		</ul>
+		
+		<br>
+		
+		<h3>Downloading / Compiling SRTI v2.00.00 Source Code (optional):</h3>
+		<p><i>This is only recommended if the pre-compiled executable files do not run 
+		successfully on your machine, or if you need to modify the source code of the SRTI.</i></p>
+		<ol>
+		<li>Go to the following Github URL: [TO DO]</li>
+		<li>Download the source code. Remember that there are 2 project files:</li>
+			<ul>
+				<li><b>RTI Server + RTI Lib API</b> in the same project / package: This is distinct
+				from the SRTI v1.00.00 version.</li>
+				<li><b>RTI Wrapper</b>: Separate project folders available for Java, Matlab, 
+				NetLogo, and Python. Makes use of compiled version of RTI Server + RTI Lib API.
+			</ul>
+		<li>Install Java Development Kit (JDK) 8 or higher.</li>
+			<ul>
+				<li><b>Installing JDK:</b> see 
+				<b><a href="https://www.oracle.com/java/technologies/javase-downloads.html" target="_blank">
+				https://www.oracle.com/java/technologies/javase-downloads.html</a></b>.</li>
+				<li>The SRTI Java files were originally programmed in the <b>Eclipse Java IDE</b> (v.2018-12). 
+				You may choose to install Eclipse 
+				(<b><a href="https://www.eclipse.org/" target="_blank">https://www.eclipse.org/</a></b>) 
+				and import the file structure as a new project,
+				or to use an alternative method to edit / compile the original Java code.</li>
+			</ul>
+		<li>If required, download additional compilers to compile langauge-specific RTI Wrapper
+		(example: Matlab, NetLogo, Python, etc.).</li>
+		<li>When compiling, remember to include any required dependencies:</li>
+			<ul>
+				<li><b>RTI Server + RTI Lib API:</b> requires included .jar files: javax.json-1.0.4.jar.</li>
+				<li><b>RTI Wrapper:</b> requires included .jar files: javax.json-1.0.4.jar, 
+				SRTI_v2_22_02.jar (or other compiled version of RTI Server + RTI Lib API).</li>
+				<li>The RTI Wrapper requires reference to a valid compatible simulator in the intended 
+				programming language. More information about the design requirements for a simulator 
+				compatible with SRTI v2.00.00 can be found in the HTML Documentation under 
+				<b>"SRTI v2.00.00 - User Simulations."</b></li>
+			</ul>
+		</ol>
+		
+		<br>
+		
+		<h3>Downloading / Compiling SRTI v2 GUI Source Code (optional):</h3>
+		<p><i>This is only recommended if the pre-compiled executable files do not run 
+		successfully on your machine, or if you need to modify the source code of the SRTI v2 GUI.</i></p>
+		<p><i>This section exclusively explains the compilation of the v2 GUI, and not the core SRTI 
+		components.</i></p>
+		<p>The SRTI v2 GUI was programmed and compiled in HTML, CSS, JavaScript and JQuery. 
+		Compilation into a desktop app for Windows, Mac and Linux (and certain desktop-specific features) 
+		was made possible through the Electron JS GUI framework. More information on Electron can be
+		found at: <b><a href="https://www.electronjs.org/" target="_blank">https://www.electronjs.org/</a></b>.</p>
+		<p>The SRTI v2 GUI requires multiple third-party developer dependencies, which the original 
+		SRTI project avoided in order to ensure compatibility and ease-of-use for both users and developers.
+		The v2 GUI is considered an optional component to use the SRTI: we encourage new groups to develop
+		their own GUI solutions that visually represent and generate the files needed for the SRTI 
+		(RTI Server and RTI Wrapper) to function.</p>
+		<ol>
+		<li>Go to the following Github URL: [TO DO]</li>
+		<li>Download the source code. The Windows folder is considered to be the "master" version and 
+		is meant to be compatible for compilation on Mac and Linux, but other folders specifically 
+		used to compile those versions are included.</li>
+		<li>Create a blank folder to store the project locally on your machine. It is recommended 
+		you first install the required dependencies (either in this new folder location, or globally), 
+		and then copy the original project files.</li>
+		<li>Install NodeJS, NPM (if not included with NodeJS), 'tree-kill' module, Semantic UI JS library, 
+		and Electron JS 6.1.7.</li>
+			<ul>
+				<li>Electron 6.1.7 is recommended, because subsequent versions change how to access 
+				folders on your local file system to match correct expected behavior, and at the time 
+				of this writing, did not provide an alternative to allow our desired function.</li>
+				<li><b>Installing NodeJS</b>: See 
+				<b><a href="https://nodejs.org/en/" target="_blank">https://nodejs.org/en/</a></b>.</li>
+				<li><b>Installing NPM</b>: This should be included with the NodeJS install. See 
+				<b><a href="https://www.npmjs.com/get-npm" target="_blank">https://www.npmjs.com/get-npm</a></b>
+				for how to check that it was installed, or else see additional options to install for your 
+				operating system (Linux might require an additional "apt install" command).</li>
+				<li><b>Installing Electron 6.1.7</b>: Example command to install through command prompt:</li>
+				<ul>
+					<li><b><code>npm install -save-dev electron@6.1.7</code></b></li>
+				</ul>
+				<li><b>Install 'tree-kill' module</b> (NPM package that v2 GUI uses to be able to 
+				start / stop simulator programs): Example command to install through command prompt:</li>
+				<ul>
+					<li><b><code>npm install tree-kill</code></b></li>
+				</ul>
+				<li><b>Install Semantic UI</b>: This should be included in existing v2 GUI project files.</li>
+			</ul>
+		<li>After installing dependencies at a blank folder location, new folders and files should be generated.
+		Copy the source code project files for v2 GUI into this folder. Important files to copy include:</li>
+			<ul>
+				<li>All individual files at top of directory (index.html, main.js, etc.).</li>
+				<li>"*/extraResources/" folder.</li>
+				<li>"*/scripts/" folder.</li>
+				<li>"*/semantic/" folder.</li>
+				<li>"*/srti_modules/" folder.</li>
+			</ul>
+		<li>To run a test-build of the v2 GUI project, open a command prompt at the top of this project location,
+		and run the following command. If successful, you will see a functional version of the v2 GUI window open.</li>
+				<ul>
+					<li><b><code>npm run dev</code></b></li>
+				</ul>
+		<li>To compile a standalone executable, we recommend using "Electron-Builder."</li>
+			<ul>
+				<li>Run the following command to install "Electron-Builder":</li>
+					<ul>
+						<li><b><code>npm install -g electron-builder --save-dev</b></code></li>
+					</ul>
+				<li>Run the following command to compile. If successful, you will have both a single packaged 
+				executable file, and a directory of the unpackaged version.</li>
+					<ul>
+						<li><b><code>npm run build</code></b></li>
+					</ul>
+				<li>An alternative to "Electron-Builder" is "Electron-Packager." 
+				This might require modifying "*/package.json" to use.</li>
+			</ul>
+		</ol>
+		
+		<br>
+		
+		<p><a href="index.html" target="_blank">Return to main page for Documentation.</a></p>
+	</body>
+</html>

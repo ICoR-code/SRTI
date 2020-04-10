@@ -2,11 +2,101 @@
 <html>
 
 <head>
-	SRTI v2 GUI - Documentation - HTML
+	<meta charset="UTF-8">
+    <title>SRTI v2 GUI - Documentation - HTML</title>
+	
+	<!-- ADDED to allow moving object -->
+	<style>
+		:root{
+			--containerheight: calc(100vh);
+			--containerwidth: calc(100vw);
+		}
+		.container{
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+		
+		.sidemenu {
+			background-color: #fff;
+			width: 20%;
+			height: calc(var(--containerheight) - 30px);
+			border: 1px solid black;
+			padding: 8px;
+			float: left;
+			vertical-align: bottom;
+			overflow: auto;
+		}
+		.maincontent {
+			blackground-color: #fff;
+			border: none;
+			width: 75%;
+			height: calc(var(--containerheight) - 30px);
+			padding: 0% 1% 0% 0%;
+			float: right;
+		}
+		.imageheader {
+			margin:8px 0px 8px 16px;
+			max-width: 288px;
+			min-width: 144px;
+			width: calc(var(--containerwidth)*0.18 - 16px);<!-- 180px; --><!-- (Math.min([calc(var(--containerwidth)*0.18),calc(var(--containerheight)*0.06*4.5)])); -->
+			height: calc(var(--containerwidth)*0.18*0.22);<!-- 40px; --><!--(Math.min([var(--containerheight)*0.06, var(--containerwidth)*0.18/4.5])); -->
+			
+		}
+	</style>
+	
+	<!-- <script src="jquery.js"></script> -->
+
 </head>
 
 <body>
-	(HTML documantion incomplete. Use PDF version instead.) 
+	<div class="docheader">
+		
+	</div>
+	<div class="sidemenu"> 
+		<img src="images/srti_logo_header_64.png" alt="logo" class="imageheader">
+		<ul>
+			<!-- <li><a href="javascript:void(0);" onclick="UpdateContent('srtiv2gui_doc_home.html');">Home</a></li> -->
+			<li><a href="srtiv2gui_doc_home.html" target="doccontent">Home</a></li>
+			<li><a href="srtiv2gui_doc_install.html" target="doccontent">How To Install / Download</a></li>
+		</ul>
+		<ul>
+			<li><a href="srtiv2gui_doc_v20000_introduction.html" target="doccontent">SRTI v2.00.00 - Introduction</a></li>
+			<li><a href="srtiv2gui_doc_v20000_rtiserver.html" target="doccontent">SRTI v2.00.00 - RTI Server</a></li>
+			<li><a href="srtiv2gui_doc_v20000_rtilibapi.html" target="doccontent">SRTI v2.00.00 - RTI Lib API</a></li>
+			<li><a href="srtiv2gui_doc_v20000_rtiwrapper.html" target="doccontent">SRTI v2.00.00 - RTI Wrapper</a></li>
+			<li><a href="srtiv2gui_doc_v20000_rticonfigurationfile.html" target="doccontent"> SRTI v2.00.00 - RTI Configuration File</a></li>
+			<li><a href="srtiv2gui_doc_v20000_usersimulations.html" target="doccontent">SRTI v2.00.00 - User Simulations and Language Differences</a></li>
+			<li><a href="srtiv2gui_doc_v20000_executionwithoutgui.html" target="doccontent">SRTI v2.00.00 - Execution (without GUI)</a></li>
+		</ul>
+		<ul>
+			<li><a href="srtiv2gui_doc_v2gui_introduction.html" target="doccontent">SRTI v2 GUI - Introduction</a></li>
+			<li><a href="srtiv2gui_doc_v2gui_layout.html" target="doccontent">SRTI v2 GUI - Layout</a></li>
+			<li><a href="srtiv2gui_doc_v2gui_addingsimulator.html" target="doccontent">SRTI v2 GUI - Adding Simulator</a></li>
+			<li><a href="srtiv2gui_doc_v2gui_addingmessage.html" target="doccontent">SRTI v2 GUI - Adding Message</a></li>
+			<li><a href="srtiv2gui_doc_v2gui_addingpublishsubscribe.html" target="doccontent">SRTI v2 GUI - Adding Publish / Subscribe</a></li>
+			<li><a href="srtiv2gui_doc_v2gui_deletingobjects.html" target="doccontent">SRTI v2 GUI - Deleting Objects</a></li>
+			<li><a href="srtiv2gui_doc_v2gui_differentstages.html" target="doccontent">SRTI v2 GUI - Different Stages</a></li>
+			<li><a href="srtiv2gui_doc_v2gui_additionalsimulatorproperties.html" target="doccontent">SRTI v2 GUI - Additional Simulator and Message Properties</a></li>
+			<li><a href="srtiv2gui_doc_v2gui_rtiserverproperties.html" target="doccontent">SRTI v2 GUI - RTI Server Properties</a></li>
+			<li><a href="srtiv2gui_doc_v2gui_savingproject.html" target="doccontent">SRTI v2 GUI - Saving Project</a></li>
+			<li><a href="srtiv2gui_doc_v2gui_executionwithgui.html" target="doccontent">SRTI v2 GUI - Execution (with GUI)</a></li>
+		</ul>
+	</div>
+	
+	<!--<div class="maincontent" id="doccontent"> 
+		
+		
+	</div>-->
+	<iframe class="maincontent" id="doccontent" name="doccontent" src="srtiv2gui_doc_home.html"></iframe>
+	
+	
+	<script>
+		<!-- ... could also have just set "_target" property in <a> link above, set to iframe name. -->
+		function UpdateContent(fileName){
+			document.getElementById('doccontent').src = fileName;
+		}
+	</script>
 </body>
 
 </html>

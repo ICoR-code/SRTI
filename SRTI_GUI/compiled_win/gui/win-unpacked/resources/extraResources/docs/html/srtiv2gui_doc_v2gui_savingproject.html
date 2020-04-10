@@ -1,0 +1,58 @@
+<html>
+	<body>
+		<h2>SRTI v2 GUI - Saving Project:</h2>
+		<p>This section covers details how the SRTI v2 GUI saves its project files.</p> 
+
+		<br> 
+		
+		<h3>How To Save:</h3>
+		<img src="images/srtiv2gui_doc_v2gui_savingproject_img_01.png" style="max-width:94%;margin:2%;" align="middle">
+		<p>To save a project, go to "File -> Save" or "File -> Save As" 
+		in the Menu Bar, and follow prompts to name your project if necessary,
+		and to choose a folder location. If successful, a notication will 
+		appear indicating the file has been saved. After saving, you can 
+		reopen the project through "File -> Open."</p>
+
+		<br>
+		
+		<h3>What Do The Save Files Look Like?:</h3>
+		<p>There are 3 types of files that get output when saving a project:</p>
+		<ul>
+			<li>1 ".project" file</li>
+			<li>'n' ".simdef" files</li>
+			<li>'n' ".mesdef" files</li>
+		</ul>
+		<p>All of these files are saved in ASCII-string JSON format, and 
+		can be viewed in any text editor.</p>
+		<p>The <b>.project</b> file is the main file, and it represents 
+		all information about your project. The additional files are not required
+		to reopen or transfer a project.</p>
+		<p>The <b>.simdef</b> files represent each simulator definition you 
+		added to your project. The data in this file is a portion of the 
+		information already stored in the .project file. The reason these 
+		are generated is to allow you to easily transfer simulator definitions 
+		for use in other projects or for other users (you can add a new 
+		simulator to a project using the "Import" option and selecting 
+		a .simdef file).</p>
+		<p>The <b>.mesdef</b> files serve the same purpose as the .simdef 
+		files, but represent each definition of a mesasge in the project 
+		rather than simulators.</p>
+		
+		<br>
+		
+		<h3>Exporting Files For Execution:</h3>
+		<p>Under "File" in the Menu Bar, there is also an option called "<b>Export Execute Files</b>."</p>
+		<p>When you make and save a project using the SRTI v2 GUI, you've only made a visual
+		representation. When you click "Export Execute Files," you generate and output 
+		the actual files required for a simulator system to run. This includes the 
+		configuration files an RTI Wrapper relies on, and the "settings.txt" file for 
+		the RTI Server. Each file is generated in the same folder location as 
+		the RTI Wrapper and RTI Server in the project.</p>
+		<p>Before trying to run a project, remember to both save your project and 
+		to export excute files for it to behave as expected.</p>
+		
+		<br>
+		
+		<p><a href="index.html" target="_blank">Return to main page for Documentation.</a></p>
+	</body>
+</html>

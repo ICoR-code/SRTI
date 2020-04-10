@@ -1,0 +1,55 @@
+<html>
+	<body>
+		<h2>SRTI v2 GUI - Execution (with GUI):</h2>
+		<p>This section covers details how to run a simulation system from within the SRTI v2 GUI.</p> 
+
+		<br> 
+		
+		<h3>How To Run:</h3>
+		<ol>
+			<li>First, click on "<b>File -> Export Execute Files</b>" in the Menu Bar.</li>
+			<li>Click the <b>POWER</b> button in the Execute Bar, and wait a few seconds.
+			You should see an instance of the RTI Server (with the Java-based Server GUI)
+			open, and it should indicate that all expected simulators have connected 
+			(this includes simulators that occur in any stage, not necesasrily just 
+			stage 0). After a few seconds, the PLAY and STOP buttons should become 
+			enabled. If launching a simulator in a large program (example: Matlab),
+			wait until everything has launched, not just for when the PLAY button
+			becomes available.</li>
+				<ul>If the RTI Server or simulators have not launched or connected as expected,
+				some further debugging may be required outside the SRTI v2 GUI.</ul>
+			<li>Click the <b>PLAY</b> button. It should tell the RTI Server to start the 
+			system, and the simulators will begin to run. Inside the SRTI v2 GUI,
+			you should see simulators on the Simulator Canvas begin to change color,
+			cycling from red to blue. The Inspector Panel should indicate the current 
+			timestep of the simulation system, and a Feed of the most recent messages
+			for you to analyze (each can be expanded to show their contents).</li>
+				<ul>If a simulator changes red and stays red, that means the system 
+				has halted, waiting for that simulator to "finish" the current step.</ul>
+			<img src="images/srtiv2gui_doc_v2gui_executionwithgui_img_01.png" style="max-width:94%;margin:2%;" align="middle">
+			<li>At any time, you can click the <b>PAUSE</b> button to temporarily pause 
+			the active system. You can resume by clicking PLAY again.</li>
+			<li>When you choose, you can click the <b>STOP</b> button to end execution and 
+			close the RTI Server and all active simulators. If an "End Condition" is satisfied,
+			it will cause this event automatically.</li>
+				<ul>When closing these processes, it is normal for error and warning prompts to occur.
+				Generally, these can be ignored.</ul>
+		</ol>
+
+		<br>
+
+		<h3>When To Use This Feature:</h3>
+		<p>Being able to launch and control your SRTI simulation system from one location 
+		is one of the major benefits of the SRTI v2 GUI. For most simulation systems
+		using SRTI v2.00.00, we recommend giving this a try.</p>
+		<p>However, if any errors occur, it can be difficult to debug the root cause 
+		from the SRTI v2 GUI. If this becomes a problem, we recommended running your 
+		system without the SRTI v2 GUI first, and to use the GUI for subsequent 
+		runs when it is confirmed to work. See HTML Documentation for 
+		<b>"SRTI v2.00.00 - Execution (without GUI)"</b> for more information.</p>
+
+		<br>
+		
+		<p><a href="index.html" target="_blank">Return to main page for Documentation.</a></p>
+	</body>
+</html>

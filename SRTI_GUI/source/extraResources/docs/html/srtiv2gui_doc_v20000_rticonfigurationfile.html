@@ -1,0 +1,118 @@
+<html>
+	<body>
+		<h2>SRTI v2.00.00 - RTI Configuration File:</h2>
+		<p>This section provides details on the format of the Configuration files that
+		allow the RTI Wrapper (part of SRTI v2.00.00) to function.</p> 
+
+		<br> 
+		
+		<h3>Brief Overview</h3>
+		<p>The RTI Wrapper is a new component introduced in SRTI v2.00.00,
+		and it provides a way for simulators to be added to an SRTI simulation 
+		system without any modification of the simulator's source code, without
+		any modification of the RTI Wrapper either. However,
+		the RTI Wrapper doesn't magically understand a simulator's purpose
+		or functionality: it relies on an external <b>configuration files</b>, written
+		is ASCII-string format (JSON), to outline the simulator it is
+		meant to reference, and how it relates to a larger simulation system.</p>
+		<p>There are 3 configuration files expected to be in the same 
+		file directory as the RTI Wrapper:</p>
+		<ul>
+			<li>Settings.json</li>
+			<li>XXX_global.json</li>
+			<li>XXX_config.json</li>
+		</ul>
+		<p><b>Settings.json</b> is a JSON file containing two variables: "global" and "configuration."
+		Settings.json is a case-sensitive-named file that the RTI Wrapper will always search for.
+		The two variables it contains are the names of the external files it needs to use:
+		by storing file names in this way, the other two files can be given any name, 
+		including custom names to better differentiate them from other simulator configuration 
+		files.</p>
+		<p><b>XXX_global.json</b> was intended to store information relevant for the entire simulation
+		system and not just a single simulator. This was originally planned to be in use, 
+		but ultimately was decided to be unecessary: this file is depricated and not in use.
+		Furthermore, we discovered the word "global" is a reserved word in Python, preventing
+		the current usage of it for a Python RTI Wrapper anyway! Regardless, it is kept 
+		to prevent any errors in old code that attempts to search and read it, but the contents
+		of the file are irrelevant.</p>
+		<p><b>XXX_config.json</b> is the main file that contains the parameters that define
+		a simulator relative to a simulation system in the SRTI. Its contents are listed in
+		the below section called <b>"Table of Configuration Properties,"</b> but an example file
+		might look something like this:</p>
+		<code>{
+"hostName": "localhost",
+"portNumber": "42010",
+"simulatorName": "A_Sim",
+"simulatorRef": "airport_20190104.A",
+"debugConsole":true,
+"debugFile":true,
+"dataOutFile":true,
+"initializeChannels":[
+],
+"stageChannels":[
+{
+"stage": 0,
+"order": 0,
+14
+"timestepDelta": 1,
+"timestepVarDelta": "",
+"timestepMul": 1
+}
+],
+"simulateChannels":[
+{
+"functionName": "Simulate",
+"timestepDelta": 1,
+"stage": 0
+}
+],
+"subscribedChannels": [
+{
+"messageName": "D",
+"oneTime": false,
+"varChannel": [
+{
+"valueName": "D_numberOfPeople",
+"varName": "changeInPeople"
+}
+],
+"mandatory": true,
+"relativeOrder": 0,
+"maxTimestep": 0,
+"timestepDelta": 1,
+"stage": 0
+}
+],
+"publishedChannels": [
+],
+"endConditions": [
+[
+{
+"varName": "people",
+"condition": "<=",
+"value": 0
+“varName2”:””
+}
+]
+],
+"stageConditions": [
+]
+}</code>
+		
+		<br>
+		<br>
+		<br>
+		
+		<h3>Table of Configuration Properties:</h3>
+		<p>[For the sake of time, this table is made available in better formatting at the 
+		following link:
+		<a href="https://github.com/ICoR-code/SRTI/blob/master/SRTI_Documentation/SRTI_v02_20_02_Documentation.pdf" target="_blank">
+		https://github.com/ICoR-code/SRTI/blob/master/SRTI_Documentation/SRTI_v02_20_02_Documentation.pdf</a>]</p>
+
+		
+		<br>
+		
+		
+		<p><a href="index.html" target="_blank">Return to main page for Documentation.</a></p>
+	</body>
+</html>

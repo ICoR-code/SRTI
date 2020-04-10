@@ -1,0 +1,56 @@
+<html>
+	<body>
+		<h2>SRTI v2 GUI - Different Stages:</h2>
+		<p>This section covers the purpose of different stages in an SRTI v2 GUI project.</p> 
+
+		<br> 
+		
+		<h3>Brief Overview:</h3>
+		<p>There are many different types of simulation design. It's possible a user would
+		want to design a simulation system that consists of multiple states or stages,
+		where the events being simulated change during execution. One example might be 
+		a scenario regarding natural disaster and recovery: one might want to first 
+		simulate the natural disaster over several hours, and then the recovery 
+		process that occurs over several days, all within one system.</p>
+		<p>SRTI v2.00.00 and the SRTI v2 GUI are capable of supporting this type
+		of design. Every simulator execution (including properties for what function
+		to call to initialize or simulate, and publishing and susbscribing to messages)
+		is given a stage number, and these definitions can be given a new stage
+		number to indicate they are to execute at a different time. By default,
+		all simulation systems begin by executing Stage 0, but a "stage condition"
+		can define a condition that must be verified to transition to a new 
+		specified stage. These transitions can occur in any order (you don't need
+		to restrict yourself to 0 -> 1 -> 2 -> ...). Each stage can have it's own
+		initialize logic for messages and functions.</p>
+		<img src="images/srtiv2gui_doc_v2gui_differentstages_img_01.png" style="max-width:94%;margin:2%;" align="middle">
+		
+		<br>
+		
+		<h3>Creating New Stages in the v2 GUI:</h3>
+		<p>The "+" button on the Stage Bar allows you to add a new stage. By default, 
+		you start with one stage, "Stage 0." After clicking "+" once, you should see
+		two buttons, "0" and "1." You can repeat this for as many stages as you need.</p>
+		<p>Click on a number to change to a new stage. The Simulator Canvas will update
+		accordingly to display the current stage.</p>
+		<p><i>At this time, the SRTI v2 GUI does not allow you to delete stages. 
+		You can clear objects from a stage and remove any "stage conditions" that 
+		would lead to them. Alternatively, it is possible to modify the .project file
+		in a text editor that represents the SRTI v2 GUI and reopen it.</i></p>
+		
+		<br>
+		
+		<h3>Creating Stage Conditions:</h3>
+		<p>Each simulator has the ability to save a "stage condition" property,
+		with the option to check the value of a variable from an active simulator
+		to qualify whether or not the stage should transition. You cannot define
+		a single condition that checks multiple simulators at once. More details
+		on this can be found in the HTML Documentation under 
+		"<b>SRTI v2 GUI - Additional Simulator and Message Properties</b>."</p>
+
+		
+		<br>
+		
+		
+		<p><a href="index.html" target="_blank">Return to main page for Documentation.</a></p>
+	</body>
+</html>

@@ -1,0 +1,60 @@
+<html>
+	<body>
+		<h2>SRTI v2 GUI - Adding Simulator:</h2>
+		<p>This section outlines the steps to add a simulator definition to 
+		a project in the SRTI v2 GUI.</p> 
+
+		<br> 
+		
+		<h3>Steps:</h3>
+		<ol>
+			<li>In "Select" mode, click on the "+ New" button at the top of the Object List Panel.</li>
+			<img src="images/srtiv2gui_doc_v2gui_addingsimulator_img_01.png" style="max-width:94%;margin:2%;" align="middle">
+			<li>Select "Simulator" as the new object you want to add, and click "Next."</li>
+			<ul>
+				Alternatively, you can select "Import...," which will ask you to select a .simdef file, which is 
+				automatically generated when you save other projects in the SRTI v2 GUI. If selecting this option,
+				the following steps will become unecessary, although you may want to edit some "file location" properties
+				if the simulator was originally on a different machine.
+			</ul>
+			<img src="images/srtiv2gui_doc_v2gui_addingsimulator_img_02.png" style="max-width:94%;margin:2%;" align="middle">
+			<li>Fill in "Simulator Name" (name that the RTI Server will recognize it by),
+			"Reference Name" (name of simulator class), "Wrapper File Location" (folder
+			location of the RTI Wrapper file, which should also contain the simulator file(s)),
+			and "Execute Command" (the terminal command(s) you would use to launch the RTI Wrapper
+			from that folder location).</li>
+			<img src="images/srtiv2gui_doc_v2gui_addingsimulator_img_03.png" style="max-width:94%;margin:2%;" align="middle">
+			<li>Add public variables and functions that exist in the simulator, if required 
+			to use in the simulation system. </li>
+			<img src="images/srtiv2gui_doc_v2gui_addingsimulator_img_04.png" style="max-width:94%;margin:2%;" align="middle">
+			<li>When finished, you'll see the simulator added to the object list in the project.</li>
+			<ul>
+				If you want a second chance to edit the simulator definition you added, you
+				can click on the entry in the Simulator List Panel in "Configure/Edit" mode.
+			</ul>
+			<img src="images/srtiv2gui_doc_v2gui_addingsimulator_img_05.png" style="max-width:94%;margin:2%;" align="middle">
+			<li>Click on the simulator entry in the Simulator List Panel, and it will be 
+			added to the Simulator Canvas in the upper-left corner.</li>
+			<ul>
+				<li>If you want to add a simulator to a specific stage, first select the stage number
+				to make it visible on the canvas, and then click on the simulator entry
+				in the Simulator List Panel.</li>
+				<li>A simulator can only be added once in a stage on the canvas, and it will
+				disable itself to prevent you from adding it twice. If you need to add a simulator
+				multiple times, it is recommended that you duplicate the simulator files into
+				a different folder location, and add them as a new simulator with a different name.</li>
+			</ul>
+			<img src="images/srtiv2gui_doc_v2gui_addingsimulator_img_06.png" style="max-width:94%;margin:2%;" align="middle">
+			<li>Click on the simulator on the Canvas to place it anywhere. It will automatically
+			snap along the grid. Horizontal placement
+			is for personal organization, but vertical placement defines order of execution,
+			where simulators at the top will run before simulators below.</li>
+			<img src="images/srtiv2gui_doc_v2gui_addingsimulator_img_07.png" style="max-width:94%;margin:2%;" align="middle">
+		</ol>
+		
+		<br>
+		
+		
+		<p><a href="index.html" target="_blank">Return to main page for Documentation.</a></p>
+	</body>
+</html>

@@ -1,0 +1,61 @@
+<html>
+	<body>
+		<h2>SRTI v2 GUI - Adding Publish / Subscribe:</h2>
+		<p>This section outlines the steps to add a publish / subscribe
+		connection between a simulator and a message in the SRTI v2 GUI.</p> 
+
+		<br> 
+		
+		<h3>Steps:</h3>
+		<ol>
+			<li>After having placed a simulator and message on the canvas, change to "connection" mode.</li>
+			<img src="images/srtiv2gui_doc_v2gui_addingpublishsubscribe_img_01.png" style="max-width:94%;margin:2%;" align="middle">
+			<li><b>To add a "publish" connection:</b> First, click on a simulator. Then click on the message you 
+			want it to publish to. A window will appear asking you to set configuration variables
+			that define this connection.</li>
+			<ul>To undo a selection, you can click anywhere on the canvas that isn't a simulator or message.</ul>
+			<img src="images/srtiv2gui_doc_v2gui_addingpublishsubscribe_img_02.png" style="max-width:94%;margin:2%;" align="middle">
+			<img src="images/srtiv2gui_doc_v2gui_addingpublishsubscribe_img_03.png" style="max-width:94%;margin:2%;" align="middle">
+			<li>The "Publish Details" window is similar to the "Subscribe Details" window.
+			You will see a list of variables that exist in the message, and will have the 
+			option to choose a variable of the same datatype from the simulator to correspond
+			to that variable (this means the value in the simulator will be copied to the 
+			message at the time the message is published). There are additional variables
+			that determine when and how often this message should be published by this 
+			simulator; see the HTML Documentation for <b>"SRTI v2.00.00 - RTI Configuration File"</b>
+			for a better understanding of these properties.</li>
+			<li>After clicking "Confirm," the window will close, and you will see a red box
+			with an arrow leading from the simulator to the message.</li>
+			<ul>If you want a second chance to edit this connection, you can click on the red box
+			in "Configure/Edit" mode.</ul>
+			<img src="images/srtiv2gui_doc_v2gui_addingpublishsubscribe_img_04.png" style="max-width:94%;margin:2%;" align="middle">
+			<li><b>To add a "subscribe" connection:</b> First, click on a message. Then click on the simulator you 
+			want to subscribe to that message. A window will appear asking you to set configuration variables
+			that define this connection.</li>
+			<ul>To undo a selection, you can click anywhere on the canvas that isn't a simulator or message.</ul>
+			<img src="images/srtiv2gui_doc_v2gui_addingpublishsubscribe_img_05.png" style="max-width:94%;margin:2%;" align="middle">
+			<img src="images/srtiv2gui_doc_v2gui_addingpublishsubscribe_img_06.png" style="max-width:94%;margin:2%;" align="middle">
+			<li>The "Subscribe Details" window is similar to the "Subscribe Details" window.
+			You will see a list of variables that exist in the simulator, and will have the 
+			option to choose a variable of the same datatype from the message to correspond
+			to that variable (this means the value in the message will be copied to the 
+			simulator at the time the message is accessed). There are additional variables
+			that determine when and how often this message should be published by this 
+			simulator; see the HTML Documentation for <b>"SRTI v2.00.00 - RTI Configuration File"</b>
+			for a better understanding of these properties.</li>
+			<li>After clicking "Confirm," the window will close, and you will see a red box
+			with an arrow leading from the message to the simulator.</li>
+			<ul>If you want a second chance to edit this connection, you can click on the red box
+			in "Configure/Edit" mode.</ul>
+			<img src="images/srtiv2gui_doc_v2gui_addingpublishsubscribe_img_07.png" style="max-width:94%;margin:2%;" align="middle">
+			<li><b>Remember:</b> A simulator can publish and subscribe to multiple messages. 
+			A message can be published by multiple simulators, and subscribed to
+			by multiple simulators.</li>
+		</ol>
+		
+		<br>
+		
+		
+		<p><a href="index.html" target="_blank">Return to main page for Documentation.</a></p>
+	</body>
+</html>

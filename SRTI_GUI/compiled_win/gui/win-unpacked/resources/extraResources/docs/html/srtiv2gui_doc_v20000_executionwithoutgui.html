@@ -1,0 +1,63 @@
+<html>
+	<body>
+		<h2>SRTI v2.00.00 - Execution (without GUI):</h2>
+		<p>This is a reminder of the steps to take to start an SRTI v2.00.00 system.
+		Installing the Java Runtime Environment (JRE) is the minimum requirement 
+		to run the SRTI and its components.
+		Further details about language-dependent commands can be reviewed in the 
+		HTML documentation under <b>"SRTI v2.00.00 - RTI Wrapper"</b> and 
+		<b>"SRTI v2.00.00 - User Simulations and Language Differences."</b></p> 
+
+		<br> 
+		
+		<h3>Ordered Steps to Execute:</h3>
+		<p>You can generally follow these steps to manually launch an SRTI v2.00.00 system.</p>
+		<ol>
+			<li>Start the RTI Server.</li>
+			<ul>
+				<li>Download and double-click on SRTI_v2_22_02.jar. A small window should appear 
+				listing the hostname and portnumber.</li>
+				<li>To set certain configuration details for the RTI Server, download "settings.txt" 
+				and place in the same file directory.</li>
+			</ul>
+			<li>Launch each individual simulator.</li>
+			<ul>
+				<li>If you haven't already done so, edit and prepare the appropriate 
+				configuration files for the RTI Wrapper. This includes ensuring the
+				port number to connect to the RTI Server is correct.</li>
+				<li>Download and place the appropriate-language RTI Wrapper in the 
+				same directory as your simulator file(s).</li>
+				<li>Run the RTI Wrapper. Depending on the Wrapper you use, you may
+				need to launch it through a command prompt / terminal.</li>
+				<li>You should see each simulator listed in the Server GUI 
+				when they each connect. If not, check for any errors from either
+				the RTI Wrapper or RTI Server. Generally, it is recommended to 
+				restart the RTI Server if something fails.</li>
+			</ul>
+			<li>When all simulators have been connected, click on the 
+			"Send Start Request To All" button on the Server GUI.</li>
+			<ul>
+				<li>You should see the Server GUI updating with new messages.</li>
+			</ul>
+			<li>If you wish to pause / resume the simulation system temporarily,
+			click on the "Send Pause Request To Server" button.</li>
+			<li>To end the simulation system, close the Server GUI.</li>
+			<ul>
+				<li>Each connected simulator should quit automatically, or 
+				throw an error and remain open, depending on the language.
+				Check and close each simulator manually if necessary to avoid
+				ghost processes.</li>
+			</ul>
+		</ol>
+		<p>Running each simulator manually can be tedious for large simulation systems 
+		(as an example, if you have 10 simulators, you could need to have 10 command line / terminal
+		windows active). The SRTI v2 GUI helps manage and automate this process, but 
+		relies on these core instructions, which can be replicated on a variety of systems,
+		including remote or cluster servers.</p>
+		
+		<br>
+		
+		
+		<p><a href="index.html" target="_blank">Return to main page for Documentation.</a></p>
+	</body>
+</html>

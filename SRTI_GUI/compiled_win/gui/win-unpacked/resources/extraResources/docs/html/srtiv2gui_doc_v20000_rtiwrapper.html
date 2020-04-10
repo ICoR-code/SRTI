@@ -1,0 +1,180 @@
+<html>
+	<body>
+		<h2>SRTI v2.00.00 - RTI Wrapper:</h2>
+		<p>This section provides extra details on the functionality of the RTI Wrapper.</p>
+		
+		<br>
+		
+		<h3>Brief Overview:</h3>
+		<p>The <b>RTI Wrapper</b> is a new, important component that differentiates
+		SRTI v2.00.00 from v1.00.00. Originally, the user would have to add lines of 
+		programming to their simulator's source code to call upon functions in the 
+		RTI Lib API, to initiate and maintain a connection to the RTI Server, and
+		to publish or receive messages from other parts of a simulation system.
+		This makes a simulator dependent on the SRTI, making it less portable
+		and requiring extra responsibility on the user. The RTI Wrapper now manages
+		these responsibilities, both by calling the RTI Lib API functions at
+		the correct times, and by copying and setting data saved in public variables
+		in a connected simulator.</p>
+		<p>The following image illustrates this difference, as well as which 
+		component is accessing the other.</p>
+		<img src="images/srtiv2gui_doc_v20000rtiwrapper_img_01.png" style="max-width:94%;margin:2%;" align="middle">
+		<p>Normally, a computer program couldn't arbitrarily access functions or variables
+		from an external program, if it isn't known until after compilation and before runtime.
+		But the RTI Wrapper accomplishes this, allowing it to be distributed as a pre-compiled
+		program, such that the user doesn't have to compile it. 
+		This is made possible thanks to a programming paradigm called <b>"reflection."</b>
+		A feature available in most modern lanauges, it allows a program to start an
+		instance of an arbitrary program / object-oriented-class, and to query information
+		from it, including names of publicly-accessible functions and variables. This 
+		feature also allows accessing the data stored in these variables, or calling 
+		an external function. 
+		</p>
+		<p>The general pattern of utilizing the RTI Lib API is fairly consistent
+		(set simulator name, connect to open RTI Server instance, subscribe to relevant 
+		messages, wait for next expected message, publish new message, etc.). Similarly,
+		the moments of when a simulator's data variables or simulate functions need to
+		be called are generally the same. With this in mind, the RTI Wrapper was written
+		to execute these steps in an expected order, and should satisfy most requirements
+		that would have been met by a user directly using the RTI Lib API.</p>
+		<p>There are limitations to this. "Reflection" is not supported by all 
+		programming languages, especially older ones (C++ is a major example), and
+		the recommended alternative would be to write a custom Wrapper for a specific
+		simulator, which can be a major task. Even with reflection, one program couldn't
+		easily access any other program written in a different language, so our
+		general guidance is that a RTI Wrapper must be written in the same language
+		as the user's simulator (a handful of RTI Wrapper examples in different languages
+		are provided). It is also impossible for the RTI Wrapper to automatically know
+		what variables and functions in a simulator are of interest: to guide it,
+		a user must still provide some information, which in the official case, is
+		provided in an external ASCII-text JSON file as a large set of parameters.
+		And despite a user's simulator not requiring direct reference to the SRTI,
+		it has to be written in an object-oriented pattern, to make variables and functions
+		accessible by an external program, and that functions must be written to accomplish
+		one "timestep" of a simulation rather than its entirety: our internal experience shows 
+		that this might type of design might be
+		be unintuitive to some users (computer programming allows for an infinite number
+		of design patterns), and might require significant modification to be
+		compatible.</p>
+		<p>Where possible, the RTI Wrapper is provided as a pre-compiled program.
+		This assumes that the user's simulator is also pre-compiled.
+		In some supported languages, like Matlab or Python, the idea of 'compiling' 
+		the scripted language isn't possible, in which case a raw script in the same
+		language is provided, to be run in the same way the original simulator would be
+		(and allowing the user's simulator to not be pre-compiled to be accessed).</p>
+		<p>The RTI Wrapper handles translating variables to string format when necessary
+		to send to the RTI Server, and translating back again to expected raw format for
+		the local language. Supported datatypes include <b>[strings, integer, double, boolean]</b>.
+		Arrays and multi-dimensional arrays are also supported (translated into JSON-array
+		format when added to an SRTI message), but different types in given languages are
+		expected <b>[Java = array [], Matlab = matrix, NetLogo = List]</b>. Non-primitive types 
+		(example: a 'struct' or 'enum' type) are not supported natively by the RTI Wrapper,
+		and would have to be translated into a simpler format within the simulator.</p>
+
+		<br>
+
+		<h3>Configuration Files:</h3>
+		<p>An important part that allows the RTI Wrapper to function are the configuration files
+		placed in the same folder location as the Wrapper application. This file provides information
+		to the Wrapper regarding the simulator it corresponds to, what functions and variables
+		inside that simulator to utilize, and how it corresponds to the rest of the active 
+		simulation system, all without any modification or re-compilation required of the Wrapper.</p>
+		<p>These configuration files are in JSON format, and can be read and modified in a 
+		typical text editor on your operating system (Notepad, Notepad++, gedit, etc.). 
+		Due to its complexity, one of the major purposes of the <b>SRTI v2 GUI</b> is to
+		provide a graphic interface to help visualize and define the internal properties for
+		the configuration file, and to generate them for use.</p>
+		<p>More information about the configuration files can be reviewed in the HTML 
+		Documentation under <b>"SRTI v2.00.00 - RTI Configuration File."</b></p>
+
+		<br>
+
+		<h3>How To Use (Launch) - Java Version:</h3>
+		<p>The RTI Server is contained in an executable .jar file that can be opened by 
+		double-clicking on it in your file system, like you would with most applications.
+		However, if this was attempted with the RTI Wrapper, an error would be thrown. This is
+		because the RTI Wrapper would not have access to the compiled-Java simulator it is
+		meant to function with.</p>
+		<p>Instead, the RTI Wrapper must be launched through a command line terminal, 
+		specifying an additional property called "classpath" (cp), and specifying to launch
+		the RTI Wrapper's "main" function as the initial starting point. Suppose a user has a
+		pre-compiled Java simulator stored in "User_Simulator_01.jar": The command in Windows
+		looks like this:</p>
+		<ul>
+		<code>java -cp "User_Simulator_01.jar;SRTI_JavaWrapper_v2_22_02.jar" main.Wrapper</code>
+		</ul>
+		<p>This command specifies a classpath (-cp) that includes both the original simulator class
+		and the Wrapper class for Java, and requests to start the class "Wrapper" stored in package "main"
+		inside "SRTI_JavaWrapper_v2_22_02.jar". If the original simulator has a package or program of the same
+		name, this command might throw an error, claiming the Wrapper class cannot be found.
+		</p>
+		<p>For Mac and Linux, it looks slightly different:</p>
+		<ul>
+		<code>java -cp "User_Simulator_01.jar:SRTI_JavaWrapper_v2_22_02.jar" main.Wrapper</code>
+		</ul>
+		<p>Keep in mind that the RTI Wrapper for <b>Java</b> was tested and intended to run with
+		a pre-compiled .jar version of a user-provided Java simulator. This is different from
+		the other provided RTI Wrappers (Matlab, NetLogo, Python), which are scripting and 
+		interpreted languages that don't typically have a concept of "pre-compiling" code
+		for distribution. More information on the differences between languages can be reviewed
+		in the HTML Documentation under <b>"SRTI v2.00.00 - User Simulations and Language 
+		Differences."</b></p>
+		
+		<br>
+
+		<h3>How To Use (Launch) - Other Languages:</h3>
+		<p>For <b>Matlab</b>, the corresponding Wrapper is called "SRTI_Wrapper_v2_22_02.m". 
+		It is not pre-compiled, and can be copied in the same location as a un-compiled 
+		Matlab simulator to access it. Because the Wrapper isn't pre-compiled, it expects a copy of 
+		SRTI_v2_22_02.jar (containing the RTI Lib API) to be in the same directory.
+		To start it, open the Matlab Wrapper in Mathworks' Matlab program
+		interface (this requires a licensed installtion of Matlab), and run it: it should
+		be able to access the correct simulator script by reading configuration files saved 
+		in the same location. </p>
+		<p>Alternatively, the program can be run in a command line interface with a command
+		similar to the following (further information can be found in Matlab's documentation):</p>
+		<ul>
+		<code>matlab -r "try, run('SRTI_Wrapper_v2_22_02.m');end;quit;"</code>
+		</ul>
+		<p>For <b>NetLogo</b> (an agent-model-inspred scripting language), 
+		the language happens to have limited compatibility with Java.
+		The NetLogo SRTI Wrapper was written in Java, pre-compiled with a full installation of
+		NetLogo 6.1, allowing it to open a NetLogo project directly, even on computer systems without
+		a NetLogo installation. Some differences between NetLogo versions, and restricted access to 
+		some non-standard NetLogo plugins, might prevent the Wrapper from successfully running
+		a NetLogo simulator.</p>
+		<p>Since the NetLogo Wrapper was written in Java, a Java Runtime Environment (JRE) 
+		must be installed, and the Wrapper can be run in the same way as the Java version.
+		The classpath is no longer necessary, but is written similarly here for consistency:</p>
+		<ul>
+		<code>java -cp "SRTI_NetLogoWrapper_v2_22_02.jar" main.Wrapper</code>
+		</ul>
+		
+		<br>
+
+		<h3>Underlying Design (programming):</h3>
+		<p>In addition to the general expected order of events (connect to RTI Server, publish messages, etc.),
+		the RTI Wrapper also allows subscribing to "initial" messages before executing a simulator's
+		functions, updating what simulator properties to use when a stage changes,
+		and to let the RTI Server to know when to proceed to a new timestep, 
+		it waits for a message called "RTI_StartStep" and sends "RTI_FinishStep" when it has finished.
+		Because of this complexity, getting familar with the source code design 
+		is beneficial, but not required if a user relies on existing, provided RTI Wrappers.
+		</p>
+		<p>If a user needs to program a custom RTI Wrapper for their specific language or simulator,
+		it is recommended to study the source code for the Java version of the RTI Wrapper 
+		(considered to be the master version), or to study its similarities to RTI Wrappers
+		in other languages. The source code can be accessed here: 
+		<a href="https://github.com/ICoR-code/SRTI/tree/master/SRTI_Source/v2_Java_Sim_Wrapper_Source/source/SRTI_v2_00_00_Wrapper_Java" 
+		target="_blank">https://github.com/ICoR-code/SRTI/tree/master/SRTI_Source/v2_Java_Sim_Wrapper_Source/source/SRTI_v2_00_00_Wrapper_Java
+		</a>. <b>"Wrapper.java"</b> is the main class.</p>
+		<p>A more detailed overview of the RTI Wrapper internal design can be
+		read here: 
+		<a href="https://github.com/ICoR-code/SRTI/blob/master/SRTI_Documentation/SRTI_v02_20_02_Documentation.pdf"
+		target="_blank">https://github.com/ICoR-code/SRTI/blob/master/SRTI_Documentation/SRTI_v02_20_02_Documentation.pdf</a></p>
+		<p>If a new language RTI Wrapper is unable to access the RTI Lib API
+		in the pre-compiled Java .jar file, then the RTI Lib API may also need to be
+		re-written in the native language of the new simulator.</p>
+	
+	</body>
+</html>

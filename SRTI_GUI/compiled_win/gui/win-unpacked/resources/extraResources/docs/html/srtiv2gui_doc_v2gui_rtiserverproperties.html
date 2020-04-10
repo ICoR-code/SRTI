@@ -1,0 +1,52 @@
+<html>
+	<body>
+		<h2>SRTI v2 GUI - RTI Server Properties:</h2>
+		<p>This section covers details regarding the RTI Server related
+		to the SRTI v2 GUI.</p> 
+
+		<br> 
+		
+		<h3>Brief Overview:</h3>
+		<p>The SRTI v2 GUI comes with a copy of the RTI Server (.jar) file, either 
+		in the single packed version of the executable, or in 
+		<i>"*\resources\extraResources\srti_server\"</i> in the root directory
+		of the unpacked version of the executable. The source code of the 
+		SRTI v2 GUI checks this location for that .jar file by name.</p>
+		<p>If you wish to use a different version of the RTI Server, or 
+		a duplicate version in a different location, then you can change 
+		which version to reference within the GUI itself. In some cases,
+		trying to run the simulation system might trigger an error, 
+		because of a bad reference to the RTI Server, in which case you 
+		can reset the correct reference.</p>
+		
+		<br>
+		
+		<h3>How To Acces These Properties:</h3>
+		<img src="images/srtiv2gui_doc_v2gui_rtiserverproperties_img_01.png" style="max-width:94%;margin:2%;" align="middle">
+		<p>On the Action Mode Bar, select "configure/edit" mode. In this mode,
+		when you select any object, properties and buttons will appear in the
+		Inpsector Panel. Select the RTI Server in the Message Canvas to see 
+		a button to "Change Launch Parameters."</p>
+
+		<br>
+		
+		<h3>RTI Server Properties:</h3>
+		<img src="images/srtiv2gui_doc_v2gui_rtiserverproperties_img_02.png" style="max-width:94%;margin:2%;" align="middle">
+		<p>"Change Launch Parameters" will allow you to change 
+		the RTI Server file to use (the .jar file within the v2 GUI 
+		folder directory is used by default), as well as whether 
+		you are running on "localhost" (more reliable to use this string 
+		directly if all simulators are running on the local machine), or 
+		"network" (will use your computer's public IP address), and 
+		what preferred port number the RTI Server should launch on.</p>
+		<p>Both the RTI Server and all simulators will use the properties 
+		set here to connect with each other.</p>
+
+		<br>
+		
+		<br>
+		
+		
+		<p><a href="index.html" target="_blank">Return to main page for Documentation.</a></p>
+	</body>
+</html>

@@ -1,0 +1,49 @@
+<html>
+	<body>
+		<h2>SRTI v2 GUI - Adding Message:</h2>
+		<p>This section outlines the steps to add a message definition to 
+		a project in the SRTI v2 GUI.</p> 
+
+		<br> 
+		
+		<h3>Steps:</h3>
+		<ol>
+			<li>In "Select" mode, click on the "+ New" button at the top of the Object List Panel.</li>
+			<img src="images/srtiv2gui_doc_v2gui_addingsimulator_img_01.png" style="max-width:94%;margin:2%;" align="middle">
+			<li>Select "Message" as the new object you want to add, and click "Next."</li>
+			<ul>
+				Alternatively, you can select "Import...," which will ask you to select a .mesdef file, which is 
+				automatically generated when you save other projects in the SRTI v2 GUI. If selecting this option,
+				the following steps will become unecessary.
+			</ul>
+			<img src="images/srtiv2gui_doc_v2gui_addingmessage_img_02.png" style="max-width:94%;margin:2%;" align="middle">
+			<li>Fill in "Message Name" (name that the RTI Server and simulators will recognize it by),
+			and add any variables the message will contain (the variable names can be arbitrary,
+			but the datatypes should match corresponding types that will be copied to and from
+			simulators (the data will not be cast to a different type by the SRTI).</li>
+			<img src="images/srtiv2gui_doc_v2gui_addingmessage_img_03.png" style="max-width:94%;margin:2%;" align="middle">
+			<li>When finished, you'll see the message added to the Object List Panel in the project.</li>
+			<ul>
+				If you want a second chance to edit the message definition you added, you
+				can click on the entry in the Message List Panel in "Configure/Edit" mode.
+			</ul>
+			<img src="images/srtiv2gui_doc_v2gui_addingmessage_img_04.png" style="max-width:94%;margin:2%;" align="middle">
+			<li>Click on the simulator entry in the Simulator List Panel, and it will be 
+			added to the Message Canvas.</li>
+			<ul>
+				<li>The order of the message in the canvas is irrelevant. Also, the Message Canvas
+				remains consistent in different stages: the RTI Server always listens to and 
+				receives messages regardless of stage, so this representation is more appropriate.
+				After adding it to the canvas, you will be unable to add the same message to the 
+				canvas a second time (you cannot have two messages of the same name: that would
+				confuse the RTI Server as to what each simulator is subscribed to!).</li>
+			</ul>
+			<img src="images/srtiv2gui_doc_v2gui_addingmessage_img_05.png" style="max-width:94%;margin:2%;" align="middle">
+		</ol>
+		
+		<br>
+		
+		
+		<p><a href="index.html" target="_blank">Return to main page for Documentation.</a></p>
+	</body>
+</html>

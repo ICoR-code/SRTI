@@ -1,0 +1,109 @@
+<html>
+	<body>
+		<h2>SRTI v2 GUI - Additional Simulator and Message Properties:</h2>
+		<p>This section covers additional important properties you can modify
+		for simulators, and messages in your project. Access to these can
+		allow you to modify both previously set and new properties.</p> 
+
+		<br> 
+		
+		<h3>How To Acces These Properties:</h3>
+		<img src="images/srtiv2gui_doc_v2gui_additionalsimulatorproperties_img_01.png" style="max-width:94%;margin:2%;" align="middle">
+		<p>On the Action Mode Bar, select "configure/edit" mode. In this mode,
+		when you select any object, properties and buttons will appear in the
+		Inpsector Panel.</p>
+
+		<br>
+		
+		<h3>Simulator Properties:</h3>
+		<p>If you click on a simulator in the Simulator Object List Panel,
+		you'll see something like this:</p>
+		<img src="images/srtiv2gui_doc_v2gui_additionalsimulatorproperties_img_02.png" style="max-width:94%;margin:2%;" align="middle">
+		<p>"Change Properties" will let you modify the properties
+		you defined when you first added the simulator,
+		including name, RTI Wrapper folder location, 
+		execute command, and listing public variables and functions.</p>
+		<p>"Configure Remote SSH Details" will allow you to 
+		utilize an experimental feature, to use an included Java 
+		program to open an SSH connection to a remote server 
+		storing the simulator. By default, this will assume your
+		simulator is "Local" (no SSH connection required), but you
+		can change this to "SSH Remote" and fill in the Host IP 
+		and Port to connect to, username and password, and the
+		directory location of the simulator relative to the default
+		root location at login.</p>
+		<img src="images/srtiv2gui_doc_v2gui_additionalsimulatorproperties_img_03.png" style="max-width:94%;margin:2%;" align="middle">
+
+		<br>
+
+		<h3>Message Properties:</h3>
+		<p>If you click on a simulator in the Message Object List Panel,
+		you'll see something like this:</p>
+		<img src="images/srtiv2gui_doc_v2gui_additionalsimulatorproperties_img_04.png" style="max-width:94%;margin:2%;" align="middle">
+		<p>"Change Properties" will let you modify the properties
+		you defined when you first added the message,
+		including name, and variables.</p>
+
+		<br>
+
+		<h3>Simulator Object Properties:</h3>
+		<p>If you click on a simulator in the Simulator Canvas,
+		you'll see something like this:</p>
+		<img src="images/srtiv2gui_doc_v2gui_additionalsimulatorproperties_img_05.png" style="max-width:94%;margin:2%;" align="middle">
+		<p>The options here are not set by default, but some of them 
+		are important to set before running your simulation system. Details 
+		regarding the meaning of these properties can be reviewed in the 
+		HTML documentation under "<b>SRTI v2.00.00 - RTI Configuration File</b>."</p>
+		<img src="images/srtiv2gui_doc_v2gui_additionalsimulatorproperties_img_06.png" style="max-width:94%;margin:2%;" align="middle">
+		<p>"Change Local Time" lets you change whether or not the 
+		simulator should run at every step, or every 'n' steps, or
+		every few steps based on the value of a variable within the 
+		simulator itself.
+		</p>
+		<img src="images/srtiv2gui_doc_v2gui_additionalsimulatorproperties_img_07.png" style="max-width:94%;margin:2%;" align="middle">
+		<p>"Set Initialize and Simulate Functions" lets you 
+		pick one function within the simulator to be called 
+		at the beginning of the simulation (Initialize) or 
+		at each timestep (Simulate).</p>
+		<img src="images/srtiv2gui_doc_v2gui_additionalsimulatorproperties_img_08.png" style="max-width:94%;margin:2%;" align="middle">
+		<p>"Change Stage Transition Conditions" lets you define 
+		conditions to be met to change from this stage to a different
+		stage. These conditions rely on comparing a variable inside 
+		the simulator (or a proprietary variable in the SRTI system)
+		against a value or another variable. You can require that 
+		multiple conditions are met together (first panel), or that
+		one condition of the collection is met (second, final panel).
+		You must click "Add to Conditions List" to finalize the 
+		condition.</p>
+		<p>"Change End System Conditions"
+		is similar to this, but without the ability to set the 
+		destination stage to transition to (instead, it will request 
+		that each RTI Wrapper finish execution).</p>
+		<br>
+		
+		<h3>Message Object Properties:</h3>
+		<p>There are no "local" properties to change when clicking on a 
+		message on the Message Cnavas.</p>
+
+		<br>
+		
+		<h3>Publish / Subscribe Properties:</h3>
+		<p>You can click on a red box underneath a simulator on the Simulator Canvas
+		representing a publish or subscribe connection to modify it. It will allow
+		you to modify properties you previously defined (no new properties).</p>
+
+		<br>
+		
+		<h3>RTI Server Properties:</h3>
+		<p>You can click on the RTI Server object in the Message Canvas to access
+		its properties. More details on this can be found in the HTML documentation
+		under "<b>SRTI v2 GUI - RTI Server Properties</b>."</p>
+
+		<br>
+		
+		<br>
+		
+		
+		<p><a href="index.html" target="_blank">Return to main page for Documentation.</a></p>
+	</body>
+</html>

@@ -1,0 +1,40 @@
+<html>
+	<body>
+		<h2>SRTI v2 GUI - Layout:</h2>
+		<p>This section explains the basic layout of the SRTI v2 GUI.</p> 
+
+		<br> 
+		
+		<h3>Layout Map:</h3>
+		<img src="images/srtiv2gui_doc_v2gui_layout_img_01.png" style="max-width:94%;margin:2%;" align="middle">
+		<ol>
+			<li><b>Menu Bar:</b> Access to functions like "New Project," "Save Project," 
+				"Export Execute FIles", "Undo" and "Redo."</li>
+			<li><b>Action Mode Bar:</b> Changes the action the mouse cursor does 
+				[select object, configure/edit object, create publish/subscribe connection, delete object].</li>
+			<li><b>Execute Bar:</b> For a finished project, allows the user to Start, Play, Pause and Stop
+				an SRTI v2.00.00 simulation system (launches the set of system commands required to open
+				the RTI Server and individual simulators).</li>
+			<li><b>Object List Panel:</b> List of simulator and message definitions saved for this project.
+				Can create a new definition, or import an existing definition from a previous project.</li>
+			<li><b>Object (Simulator) List Panel:</b> A list of simulators that can be added to the canvas.
+				User must define a simulator here first to be used in the project.</li>
+			<li><b>Object (Message) List Panel:</b> A list of messages that can be added to the canvas.
+				User must define a message here first to be used in the project.</li>
+			<li><b>Simulator Canvas:</b> A canvas that visually defines the order of execution of 
+				simulators in a given stage. Also defines publish/subscribe connections.</li>
+			<li><b>Message Canvas: A canvas that visually defines message channels that a 
+				simulator in the project can publish or subscribe to.</b></li>
+			<li><b>Inspector Panel:</b> When selecting an object in the v2 GUI in "configure/edit object" 
+				mode, optional windows to edit certain properties show up in this panel.</li>
+			<li><b>Stage Bar:</b> The ability to add multiple stages within the same simulation system execution,
+				which might consist of different simulators, different publish/subscribe connections
+				and other properties.</li>
+			<li><b>Action Output Box:</b> A debug text-box to confirm events as they are accomplished,
+				including the currently-open project, and confirming undo/redo actions.</li>
+		</ol>
+
+		
+		<p><a href="index.html" target="_blank">Return to main page for Documentation.</a></p>
+	</body>
+</html>

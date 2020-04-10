@@ -1,0 +1,50 @@
+<html>
+	<body>
+		<h2>SRTI v2.00.00 - RTI Lib API:</h2>
+		<p>This section provides extra details on the functionality of the RTI Lib API.</p>
+		
+		<br>
+		
+		<h3>Brief Overview:</h3>
+		<p>The <b>RTI Lib API</b> (Application Programming Interface) is a class that contains a 
+		series of public functions to help create and manage a connection with the RTI Server,
+		and to publish / subscribe data with the RTI Server. Functionality like creating a 
+		connection, disconnecting, publishing a message, subscribing to a message, or waiting
+		for the next available message by name, can each be accomplished with a single 
+		function call.</p>
+		<p>The exact functionality behind these functions is hidden from the user. This level
+		of abstraction was a conscious design decision. In future
+		or alternate versions of the SRTI, the low-level backend code can be modified (both
+		the RTI Server and RTI Lib API are dependent on each other, and would have to be modified
+		concurrently), while still maintaining the same function names and parameters. Modfication
+		of backend functionality may be desired for improved performance, at expense of certain
+		features (using a strict message format rather than flexible JSON, or not supporting
+		networked simulation systems across distributed computers, for example).</p>
+		<p>The RTI Server does not need to be rewritten to support other languages, but in
+		some cases, the RTI Lib API might. It was programmed to consist of simplified functions
+		that can be duplicated in other languages, provided they support "sockets" and "JSON parsing."</p>
+
+		<br>
+
+		<h3>How To Use:</h3>
+		<p>The RTI Lib API (Java version) is included in the .jar file that contains the RTI Server.
+		Regarding SRTI v2.00.00, it is not required for the user to directly utilize the RTI Lib API;
+		The RTI Wrapper manages and calls each function when required. 
+		The user would only need to concern themselves with the functionality of the RTI Lib API if
+		they want to understand the underlying structure of the SRTI system, or if they are preparing
+		to write their own RTI Wrapper for their computer language of choice (which in some cases,
+		may also require rewriting the RTI Lib API from scratch).</p>
+		<p>If using SRTI v1.00.00, the user would need to use the RTI Lib API directly, and would
+		need to study its available functions more closely.</p>
+		<p>A full list of public API functions can be found here: 
+		<a href="https://github.com/ICoR-code/SRTI/blob/master/SRTI_Documentation/SRTI_v01_00_01_Documentation.pdf" target="_blank">
+		https://github.com/ICoR-code/SRTI/blob/master/SRTI_Documentation/SRTI_v01_00_01_Documentation.pdf</a>.</p>
+		<p>The source code for the RTI Lib API (Java version is considered to be the master standard)
+		can be found here: 
+		<a href="https://github.com/ICoR-code/SRTI/tree/master/SRTI_Source/v1_v2_Java_Server_Client_Source/SRTI_v2_00_00" target="_blank">
+		https://github.com/ICoR-code/SRTI/tree/master/SRTI_Source/v1_v2_Java_Server_Client_Source/SRTI_v2_00_00</a>. 
+		<b>RTILib.java</b> is the main class for the RTI Lib API.</p>
+		
+	
+	</body>
+</html>
