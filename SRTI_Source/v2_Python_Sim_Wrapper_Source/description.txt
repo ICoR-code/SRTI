@@ -1,0 +1,4 @@
+This is a Python Wrapper for SRTI v2.00.00.
+
+The RTI Wrapper normally has to access both the user's simulator and a copy of the RTI Lib API.
+The RTI Lib API for SRTI v2.00.00 has been re-written in Python (with most of the functionality in original Java version) to allow for this.
