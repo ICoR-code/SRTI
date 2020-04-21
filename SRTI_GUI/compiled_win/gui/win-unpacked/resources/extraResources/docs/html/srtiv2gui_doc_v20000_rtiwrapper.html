@@ -67,7 +67,7 @@
 		the local language. Supported datatypes include <b>[strings, integer, double, boolean]</b>.
 		Arrays and multi-dimensional arrays are also supported (translated into JSON-array
 		format when added to an SRTI message), but different types in given languages are
-		expected <b>[Java = array [], Matlab = matrix, NetLogo = List]</b>. Non-primitive types 
+		expected <b>[Java = array [], Matlab = matrix, NetLogo = List, Python = List]</b>. Non-primitive types 
 		(example: a 'struct' or 'enum' type) are not supported natively by the RTI Wrapper,
 		and would have to be translated into a simpler format within the simulator.</p>
 
@@ -148,6 +148,32 @@
 		The classpath is no longer necessary, but is written similarly here for consistency:</p>
 		<ul>
 		<code>java -cp "SRTI_NetLogoWrapper_v2_22_02.jar" main.Wrapper</code>
+		</ul>
+		<p>For <b>Python</b>, there are new issues. The language is not natively compatible with
+		Java classes or .jar files, preventing it from natively accessing the Java RTI Lib API.
+		With this in mind, there are 2 provided solutions to support Python: 1) A Python RTI Wrapper
+		that uses the open-source library 'py4j' to connect to a custom Java RTI Lib API, and 2)
+		A Python RTI Wrapper that uses a version of the RTI Lib API re-written in native Python,
+		with most of the functionality of the original Java version. Option 2) is recommended, 
+		but should it produce unexpected errors, option 1) is expected to function better, thanks 
+		to its reliance on the more robust Java RTI Lib API.</p>
+		<p>The 'py4j' prototype Wrapper consists of 2 projects, one in Java 
+		(the RTI Lib API with a 'py4j' hook) and one in Python (the RTI Wrapper). These have 
+		not been compiled into executable files. The user must download the source code and compile / run
+		each project. They must first run the RTI Server (separately), then run the Java RTI Lib API
+		(for the RTI Wrapper to have something to connect to), and then run the Python RTI Wrapper,
+		in this order. The source code for these 2 components can be found at the following link:
+		<a href="https://github.com/ICoR-code/SRTI/tree/master/SRTI_Source/v2_Python_py4j_Sim_Wrapper_Source">
+		https://github.com/ICoR-code/SRTI/tree/master/SRTI_Source/v2_Python_py4j_Sim_Wrapper_Source</a>.</p>
+		<p>The native Python RTI Wrapper is not compiled (Python scripts are generally compiled at runtime,
+		and not compiled to be portable). It consists of the following scripts: SRTI_Python_Wrapper_v2_22_02.py 
+		(the main script), RTILib.py, and RTISimConnectThread.py. These must be placed in the same directory,
+		on a machine with an installation of Python. Like other RTI Wrapper examples, the user's simulator
+		(written in Python) and it's relevant configuration files should also be in the same directory. 
+		The Python RTI Wrapper can be launched by running SRTI_Python_Wrapper_v2_22_02.py, either 
+		in the user's preferred Python IDE, or with a command prompt / terminal command like the following:</p>
+		<ul>
+		<code>python SRTI_Python_Wrapper_v2_22_02.py</code>
 		</ul>
 		
 		<br>

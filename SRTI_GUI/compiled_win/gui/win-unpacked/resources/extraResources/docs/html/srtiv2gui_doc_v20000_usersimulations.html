@@ -1,28 +1,484 @@
 <html>
 	<body>
 		<h2>SRTI v2.00.00 - User Simulations and Language Differences:</h2>
-		<p>[TO DO]</p> 
+		<p>This section briefly discusses notable differences for users using simulators 
+		in one of the supported languages. As open-source software, users have the 
+		capability of adapting further languages to be compatible with an SRTI system;
+		some of the information described here might be of interest as limited guidance
+		for what to expect.
+		</p> 
+		<p>Some general rules for all simulators in any language: 
+		<ol>
+			<li>The variables and functions that 
+		are being written to or copied by the SRTI must be publicly accessable.
+			</li>
+			<li>The variables must be of simple types (int, boolean, string, arrays, etc.), and not of
+			custom types (structs, classes, etc.).
+			</li>
+			<li>The functions should return no value (void) and should have no input parameters.</li>
+		</ol></p>
 
 		<br> 
 		
-		<h3>Example User Simulations in Java:</h3>
-		<p>[TO DO]</p>
-		
+		<h3>User Simulations in Java:</h3>
+		<p>The Java version of the RTI Wrapper is written in Java and is pre-compiled 
+		as a .jar file. Likewise, it is able to access an external Java simulator, if 
+		it is also compiled into a .jar file. An installation of a Java Runtime Environment
+		(JRE) is required to run this.</p>
+		<p>To run the Java Wrapper, keep a copy of the Java Wrapper in the same
+		file directory as your Java simulator. In a command prompt / terminal, run 
+		the following command: </p>
+		<code>java -cp "User_Simulator_01.jar;SRTI_JavaWrapper_v2_22_02.jar" main.Wrapper</code>
+		<p>(for Mac and Linux, the command might be the following):</p>
+		<code>java -cp "User_Simulator_01.jar:SRTI_JavaWrapper_v2_22_02.jar" main.Wrapper</code>
+		<p>Notice that the simulator .jar file is specified, in order for an instance 
+		of the Java Wrapper to have access to it.</p>
+		<p>Below is a simple example of a Java simulator and configuration file:</p>
+		<code style="display: block; white-space: pre-wrap;">
+package groceries;
+
+public class Groceries_A {
+
+	public int totalApples = 4;
+	public int wantApples = 0;
+
+	public static void main(String [] args){
+		// below is some sample code for if the user wanted to run this without the SRTI
+		Groceries_A thisClass = new Groceries_A();
+		for (int step = 0; step < 100; step++){
+			if (step % 1 == 0){
+				thisClass.UpdateNextStep();
+			}
+		}
+	}
+
+	public void Initialize(){
+		totalApples = 4;
+		wantApples = 0;
+	}
+	
+	public void UpdateNextStep(){
+		if (totalApples <= 1){
+			wantApples = 5;
+		} else {
+			wantApples = 0;
+		}
+		totalApples--;
+	}
+}		
+		</code>
+		<code style="display: block; white-space: pre-wrap;">
+{
+    "hostName": "localhost",
+    "portNumber": "42014",
+    "simulatorName": "A",
+    "simulatorRef": "groceries.Groceries_A",
+    "debugConsole": false,
+    "debugFile": false,
+    "dataOutFile": false,
+    "stageChannels": [
+        {
+            "stage": 0,
+            "order": 0,
+            "timestepDelta": 1,
+            "timestepMul": 1,
+            "timestepVarDelta": ""
+        }
+    ],
+    "initializeChannels": [
+        {
+            "functionName": "Initialize",
+            "stage": 0
+        }
+    ],
+    "simulateChannels": [
+        {
+            "functionName": "UpdateNextStep",
+            "timestepDelta": 1,
+            "stage": 0
+        }
+    ],
+    "subscribedChannels": [
+        {
+            "messageName": "Message_G",
+            "oneTime": false,
+            "mandatory": true,
+            "relativeOrder": 0,
+            "maxTimestep": 0,
+            "timestepDelta": 1,
+            "stage": 0,
+            "varChannel": [
+                {
+                    "valueName": "m_soldApples",
+                    "varName": "totalApples"
+                }
+            ]
+        }
+    ],
+    "publishedChannels": [
+        {
+            "messageName": "Message_A",
+            "initial": false,
+            "timestepDelta": 1,
+            "stage": 0,
+            "varChannel": [
+                {
+                    "valueName": "m_wantApples",
+                    "varName": "wantApples"
+                }
+            ]
+        }
+    ],
+    "endConditions": [],
+    "stageConditions": []
+}		
+		</code>		
+		<br>
+		<p>---</p>
 		<br>
 
 		<h3>Differences for Matlab:</h3>
-		<p>[TO DO]</p>
+		<p>While compilation and distribution of stand-alone Matlab simulators is possible,
+		most users will be used to running the code as a .m script directly in the Matlab
+		editor. We also found it best to simply provided a raw .m Wrapper script, written in
+		Matlab code, to run in the Matlab editor, and to access a non-compiled simulator script.
+		These are key differences to the Java version of the RTI Wrapper, and requires the 
+		user to have an installed license of Matlab on their computer.</p>
+		<p>The RTI Wrapper .m file, and the user's simulator .m file, must be in the same 
+		file directory. Also, the RTI Wrapper relies on the RTI Lib API (Java), which is 
+		stored in the same executable .jar file as the RTI Server; a copy of this should also
+		be in that file directory (the compiled Java RTI Wrapper included an internal copy 
+		of the RTI Lib API).</p>
+		<p>To run the Matlab Wrapper, keep a copy of the Matlab Wrapper in the same
+		file directory as your Matlab simulator. In a command prompt / terminal, run 
+		the following command: </p>
+		<code>matlab -r "try, run('SRTI_Wrapper_v2_22_02.m');end;quit;"</code>
+		<p>Alternative commands might be used to disable the Matlab GUI interface, or to 
+		use other features of your Matlab installation.</p>
+		<p>Below is a simple example of a Matlab simulator and configuration file
+		(notice the object-oriented design pattern for the Matlab simulator as a class):</p>
+		<code style="display: block; white-space: pre-wrap;">
+classdef A < handle
+	properties
+		totalApples = 4
+		wantApples = 0
+	end
+	
+	methods
+		function obj = A()
 		
+		end
+
+		function Initialize(obj)
+			obj.totalApples = 4;
+			obj.wantApples = 0;
+		end
+		
+		function UpdateNextStep(obj)
+			if (obj.totalApples <= 1)
+				obj.wantApples = 5;
+			else
+				obj.wantApples = 0;
+			end
+			obj.totalApples = obj.totalApples - 1;
+		end
+	end
+end		
+		</code>
+		<code style="display: block; white-space: pre-wrap;">
+{
+  "hostName": "localhost",
+  "portNumber": "42012",
+  "simulatorName": "A",
+  "simulatorRef": "A",
+  "debugConsole": false,
+  "debugFile": false,
+  "dataOutFile": false,
+  "stageChannels": [
+    {
+      "stage": 0,
+      "order": 1,
+      "timestepDelta": 1,
+      "timestepMul": 1,
+      "timestepVarDelta": ""
+    }
+  ],
+  "initializeChannels": [
+    {
+      "functionName": "Initialize",
+      "stage": 0
+    }
+  ],
+  "simulateChannels": [
+    {
+      "functionName": "UpdateNextStep",
+      "timestepDelta": 1,
+      "stage": 0
+    }
+  ],
+  "subscribedChannels": [
+    {
+      "messageName": "Message_G",
+      "oneTime": false,
+      "mandatory": true,
+      "relativeOrder": 0,
+      "maxTimestep": 0,
+      "timestepDelta": 1,
+      "stage": 0,
+      "varChannel": [
+        {
+          "valueName": "m_soldApples",
+          "varName": "totalApples"
+        }
+      ]
+    }
+  ],
+  "publishedChannels": [
+    {
+      "messageName": "Message_A",
+      "initial": false,
+      "timestepDelta": 1,
+      "stage": 0,
+      "varChannel": [
+        {
+          "valueName": "m_wantApples",
+          "varName": "wantApples"
+        }
+      ]
+    }
+  ],
+  "endConditions": [],
+  "stageConditions": []
+}
+		</code>
+		
+		
+		<br>
+		<p>---</p>
 		<br>
 		
 		<h3>Differences for NetLogo:</h3>
-		<p>[TO DO]</p>
-		
+		<p>NetLogo is a free scripting language designed for agent-based modeling and 
+		visual simulations. Like Matlab, it does not typically use the concept of 
+		compiling a simulator for others to use: it relies on an installation of NetLogo 
+		on your local machine. But thanks to its compatibility with Java and its 
+		licensing rules, we were able to compile a RTI Wrapper written in Java (.jar)
+		with an included NetLogo installation (v 6.1). A user can launch 
+		and run an uncompiled NetLogo script with this pre-compiled NetLogo Wrapper, 
+		which will launch a version of NetLogo on your machine, without installation.</p>
+		<p>A user might prefer to install a specific copy of NetLogo on their local 
+		machine and utilize that, but the NetLogo RTI Wrapper cannot make use of this.
+		Also, some additional plugins made for NetLogo might not function as expected,
+		causing errors if your simulator utilizes specialized features.</p>
+		<p>To run the NetLogo Wrapper, keep a copy of the NetLogo Wrapper in the same
+		file directory as your NetLogo simulator. In a command prompt / terminal, run 
+		the following command: </p>
+		<code>java -cp "SRTI_NetLogoWrapper_v2_22_02.jar" main.Wrapper</code>
+		<p>Notice that this command is similar to the Java command, but does not require 
+		that you specify the simulator as part of the classpath.</p>
+		<p>Below is a simple example of a configuration file and NetLogo simulator:</p>
+		<code style="display: block; white-space: pre-wrap;">
+globals [totalBlueberries wantBlueberries]
+
+to Initialize
+	clear-all
+	set totalBlueberries 4
+	set wantBlueberries 0
+end
+
+to UpdateNextStep
+	ifelse totalBlueberries <= 1 [set wantBlueberries 5] [set wantBlueberries 0]
+	set totalBlueberries totalBlueberries - 1
+end
+		</code>
+		<code style="display: block; white-space: pre-wrap;">
+{
+  "hostName": "localhost",
+  "portNumber": "42012",
+  "simulatorName": "B",
+  "simulatorRef": "B_FromNetLogo",
+  "debugConsole": false,
+  "debugFile": false,
+  "dataOutFile": false,
+  "stageChannels": [
+    {
+      "stage": 0,
+      "order": 1,
+      "timestepDelta": 1,
+      "timestepMul": 1,
+      "timestepVarDelta": ""
+    }
+  ],
+  "initializeChannels": [
+    {
+      "functionName": "Initialize",
+      "stage": 0
+    }
+  ],
+  "simulateChannels": [
+    {
+      "functionName": "UpdateNextStep",
+      "timestepDelta": 1,
+      "stage": 0
+    }
+  ],
+  "subscribedChannels": [
+    {
+      "messageName": "Message_G",
+      "oneTime": false,
+      "mandatory": true,
+      "relativeOrder": 0,
+      "maxTimestep": 0,
+      "timestepDelta": 1,
+      "stage": 0,
+      "varChannel": [
+        {
+          "valueName": "m_soldBlueberries",
+          "varName": "totalBlueberries"
+        }
+      ]
+    }
+  ],
+  "publishedChannels": [
+    {
+      "messageName": "Message_B",
+      "initial": false,
+      "timestepDelta": 1,
+      "stage": 0,
+      "varChannel": [
+        {
+          "valueName": "m_wantBlueberries",
+          "varName": "wantBlueberries"
+        }
+      ]
+    }
+  ],
+  "endConditions": [],
+  "stageConditions": []
+}
+		</code>
+		<br>
+		<p>---</p>
 		<br>
 		
 		<h3>Differences for Python:</h3>
-		<p>[TO DO]</p>
-		
+		<p>Python has grown to be a popular scripting language, both in Computer Science and
+		in external disciplines. Similar to the Matlab version of the RTI Wrapper, it was 
+		meant to be run with a local installation of Python (a portable executable version 
+		of a Python script is not typical). A greater issue is that Python does not support 
+		native communication with Java libraries like Matlab or NetLogo do; either a third-party
+		library must be used to enable this, or the RTI Lib API (which the RTI Wrapper relies on) 
+		must be rewritten in the native language of the RTI Wrapper and simulator. Both solutions
+		are provided, both to allow use with Python, and to serve as an example for open-source 
+		developers to extend functionality for other languages.</p>
+		<p>There are 2 provided solutions to support Python: 1) A Python RTI Wrapper
+		that uses the open-source library 'py4j' to connect to a custom Java RTI Lib API, and 2)
+		A Python RTI Wrapper that uses a version of the RTI Lib API re-written in native Python,
+		with most of the functionality of the original Java version. Option 2) is recommended, 
+		but should it produce unexpected errors, option 1) is expected to function better, thanks 
+		to its reliance on the more robust Java RTI Lib API.</p>
+		<p>The 'py4j' prototype Wrapper consists of 2 projects, one in Java 
+		(the RTI Lib API with a 'py4j' hook) and one in Python (the RTI Wrapper). These have 
+		not been compiled into executable files. The user must download the source code and compile / run
+		each project. They must first run the RTI Server (separately), then run the Java RTI Lib API
+		(for the RTI Wrapper to have something to connect to), and then run the Python RTI Wrapper,
+		in this order. The source code for these 2 components can be found at the following link:
+		<a href="https://github.com/ICoR-code/SRTI/tree/master/SRTI_Source/v2_Python_py4j_Sim_Wrapper_Source">
+		https://github.com/ICoR-code/SRTI/tree/master/SRTI_Source/v2_Python_py4j_Sim_Wrapper_Source</a>.</p>
+		<p>The native Python RTI Wrapper is not compiled (Python scripts are generally compiled at runtime,
+		and not compiled to be portable). It consists of the following scripts: SRTI_Python_Wrapper_v2_22_02.py 
+		(the main script), RTILib.py, and RTISimConnectThread.py. These must be placed in the same directory,
+		on a machine with an installation of Python. Like other RTI Wrapper examples, the user's simulator
+		(written in Python) and it's relevant configuration files should also be in the same directory. 
+		The Python RTI Wrapper can be launched by running SRTI_Python_Wrapper_v2_22_02.py, either 
+		in the user's preferred Python IDE, or with a command prompt / terminal command like the following:</p>
+		<ul>
+		<code>python SRTI_Python_Wrapper_v2_22_02.py</code>
+		</ul>
+		<p>Below is an example of a configuration file and Python simulator, based on the example from Java and Matlab.</p>
+				<code style="display: block; white-space: pre-wrap;">
+class Groceries_A:
+
+	totalApples = 4;
+	wantApples = 0;
+
+	def Initialize(self):
+		totalApples = 4;
+		wantApples = 0;
+	
+	def UpdateNextStep(self):
+		if (totalApples <= 1):
+			wantApples = 5;
+		else:
+			wantApples = 0;
+		totalApples = totalApples - 1;	
+		</code>
+		<code style="display: block; white-space: pre-wrap;">
+{
+    "hostName": "localhost",
+    "portNumber": "42014",
+    "simulatorName": "A",
+    "simulatorRef": "groceries_py_script.Groceries_A",
+    "debugConsole": false,
+    "debugFile": false,
+    "dataOutFile": false,
+    "stageChannels": [
+        {
+            "stage": 0,
+            "order": 0,
+            "timestepDelta": 1,
+            "timestepMul": 1,
+            "timestepVarDelta": ""
+        }
+    ],
+    "initializeChannels": [
+        {
+            "functionName": "Initialize",
+            "stage": 0
+        }
+    ],
+    "simulateChannels": [
+        {
+            "functionName": "UpdateNextStep",
+            "timestepDelta": 1,
+            "stage": 0
+        }
+    ],
+    "subscribedChannels": [
+        {
+            "messageName": "Message_G",
+            "oneTime": false,
+            "mandatory": true,
+            "relativeOrder": 0,
+            "maxTimestep": 0,
+            "timestepDelta": 1,
+            "stage": 0,
+            "varChannel": [
+                {
+                    "valueName": "m_soldApples",
+                    "varName": "totalApples"
+                }
+            ]
+        }
+    ],
+    "publishedChannels": [
+        {
+            "messageName": "Message_A",
+            "initial": false,
+            "timestepDelta": 1,
+            "stage": 0,
+            "varChannel": [
+                {
+                    "valueName": "m_wantApples",
+                    "varName": "wantApples"
+                }
+            ]
+        }
+    ],
+    "endConditions": [],
+    "stageConditions": []
+}		
+		</code>	
 		<br>
 		
 		

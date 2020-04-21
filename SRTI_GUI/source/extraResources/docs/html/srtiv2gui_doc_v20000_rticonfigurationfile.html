@@ -1,4 +1,26 @@
 <html>
+<style>
+	table{
+		font-family: arial, sans-serif;
+		border-collapse: collapse;
+		width: 100%;
+	}
+	th {
+		background-color: #dddddd;
+		border: 1px solid #dddddd;
+		text-align: left;
+		padding: 8px;
+	}
+	td {
+		border: 1px solid #dddddd;
+		text-align: left;
+		padding: 8px;
+	}
+	tr:nth-child(even){
+		background-color: #eeeeee;
+	}
+</style>
+
 	<body>
 		<h2>SRTI v2.00.00 - RTI Configuration File:</h2>
 		<p>This section provides details on the format of the Configuration files that
@@ -39,78 +61,509 @@
 		a simulator relative to a simulation system in the SRTI. Its contents are listed in
 		the below section called <b>"Table of Configuration Properties,"</b> but an example file
 		might look something like this:</p>
-		<code>{
-"hostName": "localhost",
-"portNumber": "42010",
-"simulatorName": "A_Sim",
-"simulatorRef": "airport_20190104.A",
-"debugConsole":true,
-"debugFile":true,
-"dataOutFile":true,
-"initializeChannels":[
-],
-"stageChannels":[
-{
-"stage": 0,
-"order": 0,
-14
-"timestepDelta": 1,
-"timestepVarDelta": "",
-"timestepMul": 1
+<code style="display: block; white-space: pre-wrap;">
+{		
+	"hostName": "localhost",
+	"portNumber": "42010",
+	"simulatorName": "A_Sim",
+	"simulatorRef": "airport_20190104.A",
+	"debugConsole":true,
+	"debugFile":true,
+	"dataOutFile":true,
+	"initializeChannels":[
+	],
+	"stageChannels":[
+		{
+			"stage": 0,
+			"order": 0,
+			"timestepDelta": 1,	
+			"timestepVarDelta": "",
+			"timestepMul": 1
+		}
+	],
+	"simulateChannels":[
+		{
+			"functionName": "Simulate",
+			"timestepDelta": 1,
+			"stage": 0
+		}
+	],
+	"subscribedChannels": [
+		{
+			"messageName": "D",
+			"oneTime": false,
+			"varChannel": [
+				{
+					"valueName": "D_numberOfPeople",
+					"varName": "changeInPeople"
+				}
+			],
+			"mandatory": true,
+			"relativeOrder": 0,
+			"maxTimestep": 0,
+			"timestepDelta": 1,
+			"stage": 0
+		}
+	],
+	"publishedChannels": [
+	],
+	"endConditions": [
+		[
+			{
+				"varName": "people",
+				"condition": "<=",
+				"value": 0
+				“varName2”:””
+			}
+		]
+	],
+	"stageConditions": [
+	]
 }
-],
-"simulateChannels":[
-{
-"functionName": "Simulate",
-"timestepDelta": 1,
-"stage": 0
-}
-],
-"subscribedChannels": [
-{
-"messageName": "D",
-"oneTime": false,
-"varChannel": [
-{
-"valueName": "D_numberOfPeople",
-"varName": "changeInPeople"
-}
-],
-"mandatory": true,
-"relativeOrder": 0,
-"maxTimestep": 0,
-"timestepDelta": 1,
-"stage": 0
-}
-],
-"publishedChannels": [
-],
-"endConditions": [
-[
-{
-"varName": "people",
-"condition": "<=",
-"value": 0
-“varName2”:””
-}
-]
-],
-"stageConditions": [
-]
-}</code>
+</code>
 		
 		<br>
 		<br>
 		<br>
 		
 		<h3>Table of Configuration Properties:</h3>
-		<p>[For the sake of time, this table is made available in better formatting at the 
-		following link:
+		<p>The original table describing the properties can be found at the following link: 
 		<a href="https://github.com/ICoR-code/SRTI/blob/master/SRTI_Documentation/SRTI_v02_20_02_Documentation.pdf" target="_blank">
-		https://github.com/ICoR-code/SRTI/blob/master/SRTI_Documentation/SRTI_v02_20_02_Documentation.pdf</a>]</p>
+		https://github.com/ICoR-code/SRTI/blob/master/SRTI_Documentation/SRTI_v02_20_02_Documentation.pdf</a></p>
+		<p></p>
 
-		
+		<table>
+			<tr>
+				<th>Key</th>
+				<th>Value Example</th>
+				<th>Value Type</th>
+				<th>Definition</th>
+			</tr>
+			<tr>
+				<th>"hostname"</th>
+				<td>"localhost"</td>
+				<td>String</td>
+				<td>The host name of the RTI Server this simulator is trying to connect to.</td>
+			</tr>
+			<tr>
+				<th>"portNumber"</th>
+				<td>"4200"</td>
+				<td>String</td>
+				<td>The port number of the RTI Server this simulator is trying to connect to.</td>
+			</tr>
+			<tr>
+				<th>"simulatorName"</th>
+				<td>"SomeSim"</td>
+				<td>String</td>
+				<td>Cosmetic name for simulator, to read in ‘debug files’ or to differentiate on RTI Server side.</td>
+			</tr>
+			<tr>
+				<th>"simulatorRef"</th>
+				<td>"Package.SomeSim"</td>
+				<td>String</td>
+				<td>Name of simulator file/reference. If inside ‘package’ (Java), full path must be provided.</td>
+			</tr>
+			<tr>
+				<th>"debugConsole"</th>
+				<td>true</td>
+				<td>Boolean</td>
+				<td>Whether or not to print out debug info to the console window.</td>
+			</tr>
+			<tr>
+				<th>"debugFile"</th>
+				<td>false</td>
+				<td>Boolean</td>
+				<td>Whether or not to print out debug info to a file (not supported in Matlab).</td>
+			</tr>
+			<tr>
+				<th>"dataOutFile"</th>
+				<td>true</td>
+				<td>Boolean</td>
+				<td>Whether or not to print out file tracing variable values during the time of the simulation (currently Java-only feature).</td>
+			</tr>
+			<tr>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<th>"stageChannels"</th>
+				<td></td>
+				<td>JSON array</td>
+				<td>An array of objects that contain variables that partially define this simulator, at different ‘stages.’</td>
+			</tr>
+			<tr>
+				<th>"stage"</th>
+				<td>0</td>
+				<td>Int, [>=0]</td>
+				<td>Allows stating that these variables are only true for specified stage. Stage = 0 by default.</td>
+			</tr>
+			<tr>
+				<th>"order"</th>
+				<td>0</td>
+				<td>Int, [>=0]</td>
+				<td>Specifies order this simulator should run in in relation to others during this stage, 
+				if not all simulators should be parallel. For example, “order = 0” should run first, “order = 1” should run second, etc.</td>
+			</tr>
+			<tr>
+				<th>"timestepDelta"</th>
+				<td>1</td>
+				<td>Int, [>= 1]</td>
+				<td>Specifies how many steps should occur before this simulator runs again. 
+				For example, 2 means this simulator would not run again until 2 vTimesteps later.</td>			
+			</tr>
+			<tr>
+				<th>"timestepVarDelta"</th>
+				<td>“nextTimestep”</td>
+				<td>String</td>
+				<td>Alternative to setting “timestepDelta”: if “timestepVarDelta” != “”, 
+				Wrapper will read int variable from simulator to decide next time to run.</td>			
+			</tr>
+			<tr>
+				<th>"timestepMul"</th>
+				<td>1</td>
+				<td>Int, [>=0]</td>
+				<td>If using simulators that each have different internal concept of time, 
+				use “timestepMul” to update one simulator to have same timestep as others, 
+				without affecting internal logic.</td>		
+			</tr>
+			<tr>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<th>"initializeChannels"</th>
+				<td></td>
+				<td>JSON array</td>
+				<td>Lists public functions inside simulator that should be called at the beginning of each stage.</td>
+			</tr>
+			<tr>
+				<th>"functionName"</th>
+				<td>“initializeNow”</td>
+				<td>String</td>
+				<td>Name of public function inside simulator.</td>
+			</tr>
+			<tr>
+				<th>"stage"</th>
+				<td>0</td>
+				<td>Int, [>=0]</td>
+				<td>Stage where this function should occur.</td>	
+			</tr>
+			<tr>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<th>"simulateChannels"</thd>
+				<td></td>
+				<td>JSON array</td>
+				<td>Lists public functions inside simulator that should be called during each timestep of a specific stage.</td>		
+			</tr>
+			<tr>
+				<th>"functionName"</th>
+				<td>“simulateStep”</td>
+				<td>String</td>
+				<td>Name of public function inside simulator.</td>			
+			</tr>
+			<tr>
+				<th>"timestepDelta"</th>
+				<td>1</td>
+				<td>Int, [>= 1, mul. of stageChannels . timestepMul]</td>
+				<td>Specifies that this should occur every n steps. To avoid unexpected behavior, 
+				it is recommended that this is a multiple of “stageChannels.timestepMul”.</td>
+			</tr>
+			<tr>
+				<th>"stage"</th>
+				<td>0</td>
+				<td>Int, [>= 0]	</td>
+				<td>Stage where this function should occur.</td>
+			</tr>
+			<tr>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<th>"subscribedChannels"</th>
+				<td></td>
+				<td>JSON array</td>
+				<td>List messages this simulator should be subscribed to.</td>
+			</tr>
+			<tr>
+				<th>"messageName"</th>
+				<td>“messageA”</td>
+				<td>String</td>
+				<td>Name of the message.</td>
+			</tr>
+			<tr>
+				<th>"onetime"</th>
+				<td>False</td>
+				<td>Boolean</td>
+				<td>Should this simulator be subscribed to this message only at the beginning of the stage?</td>
+			</tr>
+			<tr>
+				<th>"varChannel"</th>
+				<td></td>
+				<td>JSON array</td>
+				<td>List JSON variables that need to be copied to the simulator’s public variables.</td>
+			</tr>
+			<tr>
+				<th>"valueName"</th>
+				<td>“A_time”</td>
+				<td>String</td>
+				<td>Name of the key in the JSON message.</td>
+			</tr>
+			<tr>
+				<th>"varName"</th>
+				<td>“time_var”</td>
+				<td>String</td>
+				<td>Name of the public variable in the simulator.</td>
+			</tr>
+			<tr>
+				<th>"mandatory"</th>
+				<td>true</td>
+				<td>Boolean</td>
+				<td>Indicates if the simulator cannot finish a step before receiving this message.
+					* Notice that this value does not exist in ‘publishedChannels’ or ‘simulateChannels’: 
+					without any way to indicate that these shouldn’t occur at a given moment, 
+					it is assumed they will occur at a consistent frequency within a given stage.</td>
+			</tr>
+			<tr>
+				<th>"relativeOrder"</th>
+				<td>0</td>
+				<td>Int, [0, 1, 2, 3]</td>
+				<td>Internal code to describe what message to retrieve, based on timing.
+0 = get oldest message of this name.
+1 = get newest message of this name, remove all others from queue.
+2 = get newest message of this name less than (vTimestep + maxTimestep), remove older than this from queue.
+3 = get newest message of this name greater than (vTimestep + maxTimestep), remove older than this from queue.</td>	
+			</tr>
+			<tr>
+				<th>"maxTimestep"</th>
+				<td>-1</td>
+				<td>Int, [-1, 0, 1]</td>
+				<td>Alone with “relativeOrder,” specifies what message (based on timestep) should be retrieved. 
+				Example: -1 means get message from previous timestep, 0 = get message from current timestep, etc.</td>
+			</tr>
+			<tr>
+				<th>"timestepDelta"</th>
+				<td>1</td>
+				<td>Int</td>
+				<td>Specifies that this should occur every n steps. To avoid unexpected behavior, 
+				it is recommended that this is a multiple of “stageChannels.timestepMul”.</td>
+			</tr>
+			<tr>
+				<th>"stage"</th>
+				<td>0</td>
+				<td>Int</td>
+				<td>Stage where this subscription should occur.</td>
+			</tr>
+			<tr>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<th>"publishedChannels"</th>
+				<td></td>
+				<td>JSON array</td>
+				<td>List messages this simulator should publish to.</td>
+			</tr>
+			<tr>
+				<th>"messageName"</th>
+				<td>“messageSomeSim”</td>
+				<td>String</td>
+				<td>Name of the message.</td>
+			</tr>
+			<tr>
+				<th>"initial"</th>
+				<td>true</td>
+				<td>Boolean</td>
+				<td>Should an ‘initial’ version of this message be published at the very beginning, 
+				to help initialize other simulators?</td>
+			</tr>
+			<tr>
+				<th>"varChannel"</th>
+				<td></td>
+				<td>JSON array</td>
+				<td>List JSON variables that need to be copied from the simulator’s public variables.</td>
+			</tr>
+			<tr>
+				<th>"valueName"</th>
+				<td>“Sim_Time”</td>
+				<td>String</td>
+				<td>Name of the key in the JSON message.</td>
+			</tr>
+			<tr>
+				<th>"varName"</th>
+				<td>“newTime”</td>
+				<td>String</td>
+				<td>Name of the public variable in the simulator.</td>
+			</tr>
+			<tr>
+				<th>"timestepDelta"</th>
+				<td>1</td>
+				<td>Int</td>
+				<td>Specifies that this should occur every n steps. To avoid unexpected behavior, 
+				it is recommended that this is a multiple of “stageChannels.timestepMul”.</td>
+			</tr>
+			<tr>
+				<th>"stage"</th>
+				<td>0</td>
+				<td>Int</td>
+				<td>Stage where this publishing should occur.</td>
+			</tr>
+			<tr>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<th>"endConditions"</th>
+				<td></td>
+				<td>JSON array</td>
+				<td>List of conditions that will cause the entire simulation system to end 
+				(can only reference variables inside this simulator or Wrapper instance).</td>
+			</tr>
+			<tr>
+				<th>(array)</th>
+				<td></td>
+				<td>JSON array (at least 2 elements)</td>
+				<td>Why is “endConditions” an array of arrays?
+The internal arrays represent conditions that should ALL be met to end the system.
+The external arrays represent conditions where one OR another can be met to end the system.
+Why at least 2 elements? While not an issue for all languages, Matlab automatically 
+simplifies the data type, which may misread how to check a condition is met.
+To get around this, the internal array(s) must have at least 2 elements, even if the user 
+just duplicates the first element a second time. This is only required if a second 
+OR condition exists in the list.</td>
+			</tr>
+			<tr>
+				<th>"varName"</th>
+				<td>“outputValue”</td>
+				<td>String</td>
+				<td>Name of public variable in the simulator.</td>
+			</tr>
+			<tr>
+				<th>"condition"</th>
+				<td>“>=”</td>
+				<td>String [“=”, “>”, “<”, “>=”, “<=”, “!=”]</td>
+				<td>Condition to be met.</td>
+			</tr>
+			<tr>
+				<th>"value"</th>
+				<td>100</td>
+				<td>String / Int / Float / Booolean / Other</td>
+				<td>Value to compare “varName” against.</td>
+			</tr>
+			<tr>
+				<th>"varName2"</th>
+				<td>“”</td>
+				<td>String</td>
+				<td>Name of variable inside simulator to compare “varName” against.
+If set to “”, it will be ignored, and “value” will be used instead. Otherwise, 
+this allows the user to compare two dynamic values inside their own simulator, 
+instead of relying on a strict hardcoded value in this file.</td>
+			</tr>
+			<tr>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<th>"stageConditions"</th>
+				<td></td>
+				<td>JSON array</td>
+				<td>List of conditions that will cause the entire simulation system to switch to a different stage.</td>
+			</tr>
+			<tr>
+				<th>(array)</th>
+				<td></td>
+				<td>JSON array (at least 2 elements)</td>
+				<td>Why is “endConditions” an array of arrays?
+The internal arrays represent conditions that should ALL be met to end the system. 
+The external arrays represent conditions where one OR another can be met to end the system.
+Why at least 2 elements? While not an issue for all languages, Matlab automatically 
+simplifies the data type, which may misread how to check a condition is met. To get around this, 
+the internal array(s) must have at least 2 elements, even if the user just duplicates the first 
+element a second time. This is only required if a second OR condition exists in the list.</td>
+			</tr>
+			<tr>
+				<th>"oldStage"</th>
+				<td>0</td>
+				<td>Int</td>
+				<td>Stage to check this condition at.</td>
+			</tr>
+			<tr>
+				<th>"varName"</th>
+				<td>“condition_var”</td>
+				<td>String</td>
+				<td>Name of public variable in the simulator.</td>
+			</tr>
+			<tr>
+				<th>"condition"</th>
+				<td>“=”</td>
+				<td>String [“=”, “>”, “<”, “>=”, “<=”, “!=”]</td>
+				<td>Condition to be met.</td>
+			</tr>
+			<tr>
+				<th>"value"</th>
+				<td>“start”</td>
+				<td>String / Int / Float / Booolean / Other</td>
+				<td>Value to compare “varName” against.</td>
+			</tr>
+			<tr>
+				<th>"varName2"</th>
+				<td>“”</td>
+				<td>String</td>
+				<td>Name of variable inside simulator to compare “varName” against.
+If set to “”, it will be ignored, and “value” will be used instead. Otherwise, 
+this allows the user to compare two dynamic values inside their own simulator, 
+instead of relying on a strict hardcoded value in this file.</td>
+			</tr>
+			<tr>
+				<th>"newStage"</th>
+				<td>1</td>
+				<td>Int</td>
+				<td>New stage to transition to.</td>
+			</tr>	
+		</table>
 		<br>
+		
+		
 		
 		
 		<p><a href="index.html" target="_blank">Return to main page for Documentation.</a></p>
