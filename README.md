@@ -1,12 +1,71 @@
-# SRTI
 
-## "Simple Run Time Infrastructure," name inspired by similar data-transfer systems.
+<h1 align="center">SRTI</h1>
+
+<h3 align="center">"Simple Run Time Infrastructure" (name inspired by similar data-transfer systems)</h3>
+
+<br>
+<br>
+
+<img src="https://github.com/ICoR-code/SRTI/raw/master/SRTI_GUI/source/extraResources/docs/html/images/srtiv2gui_doc_home_img_01.png">
+
+<br>
+<br>
+
+<table align="center">
+   <tr>
+     <th>DOWNLOAD</th>
+   </tr>
+   <tr>
+     <td><b>SRTI v1.00.00</b></td>
+     <td><b>SRTI v2.00.00</b></td>
+     <td><b>All Downloads</b></td>
+  </tr>
+  <tr>
+    <td><a href="https://github.com/ICoR-code/SRTI/releases/tag/v1.00.02-Java">RTI Server + RTI Lib API (Java, .jar)</a></td>
+     <td><a href="https://github.com/ICoR-code/SRTI/releases/tag/v2.22.02-JavaServer">RTI Server (Java, .jar)</a></td>
+     <td><a href="https://github.com/ICoR-code/SRTI/releases">Releases Page</a></td>
+  </tr>
+  <tr>
+    <td><a href="https://github.com/ICoR-code/SRTI/releases/tag/v1.00.01-C%2B%2B">RTI Lib API (C++, .dll)</a></td>
+     <td><a href="https://github.com/ICoR-code/SRTI/releases/tag/v2.22.02-Java">RTI Wrapper (Java)</a></td>
+    <td><a href="https://github.com/ICoR-code/SRTI/wiki">Wiki</a></td>
+  </tr>
+  <tr>
+     <td></td>
+     <td><a href="https://github.com/ICoR-code/SRTI/releases/tag/v2.22.02-Matlab">RTI Wrapper (Matlab)</a></td>
+  </tr>
+  <tr>
+     <td></td>
+     <td><a href="https://github.com/ICoR-code/SRTI/releases/tag/v2.22.02-NetLogo">RTI Wrapper (NetLogo)</a></td>
+  </tr>
+  <tr>
+     <td></td>
+     <td><a href="https://github.com/ICoR-code/SRTI/releases/tag/v2.22.02-Python">RTI Wrapper (Python)</a></td>
+  </tr>  
+  <tr>
+     <td></td>
+     <td><a href="https://github.com/ICoR-code/SRTI/releases/tag/v2GUI-1.00.01-Win">RTI v2 GUI (WINDOWS) (optional)</a></td>
+  </tr>  
+  <tr>
+     <td></td>
+     <td><a href="https://github.com/ICoR-code/SRTI/releases/tag/v2GUI-1.00.01-Mac">RTI v2 GUI (MAC) (optional)</a></td>
+  </tr> 
+  <tr>
+     <td></td>
+     <td><a href="https://github.com/ICoR-code/SRTI/releases/tag/v2GUI-1.00.01-Linux">RTI v2 GUI (LINUX) (optional)</a></td>
+  </tr>    
+</table>
+
+<br> 
 
 #### What is it?
 
-A simple, portable software solution to allow data-transfer between applications, either running on the same machine or separate machines. Can be used for virtual simulations of shared systems, IoT systems, and other applications.
+A simple, open-source, portable software solution to allow data-transfer between applications, either running on the same machine or separate machines. Can be used for virtual simulations of shared systems, IoT systems, and other applications.
 
 Unlike similar solutions, is not built for efficiency at the expense of usability: data messages are sent and received as "string" representations of JSON format, to allow flexible data representation without re-compilation. This software library includes API to help format strings properly, but to extract data requires documentation between users to understand the expected content of messages. 
+
+<br>
+<br>
 
 #### How does it work?
 
@@ -32,7 +91,8 @@ An example GUI interface, treated as a application that uses "RTILib" to connect
 
 Currently, the included compiled .jar file will automatically start "ExampleServerGUI" as well as the RTI upon startup.
 
-
+<br>
+<br>
 
 #### v1.00.00 VS v2.00.00
 
@@ -60,4 +120,4 @@ This primarily consists of time synchronization at each timestep.
 ###### RTI v2.00.00 GUI
 
 A new GUI to help design a project, with output consisting of configuration files for each Wrapper to use when running.
-Currently in development.
+
