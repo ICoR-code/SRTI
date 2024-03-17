@@ -1,0 +1,163 @@
+{
+    "hostName": "localhost",
+    "portNumber": "42012",
+    "simulatorName": "Visualization",
+    "simulatorRef": "PN_1203",
+    "debugConsole": false,
+    "debugFile": false,
+    "dataOutFile": false,
+    "stageChannels": [
+        {
+            "stage": 0,
+            "order": 5,
+            "timestepDelta": 1,
+            "timestepMul": 1,
+            "timestepVarDelta": ""
+        },
+        {
+            "stage": 1,
+            "order": 5,
+            "timestepDelta": 1,
+            "timestepMul": 1,
+            "timestepVarDelta": ""
+        }
+    ],
+    "initializeChannels": [
+        {
+            "functionName": "initialize",
+            "stage": 0
+        }
+    ],
+    "simulateChannels": [
+        {
+            "functionName": "simulate",
+            "timestepDelta": 1,
+            "stage": 0
+        },
+        {
+            "functionName": "simulate",
+            "timestepDelta": 1,
+            "stage": 1
+        }
+    ],
+    "subscribedChannels": [
+        {
+            "messageName": "RTI_",
+            "oneTime": false,
+            "mandatory": true,
+            "relativeOrder": 0,
+            "maxTimestep": 0,
+            "timestepDelta": 1,
+            "stage": 0,
+            "varChannel": [
+                {
+                    "valueName": "stage",
+                    "varName": "stage"
+                },
+                {
+                    "valueName": "stageVTimestep",
+                    "varName": "timestamp"
+                }
+            ]
+        },
+        {
+            "messageName": "Scenario",
+            "oneTime": false,
+            "mandatory": true,
+            "relativeOrder": 0,
+            "maxTimestep": 0,
+            "timestepDelta": 1,
+            "stage": 0,
+            "varChannel": [
+                {
+                    "valueName": "nodePN",
+                    "varName": "node-data"
+                },
+                {
+                    "valueName": "connectivityPN",
+                    "varName": "link-data"
+                }
+            ]
+        },
+        {
+            "messageName": "Performance",
+            "oneTime": false,
+            "mandatory": true,
+            "relativeOrder": 0,
+            "maxTimestep": 0,
+            "timestepDelta": 1,
+            "stage": 0,
+            "varChannel": [
+                {
+                    "valueName": "nodeDSPN",
+                    "varName": "nodeDSPN"
+                },
+                {
+                    "valueName": "CLPN",
+                    "varName": "CLPN"
+                }
+            ]
+        },
+        {
+            "messageName": "Damage",
+            "oneTime": false,
+            "mandatory": true,
+            "relativeOrder": 0,
+            "maxTimestep": 0,
+            "timestepDelta": 1,
+            "stage": 0,
+            "varChannel": []
+        },
+        {
+            "messageName": "RTI_",
+            "oneTime": false,
+            "mandatory": true,
+            "relativeOrder": 0,
+            "maxTimestep": 0,
+            "timestepDelta": 1,
+            "stage": 1,
+            "varChannel": [
+                {
+                    "valueName": "stage",
+                    "varName": "stage"
+                },
+                {
+                    "valueName": "stageVTimestep",
+                    "varName": "timestamp"
+                }
+            ]
+        },
+        {
+            "messageName": "Performance",
+            "oneTime": false,
+            "mandatory": true,
+            "relativeOrder": 0,
+            "maxTimestep": 0,
+            "timestepDelta": 1,
+            "stage": 1,
+            "varChannel": [
+                {
+                    "valueName": "nodeDSPN",
+                    "varName": "nodeDSPN"
+                },
+                {
+                    "valueName": "CLPN",
+                    "varName": "CLPN"
+                }
+            ]
+        },
+        {
+            "messageName": "Recovery",
+            "oneTime": false,
+            "mandatory": true,
+            "relativeOrder": 0,
+            "maxTimestep": 0,
+            "timestepDelta": 1,
+            "stage": 1,
+            "varChannel": []
+        }
+    ],
+    "publishedChannels": [],
+    "endConditions": [],
+    "stageConditions": []
+}

@@ -1,0 +1,66 @@
+{
+    "simdef": {
+        "name": "Damage",
+        "refName": "DirectDamagePN",
+        "filePath": "D:\\SRTI_GUI_tests\\PN_GUI_1203\\Damage_GUI",
+        "executeCommand": "matlab -nosplash -r SRTI_Wrapper_v2_22_02",
+        "functions": [
+            {
+                "name": "Simulate_0"
+            },
+            {
+                "name": "Update"
+            }
+        ],
+        "variables": [
+            {
+                "name": "stage",
+                "valueType": "integer"
+            },
+            {
+                "name": "timestamp",
+                "valueType": "integer"
+            },
+            {
+                "name": "nodePN",
+                "valueType": "doublearray"
+            },
+            {
+                "name": "connectivityPN",
+                "valueType": "doublearray"
+            },
+            {
+                "name": "gaPN",
+                "valueType": "doublearray"
+            },
+            {
+                "name": "gvPN",
+                "valueType": "doublearray"
+            },
+            {
+                "name": "rec_nodeDSPN",
+                "valueType": "doublearray"
+            },
+            {
+                "name": "rec_linkDSPN",
+                "valueType": "doublearray"
+            },
+            {
+                "name": "nodeDSPN",
+                "valueType": "doublearray"
+            },
+            {
+                "name": "linkDSPN",
+                "valueType": "doublearray"
+            },
+            {
+                "name": "nodeFcnPN",
+                "valueType": "doublearray"
+            },
+            {
+                "name": "linkFcnPN",
+                "valueType": "doublearray"
+            }
+        ]
+    }
+}

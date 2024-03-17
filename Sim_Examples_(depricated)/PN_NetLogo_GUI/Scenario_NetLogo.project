@@ -1,0 +1,365 @@
+{
+    "listOfSimulators": [
+        {
+            "name": "Scenario",
+            "refName": "Scenario",
+            "filePath": "D:\\SRTI_GUI_tests\\PN_GUI_1203\\Scenario_GUI",
+            "executeCommand": "matlab -nosplash -r SRTI_Wrapper_v2_22_02",
+            "functions": [
+                {
+                    "name": "Initialize"
+                },
+                {
+                    "name": "Simulate"
+                }
+            ],
+            "variables": [
+                {
+                    "name": "stage",
+                    "valueType": "integer"
+                },
+                {
+                    "name": "timestamp",
+                    "valueType": "integer"
+                },
+                {
+                    "name": "nodePN",
+                    "valueType": "doublearray"
+                },
+                {
+                    "name": "connectivityPN",
+                    "valueType": "doublearray"
+                }
+            ]
+        },
+        {
+            "name": "NetLogo",
+            "refName": "PN_1203",
+            "filePath": "D:\\SRTI_GUI_tests\\PN_GUI_1203\\NetLogo_GUI",
+            "executeCommand": "java -cp SRTI_NetLogoWrapper_v2_22_02.jar main.Wrapper",
+            "functions": [
+                {
+                    "name": "initialize"
+                },
+                {
+                    "name": "simulate"
+                }
+            ],
+            "variables": [
+                {
+                    "name": "stage",
+                    "valueType": "integer"
+                },
+                {
+                    "name": "timestamp",
+                    "valueType": "integer"
+                },
+                {
+                    "name": "node-data",
+                    "valueType": "doublearray"
+                },
+                {
+                    "name": "link-data",
+                    "valueType": "doublearray"
+                },
+                {
+                    "name": "nodeDSPN",
+                    "valueType": "doublearray"
+                },
+                {
+                    "name": "CLPN",
+                    "valueType": "double"
+                }
+            ]
+        }
+    ],
+    "listOfMessages": [
+        {
+            "name": "RTI_",
+            "variables": [
+                {
+                    "name": "vTimestep",
+                    "valueType": "integer"
+                },
+                {
+                    "name": "stage",
+                    "valueType": "integer"
+                },
+                {
+                    "name": "stageVTimestepMul",
+                    "valueType": "integer"
+                },
+                {
+                    "name": "stageVTimestep",
+                    "valueType": "integer"
+                }
+            ]
+        },
+        {
+            "name": "Scenario",
+            "variables": [
+                {
+                    "name": "nodePN",
+                    "valueType": "doublearray"
+                },
+                {
+                    "name": "connectivityPN",
+                    "valueType": "doublearray"
+                }
+            ]
+        }
+    ],
+    "simulatorObjects": [
+        {
+            "name": "Scenario",
+            "original": {
+                "name": "Scenario",
+                "refName": "Scenario",
+                "filePath": "D:\\SRTI_GUI_tests\\PN_GUI_1203\\Scenario_GUI",
+                "executeCommand": "matlab -nosplash -r SRTI_Wrapper_v2_22_02",
+                "functions": [
+                    {
+                        "name": "Initialize"
+                    },
+                    {
+                        "name": "Simulate"
+                    }
+                ],
+                "variables": [
+                    {
+                        "name": "stage",
+                        "valueType": "integer"
+                    },
+                    {
+                        "name": "timestamp",
+                        "valueType": "integer"
+                    },
+                    {
+                        "name": "nodePN",
+                        "valueType": "doublearray"
+                    },
+                    {
+                        "name": "connectivityPN",
+                        "valueType": "doublearray"
+                    }
+                ]
+            },
+            "stage": 0,
+            "objectRef": {},
+            "order": 1,
+            "offsetX": 200,
+            "offsetY": 100,
+            "leftPos": "200",
+            "topPos": "100",
+            "subscribedMessages": [
+                0
+            ],
+            "publishedMessages": [
+                1
+            ],
+            "subscribedDetails": [
+                [
+                    [
+                        0,
+                        1
+                    ],
+                    [
+                        1,
+                        3
+                    ]
+                ]
+            ],
+            "publishedDetails": [
+                [
+                    [
+                        0,
+                        2
+                    ],
+                    [
+                        1,
+                        3
+                    ]
+                ]
+            ],
+            "timeDelta": 1,
+            "timeVarDelta": "",
+            "timeScale": 1,
+            "subscribedInitial": [
+                "false"
+            ],
+            "publishedInitial": [
+                "true"
+            ],
+            "subscribedTimeDelta": [
+                1
+            ],
+            "publishedTimeDelta": [
+                1
+            ],
+            "subscribedRelative": [
+                0
+            ],
+            "subscribedTimestep": [
+                0
+            ],
+            "initialize": "Initialize",
+            "simulate": "Simulate",
+            "simulateTimeDelta": 1,
+            "stageConditions": [],
+            "endConditions": []
+        },
+        {
+            "name": "NetLogo",
+            "original": {
+                "name": "NetLogo",
+                "refName": "PN_1203",
+                "filePath": "D:\\SRTI_GUI_tests\\PN_GUI_1203\\NetLogo_GUI",
+                "executeCommand": "java -cp SRTI_NetLogoWrapper_v2_22_02.jar main.Wrapper",
+                "functions": [
+                    {
+                        "name": "initialize"
+                    },
+                    {
+                        "name": "simulate"
+                    }
+                ],
+                "variables": [
+                    {
+                        "name": "stage",
+                        "valueType": "integer"
+                    },
+                    {
+                        "name": "timestamp",
+                        "valueType": "integer"
+                    },
+                    {
+                        "name": "node-data",
+                        "valueType": "doublearray"
+                    },
+                    {
+                        "name": "link-data",
+                        "valueType": "doublearray"
+                    },
+                    {
+                        "name": "nodeDSPN",
+                        "valueType": "doublearray"
+                    },
+                    {
+                        "name": "CLPN",
+                        "valueType": "double"
+                    }
+                ]
+            },
+            "stage": 0,
+            "objectRef": {},
+            "order": 2,
+            "offsetX": 400,
+            "offsetY": 100,
+            "leftPos": "400",
+            "topPos": "100",
+            "subscribedMessages": [
+                0,
+                1
+            ],
+            "publishedMessages": [],
+            "subscribedDetails": [
+                [
+                    [
+                        0,
+                        1
+                    ],
+                    [
+                        1,
+                        3
+                    ]
+                ],
+                [
+                    [
+                        2,
+                        0
+                    ],
+                    [
+                        3,
+                        1
+                    ]
+                ]
+            ],
+            "publishedDetails": [],
+            "timeDelta": 1,
+            "timeVarDelta": "",
+            "timeScale": 1,
+            "subscribedInitial": [
+                "false",
+                "true"
+            ],
+            "publishedInitial": [],
+            "subscribedTimeDelta": [
+                1,
+                1
+            ],
+            "publishedTimeDelta": [],
+            "subscribedRelative": [
+                0,
+                0
+            ],
+            "subscribedTimestep": [
+                0,
+                0
+            ],
+            "initialize": "initialize",
+            "simulate": "simulate",
+            "simulateTimeDelta": 1,
+            "stageConditions": [],
+            "endConditions": []
+        }
+    ],
+    "messageObjects": [
+        {
+            "name": "RTI_",
+            "original": {
+                "name": "RTI_",
+                "variables": [
+                    {
+                        "name": "vTimestep",
+                        "valueType": "integer"
+                    },
+                    {
+                        "name": "stage",
+                        "valueType": "integer"
+                    },
+                    {
+                        "name": "stageVTimestepMul",
+                        "valueType": "integer"
+                    },
+                    {
+                        "name": "stageVTimestep",
+                        "valueType": "integer"
+                    }
+                ]
+            },
+            "objectRef": {}
+        },
+        {
+            "name": "Scenario",
+            "original": {
+                "name": "Scenario",
+                "variables": [
+                    {
+                        "name": "nodePN",
+                        "valueType": "doublearray"
+                    },
+                    {
+                        "name": "connectivityPN",
+                        "valueType": "doublearray"
+                    }
+                ]
+            },
+            "objectRef": {}
+        }
+    ],
+    "numOfStages": 1,
+    "serverPath": "C:\\Users\\sylin\\AppData\\Local\\Temp\\1UUbomEicsdN8EYsrWyG8gWhbC7\\resources\\app.asar\\..\\extraResources\\srti_server\\",
+    "serverFileName": "SRTI_v2_22_02.jar",
+    "hostName": "localhost",
+    "portNumber": "42012"
+}

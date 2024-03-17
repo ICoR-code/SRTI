@@ -1,0 +1,39 @@
+{
+    "mesdef": {
+        "name": "PerformancePN",
+        "variables": [
+            {
+                "name": "CLPN",
+                "valueType": "double"
+            },
+            {
+                "name": "SRPN_ppl",
+                "valueType": "double"
+            },
+            {
+                "name": "SRPN_hhd",
+                "valueType": "double"
+            },
+            {
+                "name": "SRPN_area",
+                "valueType": "double"
+            },
+            {
+                "name": "nodeDSPN",
+                "valueType": "doublearray"
+            },
+            {
+                "name": "linkDSPN",
+                "valueType": "doublearray"
+            },
+            {
+                "name": "nodeFcnPN",
+                "valueType": "doublearray"
+            },
+            {
+                "name": "linkFcnPN",
+                "valueType": "doublearray"
+            }
+        ]
+    }
+}

@@ -1,0 +1,23 @@
+{
+    "mesdef": {
+        "name": "RTI_",
+        "variables": [
+            {
+                "name": "vTimestep",
+                "valueType": "integer"
+            },
+            {
+                "name": "stage",
+                "valueType": "integer"
+            },
+            {
+                "name": "stageVTimestepMul",
+                "valueType": "integer"
+            },
+            {
+                "name": "stageVTimestep",
+                "valueType": "integer"
+            }
+        ]
+    }
+}

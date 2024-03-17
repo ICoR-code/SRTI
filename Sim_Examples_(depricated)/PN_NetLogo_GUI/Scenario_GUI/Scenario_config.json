@@ -1,0 +1,72 @@
+{
+    "hostName": "localhost",
+    "portNumber": "42012",
+    "simulatorName": "Scenario",
+    "simulatorRef": "Scenario",
+    "debugConsole": false,
+    "debugFile": false,
+    "dataOutFile": false,
+    "stageChannels": [
+        {
+            "stage": 0,
+            "order": 1,
+            "timestepDelta": 1,
+            "timestepMul": 1,
+            "timestepVarDelta": ""
+        }
+    ],
+    "initializeChannels": [
+        {
+            "functionName": "Initialize",
+            "stage": 0
+        }
+    ],
+    "simulateChannels": [
+        {
+            "functionName": "Simulate",
+            "timestepDelta": 1,
+            "stage": 0
+        }
+    ],
+    "subscribedChannels": [
+        {
+            "messageName": "RTI_",
+            "oneTime": false,
+            "mandatory": true,
+            "relativeOrder": 0,
+            "maxTimestep": 0,
+            "timestepDelta": 1,
+            "stage": 0,
+            "varChannel": [
+                {
+                    "valueName": "stage",
+                    "varName": "stage"
+                },
+                {
+                    "valueName": "stageVTimestep",
+                    "varName": "timestamp"
+                }
+            ]
+        }
+    ],
+    "publishedChannels": [
+        {
+            "messageName": "Scenario",
+            "initial": true,
+            "timestepDelta": 1,
+            "stage": 0,
+            "varChannel": [
+                {
+                    "valueName": "nodePN",
+                    "varName": "nodePN"
+                },
+                {
+                    "valueName": "connectivityPN",
+                    "varName": "connectivityPN"
+                }
+            ]
+        }
+    ],
+    "endConditions": [],
+    "stageConditions": []
+}

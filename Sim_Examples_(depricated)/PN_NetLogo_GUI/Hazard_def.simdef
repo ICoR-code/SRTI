@@ -1,0 +1,35 @@
+{
+    "simdef": {
+        "name": "Hazard",
+        "refName": "Hazard",
+        "filePath": "D:\\SRTI_GUI_tests\\PN_GUI_1203\\Hazard_GUI",
+        "executeCommand": "matlab -nosplash -r SRTI_Wrapper_v2_22_02",
+        "functions": [
+            {
+                "name": "Simulate_0"
+            }
+        ],
+        "variables": [
+            {
+                "name": "stage",
+                "valueType": "integer"
+            },
+            {
+                "name": "timestamp",
+                "valueType": "integer"
+            },
+            {
+                "name": "nodePN",
+                "valueType": "doublearray"
+            },
+            {
+                "name": "gaPN",
+                "valueType": "doublearray"
+            },
+            {
+                "name": "gvPN",
+                "valueType": "doublearray"
+            }
+        ]
+    }
+}

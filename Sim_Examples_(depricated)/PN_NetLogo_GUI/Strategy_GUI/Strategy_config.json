@@ -1,0 +1,78 @@
+{
+    "hostName": "localhost",
+    "portNumber": "42012",
+    "simulatorName": "Strategy",
+    "simulatorRef": "Strategy",
+    "debugConsole": false,
+    "debugFile": false,
+    "dataOutFile": false,
+    "stageChannels": [
+        {
+            "stage": 1,
+            "order": 3,
+            "timestepDelta": 1,
+            "timestepMul": 1,
+            "timestepVarDelta": ""
+        }
+    ],
+    "initializeChannels": [],
+    "simulateChannels": [
+        {
+            "functionName": "Simulate",
+            "timestepDelta": 1,
+            "stage": 1
+        }
+    ],
+    "subscribedChannels": [
+        {
+            "messageName": "RTI_",
+            "oneTime": false,
+            "mandatory": true,
+            "relativeOrder": 0,
+            "maxTimestep": 0,
+            "timestepDelta": 1,
+            "stage": 1,
+            "varChannel": [
+                {
+                    "valueName": "stage",
+                    "varName": "stage"
+                },
+                {
+                    "valueName": "stageVTimestep",
+                    "varName": "timestamp"
+                }
+            ]
+        },
+        {
+            "messageName": "Performance",
+            "oneTime": false,
+            "mandatory": true,
+            "relativeOrder": 0,
+            "maxTimestep": 0,
+            "timestepDelta": 1,
+            "stage": 1,
+            "varChannel": [
+                {
+                    "valueName": "CLPN",
+                    "varName": "CLPN"
+                }
+            ]
+        }
+    ],
+    "publishedChannels": [
+        {
+            "messageName": "Strategy",
+            "initial": false,
+            "timestepDelta": 1,
+            "stage": 1,
+            "varChannel": [
+                {
+                    "valueName": "resoursePN",
+                    "varName": "resourcePN"
+                }
+            ]
+        }
+    ],
+    "endConditions": [],
+    "stageConditions": []
+}

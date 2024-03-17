@@ -1,0 +1,16 @@
+\\ lines that start with \\ will not run.
+\\ This is the Windows version of the commands that need to execute to run this project. 
+cd (RTIServerLocation)
+java -jar SRTI_v2_22_02.jar
+cd D:\SRTI_GUI_tests\PN_GUI_1201\Scenario_GUI
+matlab -nosplash -r SRTI_Wrapper_v2_22_02
+cd D:\SRTI_GUI_tests\PN_GUI_1201\Hazard_GUI
+matlab -nosplash -r SRTI_Wrapper_v2_22_02
+cd D:\SRTI_GUI_tests\PN_GUI_1201\Damage_GUI
+matlab -nosplash -r SRTI_Wrapper_v2_22_02
+cd D:\SRTI_GUI_tests\PN_GUI_1201\Performance_GUI
+matlab -nosplash -r SRTI_Wrapper_v2_22_02
+cd D:\SRTI_GUI_tests\PN_GUI_1201\Strategy_GUI
+matlab -nosplash -r SRTI_Wrapper_v2_22_02
+cd D:\SRTI_GUI_tests\PN_GUI_1201\Recovery_GUI
+matlab -nosplash -r SRTI_Wrapper_v2_22_02

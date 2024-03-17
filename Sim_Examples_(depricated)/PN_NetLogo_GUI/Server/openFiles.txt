@@ -1,0 +1,18 @@
+cd ..
+cd Scenario_GUI
+matlab -nosplash -r SRTI_Wrapper
+cd ..
+cd Hazard_GUI
+matlab -nosplash -r SRTI_Wrapper
+cd ..
+cd Damage_GUI
+matlab -nosplash -r SRTI_Wrapper
+cd ..
+cd Performance_GUI
+matlab -nosplash -r SRTI_Wrapper
+cd ..
+cd Strategy_GUI
+matlab -nosplash -r SRTI_Wrapper
+cd ..
+cd Recovery_GUI
+matlab -nosplash -r SRTI_Wrapper

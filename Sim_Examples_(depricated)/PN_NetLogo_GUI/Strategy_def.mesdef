@@ -1,0 +1,11 @@
+{
+    "mesdef": {
+        "name": "Strategy",
+        "variables": [
+            {
+                "name": "resoursePN",
+                "valueType": "double"
+            }
+        ]
+    }
+}

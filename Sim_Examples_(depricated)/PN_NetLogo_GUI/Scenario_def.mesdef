@@ -1,0 +1,15 @@
+{
+    "mesdef": {
+        "name": "Scenario",
+        "variables": [
+            {
+                "name": "nodePN",
+                "valueType": "doublearray"
+            },
+            {
+                "name": "connectivityPN",
+                "valueType": "doublearray"
+            }
+        ]
+    }
+}

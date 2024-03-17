@@ -1,0 +1,82 @@
+{
+    "hostName": "localhost",
+    "portNumber": "42012",
+    "simulatorName": "Hazard",
+    "simulatorRef": "Hazard",
+    "debugConsole": false,
+    "debugFile": false,
+    "dataOutFile": false,
+    "stageChannels": [
+        {
+            "stage": 0,
+            "order": 2,
+            "timestepDelta": 1,
+            "timestepMul": 1,
+            "timestepVarDelta": ""
+        }
+    ],
+    "initializeChannels": [],
+    "simulateChannels": [
+        {
+            "functionName": "Simulate_0",
+            "timestepDelta": 1,
+            "stage": 0
+        }
+    ],
+    "subscribedChannels": [
+        {
+            "messageName": "RTI_",
+            "oneTime": false,
+            "mandatory": true,
+            "relativeOrder": 0,
+            "maxTimestep": 0,
+            "timestepDelta": 1,
+            "stage": 0,
+            "varChannel": [
+                {
+                    "valueName": "stage",
+                    "varName": "stage"
+                },
+                {
+                    "valueName": "stageVTimestep",
+                    "varName": "timestamp"
+                }
+            ]
+        },
+        {
+            "messageName": "Scenario",
+            "oneTime": true,
+            "mandatory": true,
+            "relativeOrder": 0,
+            "maxTimestep": 0,
+            "timestepDelta": 0,
+            "stage": 0,
+            "varChannel": [
+                {
+                    "valueName": "nodePN",
+                    "varName": "nodePN"
+                }
+            ]
+        }
+    ],
+    "publishedChannels": [
+        {
+            "messageName": "GroundMotion",
+            "initial": false,
+            "timestepDelta": 1,
+            "stage": 0,
+            "varChannel": [
+                {
+                    "valueName": "gaPN",
+                    "varName": "gaPN"
+                },
+                {
+                    "valueName": "gvPN",
+                    "varName": "gvPN"
+                }
+            ]
+        }
+    ],
+    "endConditions": [],
+    "stageConditions": []
+}

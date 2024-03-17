@@ -1,0 +1,42 @@
+{
+    "simdef": {
+        "name": "NetLogo",
+        "refName": "PN_1203",
+        "filePath": "D:\\SRTI_GUI_tests\\PN_GUI_1203\\NetLogo_GUI",
+        "executeCommand": "java -cp SRTI_NetLogoWrapper_v2_22_02.jar main.Wrapper",
+        "functions": [
+            {
+                "name": "initialize"
+            },
+            {
+                "name": "simulate"
+            }
+        ],
+        "variables": [
+            {
+                "name": "stage",
+                "valueType": "integer"
+            },
+            {
+                "name": "timestamp",
+                "valueType": "integer"
+            },
+            {
+                "name": "node-data",
+                "valueType": "doublearray"
+            },
+            {
+                "name": "link-data",
+                "valueType": "doublearray"
+            },
+            {
+                "name": "nodeDSPN",
+                "valueType": "doublearray"
+            },
+            {
+                "name": "CLPN",
+                "valueType": "double"
+            }
+        ]
+    }
+}

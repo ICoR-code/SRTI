@@ -1,0 +1,15 @@
+{
+    "mesdef": {
+        "name": "GroundMotion",
+        "variables": [
+            {
+                "name": "gaPN",
+                "valueType": "doublearray"
+            },
+            {
+                "name": "gvPN",
+                "valueType": "doublearray"
+            }
+        ]
+    }
+}

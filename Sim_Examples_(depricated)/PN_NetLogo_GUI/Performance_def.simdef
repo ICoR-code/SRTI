@@ -1,0 +1,66 @@
+{
+    "simdef": {
+        "name": "Performance",
+        "refName": "PerformancePN",
+        "filePath": "D:\\SRTI_GUI_tests\\PN_GUI_1203\\Performance_GUI",
+        "executeCommand": "matlab -nosplash -r SRTI_Wrapper_v2_22_02",
+        "functions": [
+            {
+                "name": "Simulate_0"
+            },
+            {
+                "name": "Simulate_1"
+            }
+        ],
+        "variables": [
+            {
+                "name": "stage",
+                "valueType": "integer"
+            },
+            {
+                "name": "timestamp",
+                "valueType": "integer"
+            },
+            {
+                "name": "nodePN",
+                "valueType": "doublearray"
+            },
+            {
+                "name": "connectivityPN",
+                "valueType": "doublearray"
+            },
+            {
+                "name": "nodeDSPN",
+                "valueType": "doublearray"
+            },
+            {
+                "name": "linkDSPN",
+                "valueType": "doublearray"
+            },
+            {
+                "name": "nodeFcnPN",
+                "valueType": "doublearray"
+            },
+            {
+                "name": "linkFcnPN",
+                "valueType": "doublearray"
+            },
+            {
+                "name": "CLPN",
+                "valueType": "double"
+            },
+            {
+                "name": "SRPN_ppl",
+                "valueType": "double"
+            },
+            {
+                "name": "SRPN_hhd",
+                "valueType": "double"
+            },
+            {
+                "name": "SRPN_area",
+                "valueType": "double"
+            }
+        ]
+    }
+}

@@ -1,0 +1,23 @@
+{
+    "mesdef": {
+        "name": "DDamagePN",
+        "variables": [
+            {
+                "name": "nodeDSPN",
+                "valueType": "doublearray"
+            },
+            {
+                "name": "linkDSPN",
+                "valueType": "doublearray"
+            },
+            {
+                "name": "nodeFcnPN",
+                "valueType": "doublearray"
+            },
+            {
+                "name": "linkFcnPN",
+                "valueType": "doublearray"
+            }
+        ]
+    }
+}

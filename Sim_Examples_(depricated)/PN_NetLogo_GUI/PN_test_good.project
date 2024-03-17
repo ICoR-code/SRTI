@@ -1,0 +1,1933 @@
+{
+    "listOfSimulators": [
+        {
+            "name": "Scenario",
+            "refName": "Scenario",
+            "filePath": "D:\\SRTI_GUI_tests\\PN_GUI_1201\\Scenario_GUI",
+            "executeCommand": "matlab -nosplash -r SRTI_Wrapper_v2_22_02",
+            "functions": [
+                {
+                    "name": "Initialize"
+                },
+                {
+                    "name": "Simulate"
+                }
+            ],
+            "variables": [
+                {
+                    "name": "stage",
+                    "valueType": "integer"
+                },
+                {
+                    "name": "timestamp",
+                    "valueType": "integer"
+                },
+                {
+                    "name": "nodePN",
+                    "valueType": "doublearray"
+                },
+                {
+                    "name": "connectivityPN",
+                    "valueType": "doublearray"
+                }
+            ]
+        },
+        {
+            "name": "Hazard",
+            "refName": "Hazard",
+            "filePath": "D:\\SRTI_GUI_tests\\PN_GUI_1201\\Hazard_GUI",
+            "executeCommand": "matlab -nosplash -r SRTI_Wrapper_v2_22_02",
+            "functions": [
+                {
+                    "name": "Simulate_0"
+                }
+            ],
+            "variables": [
+                {
+                    "name": "stage",
+                    "valueType": "integer"
+                },
+                {
+                    "name": "timestamp",
+                    "valueType": "integer"
+                },
+                {
+                    "name": "nodePN",
+                    "valueType": "doublearray"
+                },
+                {
+                    "name": "gaPN",
+                    "valueType": "doublearray"
+                },
+                {
+                    "name": "gvPN",
+                    "valueType": "doublearray"
+                }
+            ]
+        },
+        {
+            "name": "Damage",
+            "refName": "DirectDamagePN",
+            "filePath": "D:\\SRTI_GUI_tests\\PN_GUI_1201\\Damage_GUI",
+            "executeCommand": "matlab -nosplash -r SRTI_Wrapper_v2_22_02",
+            "functions": [
+                {
+                    "name": "Simulate_0"
+                },
+                {
+                    "name": "Update"
+                }
+            ],
+            "variables": [
+                {
+                    "name": "stage",
+                    "valueType": "integer"
+                },
+                {
+                    "name": "timestamp",
+                    "valueType": "integer"
+                },
+                {
+                    "name": "nodePN",
+                    "valueType": "doublearray"
+                },
+                {
+                    "name": "connectivityPN",
+                    "valueType": "doublearray"
+                },
+                {
+                    "name": "gaPN",
+                    "valueType": "doublearray"
+                },
+                {
+                    "name": "gvPN",
+                    "valueType": "doublearray"
+                },
+                {
+                    "name": "rec_nodeDSPN",
+                    "valueType": "doublearray"
+                },
+                {
+                    "name": "rec_linkDSPN",
+                    "valueType": "doublearray"
+                },
+                {
+                    "name": "nodeDSPN",
+                    "valueType": "doublearray"
+                },
+                {
+                    "name": "linkDSPN",
+                    "valueType": "doublearray"
+                },
+                {
+                    "name": "nodeFcnPN",
+                    "valueType": "doublearray"
+                },
+                {
+                    "name": "linkFcnPN",
+                    "valueType": "doublearray"
+                }
+            ]
+        },
+        {
+            "name": "Performance",
+            "refName": "PerformancePN",
+            "filePath": "D:\\SRTI_GUI_tests\\PN_GUI_1201\\Performance_GUI",
+            "executeCommand": "matlab -nosplash -r SRTI_Wrapper_v2_22_02",
+            "functions": [
+                {
+                    "name": "Simulate_0"
+                },
+                {
+                    "name": "Simulate_1"
+                }
+            ],
+            "variables": [
+                {
+                    "name": "stage",
+                    "valueType": "integer"
+                },
+                {
+                    "name": "timestamp",
+                    "valueType": "integer"
+                },
+                {
+                    "name": "nodePN",
+                    "valueType": "doublearray"
+                },
+                {
+                    "name": "connectivityPN",
+                    "valueType": "doublearray"
+                },
+                {
+                    "name": "nodeDSPN",
+                    "valueType": "doublearray"
+                },
+                {
+                    "name": "linkDSPN",
+                    "valueType": "doublearray"
+                },
+                {
+                    "name": "nodeFcnPN",
+                    "valueType": "doublearray"
+                },
+                {
+                    "name": "linkFcnPN",
+                    "valueType": "doublearray"
+                },
+                {
+                    "name": "CLPN",
+                    "valueType": "double"
+                },
+                {
+                    "name": "SRPN_ppl",
+                    "valueType": "double"
+                },
+                {
+                    "name": "SRPN_hhd",
+                    "valueType": "double"
+                },
+                {
+                    "name": "SRPN_area",
+                    "valueType": "double"
+                }
+            ]
+        },
+        {
+            "name": "Strategy",
+            "refName": "Strategy",
+            "filePath": "D:\\SRTI_GUI_tests\\PN_GUI_1201\\Strategy_GUI",
+            "executeCommand": "matlab -nosplash -r SRTI_Wrapper_v2_22_02",
+            "functions": [
+                {
+                    "name": "Simulate"
+                }
+            ],
+            "variables": [
+                {
+                    "name": "stage",
+                    "valueType": "integer"
+                },
+                {
+                    "name": "timestamp",
+                    "valueType": "integer"
+                },
+                {
+                    "name": "CLPN",
+                    "valueType": "double"
+                },
+                {
+                    "name": "resourcePN",
+                    "valueType": "double"
+                }
+            ]
+        },
+        {
+            "name": "Recovery",
+            "refName": "PhysRecoveryPN",
+            "filePath": "D:\\SRTI_GUI_tests\\PN_GUI_1201\\Recovery_GUI",
+            "executeCommand": "matlab -nosplash -r SRTI_Wrapper_v2_22_02",
+            "functions": [
+                {
+                    "name": "Initialize"
+                },
+                {
+                    "name": "Update"
+                },
+                {
+                    "name": "Simulate"
+                }
+            ],
+            "variables": [
+                {
+                    "name": "stage",
+                    "valueType": "integer"
+                },
+                {
+                    "name": "timestamp",
+                    "valueType": "integer"
+                },
+                {
+                    "name": "nodePN",
+                    "valueType": "doublearray"
+                },
+                {
+                    "name": "connectivityPN",
+                    "valueType": "doublearray"
+                },
+                {
+                    "name": "nodeDSPN",
+                    "valueType": "doublearray"
+                },
+                {
+                    "name": "linkDSPN",
+                    "valueType": "doublearray"
+                },
+                {
+                    "name": "nodeFcnPN",
+                    "valueType": "doublearray"
+                },
+                {
+                    "name": "linkFcnPN",
+                    "valueType": "doublearray"
+                },
+                {
+                    "name": "resourcePN",
+                    "valueType": "double"
+                },
+                {
+                    "name": "recoveryNodePN",
+                    "valueType": "doublearray"
+                },
+                {
+                    "name": "recoveryLinkPN",
+                    "valueType": "doublearray"
+                }
+            ]
+        }
+    ],
+    "listOfMessages": [
+        {
+            "name": "RTI_",
+            "variables": [
+                {
+                    "name": "vTimestep",
+                    "valueType": "integer"
+                },
+                {
+                    "name": "stage",
+                    "valueType": "integer"
+                },
+                {
+                    "name": "stageVTimestepMul",
+                    "valueType": "integer"
+                },
+                {
+                    "name": "stageVTimestep",
+                    "valueType": "integer"
+                }
+            ]
+        },
+        {
+            "name": "Scenario",
+            "variables": [
+                {
+                    "name": "nodePN",
+                    "valueType": "doublearray"
+                },
+                {
+                    "name": "connectivityPN",
+                    "valueType": "doublearray"
+                }
+            ]
+        },
+        {
+            "name": "GroundMotion",
+            "variables": [
+                {
+                    "name": "gaPN",
+                    "valueType": "doublearray"
+                },
+                {
+                    "name": "gvPN",
+                    "valueType": "doublearray"
+                }
+            ]
+        },
+        {
+            "name": "DDamagePN",
+            "variables": [
+                {
+                    "name": "nodeDSPN",
+                    "valueType": "doublearray"
+                },
+                {
+                    "name": "linkDSPN",
+                    "valueType": "doublearray"
+                },
+                {
+                    "name": "nodeFcnPN",
+                    "valueType": "doublearray"
+                },
+                {
+                    "name": "linkFcnPN",
+                    "valueType": "doublearray"
+                }
+            ]
+        },
+        {
+            "name": "PerformancePN",
+            "variables": [
+                {
+                    "name": "CLPN",
+                    "valueType": "double"
+                },
+                {
+                    "name": "SRPN_ppl",
+                    "valueType": "double"
+                },
+                {
+                    "name": "SRPN_hhd",
+                    "valueType": "double"
+                },
+                {
+                    "name": "SRPN_area",
+                    "valueType": "double"
+                },
+                {
+                    "name": "nodeDSPN",
+                    "valueType": "doublearray"
+                },
+                {
+                    "name": "linkDSPN",
+                    "valueType": "doublearray"
+                },
+                {
+                    "name": "nodeFcnPN",
+                    "valueType": "doublearray"
+                },
+                {
+                    "name": "linkFcnPN",
+                    "valueType": "doublearray"
+                }
+            ]
+        },
+        {
+            "name": "Strategy",
+            "variables": [
+                {
+                    "name": "resoursePN",
+                    "valueType": "double"
+                }
+            ]
+        },
+        {
+            "name": "PhysRecoveryPN",
+            "variables": [
+                {
+                    "name": "nodeDSPN",
+                    "valueType": "doublearray"
+                },
+                {
+                    "name": "linkDSPN",
+                    "valueType": "doublearray"
+                },
+                {
+                    "name": "nodeFcnPN",
+                    "valueType": "doublearray"
+                },
+                {
+                    "name": "linkFcnPN",
+                    "valueType": "doublearray"
+                },
+                {
+                    "name": "recoveryNodePN",
+                    "valueType": "doublearray"
+                },
+                {
+                    "name": "recoveryLinkPN",
+                    "valueType": "doublearray"
+                }
+            ]
+        }
+    ],
+    "simulatorObjects": [
+        {
+            "name": "Scenario",
+            "original": {
+                "name": "Scenario",
+                "refName": "Scenario",
+                "filePath": "D:\\SRTI_GUI_tests\\PN_GUI_1201\\Scenario_GUI",
+                "executeCommand": "matlab -nosplash -r SRTI_Wrapper_v2_22_02",
+                "functions": [
+                    {
+                        "name": "Initialize"
+                    },
+                    {
+                        "name": "Simulate"
+                    }
+                ],
+                "variables": [
+                    {
+                        "name": "stage",
+                        "valueType": "integer"
+                    },
+                    {
+                        "name": "timestamp",
+                        "valueType": "integer"
+                    },
+                    {
+                        "name": "nodePN",
+                        "valueType": "doublearray"
+                    },
+                    {
+                        "name": "connectivityPN",
+                        "valueType": "doublearray"
+                    }
+                ]
+            },
+            "stage": 0,
+            "objectRef": {},
+            "order": 0,
+            "offsetX": 100,
+            "offsetY": 0,
+            "leftPos": "100",
+            "topPos": "0",
+            "subscribedMessages": [
+                6
+            ],
+            "publishedMessages": [
+                0
+            ],
+            "subscribedDetails": [
+                [
+                    [
+                        0,
+                        1
+                    ],
+                    [
+                        1,
+                        3
+                    ]
+                ]
+            ],
+            "publishedDetails": [
+                [
+                    [
+                        0,
+                        2
+                    ],
+                    [
+                        1,
+                        3
+                    ]
+                ]
+            ],
+            "timeDelta": 1,
+            "timeVarDelta": "",
+            "timeScale": 1,
+            "subscribedInitial": [
+                "false"
+            ],
+            "publishedInitial": [
+                "true"
+            ],
+            "subscribedTimeDelta": [
+                1
+            ],
+            "publishedTimeDelta": [
+                1
+            ],
+            "subscribedRelative": [
+                0
+            ],
+            "subscribedTimestep": [
+                0
+            ],
+            "initialize": "Initialize",
+            "simulate": "Simulate",
+            "simulateTimeDelta": 1,
+            "stageConditions": [],
+            "endConditions": []
+        },
+        {
+            "name": "Hazard",
+            "original": {
+                "name": "Hazard",
+                "refName": "Hazard",
+                "filePath": "D:\\SRTI_GUI_tests\\PN_GUI_1201\\Hazard_GUI",
+                "executeCommand": "matlab -nosplash -r SRTI_Wrapper_v2_22_02",
+                "functions": [
+                    {
+                        "name": "Simulate_0"
+                    }
+                ],
+                "variables": [
+                    {
+                        "name": "stage",
+                        "valueType": "integer"
+                    },
+                    {
+                        "name": "timestamp",
+                        "valueType": "integer"
+                    },
+                    {
+                        "name": "nodePN",
+                        "valueType": "doublearray"
+                    },
+                    {
+                        "name": "gaPN",
+                        "valueType": "doublearray"
+                    },
+                    {
+                        "name": "gvPN",
+                        "valueType": "doublearray"
+                    }
+                ]
+            },
+            "stage": 0,
+            "objectRef": {},
+            "order": 1,
+            "offsetX": 200,
+            "offsetY": 0,
+            "leftPos": "200",
+            "topPos": "0",
+            "subscribedMessages": [
+                6,
+                0
+            ],
+            "publishedMessages": [
+                1
+            ],
+            "subscribedDetails": [
+                [
+                    [
+                        0,
+                        1
+                    ],
+                    [
+                        1,
+                        3
+                    ]
+                ],
+				[
+                    [
+                        2,
+                        0
+                    ]
+                ]
+            ],
+            "publishedDetails": [
+                [
+                    [
+                        0,
+                        3
+                    ],
+                    [
+                        1,
+                        4
+                    ]
+                ]
+            ],
+            "timeDelta": 1,
+            "timeVarDelta": "",
+            "timeScale": 1,
+            "subscribedInitial": [
+                "false",
+                "true"
+            ],
+            "publishedInitial": [
+                "false"
+            ],
+            "subscribedTimeDelta": [
+                1,
+				0
+            ],
+            "publishedTimeDelta": [
+                1
+            ],
+            "subscribedRelative": [
+                0,
+				0
+            ],
+            "subscribedTimestep": [
+                0,
+				0
+            ],
+            "initialize": "''",
+            "simulate": "Simulate_0",
+            "simulateTimeDelta": 1,
+            "stageConditions": [],
+            "endConditions": []
+        },
+        {
+            "name": "Damage",
+            "original": {
+                "name": "Damage",
+                "refName": "DirectDamagePN",
+                "filePath": "D:\\SRTI_GUI_tests\\PN_GUI_1201\\Damage_GUI",
+                "executeCommand": "matlab -nosplash -r SRTI_Wrapper_v2_22_02",
+                "functions": [
+                    {
+                        "name": "Simulate_0"
+                    },
+                    {
+                        "name": "Update"
+                    }
+                ],
+                "variables": [
+                    {
+                        "name": "stage",
+                        "valueType": "integer"
+                    },
+                    {
+                        "name": "timestamp",
+                        "valueType": "integer"
+                    },
+                    {
+                        "name": "nodePN",
+                        "valueType": "doublearray"
+                    },
+                    {
+                        "name": "connectivityPN",
+                        "valueType": "doublearray"
+                    },
+                    {
+                        "name": "gaPN",
+                        "valueType": "doublearray"
+                    },
+                    {
+                        "name": "gvPN",
+                        "valueType": "doublearray"
+                    },
+                    {
+                        "name": "rec_nodeDSPN",
+                        "valueType": "doublearray"
+                    },
+                    {
+                        "name": "rec_linkDSPN",
+                        "valueType": "doublearray"
+                    },
+                    {
+                        "name": "nodeDSPN",
+                        "valueType": "doublearray"
+                    },
+                    {
+                        "name": "linkDSPN",
+                        "valueType": "doublearray"
+                    },
+                    {
+                        "name": "nodeFcnPN",
+                        "valueType": "doublearray"
+                    },
+                    {
+                        "name": "linkFcnPN",
+                        "valueType": "doublearray"
+                    }
+                ]
+            },
+            "stage": 0,
+            "objectRef": {},
+            "order": 2,
+            "offsetX": 300,
+            "offsetY": 0,
+            "leftPos": "300",
+            "topPos": "0",
+            "subscribedMessages": [
+                6,
+                0,
+                1
+            ],
+            "publishedMessages": [
+                2
+            ],
+            "subscribedDetails": [
+                [
+                    [
+                        0,
+                        1
+                    ],
+                    [
+                        1,
+                        3
+                    ]
+                ],
+                [     
+                    [
+                        2,
+                        0
+                    ],                   
+                    [
+                        3,
+                        1
+                    ]
+                ],
+                [             
+                    [
+                        4,
+                        0
+                    ],
+                    [
+                        5,
+                        1
+                    ]
+                ]
+            ],
+            "publishedDetails": [
+                [
+                    [
+                        0,
+                        8
+                    ],
+                    [
+                        1,
+                        9
+                    ],
+                    [
+                        2,
+                        10
+                    ],
+                    [
+                        3,
+                        11
+                    ]
+                ]
+            ],
+            "timeDelta": 1,
+            "timeVarDelta": "",
+            "timeScale": 1,
+            "subscribedInitial": [
+                "false",
+                "true",
+                "false"
+            ],
+            "publishedInitial": [
+                "false"
+            ],
+            "subscribedTimeDelta": [
+                1,
+                1,
+                1
+            ],
+            "publishedTimeDelta": [
+                1
+            ],
+            "subscribedRelative": [
+                0,
+                0,
+                0
+            ],
+            "subscribedTimestep": [
+                0,
+                0,
+                0
+            ],
+            "initialize": "''",
+            "simulate": "Simulate_0",
+            "simulateTimeDelta": 1,
+            "stageConditions": [],
+            "endConditions": []
+        },
+        {
+            "name": "Performance",
+            "original": {
+                "name": "Performance",
+                "refName": "PerformancePN",
+                "filePath": "D:\\SRTI_GUI_tests\\PN_GUI_1201\\Performance_GUI",
+                "executeCommand": "matlab -nosplash -r SRTI_Wrapper_v2_22_02",
+                "functions": [
+                    {
+                        "name": "Simulate_0"
+                    },
+                    {
+                        "name": "Simulate_1"
+                    }
+                ],
+                "variables": [
+                    {
+                        "name": "stage",
+                        "valueType": "integer"
+                    },
+                    {
+                        "name": "timestamp",
+                        "valueType": "integer"
+                    },
+                    {
+                        "name": "nodePN",
+                        "valueType": "doublearray"
+                    },
+                    {
+                        "name": "connectivityPN",
+                        "valueType": "doublearray"
+                    },
+                    {
+                        "name": "nodeDSPN",
+                        "valueType": "doublearray"
+                    },
+                    {
+                        "name": "linkDSPN",
+                        "valueType": "doublearray"
+                    },
+                    {
+                        "name": "nodeFcnPN",
+                        "valueType": "doublearray"
+                    },
+                    {
+                        "name": "linkFcnPN",
+                        "valueType": "doublearray"
+                    },
+                    {
+                        "name": "CLPN",
+                        "valueType": "double"
+                    },
+                    {
+                        "name": "SRPN_ppl",
+                        "valueType": "double"
+                    },
+                    {
+                        "name": "SRPN_hhd",
+                        "valueType": "double"
+                    },
+                    {
+                        "name": "SRPN_area",
+                        "valueType": "double"
+                    }
+                ]
+            },
+            "stage": 0,
+            "objectRef": {},
+            "order": 3,
+            "offsetX": 400,
+            "offsetY": 0,
+            "leftPos": "400",
+            "topPos": "0",
+            "subscribedMessages": [
+                6,
+                0,                
+                2
+            ],
+            "publishedMessages": [
+                3
+            ],
+            "subscribedDetails": [
+                [
+                    [
+                        0,
+                        1
+                    ],
+                    [
+                        1,
+                        3
+                    ]
+                ],
+                [
+                    [
+                        2,
+                        0
+                    ],
+                    [
+                        3,
+                        1
+                    ]
+                ],
+                [                   
+					[
+                        4,
+                        0
+                    ],
+                    [
+                        5,
+                        1
+                    ],
+                    [
+                        6,
+                        2
+                    ],
+                    [
+                        7,
+                        3
+                    ]
+                ]
+            ],
+            "publishedDetails": [
+                [
+                    [
+                        0,
+                        8
+                    ],
+                    [
+                        1,
+                        9
+                    ],
+                    [
+                        2,
+                        10
+                    ],
+                    [
+                        3,
+                        11
+                    ],
+                    [
+                        4,
+                        4
+                    ],
+                    [
+                        5,
+                        5
+                    ],
+                    [
+                        6,
+                        6
+                    ],
+                    [
+                        7,
+                        7
+                    ]
+                ]
+            ],
+            "timeDelta": 1,
+            "timeVarDelta": "",
+            "timeScale": 1,
+            "subscribedInitial": [
+                "false",
+                "true",
+                "false"
+            ],
+            "publishedInitial": [
+                "false"
+            ],
+            "subscribedTimeDelta": [
+                1,
+                1,
+                1
+            ],
+            "publishedTimeDelta": [
+                1
+            ],
+            "subscribedRelative": [
+                0,
+                0,
+                0
+            ],
+            "subscribedTimestep": [
+                0,
+                0,
+                0
+            ],
+            "initialize": "''",
+            "simulate": "Simulate_0",
+            "simulateTimeDelta": 1,
+            "stageConditions": [],
+            "endConditions": []
+        },
+        {
+            "name": "Recovery",
+            "original": {
+                "name": "Recovery",
+                "refName": "PhysRecoveryPN",
+                "filePath": "D:\\SRTI_GUI_tests\\PN_GUI_1201\\Recovery_GUI",
+                "executeCommand": "matlab -nosplash -r SRTI_Wrapper_v2_22_02",
+                "functions": [
+                    {
+                        "name": "Initialize"
+                    },
+                    {
+                        "name": "Update"
+                    },
+                    {
+                        "name": "Simulate"
+                    }
+                ],
+                "variables": [
+                    {
+                        "name": "stage",
+                        "valueType": "integer"
+                    },
+                    {
+                        "name": "timestamp",
+                        "valueType": "integer"
+                    },
+                    {
+                        "name": "nodePN",
+                        "valueType": "doublearray"
+                    },
+                    {
+                        "name": "connectivityPN",
+                        "valueType": "doublearray"
+                    },
+                    {
+                        "name": "nodeDSPN",
+                        "valueType": "doublearray"
+                    },
+                    {
+                        "name": "linkDSPN",
+                        "valueType": "doublearray"
+                    },
+                    {
+                        "name": "nodeFcnPN",
+                        "valueType": "doublearray"
+                    },
+                    {
+                        "name": "linkFcnPN",
+                        "valueType": "doublearray"
+                    },
+                    {
+                        "name": "resourcePN",
+                        "valueType": "double"
+                    },
+                    {
+                        "name": "recoveryNodePN",
+                        "valueType": "doublearray"
+                    },
+                    {
+                        "name": "recoveryLinkPN",
+                        "valueType": "doublearray"
+                    }
+                ]
+            },
+            "stage": 0,
+            "objectRef": {},
+            "order": 4,
+            "offsetX": 600,
+            "offsetY": 0,
+            "leftPos": "600",
+            "topPos": "0",
+            "subscribedMessages": [
+                6,
+                0,
+                2
+            ],
+            "publishedMessages": [],
+            "subscribedDetails": [
+                [
+                    [
+                        0,
+                        1
+                    ],
+                    [
+                        1,
+                        3
+                    ]
+                ],
+                [
+                    [
+                        2,
+                        0
+                    ],
+                    [
+                        3,
+                        1
+                    ]
+                ],
+                [
+                    [
+                        4,
+                        0
+                    ],
+                    [
+                        5,
+                        1
+                    ],
+                    [
+                        6,
+                        2
+                    ],
+                    [
+                        7,
+                        3
+                    ]
+                ]
+            ],
+            "publishedDetails": [],
+            "timeDelta": 1,
+            "timeVarDelta": "",
+            "timeScale": 1,
+            "subscribedInitial": [
+                "false",
+                "true",
+                "false"
+            ],
+            "publishedInitial": [],
+            "subscribedTimeDelta": [
+                1,
+                1,
+                1
+            ],
+            "publishedTimeDelta": [],
+            "subscribedRelative": [
+                0,
+                0,
+                0
+            ],
+            "subscribedTimestep": [
+                0,
+                0,
+                0
+            ],
+            "initialize": "''",
+            "simulate": "Update",
+            "simulateTimeDelta": 1,
+            "stageConditions": [
+                {
+                    "oldStage": 0,
+                    "conditions": [
+                        {
+                            "varName": "timestamp",
+                            "condition": ">=",
+                            "value": "100",
+                            "varName2": ""
+                        }
+                    ],
+                    "newStage": "1"
+                }
+            ],
+            "endConditions": []
+        },
+        {
+            "name": "Performance",
+            "original": {
+                "name": "Performance",
+                "refName": "PerformancePN",
+                "filePath": "D:\\SRTI_GUI_tests\\PN_GUI_1201\\Performance_GUI",
+                "executeCommand": "matlab -nosplash -r SRTI_Wrapper_v2_22_02",
+                "functions": [
+                    {
+                        "name": "Simulate_0"
+                    },
+                    {
+                        "name": "Simulate_1"
+                    }
+                ],
+                "variables": [
+                    {
+                        "name": "stage",
+                        "valueType": "integer"
+                    },
+                    {
+                        "name": "timestamp",
+                        "valueType": "integer"
+                    },
+                    {
+                        "name": "nodePN",
+                        "valueType": "doublearray"
+                    },
+                    {
+                        "name": "connectivityPN",
+                        "valueType": "doublearray"
+                    },
+                    {
+                        "name": "nodeDSPN",
+                        "valueType": "doublearray"
+                    },
+                    {
+                        "name": "linkDSPN",
+                        "valueType": "doublearray"
+                    },
+                    {
+                        "name": "nodeFcnPN",
+                        "valueType": "doublearray"
+                    },
+                    {
+                        "name": "linkFcnPN",
+                        "valueType": "doublearray"
+                    },
+                    {
+                        "name": "CLPN",
+                        "valueType": "double"
+                    },
+                    {
+                        "name": "SRPN_ppl",
+                        "valueType": "double"
+                    },
+                    {
+                        "name": "SRPN_hhd",
+                        "valueType": "double"
+                    },
+                    {
+                        "name": "SRPN_area",
+                        "valueType": "double"
+                    }
+                ]
+            },
+            "stage": 1,
+            "objectRef": {},
+            "order": 0,
+            "offsetX": 200,
+            "offsetY": -500,
+            "leftPos": "200",
+            "topPos": "-500",
+            "subscribedMessages": [
+                6,
+                5
+            ],
+            "publishedMessages": [
+                3
+            ],
+            "subscribedDetails": [
+                [
+                    [
+                        0,
+                        1
+                    ],
+                    [
+                        1,
+                        3
+                    ]
+                ],
+                [
+                    [
+                        4,
+                        0
+                    ],
+                    [
+                        5,
+                        1
+                    ],
+                    [
+                        6,
+                        2
+                    ],
+                    [
+                        7,
+                        3
+                    ]
+                ]
+            ],
+            "publishedDetails": [
+                [
+                    [
+                        0,
+                        8
+                    ],
+                    [
+                        1,
+                        9
+                    ],
+                    [
+                        2,
+                        10
+                    ],
+                    [
+                        3,
+                        11
+                    ],
+                    [
+                        4,
+                        4
+                    ],
+                    [
+                        5,
+                        5
+                    ],
+                    [
+                        6,
+                        6
+                    ],
+                    [
+                        7,
+                        7
+                    ]
+                ]
+            ],
+            "timeDelta": 1,
+            "timeVarDelta": "",
+            "timeScale": 1,
+            "subscribedInitial": [
+                "false",
+                "false"
+            ],
+            "publishedInitial": [
+                "false"
+            ],
+            "subscribedTimeDelta": [
+                1,
+                1
+            ],
+            "publishedTimeDelta": [
+                1
+            ],
+            "subscribedRelative": [
+                0,
+                0
+            ],
+            "subscribedTimestep": [
+                0,
+                0
+            ],
+            "initialize": "''",
+            "simulate": "Simulate_1",
+            "simulateTimeDelta": 1,
+            "stageConditions": [],
+            "endConditions": []
+        },
+        {
+            "name": "Strategy",
+            "original": {
+                "name": "Strategy",
+                "refName": "Strategy",
+                "filePath": "D:\\SRTI_GUI_tests\\PN_GUI_1201\\Strategy_GUI",
+                "executeCommand": "matlab -nosplash -r SRTI_Wrapper_v2_22_02",
+                "functions": [
+                    {
+                        "name": "Simulate"
+                    }
+                ],
+                "variables": [
+                    {
+                        "name": "stage",
+                        "valueType": "integer"
+                    },
+                    {
+                        "name": "timestamp",
+                        "valueType": "integer"
+                    },
+                    {
+                        "name": "CLPN",
+                        "valueType": "double"
+                    },
+                    {
+                        "name": "resourcePN",
+                        "valueType": "double"
+                    }
+                ]
+            },
+            "stage": 1,
+            "objectRef": {},
+            "order": 1,
+            "offsetX": 300,
+            "offsetY": -500,
+            "leftPos": "300",
+            "topPos": "-500",
+            "subscribedMessages": [
+                6,
+                3
+            ],
+            "publishedMessages": [
+                4
+            ],
+            "subscribedDetails": [
+                [
+                    [
+                        0,
+                        1
+                    ],
+                    [
+                        1,
+                        3
+                    ]
+                ],
+                [
+                    [
+                        2,
+                        0
+                    ]
+                ]
+            ],
+            "publishedDetails": [
+                [
+                    [
+                        0,
+                        3
+                    ]
+                ]
+            ],
+            "timeDelta": 1,
+            "timeVarDelta": "",
+            "timeScale": 1,
+            "subscribedInitial": [
+                "false",
+                "false"
+            ],
+            "publishedInitial": [
+                "false"
+            ],
+            "subscribedTimeDelta": [
+                1,
+                1
+            ],
+            "publishedTimeDelta": [
+                1
+            ],
+            "subscribedRelative": [
+                0,
+                0
+            ],
+            "subscribedTimestep": [
+                0,
+                0
+            ],
+            "initialize": "''",
+            "simulate": "Simulate",
+            "simulateTimeDelta": 1,
+            "stageConditions": [],
+            "endConditions": []
+        },
+        {
+            "name": "Recovery",
+            "original": {
+                "name": "Recovery",
+                "refName": "PhysRecoveryPN",
+                "filePath": "D:\\SRTI_GUI_tests\\PN_GUI_1201\\Recovery_GUI",
+                "executeCommand": "matlab -nosplash -r SRTI_Wrapper_v2_22_02",
+                "functions": [
+                    {
+                        "name": "Initialize"
+                    },
+                    {
+                        "name": "Update"
+                    },
+                    {
+                        "name": "Simulate"
+                    }
+                ],
+                "variables": [
+                    {
+                        "name": "stage",
+                        "valueType": "integer"
+                    },
+                    {
+                        "name": "timestamp",
+                        "valueType": "integer"
+                    },
+                    {
+                        "name": "nodePN",
+                        "valueType": "doublearray"
+                    },
+                    {
+                        "name": "connectivityPN",
+                        "valueType": "doublearray"
+                    },
+                    {
+                        "name": "nodeDSPN",
+                        "valueType": "doublearray"
+                    },
+                    {
+                        "name": "linkDSPN",
+                        "valueType": "doublearray"
+                    },
+                    {
+                        "name": "nodeFcnPN",
+                        "valueType": "doublearray"
+                    },
+                    {
+                        "name": "linkFcnPN",
+                        "valueType": "doublearray"
+                    },
+                    {
+                        "name": "resourcePN",
+                        "valueType": "double"
+                    },
+                    {
+                        "name": "recoveryNodePN",
+                        "valueType": "doublearray"
+                    },
+                    {
+                        "name": "recoveryLinkPN",
+                        "valueType": "doublearray"
+                    }
+                ]
+            },
+            "stage": 1,
+            "objectRef": {},
+            "order": 2,
+            "offsetX": 400,
+            "offsetY": -500,
+            "leftPos": "400",
+            "topPos": "-500",
+            "subscribedMessages": [
+                6,
+                4
+            ],
+            "publishedMessages": [
+                5
+            ],
+            "subscribedDetails": [
+                [
+                    [
+                        0,
+                        1
+                    ],
+                    [
+                        1,
+                        3
+                    ]
+                ],
+                [
+                    [
+                        8,
+                        0
+                    ]
+                ]
+            ],
+            "publishedDetails": [
+                [
+                    [
+                        0,
+                        4
+                    ],
+					[
+                        1,
+                        5
+                    ],
+                    [
+                        2,
+                        6
+                    ],
+                    [
+                        3,
+                        7
+                    ],
+                    [
+                        4,
+                        9
+                    ],
+                    [
+                        5,
+                        10
+                    ]
+                ]
+            ],
+            "timeDelta": 1,
+            "timeVarDelta": "",
+            "timeScale": 1,
+            "subscribedInitial": [
+                "false",
+                "false"
+            ],
+            "publishedInitial": [
+                "true"
+            ],
+            "subscribedTimeDelta": [
+                1,
+                1
+            ],
+            "publishedTimeDelta": [
+                1
+            ],
+            "subscribedRelative": [
+                0,
+                0
+            ],
+            "subscribedTimestep": [
+                0,
+                0
+            ],
+            "initialize": "Initialize",
+            "simulate": "Simulate",
+            "simulateTimeDelta": 1,
+            "stageConditions": [],
+            "endConditions": [
+                {
+                    "oldStage": 1,
+                    "conditions": [
+                        {
+                            "varName": "stage",
+                            "condition": "==",
+                            "value": "1",
+                            "varName2": ""
+                        },
+                        {
+                            "varName": "timestamp",
+                            "condition": ">=",
+                            "value": "120",
+                            "varName2": ""
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Damage",
+            "original": {
+                "name": "Damage",
+                "refName": "DirectDamagePN",
+                "filePath": "D:\\SRTI_GUI_tests\\PN_GUI_1201\\Damage_GUI",
+                "executeCommand": "matlab -nosplash -r SRTI_Wrapper_v2_22_02",
+                "functions": [
+                    {
+                        "name": "Simulate_0"
+                    },
+                    {
+                        "name": "Update"
+                    }
+                ],
+                "variables": [
+                    {
+                        "name": "stage",
+                        "valueType": "integer"
+                    },
+                    {
+                        "name": "timestamp",
+                        "valueType": "integer"
+                    },
+                    {
+                        "name": "nodePN",
+                        "valueType": "doublearray"
+                    },
+                    {
+                        "name": "connectivityPN",
+                        "valueType": "doublearray"
+                    },
+                    {
+                        "name": "gaPN",
+                        "valueType": "doublearray"
+                    },
+                    {
+                        "name": "gvPN",
+                        "valueType": "doublearray"
+                    },
+                    {
+                        "name": "rec_nodeDSPN",
+                        "valueType": "doublearray"
+                    },
+                    {
+                        "name": "rec_linkDSPN",
+                        "valueType": "doublearray"
+                    },
+                    {
+                        "name": "nodeDSPN",
+                        "valueType": "doublearray"
+                    },
+                    {
+                        "name": "linkDSPN",
+                        "valueType": "doublearray"
+                    },
+                    {
+                        "name": "nodeFcnPN",
+                        "valueType": "doublearray"
+                    },
+                    {
+                        "name": "linkFcnPN",
+                        "valueType": "doublearray"
+                    }
+                ]
+            },
+            "stage": 1,
+            "objectRef": {},
+            "order": 3,
+            "offsetX": 100,
+            "offsetY": -500,
+            "leftPos": "100",
+            "topPos": "-500",
+            "subscribedMessages": [
+                6,
+                5
+            ],
+            "publishedMessages": [],
+            "subscribedDetails": [
+                [
+                    [
+                        0,
+                        1
+                    ],
+                    [
+                        1,
+                        3
+                    ]
+                ],
+				[
+                    [
+                        6,
+                        0
+                    ],
+                    [
+                        7,
+                        1
+                    ],
+                    [
+                        10,
+                        2
+                    ],
+                    [
+                        11,
+                        3
+                    ]
+                ]
+            ],
+            "publishedDetails": [],
+            "timeDelta": 1,
+            "timeVarDelta": "",
+            "timeScale": 1,
+            "subscribedInitial": [
+                "false"
+            ],
+            "publishedInitial": [],
+            "subscribedTimeDelta": [
+                1,
+				1
+            ],
+            "publishedTimeDelta": [],
+            "subscribedRelative": [
+                0,
+				0
+            ],
+            "subscribedTimestep": [
+                0,
+				0
+            ],
+            "initialize": "''",
+            "simulate": "Update",
+            "simulateTimeDelta": 1,
+            "stageConditions": [],
+            "endConditions": []
+        }
+    ],
+    "messageObjects": [
+        {
+            "name": "Scenario",
+            "original": {
+                "name": "Scenario",
+                "variables": [
+                    {
+                        "name": "nodePN",
+                        "valueType": "doublearray"
+                    },
+                    {
+                        "name": "connectivityPN",
+                        "valueType": "doublearray"
+                    }
+                ]
+            },
+            "objectRef": {}
+        },
+        {
+            "name": "GroundMotion",
+            "original": {
+                "name": "GroundMotion",
+                "variables": [
+                    {
+                        "name": "gaPN",
+                        "valueType": "doublearray"
+                    },
+                    {
+                        "name": "gvPN",
+                        "valueType": "doublearray"
+                    }
+                ]
+            },
+            "objectRef": {}
+        },
+        {
+            "name": "DDamagePN",
+            "original": {
+                "name": "DDamagePN",
+                "variables": [
+                    {
+                        "name": "nodeDSPN",
+                        "valueType": "doublearray"
+                    },
+                    {
+                        "name": "linkDSPN",
+                        "valueType": "doublearray"
+                    },
+                    {
+                        "name": "nodeFcnPN",
+                        "valueType": "doublearray"
+                    },
+                    {
+                        "name": "linkFcnPN",
+                        "valueType": "doublearray"
+                    }
+                ]
+            },
+            "objectRef": {}
+        },
+        {
+            "name": "PerformancePN",
+            "original": {
+                "name": "PerformancePN",
+                "variables": [
+                    {
+                        "name": "CLPN",
+                        "valueType": "double"
+                    },
+                    {
+                        "name": "SRPN_ppl",
+                        "valueType": "double"
+                    },
+                    {
+                        "name": "SRPN_hhd",
+                        "valueType": "double"
+                    },
+                    {
+                        "name": "SRPN_area",
+                        "valueType": "double"
+                    },
+                    {
+                        "name": "nodeDSPN",
+                        "valueType": "doublearray"
+                    },
+                    {
+                        "name": "linkDSPN",
+                        "valueType": "doublearray"
+                    },
+                    {
+                        "name": "nodeFcnPN",
+                        "valueType": "doublearray"
+                    },
+                    {
+                        "name": "linkFcnPN",
+                        "valueType": "doublearray"
+                    }
+                ]
+            },
+            "objectRef": {}
+        },
+        {
+            "name": "Strategy",
+            "original": {
+                "name": "Strategy",
+                "variables": [
+                    {
+                        "name": "resoursePN",
+                        "valueType": "double"
+                    }
+                ]
+            },
+            "objectRef": {}
+        },
+        {
+            "name": "PhysRecoveryPN",
+            "original": {
+                "name": "PhysRecoveryPN",
+                "variables": [
+                    {
+                        "name": "nodeDSPN",
+                        "valueType": "doublearray"
+                    },
+                    {
+                        "name": "linkDSPN",
+                        "valueType": "doublearray"
+                    },
+                    {
+                        "name": "nodeFcnPN",
+                        "valueType": "doublearray"
+                    },
+                    {
+                        "name": "linkFcnPN",
+                        "valueType": "doublearray"
+                    },
+                    {
+                        "name": "recoveryNodePN",
+                        "valueType": "doublearray"
+                    },
+                    {
+                        "name": "recoveryLinkPN",
+                        "valueType": "doublearray"
+                    }
+                ]
+            },
+            "objectRef": {}
+        },
+        {
+            "name": "RTI_",
+            "original": {
+                "name": "RTI_",
+                "variables": [
+                    {
+                        "name": "vTimestep",
+                        "valueType": "integer"
+                    },
+                    {
+                        "name": "stage",
+                        "valueType": "integer"
+                    },
+                    {
+                        "name": "stageVTimestepMul",
+                        "valueType": "integer"
+                    },
+                    {
+                        "name": "stageVTimestep",
+                        "valueType": "integer"
+                    }
+                ]
+            },
+            "objectRef": {}
+        }
+    ],
+    "numOfStages": 2,
+    "serverPath": "D:\\SRTI_GUI_tests\\PN_GUI_1201\\Server\\",
+    "serverFileName": "SRTI_v2_22_02.jar",
+    "hostName": "localhost",
+    "portNumber": "42012"
+}
